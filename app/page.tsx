@@ -53,27 +53,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* How It Works */}
-        <section className="mt-4">
-          <div className="card">
-            <h2 className="text-center mb-3">The Three-Part Project</h2>
-            <div className="grid grid-3">
-              <div>
-                <h4>Part 1: Shared Reading</h4>
-                <p>Elementary and middle school students from two schools in different geographic regions read <em>Right Back at You</em> simultaneously. Scholastic provides discounted books and discussion guides.</p>
-              </div>
-              <div>
-                <h4>Part 2: Author Visit</h4>
-                <p>Author Carolyn Mackler conducts a joint virtual visit where students from both schools share thoughts on bullying and discuss solutions for building empathy and kindness.</p>
-              </div>
-              <div>
-                <h4>Part 3: Pen Pal Correspondence</h4>
-                <p>Students exchange letters with peers from the partner school, building connections across geographic boundaries and discovering their shared experiences.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* About the Book */}
         <section className="mt-4">
           <div className="card">
