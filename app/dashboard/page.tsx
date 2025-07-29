@@ -186,113 +186,157 @@ David Rodriguez,"Sports & Athletics, Animals & Nature",Maria Santos,Roosevelt El
               
               {/* Missing Info Student */}
               <div className="card" style={{ background: '#fff5f5', border: '2px solid #fed7d7' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                  <div>
-                    <h4 style={{ color: '#c53030', marginBottom: '0.25rem' }}>David Rodriguez</h4>
-                    <span style={{ color: '#6c757d', fontSize: '0.9rem' }}>Grade 5 • No interests selected</span>
-                  </div>
-                  <button className="btn btn-primary" onClick={() => {
-                    const editForm = document.getElementById('edit-david');
-                    const viewCard = document.getElementById('view-david');
-                    if (editForm && viewCard) {
-                      editForm.style.display = editForm.style.display === 'none' ? 'block' : 'none';
-                      viewCard.style.display = editForm.style.display === 'none' ? 'block' : 'none';
-                    }
-                  }} style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
-                    Add Interests
-                  </button>
+                <div style={{ marginBottom: '1rem' }}>
+                  <h4 style={{ color: '#c53030', marginBottom: '0.25rem' }}>David Rodriguez</h4>
+                  <span style={{ color: '#6c757d', fontSize: '0.9rem' }}>Grade 5 • No interests selected</span>
                 </div>
                 
-                <div id="view-david">
-                  <div style={{ background: 'white', padding: '1rem', borderRadius: '6px', border: '1px solid #fed7d7', textAlign: 'center' }}>
-                    <p style={{ color: '#6c757d', marginBottom: '0', fontStyle: 'italic' }}>
-                      Click "Add Interests" to select this student's preferences
-                    </p>
+                <div style={{ background: 'white', padding: '1.5rem', borderRadius: '6px', border: '1px solid #fed7d7' }}>
+                  <h5 style={{ marginBottom: '1rem', color: '#495057' }}>Select David's Interests:</h5>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.5rem', marginBottom: '1rem' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input type="checkbox" name="david-interests" value="sports" />
+                      🏀 Sports & Athletics
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input type="checkbox" name="david-interests" value="arts" />
+                      🎨 Arts & Creativity
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input type="checkbox" name="david-interests" value="reading" />
+                      📚 Reading & Books
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input type="checkbox" name="david-interests" value="technology" />
+                      💻 Technology & Gaming
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input type="checkbox" name="david-interests" value="animals" />
+                      🐕 Animals & Nature
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input type="checkbox" name="david-interests" value="entertainment" />
+                      🎬 Entertainment & Media
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input type="checkbox" name="david-interests" value="social" />
+                      👥 Social & Family
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input type="checkbox" name="david-interests" value="academic" />
+                      🧮 Academic Subjects
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input type="checkbox" name="david-interests" value="hobbies" />
+                      🎯 Hobbies & Collections
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input type="checkbox" name="david-interests" value="outdoors" />
+                      🏕️ Outdoor Activities
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input type="checkbox" name="david-interests" value="music" />
+                      🎵 Music & Performance
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input type="checkbox" name="david-interests" value="fashion" />
+                      👗 Fashion & Style
+                    </label>
                   </div>
-                </div>
-
-                {/* Inline Edit Form */}
-                <div id="edit-david" style={{ display: 'none' }}>
-                  <div style={{ background: 'white', padding: '1.5rem', borderRadius: '6px', border: '1px solid #fed7d7' }}>
-                    <h5 style={{ marginBottom: '1rem' }}>Select David's Interests:</h5>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.5rem', marginBottom: '1rem' }}>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <input type="checkbox" name="david-interests" value="sports" />
-                        🏀 Sports & Athletics
-                      </label>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <input type="checkbox" name="david-interests" value="arts" />
-                        🎨 Arts & Creativity
-                      </label>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <input type="checkbox" name="david-interests" value="reading" />
-                        📚 Reading & Books
-                      </label>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <input type="checkbox" name="david-interests" value="technology" />
-                        💻 Technology & Gaming
-                      </label>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <input type="checkbox" name="david-interests" value="animals" />
-                        🐕 Animals & Nature
-                      </label>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <input type="checkbox" name="david-interests" value="music" />
-                        🎵 Music & Performance
-                      </label>
-                    </div>
-                    <div style={{ marginBottom: '1rem' }}>
-                      <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Other Interests:</label>
-                      <textarea 
-                        className="form-textarea" 
-                        placeholder="Any other hobbies or interests..."
-                        rows={2}
-                        style={{ width: '100%' }}
-                      ></textarea>
-                    </div>
-                    <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                      <button className="btn btn-outline" onClick={() => {
-                        const editForm = document.getElementById('edit-david');
-                        const viewCard = document.getElementById('view-david');
-                        if (editForm && viewCard) {
-                          editForm.style.display = 'none';
-                          viewCard.style.display = 'block';
-                        }
-                      }}>
-                        Cancel
-                      </button>
-                      <button className="btn btn-primary" onClick={() => {
-                        alert('Interests saved for David Rodriguez!');
-                        const editForm = document.getElementById('edit-david');
-                        const viewCard = document.getElementById('view-david');
-                        if (editForm && viewCard) {
-                          editForm.style.display = 'none';
-                          viewCard.style.display = 'block';
-                        }
-                      }}>
-                        Save Interests
-                      </button>
-                    </div>
+                  <div style={{ marginBottom: '1rem' }}>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Other Interests:</label>
+                    <textarea 
+                      className="form-textarea" 
+                      placeholder="Any other hobbies or interests..."
+                      rows={2}
+                      style={{ width: '100%' }}
+                    ></textarea>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                    <button className="btn btn-primary" onClick={() => {
+                      alert('Interests saved for David Rodriguez!');
+                    }}>
+                      Save Interests
+                    </button>
                   </div>
                 </div>
               </div>
 
               {/* Another Missing Info Student */}
               <div className="card" style={{ background: '#fff5f5', border: '2px solid #fed7d7' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                  <div>
-                    <h4 style={{ color: '#c53030', marginBottom: '0.25rem' }}>Emily Watson</h4>
-                    <span style={{ color: '#6c757d', fontSize: '0.9rem' }}>Grade 5 • No interests selected</span>
-                  </div>
-                  <button className="btn btn-primary" style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
-                    Add Interests
-                  </button>
+                <div style={{ marginBottom: '1rem' }}>
+                  <h4 style={{ color: '#c53030', marginBottom: '0.25rem' }}>Emily Watson</h4>
+                  <span style={{ color: '#6c757d', fontSize: '0.9rem' }}>Grade 5 • No interests selected</span>
                 </div>
                 
-                <div style={{ background: 'white', padding: '1rem', borderRadius: '6px', border: '1px solid #fed7d7', textAlign: 'center' }}>
-                  <p style={{ color: '#6c757d', marginBottom: '0', fontStyle: 'italic' }}>
-                    Click "Add Interests" to select this student's preferences
-                  </p>
+                <div style={{ background: 'white', padding: '1.5rem', borderRadius: '6px', border: '1px solid #fed7d7' }}>
+                  <h5 style={{ marginBottom: '1rem', color: '#495057' }}>Select Emily's Interests:</h5>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.5rem', marginBottom: '1rem' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input type="checkbox" name="emily-interests" value="sports" />
+                      🏀 Sports & Athletics
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input type="checkbox" name="emily-interests" value="arts" />
+                      🎨 Arts & Creativity
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input type="checkbox" name="emily-interests" value="reading" />
+                      📚 Reading & Books
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input type="checkbox" name="emily-interests" value="technology" />
+                      💻 Technology & Gaming
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input type="checkbox" name="emily-interests" value="animals" />
+                      🐕 Animals & Nature
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input type="checkbox" name="emily-interests" value="entertainment" />
+                      🎬 Entertainment & Media
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input type="checkbox" name="emily-interests" value="social" />
+                      👥 Social & Family
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input type="checkbox" name="emily-interests" value="academic" />
+                      🧮 Academic Subjects
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input type="checkbox" name="emily-interests" value="hobbies" />
+                      🎯 Hobbies & Collections
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input type="checkbox" name="emily-interests" value="outdoors" />
+                      🏕️ Outdoor Activities
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input type="checkbox" name="emily-interests" value="music" />
+                      🎵 Music & Performance
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input type="checkbox" name="emily-interests" value="fashion" />
+                      👗 Fashion & Style
+                    </label>
+                  </div>
+                  <div style={{ marginBottom: '1rem' }}>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Other Interests:</label>
+                    <textarea 
+                      className="form-textarea" 
+                      placeholder="Any other hobbies or interests..."
+                      rows={2}
+                      style={{ width: '100%' }}
+                    ></textarea>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                    <button className="btn btn-primary" onClick={() => {
+                      alert('Interests saved for Emily Watson!');
+                    }}>
+                      Save Interests
+                    </button>
+                  </div>
                 </div>
               </div>
 
