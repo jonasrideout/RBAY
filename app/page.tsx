@@ -22,12 +22,12 @@ export default function Home() {
         
         {/* Hero Section */}
         <section className="text-center mb-4">
-          <h1>Connect Students Through Reading & Writing</h1>
+          <h1>Building Empathy Through Literature & Letters</h1>
           <p style={{ fontSize: '1.2rem', color: '#6c757d', marginBottom: '2rem' }}>
-            Match students from different schools to share their love of books through penpal letters
+            Connect students across geographic regions to combat bullying and discover their shared humanity through the power of penpal correspondence
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <a href="/register" className="btn btn-primary">Get Started</a>
+            <a href="/register" className="btn btn-primary">Join the Project</a>
             <a href="/about" className="btn btn-outline">Learn More</a>
           </div>
         </section>
@@ -35,45 +35,57 @@ export default function Home() {
         {/* Features */}
         <section className="grid grid-3 mt-4">
           <div className="card text-center">
-            <h3>📚 Book-Based Learning</h3>
-            <p>Students discuss their reading with peers from other schools, deepening comprehension and engagement.</p>
+            <h3>📚 Shared Reading Experience</h3>
+            <p>Students from different regions read "Right Back at You" together, exploring themes of bullying, empathy, and connection.</p>
           </div>
           
           <div className="card text-center">
-            <h3>🤝 Smart Matching</h3>
-            <p>Our algorithm pairs students based on shared interests, reading levels, and compatible class sizes.</p>
+            <h3>🎤 Virtual Author Visit</h3>
+            <p>Join author Carolyn Mackler in a virtual session where students share anti-bullying solutions from their communities.</p>
           </div>
           
           <div className="card text-center">
-            <h3>🛡️ Safe & Moderated</h3>
-            <p>Teacher oversight and content moderation ensure a safe, educational environment for all students.</p>
+            <h3>✉️ Cross-Regional Pen Pals</h3>
+            <p>Students correspond with peers from different geographic areas, discovering commonalities despite their differences.</p>
           </div>
         </section>
 
         {/* How It Works */}
         <section className="mt-4">
           <div className="card">
-            <h2 className="text-center mb-3">How It Works</h2>
-            <div className="grid grid-2">
+            <h2 className="text-center mb-3">The Three-Part Project</h2>
+            <div className="grid grid-3">
               <div>
-                <h4>For Teachers:</h4>
-                <ul style={{ paddingLeft: '1.5rem', marginBottom: '1rem' }}>
-                  <li>Register your school and class</li>
-                  <li>Add students and their interests</li>
-                  <li>Get matched with a compatible school</li>
-                  <li>Receive printable penpal assignments</li>
-                  <li>Facilitate letter writing in class</li>
-                </ul>
+                <h4>Part 1: Shared Reading</h4>
+                <p>Elementary and middle school students from two schools in different geographic regions read <em>Right Back at You</em> simultaneously. Scholastic provides discounted books and discussion guides.</p>
               </div>
               <div>
-                <h4>For Students:</h4>
-                <ul style={{ paddingLeft: '1.5rem', marginBottom: '1rem' }}>
-                  <li>Share your interests and hobbies</li>
-                  <li>Get matched with a penpal who shares your interests</li>
-                  <li>Write letters about books you're reading</li>
-                  <li>Learn about life in a different school/community</li>
-                  <li>Build writing skills and make new friends</li>
-                </ul>
+                <h4>Part 2: Author Visit</h4>
+                <p>Author Carolyn Mackler conducts a joint virtual visit where students from both schools share thoughts on bullying and discuss solutions for building empathy and kindness.</p>
+              </div>
+              <div>
+                <h4>Part 3: Pen Pal Correspondence</h4>
+                <p>Students exchange letters with peers from the partner school, building connections across geographic boundaries and discovering their shared experiences.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* About the Book */}
+        <section className="mt-4">
+          <div className="card">
+            <h2 className="text-center mb-3">About "Right Back at You"</h2>
+            <p style={{ fontSize: '1.1rem', textAlign: 'center', marginBottom: '1.5rem' }}>
+              A powerful middle-grade novel told through letters between Talia (Western Pennsylvania, 1987) and Mason (New York City, 2023) - two seventh graders who discover that bullying transcends time and geography.
+            </p>
+            <div className="grid grid-2">
+              <div>
+                <h4>The Story</h4>
+                <p>When Talia and Mason find a mysterious way to communicate across thirty-six years and three hundred miles, they're both skeptical. But as they share their experiences of being bullied, they form an unlikely friendship and realize they have more in common than they thought.</p>
+              </div>
+              <div>
+                <h4>The Impact</h4>
+                <p>Through their correspondence, students explore universal themes of bullying, resilience, and empathy while learning that connection and understanding can bridge any divide - whether it's time, distance, or differences.</p>
               </div>
             </div>
           </div>
