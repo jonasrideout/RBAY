@@ -33,8 +33,10 @@ export default function RegisterStudent() {
 
             <form onSubmit={(e) => {
               e.preventDefault();
-              document.getElementById('step2').style.display = 'none';
-              document.getElementById('success').style.display = 'block';
+              const step2 = document.getElementById('step2');
+              const success = document.getElementById('success');
+              if (step2) step2.style.display = 'none';
+              if (success) success.style.display = 'block';
             }}>
               <div className="form-group">
                 <label htmlFor="teacher-email" className="form-label">
@@ -55,18 +57,19 @@ export default function RegisterStudent() {
 
               <div className="form-group text-center">
                 <button type="button" className="btn btn-primary" onClick={() => {
-                  const email = document.getElementById('teacher-email').value;
+                  const emailInput = document.getElementById('teacher-email') as HTMLInputElement;
                   const errorDiv = document.getElementById('school-not-found');
                   const step1 = document.getElementById('step1');
                   const step2 = document.getElementById('step2');
+                  const schoolName = document.getElementById('school-name');
                   
-                  if (email && email.includes('@')) {
-                    errorDiv.style.display = 'none';
-                    step1.style.display = 'none';
-                    step2.style.display = 'block';
-                    document.getElementById('school-name').textContent = 'Lincoln Elementary - 5th Grade (Ms. Johnson)';
+                  if (emailInput && emailInput.value && emailInput.value.includes('@')) {
+                    if (errorDiv) errorDiv.style.display = 'none';
+                    if (step1) step1.style.display = 'none';
+                    if (step2) step2.style.display = 'block';
+                    if (schoolName) schoolName.textContent = 'Lincoln Elementary - 5th Grade (Ms. Johnson)';
                   } else {
-                    errorDiv.style.display = 'block';
+                    if (errorDiv) errorDiv.style.display = 'block';
                   }
                 }}>
                   Find My School
@@ -90,7 +93,13 @@ export default function RegisterStudent() {
               This information helps us find you a great penpal who shares your interests!
             </p>
 
-            <form>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const step2 = document.getElementById('step2');
+              const success = document.getElementById('success');
+              if (step2) step2.style.display = 'none';
+              if (success) success.style.display = 'block';
+            }}>
               {/* Student Information */}
               <div className="grid grid-2">
                 <div className="form-group">
@@ -204,8 +213,10 @@ export default function RegisterStudent() {
               {/* Submit */}
               <div className="form-group text-center">
                 <button type="button" className="btn btn-secondary" onClick={() => {
-                  document.getElementById('step1').style.display = 'block';
-                  document.getElementById('step2').style.display = 'none';
+                  const step1 = document.getElementById('step1');
+                  const step2 = document.getElementById('step2');
+                  if (step1) step1.style.display = 'block';
+                  if (step2) step2.style.display = 'none';
                 }} style={{ marginRight: '1rem' }}>
                   ← Go Back
                 </button>
@@ -247,8 +258,6 @@ export default function RegisterStudent() {
           <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
         </div>
       </footer>
-
-
     </div>
   );
 }
