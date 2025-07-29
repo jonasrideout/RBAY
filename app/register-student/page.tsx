@@ -2,7 +2,7 @@
 
 export default function RegisterStudent() {
   // In a real app, this would be managed with React state
-  // For now, we'll show both steps in the same component
+  // For now, we'll show all three steps in the same component
   
   return (
     <div className="page">
@@ -35,10 +35,7 @@ export default function RegisterStudent() {
 
             <form onSubmit={(e) => {
               e.preventDefault();
-              const step2 = document.getElementById('step2');
-              const success = document.getElementById('success');
-              if (step2) step2.style.display = 'none';
-              if (success) success.style.display = 'block';
+              // This form doesn't actually submit - just contains the email input
             }}>
               <div className="form-group">
                 <label htmlFor="teacher-email" className="form-label">
@@ -62,8 +59,8 @@ export default function RegisterStudent() {
                   const emailInput = document.getElementById('teacher-email') as HTMLInputElement;
                   const errorDiv = document.getElementById('school-not-found');
                   const step1 = document.getElementById('step1');
-                  const step2 = document.getElementById('step2');
-                  const schoolName = document.getElementById('school-name');
+                  const step2 = document.getElementById('step2-confirm');
+                  const schoolName = document.getElementById('school-name-confirm');
                   
                   if (emailInput && emailInput.value && emailInput.value.includes('@')) {
                     if (errorDiv) errorDiv.style.display = 'none';
@@ -84,10 +81,57 @@ export default function RegisterStudent() {
             </div>
           </div>
 
-          {/* Step 2: Student Information (hidden initially) */}
-          <div className="card" id="step2" style={{ display: 'none' }}>
+          {/* Step 2: School Confirmation */}
+          <div className="card" id="step2-confirm" style={{ display: 'none' }}>
+            <h1 className="text-center mb-3">Is This Your School?</h1>
+            
+            <div className="alert alert-success text-center" style={{ marginBottom: '2rem' }}>
+              <h3 style={{ color: '#155724', marginBottom: '0.5rem' }}>✅ We found your school:</h3>
+              <p style={{ color: '#155724', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '0' }}>
+                <span id="school-name-confirm">Lincoln Elementary - 5th Grade</span>
+              </p>
+            </div>
+
+            <div className="text-center">
+              <p style={{ fontSize: '1.1rem', marginBottom: '2rem', color: '#6c757d' }}>
+                Please confirm this is the correct school before continuing.
+              </p>
+              
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <button type="button" className="btn btn-primary" onClick={() => {
+                  const step2Confirm = document.getElementById('step2-confirm');
+                  const step3 = document.getElementById('step3');
+                  const schoolNameFinal = document.getElementById('school-name-final');
+                  const schoolNameSource = document.getElementById('school-name-confirm');
+                  
+                  if (step2Confirm) step2Confirm.style.display = 'none';
+                  if (step3) step3.style.display = 'block';
+                  if (schoolNameFinal && schoolNameSource) {
+                    schoolNameFinal.textContent = schoolNameSource.textContent;
+                  }
+                }} style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}>
+                  ✅ Yes, that's my school
+                </button>
+                
+                <button type="button" className="btn btn-secondary" onClick={() => {
+                  const step1 = document.getElementById('step1');
+                  const step2Confirm = document.getElementById('step2-confirm');
+                  const emailInput = document.getElementById('teacher-email') as HTMLInputElement;
+                  
+                  if (step1) step1.style.display = 'block';
+                  if (step2Confirm) step2Confirm.style.display = 'none';
+                  if (emailInput) emailInput.focus();
+                }} style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}>
+                  ❌ No, try different email
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Step 3: Student Information (renamed from step2) */}
+          <div className="card" id="step3" style={{ display: 'none' }}>
             <div className="alert alert-success">
-              <strong>Great!</strong> We found your school: <span id="school-name">Lincoln Elementary - 5th Grade</span>
+              <strong>Great!</strong> We found your school: <span id="school-name-final">Lincoln Elementary - 5th Grade</span>
             </div>
 
             <h2 className="text-center mb-3">Tell Us About Yourself</h2>
@@ -97,9 +141,9 @@ export default function RegisterStudent() {
 
             <form onSubmit={(e) => {
               e.preventDefault();
-              const step2 = document.getElementById('step2');
+              const step3 = document.getElementById('step3');
               const success = document.getElementById('success');
-              if (step2) step2.style.display = 'none';
+              if (step3) step3.style.display = 'none';
               if (success) success.style.display = 'block';
             }}>
               {/* Student Information */}
@@ -215,10 +259,10 @@ export default function RegisterStudent() {
               {/* Submit */}
               <div className="form-group text-center">
                 <button type="button" className="btn btn-secondary" onClick={() => {
-                  const step1 = document.getElementById('step1');
-                  const step2 = document.getElementById('step2');
-                  if (step1) step1.style.display = 'block';
-                  if (step2) step2.style.display = 'none';
+                  const step2Confirm = document.getElementById('step2-confirm');
+                  const step3 = document.getElementById('step3');
+                  if (step2Confirm) step2Confirm.style.display = 'block';
+                  if (step3) step3.style.display = 'none';
                 }} style={{ marginRight: '1rem' }}>
                   ← Go Back
                 </button>
