@@ -5,8 +5,9 @@ export default function Home() {
       <header className="header">
         <div className="container">
           <div className="header-content">
-            <a href="/" className="logo">
-              📝 PenPal Connect
+            <a href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
+              The Right Back at You Project
             </a>
             <nav className="nav">
               <a href="/login" className="nav-link">Login</a>
@@ -96,7 +97,7 @@ export default function Home() {
       {/* Footer */}
       <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
         <div className="container text-center">
-          <p>&copy; 2024 PenPal Connect. Connecting students through literacy and friendship.</p>
+          <p>&copy; 2024 The Right Back at You Project. Connecting students through literacy and friendship.</p>
           <div style={{ marginTop: '1rem' }}>
             <a href="/contact" style={{ color: '#adb5bd', textDecoration: 'none', margin: '0 1rem' }}>Contact</a>
             <a href="/privacy" style={{ color: '#adb5bd', textDecoration: 'none', margin: '0 1rem' }}>Privacy</a>
