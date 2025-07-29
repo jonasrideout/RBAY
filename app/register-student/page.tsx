@@ -109,6 +109,9 @@ export default function RegisterStudent() {
                   if (schoolNameFinal && schoolNameSource) {
                     schoolNameFinal.textContent = schoolNameSource.textContent;
                   }
+                  // Also set teacher name
+                  const teacherNameFinal = document.getElementById('teacher-name-final');
+                  if (teacherNameFinal) teacherNameFinal.textContent = 'Ms. Johnson';
                 }} style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}>
                   ✅ Yes, that's my school
                 </button>
@@ -130,8 +133,14 @@ export default function RegisterStudent() {
 
           {/* Step 3: Student Information (renamed from step2) */}
           <div className="card" id="step3" style={{ display: 'none' }}>
-            <div className="alert alert-success">
-              <strong>Great!</strong> We found your school: <span id="school-name-final">Lincoln Elementary - 5th Grade</span>
+            <div style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '6px', marginBottom: '1.5rem', border: '1px solid #dee2e6' }}>
+              <h4 style={{ color: '#495057', marginBottom: '0.5rem' }}>Your School:</h4>
+              <p style={{ fontSize: '1.1rem', fontWeight: '600', color: '#2c5aa0', marginBottom: '0.25rem' }}>
+                <span id="school-name-final">Lincoln Elementary - 5th Grade</span>
+              </p>
+              <p style={{ color: '#6c757d', marginBottom: '0', fontSize: '0.95rem' }}>
+                Teacher: <span id="teacher-name-final">Ms. Johnson</span>
+              </p>
             </div>
 
             <h2 className="text-center mb-3">Tell Us About Yourself</h2>
