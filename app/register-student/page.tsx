@@ -156,8 +156,8 @@ export default function RegisterStudent() {
               if (success) success.style.display = 'block';
             }}>
               {/* Student Information */}
-              <div className="grid grid-2">
-                <div className="form-group">
+              <div className="grid grid-2" style={{ gap: '1rem' }}>
+                <div className="form-group" style={{ marginBottom: '1.5rem' }}>
                   <label htmlFor="first-name" className="form-label">First Name *</label>
                   <input 
                     type="text" 
@@ -169,7 +169,7 @@ export default function RegisterStudent() {
                   />
                 </div>
                 
-                <div className="form-group">
+                <div className="form-group" style={{ marginBottom: '1.5rem' }}>
                   <label htmlFor="last-name" className="form-label">Last Name *</label>
                   <input 
                     type="text" 
