@@ -1,4 +1,7 @@
 export default function RegisterStudent() {
+  // In a real app, this would be managed with React state
+  // For now, we'll show both steps in the same component
+  
   return (
     <div className="page">
       {/* Header */}
@@ -21,17 +24,17 @@ export default function RegisterStudent() {
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
           
-          <div className="card">
-            <h1 className="text-center mb-3">Student Registration</h1>
+          {/* Step 1: School Validation */}
+          <div className="card" id="step1">
+            <h1 className="text-center mb-3">Join The Right Back at You Project</h1>
             <p className="text-center mb-4" style={{ color: '#6c757d' }}>
-              Join The Right Back at You Project and connect with students from other schools!
+              First, let's make sure your teacher has registered your school for this project.
             </p>
 
             <form>
-              {/* Teacher Connection */}
               <div className="form-group">
                 <label htmlFor="teacher-email" className="form-label">
-                  Your Teacher's Email Address *
+                  What is your teacher's email address?
                 </label>
                 <input 
                   type="email" 
@@ -42,10 +45,34 @@ export default function RegisterStudent() {
                   required
                 />
                 <small style={{ color: '#6c757d', fontSize: '0.9rem' }}>
-                  This helps us connect you to your school and classmates
+                  This helps us find your school and connect you to your class
                 </small>
               </div>
 
+              <div className="form-group text-center">
+                <button type="button" className="btn btn-primary" onclick="validateSchool()">
+                  Find My School
+                </button>
+              </div>
+            </form>
+
+            <div className="alert alert-error" id="school-not-found" style={{ display: 'none' }}>
+              <strong>Teacher not found.</strong> That email address isn't registered yet. Please ask your teacher to register your school first, or double-check the email address.
+            </div>
+          </div>
+
+          {/* Step 2: Student Information (hidden initially) */}
+          <div className="card" id="step2" style={{ display: 'none' }}>
+            <div className="alert alert-success">
+              <strong>Great!</strong> We found your school: <span id="school-name">Lincoln Elementary - 5th Grade</span>
+            </div>
+
+            <h2 className="text-center mb-3">Tell Us About Yourself</h2>
+            <p className="text-center mb-4" style={{ color: '#6c757d' }}>
+              This information helps us find you a great penpal who shares your interests!
+            </p>
+
+            <form>
               {/* Student Information */}
               <div className="grid grid-2">
                 <div className="form-group">
@@ -156,93 +183,34 @@ export default function RegisterStudent() {
                 ></textarea>
               </div>
 
-              {/* Account Setup */}
-              <div className="form-group">
-                <label htmlFor="email" className="form-label">Your Email Address *</label>
-                <input 
-                  type="email" 
-                  id="email" 
-                  name="email" 
-                  className="form-input" 
-                  placeholder="your.email@example.com"
-                  required
-                />
-                <small style={{ color: '#6c757d', fontSize: '0.9rem' }}>
-                  This will be your login username
-                </small>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="password" className="form-label">Create Password *</label>
-                <input 
-                  type="password" 
-                  id="password" 
-                  name="password" 
-                  className="form-input" 
-                  placeholder="Create a secure password"
-                  required
-                />
-              </div>
-
-              {/* Parent/Guardian Information */}
-              <div className="card" style={{ background: '#f8f9fa', padding: '1.5rem' }}>
-                <h3>Parent/Guardian Information</h3>
-                <p style={{ color: '#6c757d', marginBottom: '1rem' }}>
-                  We need a parent or guardian's permission for you to participate in this project.
-                </p>
-                
-                <div className="grid grid-2">
-                  <div className="form-group">
-                    <label htmlFor="parent-name" className="form-label">Parent/Guardian Name *</label>
-                    <input 
-                      type="text" 
-                      id="parent-name" 
-                      name="parent-name" 
-                      className="form-input" 
-                      placeholder="Parent or guardian's name"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label htmlFor="parent-email" className="form-label">Parent/Guardian Email *</label>
-                    <input 
-                      type="email" 
-                      id="parent-email" 
-                      name="parent-email" 
-                      className="form-input" 
-                      placeholder="parent@example.com"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
-                    <input type="checkbox" name="parent-consent" required />
-                    <span>
-                      I have permission from my parent/guardian to participate in The Right Back at You Project, 
-                      including reading the book and exchanging letters with students from other schools. *
-                    </span>
-                  </label>
-                </div>
-              </div>
-
               {/* Submit */}
               <div className="form-group text-center">
+                <button type="button" className="btn btn-secondary" onclick="goBackToStep1()" style={{ marginRight: '1rem' }}>
+                  ← Go Back
+                </button>
                 <button type="submit" className="btn btn-primary" style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}>
-                  Join the Project!
+                  Submit My Information
                 </button>
               </div>
             </form>
+          </div>
 
+          {/* Success Message (hidden initially) */}
+          <div className="card text-center" id="success" style={{ display: 'none', background: '#d4edda' }}>
+            <h2 style={{ color: '#155724' }}>Thank You!</h2>
+            <p style={{ color: '#155724', fontSize: '1.1rem' }}>
+              Your information has been submitted successfully. Your teacher will receive your details and you'll be matched with a penpal soon!
+            </p>
+            <p style={{ color: '#6c757d', marginTop: '1.5rem' }}>
+              You can close this page now. Your teacher will let you know when it's time to start writing letters!
+            </p>
           </div>
 
           {/* Help Section */}
           <div className="card mt-3" style={{ background: '#f8f9fa' }}>
             <h3>Questions?</h3>
             <p style={{ marginBottom: '1rem' }}>
-              If you need help registering or have questions about the project, ask your teacher or contact us:
+              If you need help or have questions about the project, ask your teacher or contact us:
             </p>
             <p style={{ marginBottom: '0' }}>
               <strong>Email:</strong> <a href="mailto:carolyn.mackler@gmail.com" style={{ color: '#4a90e2' }}>carolyn.mackler@gmail.com</a>
@@ -258,6 +226,45 @@ export default function RegisterStudent() {
           <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
         </div>
       </footer>
+
+      {/* Simple JavaScript for demo purposes */}
+      <script dangerouslySetInnerHTML={{__html: `
+        function validateSchool() {
+          const email = document.getElementById('teacher-email').value;
+          const errorDiv = document.getElementById('school-not-found');
+          const step1 = document.getElementById('step1');
+          const step2 = document.getElementById('step2');
+          
+          // Simple validation demo - in real app, this would be an API call
+          if (email && email.includes('@')) {
+            // Hide error and step 1, show step 2
+            errorDiv.style.display = 'none';
+            step1.style.display = 'none';
+            step2.style.display = 'block';
+            
+            // Update school name (in real app, this would come from API)
+            document.getElementById('school-name').textContent = 'Lincoln Elementary - 5th Grade (Ms. Johnson)';
+          } else {
+            // Show error
+            errorDiv.style.display = 'block';
+          }
+        }
+        
+        function goBackToStep1() {
+          document.getElementById('step1').style.display = 'block';
+          document.getElementById('step2').style.display = 'none';
+        }
+        
+        // Handle form submission
+        document.addEventListener('DOMContentLoaded', function() {
+          const forms = document.querySelectorAll('form');
+          forms[1]?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('success').style.display = 'block';
+          });
+        });
+      `}} />
     </div>
   );
 }
