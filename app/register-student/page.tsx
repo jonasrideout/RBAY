@@ -31,7 +31,11 @@ export default function RegisterStudent() {
               First, let's make sure your teacher has registered your school for this project.
             </p>
 
-            <form>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              document.getElementById('step2').style.display = 'none';
+              document.getElementById('success').style.display = 'block';
+            }}>
               <div className="form-group">
                 <label htmlFor="teacher-email" className="form-label">
                   What is your teacher's email address?
@@ -50,7 +54,21 @@ export default function RegisterStudent() {
               </div>
 
               <div className="form-group text-center">
-                <button type="button" className="btn btn-primary" onclick="validateSchool()">
+                <button type="button" className="btn btn-primary" onClick={() => {
+                  const email = document.getElementById('teacher-email').value;
+                  const errorDiv = document.getElementById('school-not-found');
+                  const step1 = document.getElementById('step1');
+                  const step2 = document.getElementById('step2');
+                  
+                  if (email && email.includes('@')) {
+                    errorDiv.style.display = 'none';
+                    step1.style.display = 'none';
+                    step2.style.display = 'block';
+                    document.getElementById('school-name').textContent = 'Lincoln Elementary - 5th Grade (Ms. Johnson)';
+                  } else {
+                    errorDiv.style.display = 'block';
+                  }
+                }}>
                   Find My School
                 </button>
               </div>
@@ -185,7 +203,10 @@ export default function RegisterStudent() {
 
               {/* Submit */}
               <div className="form-group text-center">
-                <button type="button" className="btn btn-secondary" onclick="goBackToStep1()" style={{ marginRight: '1rem' }}>
+                <button type="button" className="btn btn-secondary" onClick={() => {
+                  document.getElementById('step1').style.display = 'block';
+                  document.getElementById('step2').style.display = 'none';
+                }} style={{ marginRight: '1rem' }}>
                   ← Go Back
                 </button>
                 <button type="submit" className="btn btn-primary" style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}>
@@ -227,44 +248,7 @@ export default function RegisterStudent() {
         </div>
       </footer>
 
-      {/* Simple JavaScript for demo purposes */}
-      <script dangerouslySetInnerHTML={{__html: `
-        function validateSchool() {
-          const email = document.getElementById('teacher-email').value;
-          const errorDiv = document.getElementById('school-not-found');
-          const step1 = document.getElementById('step1');
-          const step2 = document.getElementById('step2');
-          
-          // Simple validation demo - in real app, this would be an API call
-          if (email && email.includes('@')) {
-            // Hide error and step 1, show step 2
-            errorDiv.style.display = 'none';
-            step1.style.display = 'none';
-            step2.style.display = 'block';
-            
-            // Update school name (in real app, this would come from API)
-            document.getElementById('school-name').textContent = 'Lincoln Elementary - 5th Grade (Ms. Johnson)';
-          } else {
-            // Show error
-            errorDiv.style.display = 'block';
-          }
-        }
-        
-        function goBackToStep1() {
-          document.getElementById('step1').style.display = 'block';
-          document.getElementById('step2').style.display = 'none';
-        }
-        
-        // Handle form submission
-        document.addEventListener('DOMContentLoaded', function() {
-          const forms = document.querySelectorAll('form');
-          forms[1]?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            document.getElementById('step2').style.display = 'none';
-            document.getElementById('success').style.display = 'block';
-          });
-        });
-      `}} />
+
     </div>
   );
 }
