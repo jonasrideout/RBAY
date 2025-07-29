@@ -342,9 +342,6 @@ export default function RegisterSchool() {
                 <p><strong>4. Author Visit:</strong> Schedule your virtual visit with Carolyn Mackler</p>
                 <p><strong>5. Start Writing:</strong> Begin the penpal correspondence!</p>
               </div>
-            </div>:</strong> Schedule your virtual visit with Carolyn Mackler</p>
-                <p><strong>4. Start Writing:</strong> Begin the penpal correspondence!</p>
-              </div>
             </div>
 
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
