@@ -33,20 +33,23 @@ export default function Home() {
         </section>
 
         {/* Features */}
-        <section className="grid grid-3 mt-4">
-          <div className="card text-center">
-            <h3>📚 Shared Reading Experience</h3>
-            <p>Students from different regions read "Right Back at You" together, exploring themes of bullying, empathy, and connection.</p>
-          </div>
-          
-          <div className="card text-center">
-            <h3>🎤 Virtual Author Visit</h3>
-            <p>Join author Carolyn Mackler in a virtual session where students share anti-bullying solutions from their communities.</p>
-          </div>
-          
-          <div className="card text-center">
-            <h3>✉️ Cross-Regional Pen Pals</h3>
-            <p>Students correspond with peers from different geographic areas, discovering commonalities despite their differences.</p>
+        <section className="mt-4">
+          <h2 className="text-center mb-3">The Three-Part Project</h2>
+          <div className="grid grid-3">
+            <div className="card text-center">
+              <h3>📚 Shared Reading Experience</h3>
+              <p>Students from different regions read "Right Back at You" together, exploring themes of bullying, empathy, and connection.</p>
+            </div>
+            
+            <div className="card text-center">
+              <h3>🎤 Virtual Author Visit</h3>
+              <p>Join author Carolyn Mackler in a virtual session where students share anti-bullying solutions from their communities.</p>
+            </div>
+            
+            <div className="card text-center">
+              <h3>✉️ Cross-Regional Pen Pals</h3>
+              <p>Students correspond with peers from different geographic areas, discovering commonalities despite their differences.</p>
+            </div>
           </div>
         </section>
 
@@ -94,9 +97,9 @@ export default function Home() {
         {/* Call to Action */}
         <section className="text-center mt-4 mb-4">
           <div className="card" style={{ background: 'linear-gradient(135deg, #4a90e2 0%, #357abd 100%)', color: 'white' }}>
-            <h2 style={{ color: 'white' }}>Ready to Connect Your Students?</h2>
+            <h2 style={{ color: 'white' }}>Ready to Build Empathy in Your Community?</h2>
             <p style={{ fontSize: '1.1rem', marginBottom: '2rem' }}>
-              Join schools across the country in building literacy, empathy, and communication skills through the power of penpal relationships.
+              Join schools across different regions in encouraging students to become part of the solution to bullying through literature, discussion, and meaningful connections.
             </p>
             <a href="/register" className="btn btn-outline" style={{ borderColor: 'white', color: 'white' }}>
               Register Your School Today
@@ -109,7 +112,7 @@ export default function Home() {
       {/* Footer */}
       <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
         <div className="container text-center">
-          <p>&copy; 2024 The Right Back at You Project. Connecting students through literacy and friendship.</p>
+          <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
           <div style={{ marginTop: '1rem' }}>
             <a href="/contact" style={{ color: '#adb5bd', textDecoration: 'none', margin: '0 1rem' }}>Contact</a>
             <a href="/privacy" style={{ color: '#adb5bd', textDecoration: 'none', margin: '0 1rem' }}>Privacy</a>
