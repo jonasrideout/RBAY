@@ -276,32 +276,6 @@ export default function RegisterSchool() {
                     </label>
                   </div>
                 </div>
-
-                <div className="form-group" style={{ marginTop: '1.5rem' }}>
-                  <label className="form-label">How did you hear about The Right Back at You Project?</label>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.5rem' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <input type="radio" name="how-heard" value="author-visit" />
-                      Author visit/presentation
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <input type="radio" name="how-heard" value="colleague" />
-                      Colleague/teacher recommendation
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <input type="radio" name="how-heard" value="social-media" />
-                      Social media
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <input type="radio" name="how-heard" value="scholastic" />
-                      Scholastic materials
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <input type="radio" name="how-heard" value="other" />
-                      Other
-                    </label>
-                  </div>
-                </div>
               </div>
 
               {/* Submit Button */}
