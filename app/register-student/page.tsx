@@ -1,3 +1,5 @@
+"use client";
+
 export default function RegisterStudent() {
   // In a real app, this would be managed with React state
   // For now, we'll show both steps in the same component
