@@ -99,48 +99,48 @@ export default function RegisterStudent() {
                     🏀 Sports & Athletics
                   </label>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <input type="checkbox" name="interests" value="art" />
-                    🎨 Art & Drawing
+                    <input type="checkbox" name="interests" value="arts" />
+                    🎨 Arts & Creativity
                   </label>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <input type="checkbox" name="interests" value="reading" />
                     📚 Reading & Books
                   </label>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <input type="checkbox" name="interests" value="music" />
-                    🎵 Music & Singing
-                  </label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <input type="checkbox" name="interests" value="gaming" />
-                    🎮 Video Games
-                  </label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <input type="checkbox" name="interests" value="science" />
-                    🔬 Science & Experiments
-                  </label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <input type="checkbox" name="interests" value="math" />
-                    🧮 Math & Puzzles
+                    <input type="checkbox" name="interests" value="technology" />
+                    💻 Technology & Gaming
                   </label>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <input type="checkbox" name="interests" value="animals" />
-                    🐕 Animals & Pets
+                    🐕 Animals & Nature
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <input type="checkbox" name="interests" value="entertainment" />
+                    🎬 Entertainment & Media
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <input type="checkbox" name="interests" value="social" />
+                    👥 Social & Family
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <input type="checkbox" name="interests" value="academic" />
+                    🧮 Academic Subjects
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <input type="checkbox" name="interests" value="hobbies" />
+                    🎯 Hobbies & Collections
                   </label>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <input type="checkbox" name="interests" value="outdoors" />
-                    🏃 Outdoor Activities
+                    🏕️ Outdoor Activities
                   </label>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <input type="checkbox" name="interests" value="cooking" />
-                    🍳 Cooking & Baking
+                    <input type="checkbox" name="interests" value="music" />
+                    🎵 Music & Performance
                   </label>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <input type="checkbox" name="interests" value="movies" />
-                    🎬 Movies & TV Shows
-                  </label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <input type="checkbox" name="interests" value="technology" />
-                    💻 Technology & Coding
+                    <input type="checkbox" name="interests" value="fashion" />
+                    👗 Fashion & Style
                   </label>
                 </div>
               </div>
