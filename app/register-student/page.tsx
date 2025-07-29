@@ -265,6 +265,50 @@ export default function RegisterStudent() {
                 ></textarea>
               </div>
 
+              {/* Parent/Guardian Information */}
+              <div className="card" style={{ background: '#f8f9fa', padding: '1.5rem', margin: '1.5rem 0' }}>
+                <h3>Parent/Guardian Information</h3>
+                <p style={{ color: '#6c757d', marginBottom: '1rem' }}>
+                  We need a parent or guardian's permission for you to participate in this project.
+                </p>
+                
+                <div className="grid grid-2">
+                  <div className="form-group">
+                    <label htmlFor="parent-name" className="form-label">Parent/Guardian Name *</label>
+                    <input 
+                      type="text" 
+                      id="parent-name" 
+                      name="parent-name" 
+                      className="form-input" 
+                      placeholder="Parent or guardian's name"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label htmlFor="parent-email" className="form-label">Parent/Guardian Email *</label>
+                    <input 
+                      type="email" 
+                      id="parent-email" 
+                      name="parent-email" 
+                      className="form-input" 
+                      placeholder="parent@example.com"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+                    <input type="checkbox" name="parent-consent" required />
+                    <span>
+                      I have permission from my parent/guardian to participate in The Right Back at You Project, 
+                      including reading the book and exchanging letters with students from other schools. *
+                    </span>
+                  </label>
+                </div>
+              </div>
+
               {/* Submit */}
               <div className="form-group text-center">
                 <button type="button" className="btn btn-secondary" onClick={() => {
