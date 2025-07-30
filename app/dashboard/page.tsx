@@ -54,12 +54,12 @@ export default function TeacherDashboard() {
           </div>
 
           <div className="card text-center" style={{ background: '#f8f9fa' }}>
-            <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#17a2b8', marginBottom: '0.5rem' }}>
-              ✅ Matched
+            <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#ffc107', marginBottom: '0.5rem' }}>
+              📝 Collecting Info
             </div>
             <div style={{ color: '#6c757d', fontWeight: '600' }}>Class Status</div>
             <div style={{ fontSize: '0.9rem', color: '#6c757d', marginTop: '0.25rem' }}>
-              With Roosevelt Elementary
+              6 students need info
             </div>
           </div>
 
@@ -78,65 +78,34 @@ export default function TeacherDashboard() {
         <div className="card" style={{ marginBottom: '2rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
-              <h3 style={{ color: '#28a745', marginBottom: '0.5rem' }}>🎉 Class Successfully Matched!</h3>
+              <h3 style={{ color: '#ffc107', marginBottom: '0.5rem' }}>📝 Collecting Student Information</h3>
               <p style={{ color: '#6c757d', marginBottom: '0' }}>
-                Your class has been paired with Roosevelt Elementary. All students have been matched with penpals.
+                Complete all student interests before requesting to be matched with another school.
               </p>
             </div>
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-              <button className="btn btn-outline" onClick={() => {
-                const confirmation = confirm('Are you sure you want to go back to collecting student information? This will remove your current school pairing.');
-                if (confirmation) {
-                  alert('Status changed to "Collecting Info" - you can now edit student information.');
-                }
-              }}>
-                ← Back to Collecting
+            <div>
+              <button 
+                className="btn" 
+                style={{ 
+                  backgroundColor: '#6c757d', 
+                  color: 'white', 
+                  cursor: 'not-allowed',
+                  padding: '1rem 2rem',
+                  fontSize: '1.1rem'
+                }}
+                disabled
+                title="Complete all student information first"
+              >
+                🔒 Ready for Matching
               </button>
-              <button className="btn btn-primary">
-                📧 Contact Roosevelt Elementary
-              </button>
+              <p style={{ color: '#6c757d', fontSize: '0.9rem', marginTop: '0.5rem', marginBottom: '0' }}>
+                6 students still need interest information
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Partner School Info (only shown when matched) */}
-        <div className="card" style={{ marginBottom: '2rem', background: 'linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%)' }}>
-          <h3 style={{ color: '#1976d2', marginBottom: '1rem' }}>🏫 Your Partner School</h3>
-          <div className="grid grid-3">
-            <div>
-              <h4 style={{ color: '#1976d2', marginBottom: '0.5rem' }}>Roosevelt Elementary</h4>
-              <p style={{ color: '#424242', marginBottom: '0.25rem' }}>
-                <strong>Location:</strong> Portland, Oregon
-              </p>
-              <p style={{ color: '#424242', marginBottom: '0.25rem' }}>
-                <strong>Teacher:</strong> Mr. Davis
-              </p>
-              <p style={{ color: '#424242', marginBottom: '0' }}>
-                <strong>Students:</strong> 22 (5th Grade)
-              </p>
-            </div>
-            <div>
-              <h5 style={{ color: '#1976d2', marginBottom: '0.5rem' }}>Program Details</h5>
-              <p style={{ color: '#424242', marginBottom: '0.25rem' }}>
-                <strong>Start Date:</strong> March 2025
-              </p>
-              <p style={{ color: '#424242', marginBottom: '0.25rem' }}>
-                <strong>Letter Frequency:</strong> Bi-weekly
-              </p>
-              <p style={{ color: '#424242', marginBottom: '0' }}>
-                <strong>Matches:</strong> 24 pairs created
-              </p>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <a href="/register-student?teacher=s.johnson@lincoln.edu" target="_blank" className="btn btn-outline" style={{ marginBottom: '0.5rem' }}>
-                🔗 Student Registration Link
-              </a>
-              <button className="btn btn-outline">
-                📋 View All Match Details
-              </button>
-            </div>
-          </div>
-        </div>
+
 
         {/* Action Buttons */}
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
@@ -154,22 +123,16 @@ export default function TeacherDashboard() {
           <button className="btn btn-secondary">
             ➕ Add New Student
           </button>
-          <button className="btn btn-primary" onClick={() => {
-            // CSV download with actual match data
-            const csvContent = `Student Name,Student Interests,Penpal Name,Penpal School,Penpal Interests
-Sarah Mitchell,"Sports & Athletics, Arts & Creativity, Reading & Books",Jake Thompson,Roosevelt Elementary,"Soccer, Books, Art"
-Marcus Johnson,"Sports & Athletics, Technology & Gaming, Academic Subjects",Emma Davis,Roosevelt Elementary,"Sports, Gaming, Math"
-Lily Chen,"Arts & Creativity, Music & Performance, Reading & Books",Alex Rodriguez,Roosevelt Elementary,"Music, Reading, Art"
-David Rodriguez,"Sports & Athletics, Animals & Nature",Maria Santos,Roosevelt Elementary,"Soccer, Animals"`;
-            
-            const blob = new Blob([csvContent], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'lincoln-elementary-matches.csv';
-            a.click();
-            window.URL.revokeObjectURL(url);
-          }}>
+          <button 
+            className="btn" 
+            style={{ 
+              backgroundColor: '#6c757d', 
+              color: 'white', 
+              cursor: 'not-allowed'
+            }}
+            disabled
+            title="Complete all student information first"
+          >
             📥 Download Matches
           </button>
         </div>
@@ -372,15 +335,15 @@ David Rodriguez,"Sports & Athletics, Animals & Nature",Maria Santos,Roosevelt El
             {/* Student Cards */}
             <div className="grid grid-2" style={{ gap: '1.5rem' }}>
               
-              {/* Matched Student */}
-              <div className="card" style={{ background: '#f8fff8', border: '2px solid #d4edda' }}>
+              {/* Student with Interests (Not Matched Yet) */}
+              <div className="card" style={{ background: '#f0f8ff', border: '2px solid #bee5eb' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
                   <div>
-                    <h4 style={{ color: '#155724', marginBottom: '0.25rem' }}>Sarah Mitchell</h4>
+                    <h4 style={{ color: '#0c5460', marginBottom: '0.25rem' }}>Sarah Mitchell</h4>
                     <span style={{ color: '#6c757d', fontSize: '0.9rem' }}>Grade 5 • Has interests</span>
                   </div>
-                  <span style={{ background: '#d4edda', color: '#155724', padding: '0.25rem 0.75rem', borderRadius: '12px', fontSize: '0.8rem', fontWeight: '600' }}>
-                    ✅ Matched
+                  <span style={{ background: '#bee5eb', color: '#0c5460', padding: '0.25rem 0.75rem', borderRadius: '12px', fontSize: '0.8rem', fontWeight: '600' }}>
+                    ✅ Ready
                   </span>
                 </div>
                 
@@ -396,34 +359,22 @@ David Rodriguez,"Sports & Athletics, Animals & Nature",Maria Santos,Roosevelt El
                   </p>
                 </div>
 
-                <div style={{ background: 'white', padding: '1rem', borderRadius: '6px', border: '1px solid #c3e6cb' }}>
-                  <strong style={{ color: '#1976d2' }}>📮 Matched with:</strong>
-                  <p style={{ marginBottom: '0.5rem', marginTop: '0.25rem' }}>
-                    <strong>Jake Thompson</strong> (Roosevelt Elementary)
+                <div style={{ background: 'white', padding: '1rem', borderRadius: '6px', border: '1px solid #bee5eb', textAlign: 'center' }}>
+                  <p style={{ color: '#6c757d', marginBottom: '0', fontStyle: 'italic' }}>
+                    Ready for matching when class is complete
                   </p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
-                    <span style={{ background: '#e3f2fd', color: '#1976d2', padding: '0.25rem 0.5rem', borderRadius: '8px', fontSize: '0.8rem' }}>
-                      Soccer
-                    </span>
-                    <span style={{ background: '#e3f2fd', color: '#1976d2', padding: '0.25rem 0.5rem', borderRadius: '8px', fontSize: '0.8rem' }}>
-                      Books
-                    </span>
-                    <span style={{ background: '#e3f2fd', color: '#1976d2', padding: '0.25rem 0.5rem', borderRadius: '8px', fontSize: '0.8rem' }}>
-                      Art
-                    </span>
-                  </div>
                 </div>
               </div>
 
-              {/* Another Matched Student */}
-              <div className="card" style={{ background: '#f8fff8', border: '2px solid #d4edda' }}>
+              {/* Another Student with Interests */}
+              <div className="card" style={{ background: '#f0f8ff', border: '2px solid #bee5eb' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
                   <div>
-                    <h4 style={{ color: '#155724', marginBottom: '0.25rem' }}>Marcus Johnson</h4>
+                    <h4 style={{ color: '#0c5460', marginBottom: '0.25rem' }}>Marcus Johnson</h4>
                     <span style={{ color: '#6c757d', fontSize: '0.9rem' }}>Grade 5 • Has interests</span>
                   </div>
-                  <span style={{ background: '#d4edda', color: '#155724', padding: '0.25rem 0.75rem', borderRadius: '12px', fontSize: '0.8rem', fontWeight: '600' }}>
-                    ✅ Matched
+                  <span style={{ background: '#bee5eb', color: '#0c5460', padding: '0.25rem 0.75rem', borderRadius: '12px', fontSize: '0.8rem', fontWeight: '600' }}>
+                    ✅ Ready
                   </span>
                 </div>
                 
@@ -439,22 +390,10 @@ David Rodriguez,"Sports & Athletics, Animals & Nature",Maria Santos,Roosevelt El
                   </p>
                 </div>
 
-                <div style={{ background: 'white', padding: '1rem', borderRadius: '6px', border: '1px solid #c3e6cb' }}>
-                  <strong style={{ color: '#1976d2' }}>📮 Matched with:</strong>
-                  <p style={{ marginBottom: '0.5rem', marginTop: '0.25rem' }}>
-                    <strong>Emma Davis</strong> (Roosevelt Elementary)
+                <div style={{ background: 'white', padding: '1rem', borderRadius: '6px', border: '1px solid #bee5eb', textAlign: 'center' }}>
+                  <p style={{ color: '#6c757d', marginBottom: '0', fontStyle: 'italic' }}>
+                    Ready for matching when class is complete
                   </p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
-                    <span style={{ background: '#e3f2fd', color: '#1976d2', padding: '0.25rem 0.5rem', borderRadius: '8px', fontSize: '0.8rem' }}>
-                      Sports
-                    </span>
-                    <span style={{ background: '#e3f2fd', color: '#1976d2', padding: '0.25rem 0.5rem', borderRadius: '8px', fontSize: '0.8rem' }}>
-                      Gaming
-                    </span>
-                    <span style={{ background: '#e3f2fd', color: '#1976d2', padding: '0.25rem 0.5rem', borderRadius: '8px', fontSize: '0.8rem' }}>
-                      Math
-                    </span>
-                  </div>
                 </div>
               </div>
 
@@ -480,15 +419,15 @@ David Rodriguez,"Sports & Athletics, Animals & Nature",Maria Santos,Roosevelt El
                 </div>
               </div>
 
-              {/* Show a few more matched students */}
-              <div className="card" style={{ background: '#f8fff8', border: '2px solid #d4edda' }}>
+              {/* Another Student with Interests */}
+              <div className="card" style={{ background: '#f0f8ff', border: '2px solid #bee5eb' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
                   <div>
-                    <h4 style={{ color: '#155724', marginBottom: '0.25rem' }}>Lily Chen</h4>
+                    <h4 style={{ color: '#0c5460', marginBottom: '0.25rem' }}>Lily Chen</h4>
                     <span style={{ color: '#6c757d', fontSize: '0.9rem' }}>Grade 5 • Has interests</span>
                   </div>
-                  <span style={{ background: '#d4edda', color: '#155724', padding: '0.25rem 0.75rem', borderRadius: '12px', fontSize: '0.8rem', fontWeight: '600' }}>
-                    ✅ Matched
+                  <span style={{ background: '#bee5eb', color: '#0c5460', padding: '0.25rem 0.75rem', borderRadius: '12px', fontSize: '0.8rem', fontWeight: '600' }}>
+                    ✅ Ready
                   </span>
                 </div>
                 
@@ -504,22 +443,10 @@ David Rodriguez,"Sports & Athletics, Animals & Nature",Maria Santos,Roosevelt El
                   </p>
                 </div>
 
-                <div style={{ background: 'white', padding: '1rem', borderRadius: '6px', border: '1px solid #c3e6cb' }}>
-                  <strong style={{ color: '#1976d2' }}>📮 Matched with:</strong>
-                  <p style={{ marginBottom: '0.5rem', marginTop: '0.25rem' }}>
-                    <strong>Alex Rodriguez</strong> (Roosevelt Elementary)
+                <div style={{ background: 'white', padding: '1rem', borderRadius: '6px', border: '1px solid #bee5eb', textAlign: 'center' }}>
+                  <p style={{ color: '#6c757d', marginBottom: '0', fontStyle: 'italic' }}>
+                    Ready for matching when class is complete
                   </p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
-                    <span style={{ background: '#e3f2fd', color: '#1976d2', padding: '0.25rem 0.5rem', borderRadius: '8px', fontSize: '0.8rem' }}>
-                      Music
-                    </span>
-                    <span style={{ background: '#e3f2fd', color: '#1976d2', padding: '0.25rem 0.5rem', borderRadius: '8px', fontSize: '0.8rem' }}>
-                      Reading
-                    </span>
-                    <span style={{ background: '#e3f2fd', color: '#1976d2', padding: '0.25rem 0.5rem', borderRadius: '8px', fontSize: '0.8rem' }}>
-                      Art
-                    </span>
-                  </div>
                 </div>
               </div>
 
