@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 interface LoginForm {
@@ -42,7 +41,6 @@ export default function Login() {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // For demo purposes, any email/password combination works
-      // In a real app, this would be an actual API call
       console.log('Login attempt:', formData);
       
       // Redirect to dashboard
@@ -60,7 +58,6 @@ export default function Login() {
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
     if (error) setError('');
   };
 
@@ -71,7 +68,7 @@ export default function Login() {
         <div className="container">
           <div className="header-content">
             <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Image src="/RB@Y-logo.jpg" alt="Right Back at You" width={40} height={40} />
+              <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
               The Right Back at You Project
             </Link>
             <nav className="nav">
