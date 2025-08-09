@@ -1,0 +1,104 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model School {
+  id                   String   @id @default(cuid())
+  teacherFirstName     String
+  teacherLastName      String
+  teacherEmail         String   @unique
+  teacherPhone         String?
+  schoolName           String
+  schoolAddress        String
+  gradeLevels          String[] // Array of grade levels like ["5", "6"]
+  classSize            Int
+  programStartMonth    String
+  letterFrequency      String
+  specialConsiderations String?
+  programAgreement     Boolean  @default(false)
+  parentNotification   Boolean  @default(false)
+  
+  // Relations
+  students             Student[]
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@map("schools")
+}
+
+model Student {
+  id              String   @id @default(cuid())
+  firstName       String
+  lastName        String
+  grade           String
+  interests       String[] // Array of interest categories
+  otherInterests  String?
+  parentName      String
+  parentEmail     String
+  parentConsent   Boolean  @default(false)
+  
+  // Relations
+  school          School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  schoolId        String
+  
+  // Penpal matching (future feature)
+  penpals         StudentPenpal[] @relation("Student1")
+  penpalsOf       StudentPenpal[] @relation("Student2")
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("students")
+}
+
+model StudentPenpal {
+  id          String   @id @default(cuid())
+  
+  // The two students who are penpals
+  student1    Student  @relation("Student1", fields: [student1Id], references: [id], onDelete: Cascade)
+  student1Id  String
+  student2    Student  @relation("Student2", fields: [student2Id], references: [id], onDelete: Cascade)
+  student2Id  String
+  
+  // Match status
+  status      String   @default("matched") // matched, active, completed
+  
+  // Timestamps
+  matchedAt   DateTime @default(now())
+  
+  @@unique([student1Id, student2Id])
+  @@map("student_penpals")
+}
+
+model Letter {
+  id          String   @id @default(cuid())
+  
+  // Who wrote the letter
+  authorId    String
+  authorName  String   // Store name for easier querying
+  
+  // Who is it for
+  recipientId String
+  recipientName String
+  
+  // Letter content
+  subject     String?
+  content     String
+  
+  // Status
+  status      String   @default("sent") // sent, delivered, read
+  
+  // Timestamps
+  sentAt      DateTime @default(now())
+  readAt      DateTime?
+  
+  @@map("letters")
+}
