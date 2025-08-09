@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function Home() {
   return (
     <div className="page">
@@ -5,13 +7,13 @@ export default function Home() {
       <header className="header">
         <div className="container">
           <div className="header-content">
-            <a href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
               The Right Back at You Project
-            </a>
+            </Link>
             <nav className="nav">
-              <a href="/login" className="nav-link">Login</a>
-              <a href="/register" className="btn btn-primary">Register School</a>
+              <Link href="/login" className="nav-link">Login</Link>
+              <Link href="/register" className="btn btn-primary">Register School</Link>
             </nav>
           </div>
         </div>
@@ -27,8 +29,8 @@ export default function Home() {
             Connect students across geographic regions to combat bullying and discover their shared humanity through the power of penpal correspondence
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <a href="/register" className="btn btn-primary">Join the Project</a>
-            <a href="/about" className="btn btn-outline">Learn More</a>
+            <Link href="/register" className="btn btn-primary">Join the Project</Link>
+            <Link href="/about" className="btn btn-outline">Learn More</Link>
           </div>
         </section>
 
@@ -80,9 +82,9 @@ export default function Home() {
             <p style={{ fontSize: '1.1rem', marginBottom: '2rem' }}>
               Join schools across different regions in encouraging students to become part of the solution to bullying through literature, discussion, and meaningful connections.
             </p>
-            <a href="/register" className="btn btn-outline" style={{ borderColor: 'white', color: 'white' }}>
+            <Link href="/register" className="btn btn-outline" style={{ borderColor: 'white', color: 'white' }}>
               Register Your School Today
-            </a>
+            </Link>
           </div>
         </section>
 
@@ -93,9 +95,9 @@ export default function Home() {
         <div className="container text-center">
           <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
           <div style={{ marginTop: '1rem' }}>
-            <a href="/contact" style={{ color: '#adb5bd', textDecoration: 'none', margin: '0 1rem' }}>Contact</a>
-            <a href="/privacy" style={{ color: '#adb5bd', textDecoration: 'none', margin: '0 1rem' }}>Privacy</a>
-            <a href="/terms" style={{ color: '#adb5bd', textDecoration: 'none', margin: '0 1rem' }}>Terms</a>
+            <Link href="/contact" style={{ color: '#adb5bd', textDecoration: 'none', margin: '0 1rem' }}>Contact</Link>
+            <Link href="/privacy" style={{ color: '#adb5bd', textDecoration: 'none', margin: '0 1rem' }}>Privacy</Link>
+            <Link href="/terms" style={{ color: '#adb5bd', textDecoration: 'none', margin: '0 1rem' }}>Terms</Link>
           </div>
         </div>
       </footer>
