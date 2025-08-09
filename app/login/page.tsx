@@ -1,17 +1,82 @@
+"use client";
+
+import { useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+
+interface LoginForm {
+  email: string;
+  password: string;
+}
+
 export default function Login() {
+  const [formData, setFormData] = useState<LoginForm>({
+    email: '',
+    password: ''
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
+    // Basic validation
+    if (!formData.email || !formData.password) {
+      setError('Please fill in all fields');
+      setIsLoading(false);
+      return;
+    }
+
+    if (!formData.email.includes('@')) {
+      setError('Please enter a valid email address');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // For demo purposes, any email/password combination works
+      // In a real app, this would be an actual API call
+      console.log('Login attempt:', formData);
+      
+      // Redirect to dashboard
+      router.push('/dashboard');
+    } catch (err) {
+      setError('Login failed. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    // Clear error when user starts typing
+    if (error) setError('');
+  };
+
   return (
     <div className="page">
       {/* Header */}
       <header className="header">
         <div className="container">
           <div className="header-content">
-            <a href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
+            <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Image src="/RB@Y-logo.jpg" alt="Right Back at You" width={40} height={40} />
               The Right Back at You Project
-            </a>
+            </Link>
             <nav className="nav">
-              <a href="/" className="nav-link">Home</a>
-              <a href="/register" className="nav-link">Register School</a>
+              <Link href="/" className="nav-link">Home</Link>
+              <Link href="/register" className="nav-link">Register School</Link>
             </nav>
           </div>
         </div>
@@ -27,7 +92,7 @@ export default function Login() {
               Sign in to manage your school and students
             </p>
 
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <label htmlFor="email" className="form-label">Email Address</label>
                 <input 
@@ -36,6 +101,9 @@ export default function Login() {
                   name="email" 
                   className="form-input" 
                   placeholder="your.email@school.edu"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  disabled={isLoading}
                   required
                 />
               </div>
@@ -48,21 +116,42 @@ export default function Login() {
                   name="password" 
                   className="form-input" 
                   placeholder="Enter your password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  disabled={isLoading}
                   required
                 />
               </div>
 
+              {error && (
+                <div className="alert alert-error">
+                  <strong>Error:</strong> {error}
+                </div>
+              )}
+
               <div className="form-group">
-                <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
-                  Sign In
+                <button 
+                  type="submit" 
+                  className="btn btn-primary" 
+                  style={{ width: '100%' }}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <span className="loading"></span>
+                      <span style={{ marginLeft: '0.5rem' }}>Signing In...</span>
+                    </>
+                  ) : (
+                    'Sign In'
+                  )}
                 </button>
               </div>
             </form>
 
             <div className="text-center mt-3">
-              <a href="/forgot-password" style={{ color: '#4a90e2', textDecoration: 'none' }}>
+              <Link href="/forgot-password" style={{ color: '#4a90e2', textDecoration: 'none' }}>
                 Forgot your password?
-              </a>
+              </Link>
             </div>
 
             <hr style={{ margin: '2rem 0', border: 'none', borderTop: '1px solid #e9ecef' }} />
@@ -71,9 +160,9 @@ export default function Login() {
               <p style={{ color: '#6c757d', marginBottom: '1rem' }}>
                 New to The Right Back at You Project?
               </p>
-              <a href="/register" className="btn btn-outline" style={{ width: '100%' }}>
+              <Link href="/register" className="btn btn-outline" style={{ width: '100%' }}>
                 Register Your School
-              </a>
+              </Link>
             </div>
 
           </div>
