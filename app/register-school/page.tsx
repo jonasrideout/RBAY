@@ -23,6 +23,7 @@ export default function RegisterSchool() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [registeredSchool, setRegisteredSchool] = useState<any>(null);
   const [formData, setFormData] = useState<SchoolFormData>({
     teacherFirstName: '',
     teacherLastName: '',
@@ -55,8 +56,8 @@ export default function RegisterSchool() {
   };
 
   const generateStudentLink = () => {
-    if (typeof window !== 'undefined') {
-      const encodedEmail = encodeURIComponent(formData.teacherEmail);
+    if (typeof window !== 'undefined' && registeredSchool) {
+      const encodedEmail = encodeURIComponent(registeredSchool.teacherEmail);
       return `${window.location.origin}/register-student?teacher=${encodedEmail}`;
     }
     return '';
@@ -100,12 +101,24 @@ export default function RegisterSchool() {
     }
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      console.log('Submitting school registration:', formData);
+      const response = await fetch('/api/schools', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to register school');
+      }
+
+      setRegisteredSchool(data.school);
       setIsSubmitted(true);
-    } catch (err) {
-      setError('There was an error submitting your registration. Please try again.');
+    } catch (err: any) {
+      setError(err.message || 'There was an error submitting your registration. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -136,7 +149,7 @@ export default function RegisterSchool() {
             <div className="card text-center" style={{ background: '#d4edda' }}>
               <h2 style={{ color: '#155724' }}>🎉 School Registration Complete!</h2>
               <p style={{ color: '#155724', fontSize: '1.2rem', marginBottom: '1.5rem' }}>
-                Your school has been successfully registered for The Right Back at You Project.
+                {registeredSchool?.schoolName} has been successfully registered for The Right Back at You Project.
               </p>
               
               <div style={{ background: 'white', padding: '1.5rem', borderRadius: '6px', marginBottom: '2rem', border: '1px solid #c3e6cb' }}>
@@ -157,7 +170,12 @@ export default function RegisterSchool() {
 
               <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <Link href="/dashboard" className="btn btn-primary">Go to Dashboard</Link>
-                <Link href="/students" className="btn btn-outline">Add Students</Link>
+                <button 
+                  onClick={() => navigator.clipboard.writeText(generateStudentLink())}
+                  className="btn btn-outline"
+                >
+                  Copy Student Link
+                </button>
               </div>
             </div>
           </div>
