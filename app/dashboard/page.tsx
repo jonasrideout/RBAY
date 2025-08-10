@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 interface Student {
   id: string;
@@ -41,7 +42,8 @@ const INTEREST_OPTIONS = [
   { value: 'fashion', label: '👗 Fashion & Style' }
 ];
 
-export default function TeacherDashboard() {
+function TeacherDashboardContent() {
+  const searchParams = useSearchParams();
   const [showMissingInfo, setShowMissingInfo] = useState(false);
   const [students, setStudents] = useState<Student[]>([]);
   const [schoolData, setSchoolData] = useState<SchoolData | null>(null);
@@ -52,15 +54,21 @@ export default function TeacherDashboard() {
   const [tempOtherInterests, setTempOtherInterests] = useState('');
   const [isRequestingMatching, setIsRequestingMatching] = useState(false);
 
-  // For demo purposes, we'll use a hardcoded teacher email
-  // In a real app, this would come from authentication
-  const teacherEmail = 'jonas.rideout@gmail.com'; // Replace with actual logged-in teacher
+  // Get teacher email from URL parameter
+  const teacherEmail = searchParams.get('teacher');
 
   useEffect(() => {
-    fetchSchoolData();
-  }, []);
+    if (teacherEmail) {
+      fetchSchoolData();
+    } else {
+      setError('Teacher email is required. Please use the correct dashboard link.');
+      setIsLoading(false);
+    }
+  }, [teacherEmail]);
 
   const fetchSchoolData = async () => {
+    if (!teacherEmail) return;
+    
     setIsLoading(true);
     setError('');
 
@@ -105,7 +113,7 @@ export default function TeacherDashboard() {
   const readyForMatching = schoolData?.readyForMatching || false;
 
   const handleRequestMatching = async () => {
-    if (!allStudentsComplete) return;
+    if (!allStudentsComplete || !teacherEmail) return;
     
     setIsRequestingMatching(true);
     
@@ -211,6 +219,14 @@ export default function TeacherDashboard() {
   const getInterestLabel = (value: string) => {
     const option = INTEREST_OPTIONS.find(opt => opt.value === value);
     return option ? option.label : value;
+  };
+
+  const generateStudentLink = () => {
+    if (typeof window !== 'undefined' && teacherEmail) {
+      const encodedEmail = encodeURIComponent(teacherEmail);
+      return `${window.location.origin}/register-student?teacher=${encodedEmail}`;
+    }
+    return '';
   };
 
   const renderStudentCard = (student: Student) => {
@@ -347,7 +363,7 @@ export default function TeacherDashboard() {
                 The Right Back at You Project
               </Link>
               <nav className="nav">
-                <Link href="/dashboard" className="nav-link">Dashboard</Link>
+                <Link href={`/dashboard?teacher=${encodeURIComponent(teacherEmail || '')}`} className="nav-link">Dashboard</Link>
                 <Link href="/register-school" className="nav-link">School Settings</Link>
                 <Link href="/logout" className="nav-link">Logout</Link>
               </nav>
@@ -375,9 +391,8 @@ export default function TeacherDashboard() {
                 The Right Back at You Project
               </Link>
               <nav className="nav">
-                <Link href="/dashboard" className="nav-link">Dashboard</Link>
-                <Link href="/register-school" className="nav-link">School Settings</Link>
-                <Link href="/logout" className="nav-link">Logout</Link>
+                <Link href="/" className="nav-link">Home</Link>
+                <Link href="/register-school" className="nav-link">Register School</Link>
               </nav>
             </div>
           </div>
@@ -386,11 +401,13 @@ export default function TeacherDashboard() {
           <div className="alert alert-error">
             <strong>Error:</strong> {error}
           </div>
-          <div style={{ textAlign: 'center' }}>
-            <button onClick={fetchSchoolData} className="btn btn-primary">
-              Try Again
-            </button>
-          </div>
+          {teacherEmail && (
+            <div style={{ textAlign: 'center' }}>
+              <button onClick={fetchSchoolData} className="btn btn-primary">
+                Try Again
+              </button>
+            </div>
+          )}
         </main>
       </div>
     );
@@ -407,7 +424,7 @@ export default function TeacherDashboard() {
               The Right Back at You Project
             </Link>
             <nav className="nav">
-              <Link href="/dashboard" className="nav-link">Dashboard</Link>
+              <Link href={`/dashboard?teacher=${encodeURIComponent(teacherEmail || '')}`} className="nav-link">Dashboard</Link>
               <Link href="/register-school" className="nav-link">School Settings</Link>
               <Link href="/logout" className="nav-link">Logout</Link>
             </nav>
@@ -424,6 +441,22 @@ export default function TeacherDashboard() {
           <p style={{ color: '#6c757d', fontSize: '1.1rem' }}>
             Welcome back, {schoolData?.teacherFirstName} {schoolData?.teacherLastName}! Here's your {schoolData?.schoolName} overview.
           </p>
+        </div>
+
+        {/* Student Registration Link */}
+        <div className="card" style={{ marginBottom: '2rem', background: '#f8f9fa' }}>
+          <h3>Share This Link With Your Students</h3>
+          <div style={{ background: 'white', padding: '1rem', borderRadius: '4px', marginBottom: '1rem', border: '1px solid #dee2e6' }}>
+            <code style={{ color: '#e83e8c', fontSize: '0.9rem', wordBreak: 'break-all' }}>
+              {generateStudentLink()}
+            </code>
+          </div>
+          <button 
+            onClick={() => navigator.clipboard.writeText(generateStudentLink())}
+            className="btn btn-primary"
+          >
+            📋 Copy Student Registration Link
+          </button>
         </div>
 
         {/* Metrics Cards */}
@@ -539,7 +572,7 @@ export default function TeacherDashboard() {
             {showMissingInfo ? '👥 Show All Students' : `📝 Missing Info (${studentsNeedingInfo.length})`}
           </button>
           <Link 
-            href="/register-student" 
+            href={`/register-student?teacher=${encodeURIComponent(teacherEmail || '')}`}
             className="btn btn-secondary"
             style={readyForMatching ? { 
               opacity: 0.6, 
@@ -582,9 +615,12 @@ export default function TeacherDashboard() {
             <div style={{ textAlign: 'center', padding: '3rem', color: '#6c757d' }}>
               <h4>No students registered yet</h4>
               <p>Share your student registration link to get started!</p>
-              <Link href="/register-student" className="btn btn-primary">
-                Add First Student
-              </Link>
+              <button 
+                onClick={() => navigator.clipboard.writeText(generateStudentLink())}
+                className="btn btn-primary"
+              >
+                📋 Copy Student Registration Link
+              </button>
             </div>
           ) : (
             <>
@@ -616,5 +652,39 @@ export default function TeacherDashboard() {
         </div>
       </footer>
     </div>
+  );
+}
+
+// Loading component for Suspense fallback
+function LoadingDashboard() {
+  return (
+    <div className="page">
+      <header className="header">
+        <div className="container">
+          <div className="header-content">
+            <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
+              The Right Back at You Project
+            </Link>
+            <nav className="nav">
+              <Link href="/" className="nav-link">Home</Link>
+            </nav>
+          </div>
+        </div>
+      </header>
+      <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <div>Loading dashboard...</div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+export default function TeacherDashboard() {
+  return (
+    <Suspense fallback={<LoadingDashboard />}>
+      <TeacherDashboardContent />
+    </Suspense>
   );
 }
