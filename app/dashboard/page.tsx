@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 interface Student {
@@ -12,6 +12,15 @@ interface Student {
   otherInterests: string;
   hasInterests: boolean;
   status: 'ready' | 'needs-info' | 'matched';
+}
+
+interface SchoolData {
+  id: string;
+  schoolName: string;
+  teacherFirstName: string;
+  teacherLastName: string;
+  teacherEmail: string;
+  students: any[];
 }
 
 const INTEREST_OPTIONS = [
@@ -31,62 +40,56 @@ const INTEREST_OPTIONS = [
 
 export default function TeacherDashboard() {
   const [showMissingInfo, setShowMissingInfo] = useState(false);
-  const [students, setStudents] = useState<Student[]>([
-    {
-      id: '1',
-      firstName: 'Sarah',
-      lastName: 'Mitchell',
-      grade: '5',
-      interests: ['sports', 'arts', 'reading'],
-      otherInterests: 'Soccer, painting landscapes, fantasy novels',
-      hasInterests: true,
-      status: 'ready'
-    },
-    {
-      id: '2',
-      firstName: 'Marcus',
-      lastName: 'Johnson',
-      grade: '5',
-      interests: ['sports', 'technology', 'academic'],
-      otherInterests: 'Basketball, video game design, math puzzles',
-      hasInterests: true,
-      status: 'ready'
-    },
-    {
-      id: '3',
-      firstName: 'David',
-      lastName: 'Rodriguez',
-      grade: '5',
-      interests: [],
-      otherInterests: '',
-      hasInterests: false,
-      status: 'needs-info'
-    },
-    {
-      id: '4',
-      firstName: 'Emily',
-      lastName: 'Watson',
-      grade: '5',
-      interests: [],
-      otherInterests: '',
-      hasInterests: false,
-      status: 'needs-info'
-    },
-    {
-      id: '5',
-      firstName: 'Lily',
-      lastName: 'Chen',
-      grade: '5',
-      interests: ['arts', 'music', 'reading'],
-      otherInterests: 'Drawing manga, piano, mystery novels',
-      hasInterests: true,
-      status: 'ready'
-    }
-  ]);
-
+  const [students, setStudents] = useState<Student[]>([]);
+  const [schoolData, setSchoolData] = useState<SchoolData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
   const [editingStudent, setEditingStudent] = useState<string | null>(null);
   const [tempInterests, setTempInterests] = useState<string[]>([]);
   const [tempOtherInterests, setTempOtherInterests] = useState('');
+
+  // For demo purposes, we'll use a hardcoded teacher email
+  // In a real app, this would come from authentication
+  const teacherEmail = 's.johnson@school.edu'; // Replace with actual logged-in teacher
+
+  useEffect(() => {
+    fetchSchoolData();
+  }, []);
+
+  const fetchSchoolData = async () => {
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch(`/api/schools?teacherEmail=${encodeURIComponent(teacherEmail)}`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to load school data');
+      }
+
+      setSchoolData(data.school);
+      
+      // Transform students data to match our Student interface
+      const transformedStudents: Student[] = data.school.students.map((student: any) => ({
+        id: student.id,
+        firstName: student.firstName,
+        lastName: student.lastName,
+        grade: student.grade,
+        interests: student.interests || [],
+        otherInterests: student.otherInterests || '',
+        hasInterests: (student.interests && student.interests.length > 0) || false,
+        status: (student.interests && student.interests.length > 0) ? 'ready' : 'needs-info'
+      }));
+
+      setStudents(transformedStudents);
+    } catch (err: any) {
+      setError(err.message || 'Failed to load school data');
+      console.error('Dashboard error:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const studentsWithInterests = students.filter(s => s.hasInterests).length;
   const studentsNeedingInfo = students.filter(s => !s.hasInterests);
@@ -109,21 +112,45 @@ export default function TeacherDashboard() {
     );
   };
 
-  const handleSaveInterests = (studentId: string) => {
-    setStudents(prev => prev.map(student => 
-      student.id === studentId 
-        ? {
-            ...student,
-            interests: tempInterests,
-            otherInterests: tempOtherInterests,
-            hasInterests: true,
-            status: 'ready' as const
-          }
-        : student
-    ));
-    setEditingStudent(null);
-    setTempInterests([]);
-    setTempOtherInterests('');
+  const handleSaveInterests = async (studentId: string) => {
+    try {
+      const response = await fetch('/api/students', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          studentId,
+          interests: tempInterests,
+          otherInterests: tempOtherInterests
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to update student');
+      }
+
+      // Update local state
+      setStudents(prev => prev.map(student => 
+        student.id === studentId 
+          ? {
+              ...student,
+              interests: tempInterests,
+              otherInterests: tempOtherInterests,
+              hasInterests: tempInterests.length > 0,
+              status: tempInterests.length > 0 ? 'ready' as const : 'needs-info' as const
+            }
+          : student
+      ));
+
+      setEditingStudent(null);
+      setTempInterests([]);
+      setTempOtherInterests('');
+    } catch (err: any) {
+      alert('Error saving interests: ' + err.message);
+    }
   };
 
   const handleCancelEdit = () => {
@@ -259,6 +286,66 @@ export default function TeacherDashboard() {
     );
   };
 
+  if (isLoading) {
+    return (
+      <div className="page">
+        <header className="header">
+          <div className="container">
+            <div className="header-content">
+              <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
+                The Right Back at You Project
+              </Link>
+              <nav className="nav">
+                <Link href="/dashboard" className="nav-link">Dashboard</Link>
+                <Link href="/register-school" className="nav-link">School Settings</Link>
+                <Link href="/logout" className="nav-link">Logout</Link>
+              </nav>
+            </div>
+          </div>
+        </header>
+        <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
+          <div style={{ textAlign: 'center', padding: '2rem' }}>
+            <div className="loading" style={{ margin: '0 auto 1rem' }}></div>
+            <p>Loading your dashboard...</p>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="page">
+        <header className="header">
+          <div className="container">
+            <div className="header-content">
+              <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
+                The Right Back at You Project
+              </Link>
+              <nav className="nav">
+                <Link href="/dashboard" className="nav-link">Dashboard</Link>
+                <Link href="/register-school" className="nav-link">School Settings</Link>
+                <Link href="/logout" className="nav-link">Logout</Link>
+              </nav>
+            </div>
+          </div>
+        </header>
+        <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
+          <div className="alert alert-error">
+            <strong>Error:</strong> {error}
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <button onClick={fetchSchoolData} className="btn btn-primary">
+              Try Again
+            </button>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="page">
       {/* Header */}
@@ -285,7 +372,7 @@ export default function TeacherDashboard() {
         <div style={{ marginBottom: '2rem' }}>
           <h1 style={{ marginBottom: '0.5rem' }}>Teacher Dashboard</h1>
           <p style={{ color: '#6c757d', fontSize: '1.1rem' }}>
-            Welcome back, Ms. Johnson! Here's your Lincoln Elementary class overview.
+            Welcome back, {schoolData?.teacherFirstName} {schoolData?.teacherLastName}! Here's your {schoolData?.schoolName} overview.
           </p>
         </div>
 
@@ -312,8 +399,8 @@ export default function TeacherDashboard() {
           </div>
 
           <div className="card text-center" style={{ background: '#f8f9fa' }}>
-            <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#ffc107', marginBottom: '0.5rem' }}>
-              📝 Collecting Info
+            <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: studentsNeedingInfo.length > 0 ? '#ffc107' : '#28a745', marginBottom: '0.5rem' }}>
+              {studentsNeedingInfo.length > 0 ? '📝 Collecting Info' : '✅ Ready!'}
             </div>
             <div style={{ color: '#6c757d', fontWeight: '600' }}>Class Status</div>
             <div style={{ fontSize: '0.9rem', color: '#6c757d', marginTop: '0.25rem' }}>
@@ -378,9 +465,9 @@ export default function TeacherDashboard() {
           >
             {showMissingInfo ? '👥 Show All Students' : `📝 Missing Info (${studentsNeedingInfo.length})`}
           </button>
-          <button className="btn btn-secondary">
+          <Link href="/register-student" className="btn btn-secondary">
             ➕ Add New Student
-          </button>
+          </Link>
           <button 
             className="btn" 
             style={{ 
@@ -409,20 +496,32 @@ export default function TeacherDashboard() {
             </div>
           </div>
 
-          {/* Student Cards */}
-          <div className="grid grid-2" style={{ gap: '1.5rem' }}>
-            {showMissingInfo 
-              ? studentsNeedingInfo.map(student => renderStudentCard(student))
-              : students.map(student => renderStudentCard(student))
-            }
-          </div>
-
-          {!showMissingInfo && students.length > 4 && (
-            <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-              <button className="btn btn-outline">
-                Show All {totalStudents} Students
-              </button>
+          {totalStudents === 0 ? (
+            <div style={{ textAlign: 'center', padding: '3rem', color: '#6c757d' }}>
+              <h4>No students registered yet</h4>
+              <p>Share your student registration link to get started!</p>
+              <Link href="/register-student" className="btn btn-primary">
+                Add First Student
+              </Link>
             </div>
+          ) : (
+            <>
+              {/* Student Cards */}
+              <div className="grid grid-2" style={{ gap: '1.5rem' }}>
+                {showMissingInfo 
+                  ? studentsNeedingInfo.map(student => renderStudentCard(student))
+                  : students.map(student => renderStudentCard(student))
+                }
+              </div>
+
+              {!showMissingInfo && students.length > 4 && (
+                <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+                  <button className="btn btn-outline">
+                    Show All {totalStudents} Students
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
 
