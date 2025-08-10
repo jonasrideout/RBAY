@@ -17,8 +17,8 @@ model School {
   teacherPhone         String?
   schoolName           String
   schoolAddress        String
-  schoolState          String   // NEW: State abbreviation (e.g., "CA", "NY")
-  region               String   // NEW: Calculated region (e.g., "Pacific", "Northeast")
+  schoolState          String?  // TEMPORARY: Optional to allow existing schools
+  region               String?  // TEMPORARY: Optional to allow existing schools
   gradeLevels          String[] // Array of grade levels like ["5", "6"]
   classSize            Int
   programStartMonth    String
