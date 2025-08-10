@@ -102,11 +102,11 @@ export async function POST(request: NextRequest) {
       }
     }, { status: 201 });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('School registration error:', error);
     
     // Handle Prisma errors more specifically
-    if (error.code === 'P2002') {
+    if (error?.code === 'P2002') {
       return NextResponse.json(
         { error: 'A school with this teacher email already exists' },
         { status: 409 }
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Handle missing column errors (if schema not updated yet)
-    if (error.code === 'P2010' || error.message?.includes('column') || error.message?.includes('schoolState') || error.message?.includes('region')) {
+    if (error?.code === 'P2010' || error?.message?.includes('column') || error?.message?.includes('schoolState') || error?.message?.includes('region')) {
       return NextResponse.json(
         { error: 'Database schema needs to be updated. Please contact support.' },
         { status: 500 }
@@ -169,7 +169,7 @@ export async function GET(request: NextRequest) {
       school
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Get school error:', error);
     return NextResponse.json(
       { error: 'Failed to retrieve school information' },
