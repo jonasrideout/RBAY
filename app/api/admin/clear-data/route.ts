@@ -13,10 +13,10 @@ export async function DELETE() {
       studentsDeleted: deletedStudents.count,
       schoolsDeleted: deletedSchools.count
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Clear data error:', error);
     return NextResponse.json({ 
-      error: 'Failed to clear data: ' + error.message 
+      error: 'Failed to clear data: ' + (error?.message || 'Unknown error')
     }, { status: 500 });
   }
 }
@@ -34,10 +34,10 @@ export async function GET() {
       studentsDeleted: deletedStudents.count,
       schoolsDeleted: deletedSchools.count
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Clear data error:', error);
     return NextResponse.json({ 
-      error: 'Failed to clear data: ' + error.message 
+      error: 'Failed to clear data: ' + (error?.message || 'Unknown error')
     }, { status: 500 });
   }
 }
