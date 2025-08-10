@@ -10,6 +10,7 @@ interface SchoolFormData {
   teacherPhone: string;
   schoolName: string;
   schoolAddress: string;
+  schoolState: string;
   gradeLevels: string[];
   classSize: string;
   programStartMonth: string;
@@ -18,6 +19,88 @@ interface SchoolFormData {
   programAgreement: boolean;
   parentNotification: boolean;
 }
+
+const US_STATES = [
+  { value: 'AL', label: 'Alabama' },
+  { value: 'AK', label: 'Alaska' },
+  { value: 'AZ', label: 'Arizona' },
+  { value: 'AR', label: 'Arkansas' },
+  { value: 'CA', label: 'California' },
+  { value: 'CO', label: 'Colorado' },
+  { value: 'CT', label: 'Connecticut' },
+  { value: 'DE', label: 'Delaware' },
+  { value: 'DC', label: 'District of Columbia' },
+  { value: 'FL', label: 'Florida' },
+  { value: 'GA', label: 'Georgia' },
+  { value: 'HI', label: 'Hawaii' },
+  { value: 'ID', label: 'Idaho' },
+  { value: 'IL', label: 'Illinois' },
+  { value: 'IN', label: 'Indiana' },
+  { value: 'IA', label: 'Iowa' },
+  { value: 'KS', label: 'Kansas' },
+  { value: 'KY', label: 'Kentucky' },
+  { value: 'LA', label: 'Louisiana' },
+  { value: 'ME', label: 'Maine' },
+  { value: 'MD', label: 'Maryland' },
+  { value: 'MA', label: 'Massachusetts' },
+  { value: 'MI', label: 'Michigan' },
+  { value: 'MN', label: 'Minnesota' },
+  { value: 'MS', label: 'Mississippi' },
+  { value: 'MO', label: 'Missouri' },
+  { value: 'MT', label: 'Montana' },
+  { value: 'NE', label: 'Nebraska' },
+  { value: 'NV', label: 'Nevada' },
+  { value: 'NH', label: 'New Hampshire' },
+  { value: 'NJ', label: 'New Jersey' },
+  { value: 'NM', label: 'New Mexico' },
+  { value: 'NY', label: 'New York' },
+  { value: 'NC', label: 'North Carolina' },
+  { value: 'ND', label: 'North Dakota' },
+  { value: 'OH', label: 'Ohio' },
+  { value: 'OK', label: 'Oklahoma' },
+  { value: 'OR', label: 'Oregon' },
+  { value: 'PA', label: 'Pennsylvania' },
+  { value: 'RI', label: 'Rhode Island' },
+  { value: 'SC', label: 'South Carolina' },
+  { value: 'SD', label: 'South Dakota' },
+  { value: 'TN', label: 'Tennessee' },
+  { value: 'TX', label: 'Texas' },
+  { value: 'UT', label: 'Utah' },
+  { value: 'VT', label: 'Vermont' },
+  { value: 'VA', label: 'Virginia' },
+  { value: 'WA', label: 'Washington' },
+  { value: 'WV', label: 'West Virginia' },
+  { value: 'WI', label: 'Wisconsin' },
+  { value: 'WY', label: 'Wyoming' }
+];
+
+const STATE_TO_REGION: { [key: string]: string } = {
+  // Northeast
+  'ME': 'Northeast', 'NH': 'Northeast', 'VT': 'Northeast', 'MA': 'Northeast', 
+  'RI': 'Northeast', 'CT': 'Northeast', 'NY': 'Northeast', 'NJ': 'Northeast', 
+  'PA': 'Northeast', 'DC': 'Northeast',
+  
+  // Southeast  
+  'DE': 'Southeast', 'MD': 'Southeast', 'VA': 'Southeast', 'WV': 'Southeast',
+  'KY': 'Southeast', 'TN': 'Southeast', 'NC': 'Southeast', 'SC': 'Southeast',
+  'GA': 'Southeast', 'FL': 'Southeast', 'AL': 'Southeast', 'MS': 'Southeast',
+  
+  // Midwest
+  'OH': 'Midwest', 'IN': 'Midwest', 'IL': 'Midwest', 'MI': 'Midwest',
+  'WI': 'Midwest', 'MN': 'Midwest', 'IA': 'Midwest', 'MO': 'Midwest',
+  'ND': 'Midwest', 'SD': 'Midwest', 'NE': 'Midwest', 'KS': 'Midwest',
+  
+  // Southwest
+  'TX': 'Southwest', 'OK': 'Southwest', 'AR': 'Southwest', 'LA': 'Southwest',
+  'NM': 'Southwest', 'AZ': 'Southwest',
+  
+  // Mountain West
+  'MT': 'Mountain West', 'WY': 'Mountain West', 'CO': 'Mountain West', 
+  'UT': 'Mountain West', 'ID': 'Mountain West', 'NV': 'Mountain West',
+  
+  // Pacific
+  'WA': 'Pacific', 'OR': 'Pacific', 'CA': 'Pacific', 'AK': 'Pacific', 'HI': 'Pacific'
+};
 
 export default function RegisterSchool() {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -31,6 +114,7 @@ export default function RegisterSchool() {
     teacherPhone: '',
     schoolName: '',
     schoolAddress: '',
+    schoolState: '',
     gradeLevels: [],
     classSize: '',
     programStartMonth: '',
@@ -55,10 +139,22 @@ export default function RegisterSchool() {
     if (error) setError('');
   };
 
+  const getRegionForState = (state: string) => {
+    return STATE_TO_REGION[state] || '';
+  };
+
   const generateStudentLink = () => {
     if (typeof window !== 'undefined' && registeredSchool) {
       const encodedEmail = encodeURIComponent(registeredSchool.teacherEmail);
       return `${window.location.origin}/register-student?teacher=${encodedEmail}`;
+    }
+    return '';
+  };
+
+  const generateDashboardLink = () => {
+    if (typeof window !== 'undefined' && registeredSchool) {
+      const encodedEmail = encodeURIComponent(registeredSchool.teacherEmail);
+      return `${window.location.origin}/dashboard?teacher=${encodedEmail}`;
     }
     return '';
   };
@@ -71,7 +167,7 @@ export default function RegisterSchool() {
     // Validation
     const requiredFields = [
       'teacherFirstName', 'teacherLastName', 'teacherEmail', 'schoolName', 
-      'schoolAddress', 'classSize', 'programStartMonth', 'letterFrequency'
+      'schoolAddress', 'schoolState', 'classSize', 'programStartMonth', 'letterFrequency'
     ];
 
     for (const field of requiredFields) {
@@ -101,12 +197,19 @@ export default function RegisterSchool() {
     }
 
     try {
+      // Add region to the data being sent
+      const region = getRegionForState(formData.schoolState);
+      const dataToSend = {
+        ...formData,
+        region
+      };
+
       const response = await fetch('/api/schools', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(dataToSend)
       });
 
       const data = await response.json();
@@ -136,7 +239,7 @@ export default function RegisterSchool() {
                 The Right Back at You Project
               </Link>
               <nav className="nav">
-                <Link href="/dashboard" className="nav-link">Dashboard</Link>
+                <Link href={generateDashboardLink()} className="nav-link">Dashboard</Link>
                 <Link href="/logout" className="nav-link">Logout</Link>
               </nav>
             </div>
@@ -155,26 +258,48 @@ export default function RegisterSchool() {
               <div style={{ background: 'white', padding: '1.5rem', borderRadius: '6px', marginBottom: '2rem', border: '1px solid #c3e6cb' }}>
                 <h3 style={{ color: '#155724', marginBottom: '1rem' }}>Next Steps:</h3>
                 <div style={{ textAlign: 'left', color: '#155724' }}>
-                  <p><strong>1. Share this link with your students:</strong></p>
+                  <p><strong>1. Save Your Dashboard Link:</strong></p>
+                  <div style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '4px', marginBottom: '1rem', border: '1px solid #dee2e6' }}>
+                    <code style={{ color: '#e83e8c', fontSize: '0.9rem', wordBreak: 'break-all' }}>
+                      {generateDashboardLink()}
+                    </code>
+                  </div>
+                  
+                  <p><strong>2. Share Student Registration Link:</strong></p>
                   <div style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '4px', marginBottom: '1rem', border: '1px solid #dee2e6' }}>
                     <code style={{ color: '#e83e8c', fontSize: '0.9rem', wordBreak: 'break-all' }}>
                       {generateStudentLink()}
                     </code>
                   </div>
-                  <p><strong>2. Monitor Student Registration:</strong> Check your dashboard as students sign up</p>
-                  <p><strong>3. Find a Partner School:</strong> We'll help match you with a compatible school</p>
-                  <p><strong>4. Author Visit:</strong> Schedule your virtual visit with Carolyn Mackler</p>
-                  <p><strong>5. Start Writing:</strong> Begin the penpal correspondence!</p>
+                  
+                  <p><strong>3. Monitor Student Registration:</strong> Use your dashboard to track student signups</p>
+                  <p><strong>4. Complete Student Information:</strong> Help students add their interests</p>
+                  <p><strong>5. Request Matching:</strong> When all students are ready, request partner school matching</p>
+                  <p><strong>6. Start Writing:</strong> Begin the penpal correspondence!</p>
                 </div>
               </div>
 
               <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-                <Link href="/dashboard" className="btn btn-primary">Go to Dashboard</Link>
+                <Link 
+                  href={generateDashboardLink()}
+                  className="btn btn-primary"
+                >
+                  Go to Dashboard
+                </Link>
+                <button 
+                  onClick={() => {
+                    const dashboardLink = generateDashboardLink();
+                    navigator.clipboard.writeText(dashboardLink);
+                  }}
+                  className="btn btn-secondary"
+                >
+                  📋 Copy Dashboard Link
+                </button>
                 <button 
                   onClick={() => navigator.clipboard.writeText(generateStudentLink())}
                   className="btn btn-outline"
                 >
-                  Copy Student Link
+                  📋 Copy Student Link
                 </button>
               </div>
             </div>
@@ -310,18 +435,63 @@ export default function RegisterSchool() {
                   />
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="school-address" className="form-label">School Address *</label>
-                  <textarea 
-                    id="school-address" 
-                    className="form-textarea" 
-                    placeholder="123 Main Street, City, State, ZIP"
-                    rows={3}
-                    value={formData.schoolAddress}
-                    onChange={(e) => updateFormData('schoolAddress', e.target.value)}
-                    disabled={isLoading}
-                    required
-                  />
+                <div className="grid grid-2" style={{ gap: '1rem' }}>
+                  <div className="form-group">
+                    <label htmlFor="school-address" className="form-label">School Address *</label>
+                    <textarea 
+                      id="school-address" 
+                      className="form-textarea" 
+                      placeholder="123 Main Street, City, ZIP"
+                      rows={3}
+                      value={formData.schoolAddress}
+                      onChange={(e) => updateFormData('schoolAddress', e.target.value)}
+                      disabled={isLoading}
+                      required
+                    />
+                    <small style={{ color: '#6c757d', fontSize: '0.9rem' }}>
+                      Address without state (state selected below)
+                    </small>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="school-state" className="form-label">State *</label>
+                    <select 
+                      id="school-state" 
+                      className="form-select" 
+                      value={formData.schoolState}
+                      onChange={(e) => updateFormData('schoolState', e.target.value)}
+                      disabled={isLoading}
+                      required
+                    >
+                      <option value="">Select state</option>
+                      {US_STATES.map(state => (
+                        <option key={state.value} value={state.value}>{state.label}</option>
+                      ))}
+                    </select>
+
+                    {/* Region Display */}
+                    {formData.schoolState && (
+                      <div style={{ 
+                        marginTop: '0.5rem', 
+                        padding: '0.75rem', 
+                        background: '#e8f4f8', 
+                        border: '1px solid #bee5eb', 
+                        borderRadius: '4px' 
+                      }}>
+                        <strong style={{ color: '#0c5460' }}>
+                          📍 Your Region: {getRegionForState(formData.schoolState)}
+                        </strong>
+                        <p style={{ 
+                          fontSize: '0.9rem', 
+                          color: '#6c757d', 
+                          marginTop: '0.25rem', 
+                          marginBottom: '0' 
+                        }}>
+                          You'll be matched with schools from other regions to promote cross-regional connections.
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="grid grid-2" style={{ gap: '1rem' }}>
@@ -495,7 +665,7 @@ export default function RegisterSchool() {
                   )}
                 </button>
                 <p style={{ color: '#6c757d', marginTop: '1rem', fontSize: '0.9rem' }}>
-                  After registration, you'll receive a link to share with students for registration.
+                  After registration, you'll receive links for your dashboard and student registration.
                 </p>
               </div>
             </form>
