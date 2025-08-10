@@ -400,30 +400,6 @@ function TeacherDashboardContent() {
             <div className="header-content">
               <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
-              The Right Back at You Project
-            </Link>
-            <nav className="nav">
-              <Link href="/" className="nav-link">Home</Link>
-            </nav>
-          </div>
-        </div>
-      </header>
-      <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
-        <div style={{ textAlign: 'center', padding: '2rem' }}>
-          <div>Loading dashboard...</div>
-        </div>
-      </main>
-    </div>
-  );
-}
-
-export default function TeacherDashboard() {
-  return (
-    <Suspense fallback={<LoadingDashboard />}>
-      <TeacherDashboardContent />
-    </Suspense>
-  );
-}logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
                 The Right Back at You Project
               </Link>
               <nav className="nav">
@@ -721,4 +697,28 @@ function LoadingDashboard() {
         <div className="container">
           <div className="header-content">
             <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <img src="/RB@Y-
+              <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
+              The Right Back at You Project
+            </Link>
+            <nav className="nav">
+              <Link href="/" className="nav-link">Home</Link>
+            </nav>
+          </div>
+        </div>
+      </header>
+      <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <div>Loading dashboard...</div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+export default function TeacherDashboard() {
+  return (
+    <Suspense fallback={<LoadingDashboard />}>
+      <TeacherDashboardContent />
+    </Suspense>
+  );
+}
