@@ -22,6 +22,7 @@ interface SchoolData {
   teacherEmail: string;
   classSize: number;
   programStartMonth: string;
+  readyForMatching: boolean;
   students: any[];
 }
 
@@ -49,6 +50,7 @@ export default function TeacherDashboard() {
   const [editingStudent, setEditingStudent] = useState<string | null>(null);
   const [tempInterests, setTempInterests] = useState<string[]>([]);
   const [tempOtherInterests, setTempOtherInterests] = useState('');
+  const [isRequestingMatching, setIsRequestingMatching] = useState(false);
 
   // For demo purposes, we'll use a hardcoded teacher email
   // In a real app, this would come from authentication
@@ -96,8 +98,45 @@ export default function TeacherDashboard() {
   const studentsWithInterests = students.filter(s => s.hasInterests).length;
   const studentsNeedingInfo = students.filter(s => !s.hasInterests);
   const totalStudents = students.length;
+  const allStudentsComplete = totalStudents > 0 && studentsNeedingInfo.length === 0;
+  const readyForMatching = schoolData?.readyForMatching || false;
+
+  const handleRequestMatching = async () => {
+    if (!allStudentsComplete) return;
+    
+    setIsRequestingMatching(true);
+    
+    try {
+      const response = await fetch('/api/schools/request-matching', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ teacherEmail })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to request matching');
+      }
+
+      // Update local state
+      setSchoolData(prev => prev ? { ...prev, readyForMatching: true } : null);
+      
+    } catch (err: any) {
+      alert('Error requesting matching: ' + err.message);
+    } finally {
+      setIsRequestingMatching(false);
+    }
+  };
 
   const handleEditInterests = (studentId: string) => {
+    if (readyForMatching) {
+      alert('Cannot edit student information after matching has been requested. Contact support if you need to make changes.');
+      return;
+    }
+
     const student = students.find(s => s.id === studentId);
     if (student) {
       setEditingStudent(studentId);
@@ -115,6 +154,11 @@ export default function TeacherDashboard() {
   };
 
   const handleSaveInterests = async (studentId: string) => {
+    if (readyForMatching) {
+      alert('Cannot edit student information after matching has been requested.');
+      return;
+    }
+
     try {
       const response = await fetch('/api/students', {
         method: 'PUT',
@@ -252,7 +296,7 @@ export default function TeacherDashboard() {
 
           <div style={{ background: 'white', padding: '1rem', borderRadius: '6px', border: '1px solid #bee5eb', textAlign: 'center' }}>
             <p style={{ color: '#6c757d', marginBottom: '0', fontStyle: 'italic' }}>
-              Ready for matching when class is complete
+              {readyForMatching ? 'Waiting for partner school' : 'Ready for matching'}
             </p>
           </div>
         </div>
@@ -280,8 +324,9 @@ export default function TeacherDashboard() {
             className="btn btn-primary" 
             onClick={() => handleEditInterests(student.id)}
             style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
+            disabled={readyForMatching}
           >
-            Add Interests
+            {readyForMatching ? 'Locked' : 'Add Interests'}
           </button>
         </div>
       </div>
@@ -425,32 +470,51 @@ export default function TeacherDashboard() {
         <div className="card" style={{ marginBottom: '2rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
-              <h3 style={{ color: studentsNeedingInfo.length > 0 ? '#ffc107' : '#28a745', marginBottom: '0.5rem' }}>
-                {studentsNeedingInfo.length > 0 ? '📝 Collecting Student Information' : '✅ Ready for Matching!'}
-              </h3>
-              <p style={{ color: '#6c757d', marginBottom: '0' }}>
-                {studentsNeedingInfo.length > 0 
-                  ? 'Complete all student interests before requesting to be matched with another school.'
-                  : 'All students have provided their interest information. Ready to find a partner school!'
-                }
-              </p>
+              {readyForMatching ? (
+                <>
+                  <h3 style={{ color: '#17a2b8', marginBottom: '0.5rem' }}>
+                    🎯 Matching Requested
+                  </h3>
+                  <p style={{ color: '#6c757d', marginBottom: '0' }}>
+                    Waiting for partner school. We will email you when matching is complete.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <h3 style={{ color: allStudentsComplete ? '#28a745' : '#ffc107', marginBottom: '0.5rem' }}>
+                    {allStudentsComplete ? '✅ Ready for Matching!' : '📝 Collecting Student Information'}
+                  </h3>
+                  <p style={{ color: '#6c757d', marginBottom: '0' }}>
+                    {allStudentsComplete 
+                      ? 'All students have provided their interest information. Ready to find a partner school!'
+                      : 'Complete all student interests before requesting to be matched with another school.'
+                    }
+                  </p>
+                </>
+              )}
             </div>
             <div>
               <button 
                 className="btn" 
                 style={{ 
-                  backgroundColor: studentsNeedingInfo.length > 0 ? '#6c757d' : '#28a745', 
+                  backgroundColor: readyForMatching ? '#17a2b8' : (allStudentsComplete ? '#28a745' : '#6c757d'), 
                   color: 'white', 
-                  cursor: studentsNeedingInfo.length > 0 ? 'not-allowed' : 'pointer',
+                  cursor: (!allStudentsComplete || isRequestingMatching) ? 'not-allowed' : 'pointer',
                   padding: '1rem 2rem',
                   fontSize: '1.1rem'
                 }}
-                disabled={studentsNeedingInfo.length > 0}
-                title={studentsNeedingInfo.length > 0 ? "Complete all student information first" : "Request matching with another school"}
+                disabled={!allStudentsComplete || isRequestingMatching}
+                onClick={handleRequestMatching}
+                title={readyForMatching ? "Matching has been requested" : (!allStudentsComplete ? "Complete all student information first" : "Request matching with another school")}
               >
-                {studentsNeedingInfo.length > 0 ? '🔒 Ready for Matching' : '🎯 Request Matching'}
+                {readyForMatching ? '✅ Matching Requested' : (isRequestingMatching ? (
+                  <>
+                    <span className="loading"></span>
+                    <span style={{ marginLeft: '0.5rem' }}>Requesting...</span>
+                  </>
+                ) : (allStudentsComplete ? '🎯 Request Matching' : '🔒 Ready for Matching'))}
               </button>
-              {studentsNeedingInfo.length > 0 && (
+              {!readyForMatching && studentsNeedingInfo.length > 0 && (
                 <p style={{ color: '#6c757d', fontSize: '0.9rem', marginTop: '0.5rem', marginBottom: '0' }}>
                   {studentsNeedingInfo.length} students still need interest information
                 </p>
@@ -464,77 +528,13 @@ export default function TeacherDashboard() {
           <button 
             className="btn btn-outline" 
             onClick={() => setShowMissingInfo(!showMissingInfo)}
+            disabled={readyForMatching}
           >
             {showMissingInfo ? '👥 Show All Students' : `📝 Missing Info (${studentsNeedingInfo.length})`}
           </button>
-          <Link href="/register-student" className="btn btn-secondary">
-            ➕ Add New Student
-          </Link>
-          <button 
-            className="btn" 
-            style={{ 
-              backgroundColor: studentsNeedingInfo.length > 0 ? '#6c757d' : '#4a90e2', 
-              color: 'white', 
-              cursor: studentsNeedingInfo.length > 0 ? 'not-allowed' : 'pointer'
-            }}
-            disabled={studentsNeedingInfo.length > 0}
-            title={studentsNeedingInfo.length > 0 ? "Complete all student information first" : "Download student match information"}
-          >
-            📥 Download Matches
-          </button>
-        </div>
-
-        {/* Students List */}
-        <div className="card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-            <h3>{showMissingInfo ? 'Students Missing Information' : 'Your Students'}</h3>
-            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-              <span style={{ color: '#6c757d', fontSize: '0.9rem' }}>
-                {showMissingInfo 
-                  ? `${studentsNeedingInfo.length} students need interests`
-                  : `${totalStudents} students • ${studentsWithInterests} ready`
-                }
-              </span>
-            </div>
-          </div>
-
-          {totalStudents === 0 ? (
-            <div style={{ textAlign: 'center', padding: '3rem', color: '#6c757d' }}>
-              <h4>No students registered yet</h4>
-              <p>Share your student registration link to get started!</p>
-              <Link href="/register-student" className="btn btn-primary">
-                Add First Student
-              </Link>
-            </div>
-          ) : (
-            <>
-              {/* Student Cards */}
-              <div className="grid grid-2" style={{ gap: '1.5rem' }}>
-                {showMissingInfo 
-                  ? studentsNeedingInfo.map(student => renderStudentCard(student))
-                  : students.map(student => renderStudentCard(student))
-                }
-              </div>
-
-              {!showMissingInfo && students.length > 4 && (
-                <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-                  <button className="btn btn-outline">
-                    Show All {totalStudents} Students
-                  </button>
-                </div>
-              )}
-            </>
-          )}
-        </div>
-
-      </main>
-
-      {/* Footer */}
-      <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
-        <div className="container text-center">
-          <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
-        </div>
-      </footer>
-    </div>
-  );
-}
+          <Link 
+            href="/register-student" 
+            className={`btn ${readyForMatching ? 'btn-secondary' : 'btn-secondary'}`}
+            style={readyForMatching ? { 
+              opacity: 0.6, 
+              cursor: 'not-allowed',
