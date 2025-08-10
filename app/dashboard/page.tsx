@@ -98,7 +98,10 @@ export default function TeacherDashboard() {
   const studentsWithInterests = students.filter(s => s.hasInterests).length;
   const studentsNeedingInfo = students.filter(s => !s.hasInterests);
   const totalStudents = students.length;
-  const allStudentsComplete = totalStudents > 0 && studentsNeedingInfo.length === 0;
+  const expectedStudents = schoolData?.classSize || 0;
+  const allStudentsRegistered = totalStudents === expectedStudents;
+  const allRegisteredStudentsComplete = totalStudents > 0 && studentsNeedingInfo.length === 0;
+  const allStudentsComplete = allStudentsRegistered && allRegisteredStudentsComplete;
   const readyForMatching = schoolData?.readyForMatching || false;
 
   const handleRequestMatching = async () => {
@@ -486,8 +489,8 @@ export default function TeacherDashboard() {
                   </h3>
                   <p style={{ color: '#6c757d', marginBottom: '0' }}>
                     {allStudentsComplete 
-                      ? 'All students have provided their interest information. Ready to find a partner school!'
-                      : 'Complete all student interests before requesting to be matched with another school.'
+                      ? 'All students have registered and provided their interest information. Ready to find a partner school!'
+                      : `Need ${expectedStudents - totalStudents} more students to register${studentsNeedingInfo.length > 0 ? ` and ${studentsNeedingInfo.length} current students need to complete their interests` : ''}.`
                     }
                   </p>
                 </>
@@ -505,7 +508,7 @@ export default function TeacherDashboard() {
                 }}
                 disabled={!allStudentsComplete || isRequestingMatching}
                 onClick={handleRequestMatching}
-                title={readyForMatching ? "Matching has been requested" : (!allStudentsComplete ? "Complete all student information first" : "Request matching with another school")}
+                title={readyForMatching ? "Matching has been requested" : (!allStudentsComplete ? "All expected students must register and complete their information first" : "Request matching with another school")}
               >
                 {readyForMatching ? '✅ Matching Requested' : (isRequestingMatching ? (
                   <>
@@ -514,9 +517,12 @@ export default function TeacherDashboard() {
                   </>
                 ) : (allStudentsComplete ? '🎯 Request Matching' : '🔒 Ready for Matching'))}
               </button>
-              {!readyForMatching && studentsNeedingInfo.length > 0 && (
+              {!readyForMatching && !allStudentsComplete && (
                 <p style={{ color: '#6c757d', fontSize: '0.9rem', marginTop: '0.5rem', marginBottom: '0' }}>
-                  {studentsNeedingInfo.length} students still need interest information
+                  {expectedStudents - totalStudents} students still need to register
+                  {studentsNeedingInfo.length > 0 && (
+                    <span> • {studentsNeedingInfo.length} need to complete interests</span>
+                  )}
                 </p>
               )}
             </div>
