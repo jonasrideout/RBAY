@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
@@ -39,7 +39,7 @@ const INTEREST_OPTIONS = [
   { value: 'fashion', label: '👗 Fashion & Style' }
 ];
 
-export default function RegisterStudent() {
+function RegisterStudentForm() {
   const searchParams = useSearchParams();
   const [currentStep, setCurrentStep] = useState<Step>('school');
   const [isLoading, setIsLoading] = useState(false);
@@ -510,5 +510,13 @@ export default function RegisterStudent() {
         </div>
       </footer>
     </div>
+  );
+}
+
+export default function RegisterStudent() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <RegisterStudentForm />
+    </Suspense>
   );
 }
