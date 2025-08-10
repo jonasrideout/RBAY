@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 interface StudentFormData {
   teacherEmail: string;
@@ -39,6 +40,7 @@ const INTEREST_OPTIONS = [
 ];
 
 export default function RegisterStudent() {
+  const searchParams = useSearchParams();
   const [currentStep, setCurrentStep] = useState<Step>('school');
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<StudentFormData>({
@@ -54,29 +56,48 @@ export default function RegisterStudent() {
   });
   const [schoolInfo, setSchoolInfo] = useState<SchoolInfo | null>(null);
   const [error, setError] = useState('');
+  const [registeredStudent, setRegisteredStudent] = useState<any>(null);
 
-  const handleFindSchool = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Check if teacher email was provided in URL
+  useEffect(() => {
+    const teacherEmail = searchParams.get('teacher');
+    if (teacherEmail) {
+      setFormData(prev => ({ ...prev, teacherEmail }));
+      // Auto-verify the school if email is in URL
+      handleFindSchool(null, teacherEmail);
+    }
+  }, [searchParams]);
+
+  const handleFindSchool = async (e: React.FormEvent | null, email?: string) => {
+    if (e) e.preventDefault();
+    
+    const emailToUse = email || formData.teacherEmail;
     setIsLoading(true);
     setError('');
     
-    if (!formData.teacherEmail.includes('@')) {
+    if (!emailToUse.includes('@')) {
       setError('Please enter a valid email address');
       setIsLoading(false);
       return;
     }
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      const response = await fetch(`/api/schools?teacherEmail=${encodeURIComponent(emailToUse)}`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'School not found');
+      }
+
       setSchoolInfo({
-        name: 'Lincoln Elementary - 5th Grade',
-        teacher: 'Ms. Johnson',
+        name: data.school.schoolName,
+        teacher: `${data.school.teacherFirstName} ${data.school.teacherLastName}`,
         found: true
       });
+      setFormData(prev => ({ ...prev, teacherEmail: emailToUse }));
       setCurrentStep('confirm');
-    } catch (err) {
-      setError('Unable to find a school with that email address. Please check the email and try again.');
+    } catch (err: any) {
+      setError(err.message || 'Unable to find a school with that email address. Please check the email and try again.');
     } finally {
       setIsLoading(false);
     }
@@ -110,12 +131,24 @@ export default function RegisterStudent() {
     }
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      console.log('Submitting student data:', formData);
+      const response = await fetch('/api/students', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to register student');
+      }
+
+      setRegisteredStudent(data.student);
       setCurrentStep('success');
-    } catch (err) {
-      setError('There was an error submitting your information. Please try again.');
+    } catch (err: any) {
+      setError(err.message || 'There was an error submitting your information. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -133,7 +166,7 @@ export default function RegisterStudent() {
         First, let's make sure your teacher has registered your school for this project.
       </p>
 
-      <form onSubmit={handleFindSchool}>
+      <form onSubmit={(e) => handleFindSchool(e)}>
         <div className="form-group">
           <label htmlFor="teacher-email" className="form-label">
             What is your teacher's email address?
@@ -181,8 +214,11 @@ export default function RegisterStudent() {
       
       <div className="alert alert-success text-center" style={{ marginBottom: '2rem' }}>
         <h3 style={{ color: '#155724', marginBottom: '0.5rem' }}>✅ We found your school:</h3>
-        <p style={{ color: '#155724', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '0' }}>
+        <p style={{ color: '#155724', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>
           {schoolInfo?.name}
+        </p>
+        <p style={{ color: '#155724', fontSize: '1rem', marginBottom: '0' }}>
+          Teacher: {schoolInfo?.teacher}
         </p>
       </div>
 
@@ -411,10 +447,18 @@ export default function RegisterStudent() {
 
   const renderSuccessStep = () => (
     <div className="card text-center" style={{ background: '#d4edda' }}>
-      <h2 style={{ color: '#155724' }}>Thank You!</h2>
+      <h2 style={{ color: '#155724' }}>Thank You, {registeredStudent?.firstName}!</h2>
       <p style={{ color: '#155724', fontSize: '1.1rem' }}>
-        Your information has been submitted successfully. Your teacher will receive your details and you'll be matched with a penpal soon!
+        Your registration for The Right Back at You Project has been submitted successfully. 
       </p>
+      <div style={{ background: 'white', padding: '1.5rem', borderRadius: '6px', margin: '1.5rem 0', border: '1px solid #c3e6cb' }}>
+        <p style={{ color: '#155724', marginBottom: '1rem' }}>
+          <strong>School:</strong> {registeredStudent?.schoolName}
+        </p>
+        <p style={{ color: '#155724', marginBottom: '0' }}>
+          Your teacher will receive your details and you'll be matched with a penpal soon!
+        </p>
+      </div>
       <p style={{ color: '#6c757d', marginTop: '1.5rem' }}>
         You can close this page now. Your teacher will let you know when it's time to start writing letters!
       </p>
