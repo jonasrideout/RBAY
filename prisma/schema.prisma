@@ -25,6 +25,7 @@ model School {
   specialConsiderations String?
   programAgreement     Boolean  @default(false)
   parentNotification   Boolean  @default(false)
+  readyForMatching     Boolean  @default(false)
   
   // Relations
   students             Student[]
