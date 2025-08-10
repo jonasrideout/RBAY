@@ -12,6 +12,8 @@ export async function POST(request: NextRequest) {
       teacherPhone,
       schoolName,
       schoolAddress,
+      schoolState,
+      region,
       gradeLevels,
       classSize,
       programStartMonth,
@@ -21,10 +23,10 @@ export async function POST(request: NextRequest) {
       parentNotification
     } = body;
 
-    // Validate required fields
+    // Validate required fields (including new state field)
     if (!teacherFirstName || !teacherLastName || !teacherEmail || !schoolName || 
-        !schoolAddress || !gradeLevels || !classSize || !programStartMonth || 
-        !letterFrequency || !programAgreement || !parentNotification) {
+        !schoolAddress || !schoolState || !gradeLevels || !classSize || 
+        !programStartMonth || !letterFrequency || !programAgreement || !parentNotification) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -36,6 +38,22 @@ export async function POST(request: NextRequest) {
     if (!emailRegex.test(teacherEmail)) {
       return NextResponse.json(
         { error: 'Invalid email format' },
+        { status: 400 }
+      );
+    }
+
+    // Validate state format (should be 2-letter code)
+    if (!schoolState || schoolState.length !== 2) {
+      return NextResponse.json(
+        { error: 'Invalid state format' },
+        { status: 400 }
+      );
+    }
+
+    // Validate region is provided
+    if (!region) {
+      return NextResponse.json(
+        { error: 'Region is required' },
         { status: 400 }
       );
     }
@@ -52,7 +70,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create the school
+    // Create the school with new fields
     const school = await prisma.school.create({
       data: {
         teacherFirstName,
@@ -61,6 +79,8 @@ export async function POST(request: NextRequest) {
         teacherPhone: teacherPhone || null,
         schoolName,
         schoolAddress,
+        schoolState,
+        region,
         gradeLevels,
         classSize: parseInt(classSize),
         programStartMonth,
@@ -76,12 +96,31 @@ export async function POST(request: NextRequest) {
       school: {
         id: school.id,
         teacherEmail: school.teacherEmail,
-        schoolName: school.schoolName
+        schoolName: school.schoolName,
+        schoolState: school.schoolState,
+        region: school.region
       }
     }, { status: 201 });
 
   } catch (error) {
     console.error('School registration error:', error);
+    
+    // Handle Prisma errors more specifically
+    if (error.code === 'P2002') {
+      return NextResponse.json(
+        { error: 'A school with this teacher email already exists' },
+        { status: 409 }
+      );
+    }
+
+    // Handle missing column errors (if schema not updated yet)
+    if (error.code === 'P2010' || error.message?.includes('column') || error.message?.includes('schoolState') || error.message?.includes('region')) {
+      return NextResponse.json(
+        { error: 'Database schema needs to be updated. Please contact support.' },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
       { error: 'Failed to register school. Please try again.' },
       { status: 500 }
