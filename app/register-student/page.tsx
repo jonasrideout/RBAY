@@ -513,9 +513,36 @@ function RegisterStudentForm() {
   );
 }
 
+// Loading component for Suspense fallback
+function LoadingPage() {
+  return (
+    <div className="page">
+      <header className="header">
+        <div className="container">
+          <div className="header-content">
+            <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
+              The Right Back at You Project
+            </Link>
+            <nav className="nav">
+              <Link href="/" className="nav-link">Home</Link>
+              <Link href="/login" className="nav-link">Login</Link>
+            </nav>
+          </div>
+        </div>
+      </header>
+      <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <div>Loading...</div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
 export default function RegisterStudent() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<LoadingPage />}>
       <RegisterStudentForm />
     </Suspense>
   );
