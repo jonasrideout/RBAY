@@ -50,7 +50,7 @@ export default function TeacherDashboard() {
 
   // For demo purposes, we'll use a hardcoded teacher email
   // In a real app, this would come from authentication
-  const teacherEmail = 's.johnson@school.edu'; // Replace with actual logged-in teacher
+  const teacherEmail = 'jonas.rideout@gmail.com'; // Replace with actual logged-in teacher
 
   useEffect(() => {
     fetchSchoolData();
