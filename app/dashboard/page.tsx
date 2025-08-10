@@ -20,6 +20,8 @@ interface SchoolData {
   teacherFirstName: string;
   teacherLastName: string;
   teacherEmail: string;
+  classSize: number;
+  programStartMonth: string;
   students: any[];
 }
 
@@ -380,37 +382,37 @@ export default function TeacherDashboard() {
         <div className="grid grid-4" style={{ marginBottom: '3rem' }}>
           <div className="card text-center" style={{ background: '#f8f9fa' }}>
             <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#4a90e2', marginBottom: '0.5rem' }}>
-              {totalStudents}
+              {schoolData?.classSize || 0}
             </div>
             <div style={{ color: '#6c757d', fontWeight: '600' }}>Total Students</div>
             <div style={{ fontSize: '0.9rem', color: '#6c757d', marginTop: '0.25rem' }}>
-              Enrolled in class
+              Expected in class
             </div>
           </div>
 
           <div className="card text-center" style={{ background: '#f8f9fa' }}>
             <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#28a745', marginBottom: '0.5rem' }}>
-              {studentsWithInterests}
+              {totalStudents}
             </div>
-            <div style={{ color: '#6c757d', fontWeight: '600' }}>Have Interests</div>
+            <div style={{ color: '#6c757d', fontWeight: '600' }}>Students Registered</div>
             <div style={{ fontSize: '0.9rem', color: '#6c757d', marginTop: '0.25rem' }}>
-              Selected categories
+              Actually signed up
             </div>
           </div>
 
           <div className="card text-center" style={{ background: '#f8f9fa' }}>
-            <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: studentsNeedingInfo.length > 0 ? '#ffc107' : '#28a745', marginBottom: '0.5rem' }}>
-              {studentsNeedingInfo.length > 0 ? '📝 Collecting Info' : '✅ Ready!'}
+            <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#17a2b8', marginBottom: '0.5rem' }}>
+              {studentsWithInterests}
             </div>
-            <div style={{ color: '#6c757d', fontWeight: '600' }}>Class Status</div>
+            <div style={{ color: '#6c757d', fontWeight: '600' }}>Students Ready to Match</div>
             <div style={{ fontSize: '0.9rem', color: '#6c757d', marginTop: '0.25rem' }}>
-              {studentsNeedingInfo.length} students need info
+              Have complete profiles
             </div>
           </div>
 
           <div className="card text-center" style={{ background: '#f8f9fa' }}>
             <div style={{ fontSize: '1.8rem', fontWeight: 'bold', color: '#fd7e14', marginBottom: '0.5rem' }}>
-              March
+              {schoolData?.programStartMonth || 'Not Set'}
             </div>
             <div style={{ color: '#6c757d', fontWeight: '600' }}>Start Date</div>
             <div style={{ fontSize: '0.9rem', color: '#6c757d', marginTop: '0.25rem' }}>
