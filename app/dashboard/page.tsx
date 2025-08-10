@@ -534,7 +534,81 @@ export default function TeacherDashboard() {
           </button>
           <Link 
             href="/register-student" 
-            className={`btn ${readyForMatching ? 'btn-secondary' : 'btn-secondary'}`}
+            className="btn btn-secondary"
             style={readyForMatching ? { 
               opacity: 0.6, 
               cursor: 'not-allowed',
+              pointerEvents: 'none'
+            } : {}}
+            title={readyForMatching ? "Cannot add students after matching is requested" : "Add new student"}
+          >
+            ➕ Add New Student
+          </Link>
+          <button 
+            className="btn" 
+            style={{ 
+              backgroundColor: (!allStudentsComplete || readyForMatching) ? '#6c757d' : '#4a90e2', 
+              color: 'white', 
+              cursor: (!allStudentsComplete || readyForMatching) ? 'not-allowed' : 'pointer'
+            }}
+            disabled={!allStudentsComplete || readyForMatching}
+            title={readyForMatching ? "Matching has been requested" : (!allStudentsComplete ? "Complete all student information first" : "Download student match information")}
+          >
+            📥 Download Matches
+          </button>
+        </div>
+
+        {/* Students List */}
+        <div className="card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <h3>{showMissingInfo ? 'Students Missing Information' : 'Your Students'}</h3>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <span style={{ color: '#6c757d', fontSize: '0.9rem' }}>
+                {showMissingInfo 
+                  ? `${studentsNeedingInfo.length} students need interests`
+                  : `${totalStudents} students • ${studentsWithInterests} ready`
+                }
+              </span>
+            </div>
+          </div>
+
+          {totalStudents === 0 ? (
+            <div style={{ textAlign: 'center', padding: '3rem', color: '#6c757d' }}>
+              <h4>No students registered yet</h4>
+              <p>Share your student registration link to get started!</p>
+              <Link href="/register-student" className="btn btn-primary">
+                Add First Student
+              </Link>
+            </div>
+          ) : (
+            <>
+              {/* Student Cards */}
+              <div className="grid grid-2" style={{ gap: '1.5rem' }}>
+                {showMissingInfo 
+                  ? studentsNeedingInfo.map(student => renderStudentCard(student))
+                  : students.map(student => renderStudentCard(student))
+                }
+              </div>
+
+              {!showMissingInfo && students.length > 4 && (
+                <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+                  <button className="btn btn-outline">
+                    Show All {totalStudents} Students
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
+      </main>
+
+      {/* Footer */}
+      <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
+        <div className="container text-center">
+          <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
+        </div>
+      </footer>
+    </div>
+  );
+}
