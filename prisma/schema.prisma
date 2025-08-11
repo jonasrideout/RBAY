@@ -17,10 +17,10 @@ model School {
   teacherPhone         String?
   schoolName           String
   schoolAddress        String
-  schoolState          String?  // TEMPORARY: Optional to allow existing schools
-  region               String?  // TEMPORARY: Optional to allow existing schools
+  schoolState          String?  // Optional to allow existing schools
+  region               String?  // Optional to allow existing schools
   gradeLevels          String[] // Array of grade levels like ["5", "6"]
-  classSize            Int
+  classSize            Int      // Initial estimate - actual count comes from active students
   programStartMonth    String
   letterFrequency      String
   specialConsiderations String?
@@ -45,12 +45,13 @@ model Student {
   parentName      String
   parentEmail     String
   parentConsent   Boolean  @default(false)
+  isActive        Boolean  @default(true)  // NEW: Track if student is active
   
   // Relations
   school          School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   schoolId        String
   
-  // Penpal matching (future feature)
+  // Penpal matching - students can have multiple pen-pals
   penpals         StudentPenpal[] @relation("Student1")
   penpalsOf       StudentPenpal[] @relation("Student2")
   
@@ -69,7 +70,7 @@ model StudentPenpal {
   student2Id  String
   
   // Match status
-  status      String   @default("matched") // matched, active, completed
+  status      String   @default("active") // active, inactive, completed
   
   // Timestamps
   matchedAt   DateTime @default(now())
