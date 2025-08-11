@@ -274,9 +274,6 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  return NextResponse.json({
-    message: 'Use POST to create test data',
-    description: 'This endpoint creates 4 test schools with realistic student data for testing the matching system.',
-    usage: 'POST to this endpoint to generate test data'
-  });
+  // For convenience, also allow GET to create test data
+  return await POST(request);
 }
