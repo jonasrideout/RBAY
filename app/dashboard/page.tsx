@@ -107,13 +107,14 @@ function TeacherDashboardContent() {
   const studentsNeedingInfo = students.filter(s => !s.hasInterests);
   const totalStudents = students.length;
   const expectedStudents = schoolData?.classSize || 0;
-  const allStudentsRegistered = totalStudents === expectedStudents;
-  const allRegisteredStudentsComplete = totalStudents > 0 && studentsNeedingInfo.length === 0;
-  const allStudentsComplete = allStudentsRegistered && allRegisteredStudentsComplete;
+  
+  // Simplified ready logic - teacher decides when ready
+  const hasActiveStudents = totalStudents > 0;
+  const allActiveStudentsComplete = totalStudents > 0 && studentsNeedingInfo.length === 0;
   const readyForMatching = schoolData?.readyForMatching || false;
 
   const handleRequestMatching = async () => {
-    if (!allStudentsComplete || !teacherEmail) return;
+    if (!hasActiveStudents || !teacherEmail) return;
     
     setIsRequestingMatching(true);
     
@@ -557,13 +558,13 @@ function TeacherDashboardContent() {
                 </>
               ) : (
                 <>
-                  <h3 style={{ color: allStudentsComplete ? '#28a745' : '#ffc107', marginBottom: '0.5rem' }}>
-                    {allStudentsComplete ? '✅ Ready for Matching!' : '📝 Collecting Student Information'}
+                  <h3 style={{ color: allActiveStudentsComplete ? '#28a745' : '#ffc107', marginBottom: '0.5rem' }}>
+                    {allActiveStudentsComplete ? '✅ Ready for Matching!' : '📝 Collecting Student Information'}
                   </h3>
                   <p style={{ color: '#6c757d', marginBottom: '0' }}>
-                    {allStudentsComplete 
-                      ? 'All students have registered and provided their interest information. Ready to find a partner school!'
-                      : `Need ${expectedStudents - totalStudents} more students to register${studentsNeedingInfo.length > 0 ? ` and ${studentsNeedingInfo.length} current students need to complete their interests` : ''}.`
+                    {allActiveStudentsComplete 
+                      ? 'All active students have provided their interest information. You can request matching when ready!'
+                      : `${studentsNeedingInfo.length} students still need to complete their interests. You can request matching with any number of students.`
                     }
                   </p>
                 </>
@@ -573,29 +574,29 @@ function TeacherDashboardContent() {
               <button 
                 className="btn" 
                 style={{ 
-                  backgroundColor: readyForMatching ? '#17a2b8' : (allStudentsComplete ? '#28a745' : '#6c757d'), 
+                  backgroundColor: readyForMatching ? '#17a2b8' : (hasActiveStudents ? '#28a745' : '#6c757d'), 
                   color: 'white', 
-                  cursor: (!allStudentsComplete || isRequestingMatching) ? 'not-allowed' : 'pointer',
+                  cursor: (!hasActiveStudents || isRequestingMatching) ? 'not-allowed' : 'pointer',
                   padding: '1rem 2rem',
                   fontSize: '1.1rem'
                 }}
-                disabled={!allStudentsComplete || isRequestingMatching}
+                disabled={!hasActiveStudents || isRequestingMatching}
                 onClick={handleRequestMatching}
-                title={readyForMatching ? "Matching has been requested" : (!allStudentsComplete ? "All expected students must register and complete their information first" : "Request matching with another school")}
+                title={readyForMatching ? "Matching has been requested" : (!hasActiveStudents ? "Need at least one student to request matching" : "Request matching with current students")}
               >
                 {readyForMatching ? '✅ Matching Requested' : (isRequestingMatching ? (
                   <>
                     <span className="loading"></span>
                     <span style={{ marginLeft: '0.5rem' }}>Requesting...</span>
                   </>
-                ) : (allStudentsComplete ? '🎯 Request Matching' : '🔒 Ready for Matching'))}
+                ) : (hasActiveStudents ? '🎯 Request Matching' : '🔒 Need Students'))}
               </button>
-              {!readyForMatching && !allStudentsComplete && (
+              {!readyForMatching && (
                 <p style={{ color: '#6c757d', fontSize: '0.9rem', marginTop: '0.5rem', marginBottom: '0' }}>
-                  {expectedStudents - totalStudents} students still need to register
-                  {studentsNeedingInfo.length > 0 && (
-                    <span> • {studentsNeedingInfo.length} need to complete interests</span>
-                  )}
+                  {!hasActiveStudents ? 'Register students first' : 
+                   studentsNeedingInfo.length > 0 ? `${studentsNeedingInfo.length} students still need interests (optional)` :
+                   'All students ready - you can request matching anytime!'
+                  }
                 </p>
               )}
             </div>
@@ -666,14 +667,14 @@ function TeacherDashboardContent() {
           <button 
             className="btn" 
             style={{ 
-              backgroundColor: (!allStudentsComplete || readyForMatching) ? '#6c757d' : '#4a90e2', 
+              backgroundColor: (!hasActiveStudents || readyForMatching) ? '#6c757d' : '#4a90e2', 
               color: 'white', 
-              cursor: (!allStudentsComplete || readyForMatching) ? 'not-allowed' : 'pointer'
+              cursor: (!hasActiveStudents || readyForMatching) ? 'not-allowed' : 'pointer'
             }}
-            disabled={!allStudentsComplete || readyForMatching}
-            title={readyForMatching ? "Matching has been requested" : (!allStudentsComplete ? "Complete all student information first" : "Download student match information")}
+            disabled={!hasActiveStudents || readyForMatching}
+            title={readyForMatching ? "Matching has been requested" : (!hasActiveStudents ? "Need students first" : "Download student information")}
           >
-            📥 Download Matches
+            📥 Download Student Info
           </button>
         </div>
 
