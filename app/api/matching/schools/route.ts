@@ -292,17 +292,6 @@ export async function GET(request: NextRequest) {
               id: true
             }
           }
-        },
-        select: {
-          id: true,
-          schoolName: true,
-          teacherFirstName: true,
-          teacherLastName: true,
-          teacherEmail: true,
-          region: true,
-          gradeLevels: true,
-          programStartMonth: true,
-          students: true
         }
       });
       
