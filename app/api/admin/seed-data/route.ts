@@ -44,8 +44,8 @@ export async function POST(request: NextRequest) {
     await prisma.student.deleteMany({});
     await prisma.school.deleteMany({});
 
-    const schools = [];
-    const students = [];
+    const schools: any[] = [];
+    const students: any[] = [];
 
     // School 1: Pacific Elementary (Ready for Matching)
     const pacificSchool = await prisma.school.create({
