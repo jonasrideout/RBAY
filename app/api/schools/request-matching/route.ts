@@ -28,6 +28,9 @@ export async function POST(request: NextRequest) {
       where: { teacherEmail },
       include: {
         students: {
+          where: {
+            isActive: true  // Only check active students
+          },
           select: {
             id: true,
             firstName: true,
@@ -55,32 +58,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate that all students have completed their information
+    // Require at least one active student
+    if (school.students.length === 0) {
+      return NextResponse.json(
+        { 
+          error: 'Cannot request matching. No active students registered.' 
+        },
+        { status: 400 }
+      );
+    }
+
+    // Optional: Warn about students without interests, but don't block
     const studentsWithoutInterests = school.students.filter(
       student => !student.interests || student.interests.length === 0
     );
 
-    if (studentsWithoutInterests.length > 0) {
-      return NextResponse.json(
-        { 
-          error: `Cannot request matching. ${studentsWithoutInterests.length} students still need to complete their interest information.`,
-          studentsNeedingInfo: studentsWithoutInterests.map(s => `${s.firstName} ${s.lastName}`)
-        },
-        { status: 400 }
-      );
-    }
+    // Note: We're allowing matching even if students don't have interests yet
 
-    // Validate that we have the expected number of students
-    if (school.students.length !== school.classSize) {
-      return NextResponse.json(
-        { 
-          error: `Cannot request matching. Expected ${school.classSize} students but only ${school.students.length} are registered.` 
-        },
-        { status: 400 }
-      );
-    }
-
-    // Validate that all students have parent consent
+    // Validate that all active students have parent consent
     const studentsWithoutConsent = school.students.filter(
       student => !student.parentConsent
     );
