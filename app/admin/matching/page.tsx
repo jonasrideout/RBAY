@@ -114,17 +114,6 @@ export default function AdminDashboard() {
     return colors[status];
   };
 
-  const getStatusIcon = (status: SelectedStatus) => {
-    const icons = {
-      COLLECTING: '📝',
-      READY: '✅',
-      MATCHED: '🤝',
-      CORRESPONDING: '✉️',
-      DONE: '🎉'
-    };
-    return icons[status];
-  };
-
   const getStatusLabel = (status: SelectedStatus) => {
     const labels = {
       COLLECTING: 'Collecting Information',
@@ -161,11 +150,11 @@ export default function AdminDashboard() {
           viewBox="0 0 1000 600" 
           style={{ width: '100%', height: '80px', marginBottom: '0.5rem' }}
         >
-          {/* US Outline Border */}
+          {/* US Outline Border - simplified version */}
           <path 
-            d="M 200 300 L 250 250 L 300 230 L 400 220 L 500 210 L 600 220 L 700 230 L 750 250 L 800 280 L 850 300 L 900 320 L 950 350 L 980 400 L 950 450 L 900 480 L 850 500 L 800 520 L 750 530 L 700 540 L 600 545 L 500 548 L 400 545 L 300 540 L 250 530 L 200 520 L 150 500 L 120 480 L 100 450 L 80 400 L 100 350 L 120 320 L 150 300 L 200 300 Z"
+            d="M 158 206 L 850 150 L 950 200 L 980 300 L 950 450 L 850 500 L 700 520 L 500 530 L 300 520 L 150 450 L 100 300 L 150 200 Z"
             fill="none" 
-            stroke="#ccc" 
+            stroke="#999" 
             strokeWidth="2"
           />
           
