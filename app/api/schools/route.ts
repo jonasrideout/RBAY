@@ -12,11 +12,13 @@ export async function POST(request: NextRequest) {
       teacherPhone,
       schoolName,
       schoolAddress,
+      schoolCity,
       schoolState,
+      schoolZip,
       region,
-      gradeLevels,
-      classSize,
-      programStartMonth,
+      gradeLevel,
+      expectedClassSize,
+      startMonth,
       letterFrequency,
       specialConsiderations,
       programAgreement,
@@ -25,8 +27,8 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields (including new state field)
     if (!teacherFirstName || !teacherLastName || !teacherEmail || !schoolName || 
-        !schoolAddress || !schoolState || !gradeLevels || !classSize || 
-        !programStartMonth || !letterFrequency || !programAgreement || !parentNotification) {
+        !schoolAddress || !schoolCity || !schoolState || !schoolZip || !gradeLevel || 
+        !expectedClassSize || !startMonth || !letterFrequency || !programAgreement || !parentNotification) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -79,13 +81,15 @@ export async function POST(request: NextRequest) {
         teacherPhone: teacherPhone || null,
         schoolName,
         schoolAddress,
+        schoolCity,
         schoolState,
+        schoolZip,
         region,
-        gradeLevels,
-        classSize: parseInt(classSize),
-        programStartMonth,
+        gradeLevel,
+        expectedClassSize: parseInt(expectedClassSize),
+        startMonth,
         letterFrequency,
-        specialConsiderations: specialConsiderations || null,
+        status: 'COLLECTING', // New schools start in collecting status
         programAgreement,
         parentNotification
       }
@@ -98,7 +102,8 @@ export async function POST(request: NextRequest) {
         teacherEmail: school.teacherEmail,
         schoolName: school.schoolName,
         schoolState: school.schoolState,
-        region: school.region
+        region: school.region,
+        status: school.status
       }
     }, { status: 201 });
 
@@ -114,7 +119,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Handle missing column errors (if schema not updated yet)
-    if (error?.code === 'P2010' || error?.message?.includes('column') || error?.message?.includes('schoolState') || error?.message?.includes('region')) {
+    if (error?.code === 'P2010' || error?.message?.includes('column')) {
       return NextResponse.json(
         { error: 'Database schema needs to be updated. Please contact support.' },
         { status: 500 }
@@ -144,13 +149,15 @@ export async function GET(request: NextRequest) {
       where: { teacherEmail },
       include: {
         students: {
+          where: { isActive: true },
           select: {
             id: true,
             firstName: true,
             lastName: true,
             grade: true,
             interests: true,
-            otherInterests: true,
+            profileCompleted: true,
+            parentConsent: true,
             createdAt: true
           }
         }
@@ -164,9 +171,19 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Calculate student statistics
+    const studentStats = {
+      expected: school.expectedClassSize,
+      registered: school.students.length,
+      ready: school.students.filter(s => s.profileCompleted).length
+    };
+
     return NextResponse.json({
       success: true,
-      school
+      school: {
+        ...school,
+        studentStats
+      }
     });
 
   } catch (error: any) {
