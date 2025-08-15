@@ -1,26 +1,4 @@
-const getRegionMap = (region: string) => {
-    const regionColor = getStatusColor(selectedStatus);
-    
-    // Define which states belong to each region
-    const regionStates: { [key: string]: string[] } = {
-      'Northeast': ['ME', 'NH', 'VT', 'MA', 'RI', 'CT', 'NY', 'NJ', 'PA', 'DC'],
-      'Southeast': ['DE', 'MD', 'VA', 'WV', 'KY', 'TN', 'NC', 'SC', 'GA', 'FL', 'AL', 'MS'],
-      'Midwest': ['OH', 'IN', 'IL', 'MI', 'WI', 'MN', 'IA', 'MO', 'ND', 'SD', 'NE', 'KS'],
-      'Southwest': ['TX', 'OK', 'AR', 'LA', 'NM', 'AZ'],
-      'Mountain West': ['MT', 'WY', 'CO', 'UT', 'ID', 'NV'],
-      'Pacific': ['WA', 'OR', 'CA', 'AK', 'HI']
-    };
-
-    const highlightedStates = regionStates[region] || [];
-
-    return (
-      <svg 
-        viewBox="0 0 1000 600" 
-        style={{ width: '100%', height: '100%' }}
-      >
-        {/* US Outline Border */}
-        <path 
-          d="M 844 206 L 900 190 L 950 210 L 980 240 L 990 280 L 950 320 L 900 350 L 844 380 L 800 400 L 760 420 L 720 450 L 740 480 L 780 520 L 800 560 L 750 580 L 700 570 L 650 550 L 600 530 L 550 520 L 500 "use client";
+"use client";
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -138,15 +116,12 @@ export default function AdminDashboard() {
           viewBox="0 0 100 60" 
           style={{ width: '100%', height: '80px', marginBottom: '0.5rem' }}
         >
-          {/* Simple US outline */}
           <path 
             d="M 15 20 L 85 15 L 95 30 L 90 45 L 75 50 L 50 53 L 25 50 L 10 45 L 5 30 L 15 20 Z"
             fill="none" 
             stroke="#999" 
             strokeWidth="1"
           />
-          
-          {/* Simple colored region representation */}
           <circle 
             cx="50" 
             cy="30" 
@@ -159,29 +134,6 @@ export default function AdminDashboard() {
           {region}
         </div>
       </div>
-    );
-  };460l24-4 8-12-8-16-24 0-16 16 0 12 16 4z" fill={highlightedStates.includes('TX') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-        <path d="M460 420l18-4 6-8-4-8-18-2-10 8-2 8 6 8 4 0z" fill={highlightedStates.includes('OK') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-        <path d="M520 460l18-4 6-8-4-8-18-2-10 8-2 8 6 8 4 0z" fill={highlightedStates.includes('AR') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-        <path d="M500 500l20-4 6-10-6-10-20 0-12 10 0 10 12 4z" fill={highlightedStates.includes('LA') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-        <path d="M380 460l20-4 6-10-6-10-20 0-12 10 0 10 12 4z" fill={highlightedStates.includes('NM') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-        <path d="M340 460l18-4 6-8-4-8-18-2-10 8-2 8 6 8 4 0z" fill={highlightedStates.includes('AZ') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-        
-        {/* Mountain West */}
-        <path d="M420 340l20-4 6-10-6-10-20 0-12 10 0 10 12 4z" fill={highlightedStates.includes('MT') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-        <path d="M420 380l18-4 6-8-4-8-18-2-10 8-2 8 6 8 4 0z" fill={highlightedStates.includes('WY') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-        <path d="M420 420l18-4 6-8-4-8-18-2-10 8-2 8 6 8 4 0z" fill={highlightedStates.includes('CO') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-        <path d="M360 420l20-4 6-10-6-10-20 0-12 10 0 10 12 4z" fill={highlightedStates.includes('UT') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-        <path d="M360 380l18-4 6-8-4-8-18-2-10 8-2 8 6 8 4 0z" fill={highlightedStates.includes('ID') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-        <path d="M300 420l20-4 6-10-6-10-20 0-12 10 0 10 12 4z" fill={highlightedStates.includes('NV') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-        
-        {/* Pacific */}
-        <path d="M280 340l18-4 6-8-4-8-18-2-10 8-2 8 6 8 4 0z" fill={highlightedStates.includes('WA') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-        <path d="M280 380l18-4 6-8-4-8-18-2-10 8-2 8 6 8 4 0z" fill={highlightedStates.includes('OR') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-        <path d="M260 420l24-4 8-12-8-16-24 0-16 16 0 12 16 4z" fill={highlightedStates.includes('CA') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-        <path d="M160 520l16-2 4-6-2-8-16-2-8 6-2 8 4 6 4 0z" fill={highlightedStates.includes('AK') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-        <path d="M200 540l14-2 4-6-2-6-14-2-8 4-2 6 4 6 4 0z" fill={highlightedStates.includes('HI') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-      </svg>
     );
   };
 
@@ -206,7 +158,6 @@ export default function AdminDashboard() {
           minHeight: '120px'
         }}
       >
-        {/* School Info Column */}
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
             <h3 style={{ 
@@ -249,7 +200,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Class Info Column */}
         <div style={{ 
           display: 'flex', 
           flexDirection: 'column', 
@@ -270,7 +220,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Map Column */}
         <div style={{ 
           display: 'flex', 
           alignItems: 'center', 
@@ -280,7 +229,6 @@ export default function AdminDashboard() {
           {getRegionMap(school.region)}
         </div>
 
-        {/* Status-specific info overlays */}
         {school.status === 'MATCHED' && school.matchedSchool && (
           <div style={{ 
             gridColumn: '1 / -1',
@@ -437,7 +385,6 @@ export default function AdminDashboard() {
       return renderCorrespondingPairs();
     }
 
-    // Single column layout for individual schools
     return (
       <div>
         <h3 style={{ marginBottom: '1.5rem' }}>
@@ -471,7 +418,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="page">
-      {/* Header */}
       <header className="header">
         <div className="container">
           <div className="header-content">
@@ -487,10 +433,8 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
         
-        {/* Page Header */}
         <div style={{ marginBottom: '2rem' }}>
           <h1 style={{ marginBottom: '0.5rem' }}>📊 Administrator Dashboard</h1>
           <p style={{ color: '#6c757d', fontSize: '1.1rem' }}>
@@ -510,12 +454,11 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* Status Boxes */}
         <div style={{ 
           display: 'flex', 
           gap: '0', 
           marginBottom: '3rem',
-          height: '54px', // 0.75 inches = 54px (at 72dpi)
+          height: '54px',
           borderRadius: '8px',
           overflow: 'hidden',
           boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
@@ -559,7 +502,6 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        {/* Action Buttons */}
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
           <button 
             onClick={fetchAllSchools}
@@ -585,12 +527,10 @@ export default function AdminDashboard() {
           </Link>
         </div>
 
-        {/* Dynamic Content */}
         {renderStatusContent()}
 
       </main>
 
-      {/* Footer */}
       <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
         <div className="container text-center">
           <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
