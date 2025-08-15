@@ -118,90 +118,222 @@ export default function AdminDashboard() {
     return schools.filter(school => school.status === status);
   };
 
+  const getRegionMap = (region: string) => {
+    const regionColor = getStatusColor(selectedStatus);
+    
+    // Define which states belong to each region
+    const regionStates: { [key: string]: string[] } = {
+      'Northeast': ['ME', 'NH', 'VT', 'MA', 'RI', 'CT', 'NY', 'NJ', 'PA', 'DC'],
+      'Southeast': ['DE', 'MD', 'VA', 'WV', 'KY', 'TN', 'NC', 'SC', 'GA', 'FL', 'AL', 'MS'],
+      'Midwest': ['OH', 'IN', 'IL', 'MI', 'WI', 'MN', 'IA', 'MO', 'ND', 'SD', 'NE', 'KS'],
+      'Southwest': ['TX', 'OK', 'AR', 'LA', 'NM', 'AZ'],
+      'Mountain West': ['MT', 'WY', 'CO', 'UT', 'ID', 'NV'],
+      'Pacific': ['WA', 'OR', 'CA', 'AK', 'HI']
+    };
+
+    const highlightedStates = regionStates[region] || [];
+
+    return (
+      <svg 
+        viewBox="0 0 1000 600" 
+        style={{ width: '100%', height: '100%' }}
+      >
+        {/* Simplified US state paths - showing key states for each region */}
+        {/* Northeast */}
+        <path d="M844 206l8-4 2-6-2-8-8-2-6 2-4 6 2 8 8 4z" fill={highlightedStates.includes('ME') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M800 220l12-2 4-8-4-6-12-2-8 4-2 8 4 6 6 0z" fill={highlightedStates.includes('NH') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M780 230l14-4 2-8-6-6-14 2-6 6 2 8 8 2z" fill={highlightedStates.includes('VT') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M820 240l16-2 4-6-2-8-16-2-8 4-2 8 4 6 4 0z" fill={highlightedStates.includes('MA') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M790 250l12 0 2-6-4-4-12 0-4 4 2 6 4 0z" fill={highlightedStates.includes('CT') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M740 280l20-4 6-12-6-8-20 0-12 8 0 12 12 4z" fill={highlightedStates.includes('NY') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M760 320l16-2 4-8-4-6-16 0-8 6 0 8 8 2z" fill={highlightedStates.includes('NJ') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M700 340l24-4 8-12-8-12-24 0-16 12 0 12 16 4z" fill={highlightedStates.includes('PA') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        
+        {/* Southeast */}
+        <path d="M760 360l14-2 4-6-2-6-14-2-8 4-2 6 4 6 4 0z" fill={highlightedStates.includes('MD') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M700 380l20-4 6-8-4-8-20-2-12 8-2 8 6 8 6 0z" fill={highlightedStates.includes('VA') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M680 360l16-2 4-6-2-6-16-2-8 4-2 6 4 6 4 0z" fill={highlightedStates.includes('WV') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M640 400l18-4 6-8-4-8-18-2-10 8-2 8 6 8 4 0z" fill={highlightedStates.includes('KY') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M680 420l20-4 6-10-6-10-20 0-12 10 0 10 12 4z" fill={highlightedStates.includes('TN') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M720 420l18-2 4-8-4-8-18-2-10 8-2 8 6 8 6 0z" fill={highlightedStates.includes('NC') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M740 450l16-2 4-6-2-8-16-2-8 6-2 8 4 6 4 0z" fill={highlightedStates.includes('SC') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M700 480l20-4 6-10-6-10-20 0-12 10 0 10 12 4z" fill={highlightedStates.includes('GA') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M720 520l22-4 8-12-8-12-22 0-14 12 0 12 14 4z" fill={highlightedStates.includes('FL') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M640 460l18-4 6-8-4-8-18-2-10 8-2 8 6 8 4 0z" fill={highlightedStates.includes('AL') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M580 460l20-4 6-10-6-10-20 0-12 10 0 10 12 4z" fill={highlightedStates.includes('MS') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        
+        {/* Midwest */}
+        <path d="M660 380l18-4 6-8-4-8-18-2-10 8-2 8 6 8 4 0z" fill={highlightedStates.includes('OH') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M620 380l16-2 4-6-2-8-16-2-8 6-2 8 4 6 4 0z" fill={highlightedStates.includes('IN') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M580 380l20-4 6-10-6-10-20 0-12 10 0 10 12 4z" fill={highlightedStates.includes('IL') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M600 340l18-4 6-8-4-8-18-2-10 8-2 8 6 8 4 0z" fill={highlightedStates.includes('MI') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M560 340l16-2 4-6-2-8-16-2-8 6-2 8 4 6 4 0z" fill={highlightedStates.includes('WI') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M520 320l18-4 6-8-4-8-18-2-10 8-2 8 6 8 4 0z" fill={highlightedStates.includes('MN') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M520 380l16-2 4-6-2-8-16-2-8 6-2 8 4 6 4 0z" fill={highlightedStates.includes('IA') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M540 420l18-4 6-8-4-8-18-2-10 8-2 8 6 8 4 0z" fill={highlightedStates.includes('MO') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M480 300l16-2 4-6-2-8-16-2-8 6-2 8 4 6 4 0z" fill={highlightedStates.includes('ND') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M480 340l16-2 4-6-2-8-16-2-8 6-2 8 4 6 4 0z" fill={highlightedStates.includes('SD') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M480 380l16-2 4-6-2-8-16-2-8 6-2 8 4 6 4 0z" fill={highlightedStates.includes('NE') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M480 420l18-4 6-8-4-8-18-2-10 8-2 8 6 8 4 0z" fill={highlightedStates.includes('KS') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        
+        {/* Southwest */}
+        <path d="M440 460l24-4 8-12-8-16-24 0-16 16 0 12 16 4z" fill={highlightedStates.includes('TX') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M460 420l18-4 6-8-4-8-18-2-10 8-2 8 6 8 4 0z" fill={highlightedStates.includes('OK') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M520 460l18-4 6-8-4-8-18-2-10 8-2 8 6 8 4 0z" fill={highlightedStates.includes('AR') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M500 500l20-4 6-10-6-10-20 0-12 10 0 10 12 4z" fill={highlightedStates.includes('LA') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M380 460l20-4 6-10-6-10-20 0-12 10 0 10 12 4z" fill={highlightedStates.includes('NM') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M340 460l18-4 6-8-4-8-18-2-10 8-2 8 6 8 4 0z" fill={highlightedStates.includes('AZ') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        
+        {/* Mountain West */}
+        <path d="M420 340l20-4 6-10-6-10-20 0-12 10 0 10 12 4z" fill={highlightedStates.includes('MT') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M420 380l18-4 6-8-4-8-18-2-10 8-2 8 6 8 4 0z" fill={highlightedStates.includes('WY') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M420 420l18-4 6-8-4-8-18-2-10 8-2 8 6 8 4 0z" fill={highlightedStates.includes('CO') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M360 420l20-4 6-10-6-10-20 0-12 10 0 10 12 4z" fill={highlightedStates.includes('UT') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M360 380l18-4 6-8-4-8-18-2-10 8-2 8 6 8 4 0z" fill={highlightedStates.includes('ID') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M300 420l20-4 6-10-6-10-20 0-12 10 0 10 12 4z" fill={highlightedStates.includes('NV') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        
+        {/* Pacific */}
+        <path d="M280 340l18-4 6-8-4-8-18-2-10 8-2 8 6 8 4 0z" fill={highlightedStates.includes('WA') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M280 380l18-4 6-8-4-8-18-2-10 8-2 8 6 8 4 0z" fill={highlightedStates.includes('OR') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M260 420l24-4 8-12-8-16-24 0-16 16 0 12 16 4z" fill={highlightedStates.includes('CA') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M160 520l16-2 4-6-2-8-16-2-8 6-2 8 4 6 4 0z" fill={highlightedStates.includes('AK') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+        <path d="M200 540l14-2 4-6-2-6-14-2-8 4-2 6 4 6 4 0z" fill={highlightedStates.includes('HI') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+      </svg>
+    );
+  };
+
   const renderSchoolCard = (school: School) => {
     const teacherName = `${school.teacherFirstName} ${school.teacherLastName}`;
     
     return (
       <div 
         key={school.id}
-        className="card"
         style={{ 
           background: '#fff',
-          border: '1px solid #dee2e6',
-          borderRadius: '8px',
+          border: '1px solid #e0e6ed',
+          borderRadius: '12px',
           padding: '1.5rem',
           marginBottom: '1rem',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+          boxShadow: '0 4px 6px rgba(0,0,0,0.07)',
+          transition: 'all 0.2s ease',
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr 1fr',
+          gap: '1.5rem',
+          alignItems: 'stretch',
+          minHeight: '120px'
         }}
       >
-        {/* School Header */}
-        <div style={{ marginBottom: '1rem' }}>
-          <h4 style={{ margin: '0 0 0.5rem 0', color: '#2c5aa0' }}>
-            {school.schoolName}
-          </h4>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <strong>{teacherName}</strong>
-            <a 
-              href={`mailto:${school.teacherEmail}`}
-              style={{ textDecoration: 'none', fontSize: '1.1rem' }}
-              title={school.teacherEmail}
-            >
-              ✉️
-            </a>
-          </div>
-        </div>
-
-        {/* School Info Grid */}
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-          gap: '0.75rem',
-          fontSize: '0.9rem',
-          color: '#6c757d',
-          marginBottom: '1rem'
-        }}>
-          <div><strong>Region:</strong> {school.region}</div>
-          <div><strong>Grades:</strong> {school.gradeLevel.join(', ')}</div>
+        {/* School Info Column */}
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
-            <strong>Students:</strong> Expected: {school.studentCounts.expected} | 
-            Registered: {school.studentCounts.registered} | 
-            Ready: {school.studentCounts.ready}
+            <h3 style={{ 
+              margin: '0 0 0.5rem 0', 
+              color: '#1a365d', 
+              fontSize: '1.3rem',
+              fontWeight: '600',
+              lineHeight: '1.2'
+            }}>
+              {school.schoolName}
+            </h3>
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.5rem',
+              color: '#4a5568',
+              fontSize: '1rem'
+            }}>
+              <span style={{ fontWeight: '500' }}>{teacherName}</span>
+              <a 
+                href={`mailto:${school.teacherEmail}`}
+                style={{ 
+                  textDecoration: 'none', 
+                  fontSize: '1.1rem',
+                  opacity: 0.7,
+                  transition: 'opacity 0.2s ease'
+                }}
+                title={school.teacherEmail}
+              >
+                ✉️
+              </a>
+            </div>
           </div>
-          <div><strong>Start:</strong> {school.startMonth}</div>
+          <div style={{ 
+            color: '#718096', 
+            fontSize: '0.95rem',
+            marginTop: '0.5rem'
+          }}>
+            <strong>Grades:</strong> {school.gradeLevel.join(', ')}
+          </div>
         </div>
 
-        {/* Matched School Info */}
+        {/* Class Info Column */}
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          justifyContent: 'space-between',
+          fontSize: '0.95rem'
+        }}>
+          <div style={{ color: '#4a5568', marginBottom: '0.5rem' }}>
+            <strong>Start:</strong> {school.startMonth}
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+            <div style={{ color: '#4a5568' }}>
+              <strong>Expected:</strong> {school.studentCounts.expected}
+            </div>
+            <div style={{ color: '#4a5568' }}>
+              <strong>Registered:</strong> {school.studentCounts.registered}
+            </div>
+            <div style={{ color: '#4a5568' }}>
+              <strong>Ready:</strong> {school.studentCounts.ready}
+            </div>
+          </div>
+        </div>
+
+        {/* Map Column */}
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          minHeight: '80px'
+        }}>
+          {getRegionMap(school.region)}
+        </div>
+
+        {/* Status-specific info overlays */}
         {school.status === 'MATCHED' && school.matchedSchool && (
           <div style={{ 
+            gridColumn: '1 / -1',
             padding: '0.75rem', 
-            background: '#e8f5e9', 
-            borderRadius: '4px',
-            marginBottom: '1rem'
+            background: 'linear-gradient(135deg, #f0fff4 0%, #e8f5e9 100%)', 
+            borderRadius: '8px',
+            marginTop: '1rem',
+            borderLeft: '4px solid #38a169'
           }}>
-            <strong style={{ color: '#155724' }}>
-              Matched with: {school.matchedSchool.schoolName}
+            <strong style={{ color: '#2f855a' }}>
+              🤝 Matched with: {school.matchedSchool.schoolName}
             </strong>
-            <div style={{ fontSize: '0.9rem', color: '#6c757d', marginTop: '0.25rem' }}>
+            <div style={{ fontSize: '0.9rem', color: '#4a5568', marginTop: '0.25rem' }}>
               {school.matchedSchool.teacherFirstName} {school.matchedSchool.teacherLastName} - {school.matchedSchool.region}
             </div>
           </div>
         )}
 
-        {/* Correspondence Info */}
         {school.status === 'CORRESPONDING' && (
           <div style={{ 
+            gridColumn: '1 / -1',
             padding: '0.75rem', 
-            background: '#d4edda', 
-            borderRadius: '4px',
-            marginBottom: '1rem'
+            background: 'linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%)', 
+            borderRadius: '8px',
+            marginTop: '1rem',
+            borderLeft: '4px solid #4299e1'
           }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-              <div><strong>Letters Sent:</strong> {school.lettersSent}</div>
-              <div><strong>Letters Received:</strong> {school.lettersReceived}</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '0.5rem' }}>
+              <div style={{ color: '#2d3748' }}><strong>📤 Letters Sent:</strong> {school.lettersSent}</div>
+              <div style={{ color: '#2d3748' }}><strong>📥 Letters Received:</strong> {school.lettersReceived}</div>
             </div>
             {school.matchedSchool && (
-              <div style={{ fontSize: '0.9rem', color: '#6c757d', marginTop: '0.5rem' }}>
-                <strong>Partner:</strong> {school.matchedSchool.schoolName} ({school.matchedSchool.region})
+              <div style={{ fontSize: '0.9rem', color: '#4a5568' }}>
+                <strong>✉️ Partner:</strong> {school.matchedSchool.schoolName} ({school.matchedSchool.region})
               </div>
             )}
           </div>
