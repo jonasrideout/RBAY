@@ -37,7 +37,8 @@ export async function POST(request: NextRequest) {
             lastName: true,
             grade: true,
             interests: true,
-            parentConsent: true
+            parentConsent: true,
+            profileCompleted: true
           }
         }
       }
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if school is already ready for matching
-    if (school.readyForMatching) {
+    if (school.status === 'READY' || school.readyForMatching) {
       return NextResponse.json(
         { error: 'School has already requested matching' },
         { status: 409 }
@@ -94,6 +95,7 @@ export async function POST(request: NextRequest) {
     const updatedSchool = await prisma.school.update({
       where: { teacherEmail },
       data: { 
+        status: 'READY',
         readyForMatching: true,
         updatedAt: new Date()
       },
@@ -104,7 +106,8 @@ export async function POST(request: NextRequest) {
             firstName: true,
             lastName: true,
             grade: true,
-            interests: true
+            interests: true,
+            profileCompleted: true
           }
         }
       }
@@ -120,11 +123,17 @@ export async function POST(request: NextRequest) {
         id: updatedSchool.id,
         schoolName: updatedSchool.schoolName,
         teacherEmail: updatedSchool.teacherEmail,
+        status: updatedSchool.status,
         readyForMatching: updatedSchool.readyForMatching,
         studentCount: updatedSchool.students.length,
-        gradeLevels: updatedSchool.gradeLevels,
-        programStartMonth: updatedSchool.programStartMonth,
-        letterFrequency: updatedSchool.letterFrequency
+        gradeLevel: updatedSchool.gradeLevel,
+        startMonth: updatedSchool.startMonth,
+        letterFrequency: updatedSchool.letterFrequency,
+        studentCounts: {
+          expected: updatedSchool.expectedClassSize,
+          registered: updatedSchool.students.length,
+          ready: updatedSchool.students.filter(s => s.profileCompleted).length
+        }
       }
     }, { status: 200 });
 
@@ -155,6 +164,7 @@ export async function GET(request: NextRequest) {
       select: {
         id: true,
         schoolName: true,
+        status: true,
         readyForMatching: true,
         updatedAt: true
       }
@@ -172,6 +182,7 @@ export async function GET(request: NextRequest) {
       school: {
         id: school.id,
         schoolName: school.schoolName,
+        status: school.status,
         readyForMatching: school.readyForMatching,
         lastUpdated: school.updatedAt
       }
