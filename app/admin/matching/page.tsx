@@ -94,8 +94,8 @@ export default function AdminDashboard() {
 
   const getStatusLabel = (status: SelectedStatus) => {
     const labels = {
-      COLLECTING: 'Collecting Information',
-      READY: 'Ready for Matching',
+      COLLECTING: 'Collecting',
+      READY: 'Ready to Match',
       MATCHED: 'Matched',
       CORRESPONDING: 'Corresponding',
       DONE: 'Done'
