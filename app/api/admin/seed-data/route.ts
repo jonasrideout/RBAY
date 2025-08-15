@@ -1,279 +1,305 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-const SAMPLE_INTERESTS = [
-  ['sports', 'reading', 'outdoors'],
-  ['arts', 'music', 'reading'],
-  ['technology', 'academic', 'hobbies'],
-  ['animals', 'outdoors', 'social'],
-  ['entertainment', 'social', 'fashion'],
-  ['reading', 'academic', 'music'],
-  ['sports', 'social', 'outdoors'],
-  ['arts', 'hobbies', 'animals'],
-  ['technology', 'entertainment', 'reading'],
-  ['music', 'fashion', 'social']
+const INTEREST_OPTIONS = [
+  'sports', 'arts', 'reading', 'technology', 'animals', 'entertainment',
+  'social', 'academic', 'hobbies', 'outdoors', 'music', 'fashion'
 ];
 
-const FIRST_NAMES = [
-  'Emma', 'Liam', 'Olivia', 'Noah', 'Ava', 'Ethan', 'Sophia', 'Mason',
-  'Isabella', 'William', 'Mia', 'James', 'Charlotte', 'Benjamin', 'Amelia',
-  'Lucas', 'Harper', 'Henry', 'Evelyn', 'Alexander', 'Abigail', 'Michael',
-  'Emily', 'Daniel', 'Elizabeth', 'Jacob', 'Sofia', 'Logan', 'Avery', 'Jackson'
-];
+const STATES_TO_REGIONS = {
+  // Northeast
+  'ME': 'Northeast', 'NH': 'Northeast', 'VT': 'Northeast', 'MA': 'Northeast', 
+  'RI': 'Northeast', 'CT': 'Northeast', 'NY': 'Northeast', 'NJ': 'Northeast', 
+  'PA': 'Northeast', 'DC': 'Northeast',
+  
+  // Southeast  
+  'DE': 'Southeast', 'MD': 'Southeast', 'VA': 'Southeast', 'WV': 'Southeast',
+  'KY': 'Southeast', 'TN': 'Southeast', 'NC': 'Southeast', 'SC': 'Southeast',
+  'GA': 'Southeast', 'FL': 'Southeast', 'AL': 'Southeast', 'MS': 'Southeast',
+  
+  // Midwest
+  'OH': 'Midwest', 'IN': 'Midwest', 'IL': 'Midwest', 'MI': 'Midwest',
+  'WI': 'Midwest', 'MN': 'Midwest', 'IA': 'Midwest', 'MO': 'Midwest',
+  'ND': 'Midwest', 'SD': 'Midwest', 'NE': 'Midwest', 'KS': 'Midwest',
+  
+  // Southwest
+  'TX': 'Southwest', 'OK': 'Southwest', 'AR': 'Southwest', 'LA': 'Southwest',
+  'NM': 'Southwest', 'AZ': 'Southwest',
+  
+  // Mountain West
+  'MT': 'Mountain West', 'WY': 'Mountain West', 'CO': 'Mountain West', 
+  'UT': 'Mountain West', 'ID': 'Mountain West', 'NV': 'Mountain West',
+  
+  // Pacific
+  'WA': 'Pacific', 'OR': 'Pacific', 'CA': 'Pacific', 'AK': 'Pacific', 'HI': 'Pacific'
+};
 
-const LAST_NAMES = [
-  'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller',
-  'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez',
-  'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin'
-];
+function getRandomInterests(count: number = 3): string[] {
+  const shuffled = [...INTEREST_OPTIONS].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+}
 
-const OTHER_INTERESTS = [
-  'Loves building with Legos and reading mystery books',
-  'Enjoys cooking with family and playing board games',
-  'Interested in space exploration and astronomy',
-  'Likes drawing cartoons and watching anime',
-  'Enjoys hiking and collecting rocks',
-  'Loves playing chess and solving puzzles',
-  'Interested in photography and nature',
-  'Enjoys swimming and water sports'
-];
+function getRandomFromArray<T>(array: T[]): T {
+  return array[Math.floor(Math.random() * array.length)];
+}
 
-export async function POST(request: NextRequest) {
+export async function GET() {
   try {
-    // Clear existing data first
-    await prisma.student.deleteMany({});
-    await prisma.school.deleteMany({});
+    // Clear existing data
+    await prisma.letter.deleteMany();
+    await prisma.studentPenpal.deleteMany();
+    await prisma.student.deleteMany();
+    await prisma.school.deleteMany();
 
-    const schools: any[] = [];
-    const students: any[] = [];
-
-    // School 1: Pacific Elementary (Ready for Matching)
-    const pacificSchool = await prisma.school.create({
-      data: {
-        teacherFirstName: 'Sarah',
-        teacherLastName: 'Johnson',
-        teacherEmail: 'sarah.johnson@pacific-elem.edu',
-        teacherPhone: '(555) 123-4567',
-        schoolName: 'Pacific Elementary',
-        schoolAddress: '123 Ocean View Drive, San Francisco, CA 94102',
-        schoolState: 'CA',
-        region: 'Pacific',
-        gradeLevels: ['4', '5'],
-        classSize: 10,
-        programStartMonth: 'March',
-        letterFrequency: 'bi-weekly',
-        specialConsiderations: 'We have two students with learning accommodations',
-        programAgreement: true,
-        parentNotification: true,
-        readyForMatching: true
-      }
-    });
-    schools.push(pacificSchool);
-
-    // Create 10 students for Pacific Elementary (all with interests)
-    for (let i = 0; i < 10; i++) {
-      const firstName = FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)];
-      const lastName = LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)];
-      const grade = Math.random() > 0.5 ? '4' : '5';
-      const interests = SAMPLE_INTERESTS[i % SAMPLE_INTERESTS.length];
-      const otherInterests = i % 3 === 0 ? OTHER_INTERESTS[Math.floor(Math.random() * OTHER_INTERESTS.length)] : null;
-
-      const student = await prisma.student.create({
-        data: {
-          firstName,
-          lastName,
-          grade,
-          interests,
-          otherInterests,
-          parentName: `${firstName} Parent`,
-          parentEmail: `${firstName.toLowerCase()}.parent@email.com`,
-          parentConsent: true,
-          isActive: true,
-          schoolId: pacificSchool.id
-        }
-      });
-      students.push(student);
-    }
-
-    // School 2: Northeast Academy (Ready for Matching)
-    const northeastSchool = await prisma.school.create({
-      data: {
-        teacherFirstName: 'Michael',
-        teacherLastName: 'Chen',
-        teacherEmail: 'michael.chen@northeast-academy.edu',
-        teacherPhone: '(555) 234-5678',
-        schoolName: 'Northeast Academy',
-        schoolAddress: '456 Maple Street, Boston, MA 02101',
-        schoolState: 'MA',
-        region: 'Northeast',
-        gradeLevels: ['4', '5'],
-        classSize: 12,
-        programStartMonth: 'March',
-        letterFrequency: 'bi-weekly',
-        specialConsiderations: 'Our class loves creative writing projects',
-        programAgreement: true,
-        parentNotification: true,
-        readyForMatching: true
-      }
-    });
-    schools.push(northeastSchool);
-
-    // Create 12 students for Northeast Academy (all with interests)
-    for (let i = 0; i < 12; i++) {
-      const firstName = FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)];
-      const lastName = LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)];
-      const grade = Math.random() > 0.4 ? '4' : '5';
-      const interests = SAMPLE_INTERESTS[i % SAMPLE_INTERESTS.length];
-      const otherInterests = i % 4 === 0 ? OTHER_INTERESTS[Math.floor(Math.random() * OTHER_INTERESTS.length)] : null;
-
-      const student = await prisma.student.create({
-        data: {
-          firstName,
-          lastName,
-          grade,
-          interests,
-          otherInterests,
-          parentName: `${firstName} Guardian`,
-          parentEmail: `${firstName.toLowerCase()}.guardian@email.com`,
-          parentConsent: true,
-          isActive: true,
-          schoolId: northeastSchool.id
-        }
-      });
-      students.push(student);
-    }
-
-    // School 3: Midwest Elementary (In Progress - Some students need interests)
-    const midwestSchool = await prisma.school.create({
-      data: {
+    // School data with different statuses
+    const schoolsData = [
+      {
+        // COLLECTING status - still gathering students
         teacherFirstName: 'Jennifer',
         teacherLastName: 'Rodriguez',
         teacherEmail: 'jennifer.rodriguez@midwest-elem.edu',
-        teacherPhone: '(555) 345-6789',
+        teacherPhone: '555-0123',
         schoolName: 'Midwest Elementary',
-        schoolAddress: '789 Prairie Road, Chicago, IL 60601',
+        schoolAddress: '456 Oak Street',
+        schoolCity: 'Springfield',
         schoolState: 'IL',
+        schoolZip: '62701',
         region: 'Midwest',
-        gradeLevels: ['3', '4'],
-        classSize: 8,
-        programStartMonth: 'April',
-        letterFrequency: 'weekly',
-        specialConsiderations: 'We prefer shorter letter exchanges to start',
+        gradeLevel: ['3', '4'],
+        expectedClassSize: 25,
+        startMonth: 'March',
+        letterFrequency: 'Monthly',
+        status: 'COLLECTING',
         programAgreement: true,
         parentNotification: true,
-        readyForMatching: false
-      }
-    });
-    schools.push(midwestSchool);
-
-    // Create 8 students for Midwest Elementary (only half have interests)
-    for (let i = 0; i < 8; i++) {
-      const firstName = FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)];
-      const lastName = LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)];
-      const grade = Math.random() > 0.6 ? '3' : '4';
-      const hasInterests = i < 4; // First 4 have interests, last 4 don't
-      const interests = hasInterests ? SAMPLE_INTERESTS[i % SAMPLE_INTERESTS.length] : [];
-      const otherInterests = hasInterests && i % 2 === 0 ? OTHER_INTERESTS[Math.floor(Math.random() * OTHER_INTERESTS.length)] : null;
-
-      const student = await prisma.student.create({
-        data: {
-          firstName,
-          lastName,
-          grade,
-          interests,
-          otherInterests,
-          parentName: `${firstName} Parent`,
-          parentEmail: `${firstName.toLowerCase()}.parent@email.com`,
-          parentConsent: true,
-          isActive: true,
-          schoolId: midwestSchool.id
-        }
-      });
-      students.push(student);
-    }
-
-    // School 4: Southwest School (Just Started - No one ready)
-    const southwestSchool = await prisma.school.create({
-      data: {
+        studentCount: 15, // Less than expected
+        studentsWithInterests: 10 // Some haven't completed profiles
+      },
+      {
+        // READY status - ready for matching
+        teacherFirstName: 'Sarah',
+        teacherLastName: 'Johnson',
+        teacherEmail: 'sarah.johnson@pacific-elem.edu',
+        teacherPhone: '555-0101',
+        schoolName: 'Pacific Elementary',
+        schoolAddress: '123 Main Street',
+        schoolCity: 'San Francisco',
+        schoolState: 'CA',
+        schoolZip: '94102',
+        region: 'Pacific',
+        gradeLevel: ['4', '5'],
+        expectedClassSize: 20,
+        startMonth: 'March',
+        letterFrequency: 'Bi-weekly',
+        status: 'READY',
+        readyForMatching: true,
+        programAgreement: true,
+        parentNotification: true,
+        studentCount: 18,
+        studentsWithInterests: 18 // All completed
+      },
+      {
+        // READY status - also ready for matching
+        teacherFirstName: 'Michael',
+        teacherLastName: 'Chen',
+        teacherEmail: 'michael.chen@northeast-academy.edu',
+        teacherPhone: '555-0102',
+        schoolName: 'Northeast Academy',
+        schoolAddress: '789 Elm Avenue',
+        schoolCity: 'Boston',
+        schoolState: 'MA',
+        schoolZip: '02101',
+        region: 'Northeast',
+        gradeLevel: ['4', '5'],
+        expectedClassSize: 22,
+        startMonth: 'March',
+        letterFrequency: 'Bi-weekly',
+        status: 'READY',
+        readyForMatching: true,
+        programAgreement: true,
+        parentNotification: true,
+        studentCount: 20,
+        studentsWithInterests: 20 // All completed
+      },
+      {
+        // COLLECTING status - still working on setup
         teacherFirstName: 'Carlos',
         teacherLastName: 'Martinez',
         teacherEmail: 'carlos.martinez@southwest-school.edu',
-        teacherPhone: '(555) 456-7890',
+        teacherPhone: '555-0124',
         schoolName: 'Southwest Elementary',
-        schoolAddress: '321 Desert View Lane, Austin, TX 78701',
-        schoolState: 'TX',
+        schoolAddress: '321 Desert Road',
+        schoolCity: 'Phoenix',
+        schoolState: 'AZ',
+        schoolZip: '85001',
         region: 'Southwest',
-        gradeLevels: ['5', '6'],
-        classSize: 6,
-        programStartMonth: 'May',
-        letterFrequency: 'monthly',
-        specialConsiderations: 'New to the program, excited to get started',
+        gradeLevel: ['3', '4', '5'],
+        expectedClassSize: 30,
+        startMonth: 'April',
+        letterFrequency: 'Monthly',
+        status: 'COLLECTING',
+        programAgreement: false, // Still working on agreement
+        parentNotification: true,
+        studentCount: 8, // Way less than expected
+        studentsWithInterests: 3 // Very few completed
+      },
+      {
+        // MATCHED status - paired and working together
+        teacherFirstName: 'Lisa',
+        teacherLastName: 'Thompson',
+        teacherEmail: 'lisa.thompson@mountain-elem.edu',
+        teacherPhone: '555-0105',
+        schoolName: 'Mountain View Elementary',
+        schoolAddress: '555 Peak Drive',
+        schoolCity: 'Denver',
+        schoolState: 'CO',
+        schoolZip: '80201',
+        region: 'Mountain West',
+        gradeLevel: ['4', '5'],
+        expectedClassSize: 24,
+        startMonth: 'February',
+        letterFrequency: 'Bi-weekly',
+        status: 'MATCHED',
+        readyForMatching: true,
         programAgreement: true,
         parentNotification: true,
-        readyForMatching: false
+        studentCount: 22,
+        studentsWithInterests: 22,
+        lettersSent: 0 // Just matched, no letters yet
+      },
+      {
+        // CORRESPONDING status - actively exchanging letters
+        teacherFirstName: 'Amanda',
+        teacherLastName: 'Wilson',
+        teacherEmail: 'amanda.wilson@southeast-academy.edu',
+        teacherPhone: '555-0106',
+        schoolName: 'Southeast Academy',
+        schoolAddress: '777 Pine Street',
+        schoolCity: 'Atlanta',
+        schoolState: 'GA',
+        schoolZip: '30301',
+        region: 'Southeast',
+        gradeLevel: ['4', '5'],
+        expectedClassSize: 26,
+        startMonth: 'January',
+        letterFrequency: 'Weekly',
+        status: 'CORRESPONDING',
+        readyForMatching: true,
+        programAgreement: true,
+        parentNotification: true,
+        studentCount: 24,
+        studentsWithInterests: 24,
+        lettersSent: 3 // Multiple rounds of letters
       }
-    });
-    schools.push(southwestSchool);
+    ];
 
-    // Create 6 students for Southwest School (none have interests yet)
-    for (let i = 0; i < 6; i++) {
-      const firstName = FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)];
-      const lastName = LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)];
-      const grade = Math.random() > 0.5 ? '5' : '6';
+    const createdSchools = [];
 
-      const student = await prisma.student.create({
+    // Create schools and students
+    for (const schoolData of schoolsData) {
+      const { studentCount, studentsWithInterests, lettersSent, ...schoolFields } = schoolData;
+      
+      const school = await prisma.school.create({
         data: {
-          firstName,
-          lastName,
-          grade,
-          interests: [], // No interests yet
-          otherInterests: null,
-          parentName: `${firstName} Parent`,
-          parentEmail: `${firstName.toLowerCase()}.parent@email.com`,
-          parentConsent: true,
-          isActive: true,
-          schoolId: southwestSchool.id
+          ...schoolFields,
+          lettersSent: lettersSent || 0
         }
       });
-      students.push(student);
+
+      createdSchools.push(school);
+
+      // Create students for this school
+      for (let i = 0; i < studentCount; i++) {
+        const firstName = getRandomFromArray([
+          'Emma', 'Liam', 'Olivia', 'Noah', 'Ava', 'Ethan', 'Sophia', 'Mason',
+          'Isabella', 'William', 'Mia', 'James', 'Charlotte', 'Benjamin', 'Amelia'
+        ]);
+        
+        const lastName = getRandomFromArray([
+          'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller',
+          'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez'
+        ]);
+
+        const hasCompletedProfile = i < studentsWithInterests;
+        const interests = hasCompletedProfile ? getRandomInterests() : [];
+
+        await prisma.student.create({
+          data: {
+            firstName,
+            lastName,
+            grade: getRandomFromArray(schoolData.gradeLevel),
+            interests,
+            parentFirstName: getRandomFromArray(['John', 'Jane', 'Mike', 'Sarah', 'David', 'Lisa']),
+            parentLastName: lastName,
+            parentEmail: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@email.com`,
+            parentPhone: `555-${Math.floor(Math.random() * 9000) + 1000}`,
+            parentConsent: true,
+            isActive: true,
+            profileCompleted: hasCompletedProfile,
+            schoolId: school.id
+          }
+        });
+      }
     }
 
-    return NextResponse.json({
-      success: true,
-      message: 'Test data created successfully!',
-      summary: {
-        schoolsCreated: schools.length,
-        studentsCreated: students.length,
-        readyForMatching: schools.filter(s => s.readyForMatching).length
-      },
-      schools: schools.map(school => ({
-        name: school.schoolName,
-        teacher: `${school.teacherFirstName} ${school.teacherLastName}`,
-        email: school.teacherEmail,
-        region: school.region,
-        students: students.filter(s => s.schoolId === school.id).length,
-        readyForMatching: school.readyForMatching,
-        dashboardUrl: `/dashboard?teacher=${encodeURIComponent(school.teacherEmail)}`
-      })),
-      testUrls: {
-        adminMatching: '/admin/matching',
-        pacificDashboard: `/dashboard?teacher=${encodeURIComponent('sarah.johnson@pacific-elem.edu')}`,
-        northeastDashboard: `/dashboard?teacher=${encodeURIComponent('michael.chen@northeast-academy.edu')}`,
-        midwestDashboard: `/dashboard?teacher=${encodeURIComponent('jennifer.rodriguez@midwest-elem.edu')}`,
-        southwestDashboard: `/dashboard?teacher=${encodeURIComponent('carlos.martinez@southwest-school.edu')}`
-      }
+    // Create a school matching relationship (Mountain View <-> Southeast Academy)
+    const mountainSchool = createdSchools.find(s => s.schoolName === 'Mountain View Elementary');
+    const southeastSchool = createdSchools.find(s => s.schoolName === 'Southeast Academy');
+    
+    if (mountainSchool && southeastSchool) {
+      await prisma.school.update({
+        where: { id: mountainSchool.id },
+        data: { matchedWithSchoolId: southeastSchool.id }
+      });
+      
+      await prisma.school.update({
+        where: { id: southeastSchool.id },
+        data: { matchedWithSchoolId: mountainSchool.id }
+      });
+    }
+
+    // Get final counts for response
+    const schoolCounts = await prisma.school.groupBy({
+      by: ['status'],
+      _count: { status: true }
     });
 
-  } catch (error: any) {
-    console.error('Seed data error:', error);
+    const totalStudents = await prisma.student.count();
+    const studentsWithCompletedProfiles = await prisma.student.count({
+      where: { profileCompleted: true }
+    });
+
+    const response = {
+      message: 'Seed data created successfully!',
+      schools: createdSchools.length,
+      students: totalStudents,
+      studentsWithProfiles: studentsWithCompletedProfiles,
+      schoolsByStatus: schoolCounts.reduce((acc, curr) => {
+        acc[curr.status] = curr._count.status;
+        return acc;
+      }, {} as Record<string, number>),
+      testUrls: {
+        collectingSchools: [
+          'https://nextjs-boilerplate-beta-three-49.vercel.app/dashboard?teacher=jennifer.rodriguez@midwest-elem.edu',
+          'https://nextjs-boilerplate-beta-three-49.vercel.app/dashboard?teacher=carlos.martinez@southwest-school.edu'
+        ],
+        readySchools: [
+          'https://nextjs-boilerplate-beta-three-49.vercel.app/dashboard?teacher=sarah.johnson@pacific-elem.edu',
+          'https://nextjs-boilerplate-beta-three-49.vercel.app/dashboard?teacher=michael.chen@northeast-academy.edu'
+        ],
+        matchedSchool: 'https://nextjs-boilerplate-beta-three-49.vercel.app/dashboard?teacher=lisa.thompson@mountain-elem.edu',
+        correspondingSchool: 'https://nextjs-boilerplate-beta-three-49.vercel.app/dashboard?teacher=amanda.wilson@southeast-academy.edu',
+        adminDashboard: 'https://nextjs-boilerplate-beta-three-49.vercel.app/admin/matching'
+      }
+    };
+
+    return NextResponse.json(response);
+
+  } catch (error) {
+    console.error('Seed data creation failed:', error);
     return NextResponse.json(
-      { error: 'Failed to create test data: ' + (error?.message || 'Unknown error') },
+      { error: 'Failed to create seed data', details: error },
       { status: 500 }
     );
   }
-}
-
-export async function GET(request: NextRequest) {
-  // For convenience, also allow GET to create test data
-  return await POST(request);
 }
