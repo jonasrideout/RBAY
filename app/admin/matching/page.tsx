@@ -466,7 +466,7 @@ export default function AdminDashboard() {
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
                 boxShadow: selectedStatus === status ? '0 4px 12px rgba(0,0,0,0.15)' : '0 2px 8px rgba(0,0,0,0.08)',
-                minWidth: '160px',
+                width: '160px',
                 transform: selectedStatus === status ? 'translateY(-2px)' : 'translateY(0)'
               }}
             >
