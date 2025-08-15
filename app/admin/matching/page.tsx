@@ -5,323 +5,355 @@ import Link from 'next/link';
 
 interface School {
   id: string;
-  name: string;
-  teacher: string;
-  email: string;
+  schoolName: string;
+  teacherFirstName: string;
+  teacherLastName: string;
+  teacherEmail: string;
   region: string;
-  grades: string[];
-  studentCount: number;
+  gradeLevel: string[];
+  expectedClassSize: number;
   startMonth: string;
+  letterFrequency: string;
+  status: 'COLLECTING' | 'READY' | 'MATCHED' | 'CORRESPONDING' | 'DONE';
+  lettersSent: number;
+  lettersReceived: number;
+  matchedWithSchoolId?: string;
+  matchedSchool?: School;
+  studentCounts: {
+    expected: number;
+    registered: number;
+    ready: number;
+  };
 }
 
-interface Match {
-  matchId: string;
-  score: number;
-  quality: string;
-  school1: School;
-  school2: School;
-  reasons: string[];
-  status?: 'suggested' | 'approved';
-  notes?: string;
+interface StatusCounts {
+  COLLECTING: number;
+  READY: number;
+  MATCHED: number;
+  CORRESPONDING: number;
+  DONE: number;
 }
 
-export default function AdminMatching() {
-  const [allSchools, setAllSchools] = useState<School[]>([]);
-  const [suggestedMatches, setSuggestedMatches] = useState<Match[]>([]);
-  const [approvedMatches, setApprovedMatches] = useState<Match[]>([]);
-  const [selectedSchool1, setSelectedSchool1] = useState<School | null>(null);
-  const [selectedSchool2, setSelectedSchool2] = useState<School | null>(null);
-  
-  // Loading states
-  const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingSchools, setIsLoadingSchools] = useState(true);
-  
-  // Search and filter states
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterRegion, setFilterRegion] = useState('');
-  const [filterGrade, setFilterGrade] = useState('');
-  const [filterStartMonth, setFilterStartMonth] = useState('');
-  
-  // UI states
+type SelectedStatus = keyof StatusCounts;
+
+export default function AdminDashboard() {
+  const [schools, setSchools] = useState<School[]>([]);
+  const [statusCounts, setStatusCounts] = useState<StatusCounts>({
+    COLLECTING: 0,
+    READY: 0,
+    MATCHED: 0,
+    CORRESPONDING: 0,
+    DONE: 0
+  });
+  const [selectedStatus, setSelectedStatus] = useState<SelectedStatus>('COLLECTING');
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState<'suggested' | 'manual' | 'approved'>('suggested');
-  const [showingSchools, setShowingSchools] = useState<School[]>([]);
 
   useEffect(() => {
-    fetchSchools();
+    fetchAllSchools();
   }, []);
 
-  useEffect(() => {
-    filterSchools();
-  }, [allSchools, searchTerm, filterRegion, filterGrade, filterStartMonth]);
-
-  const fetchSchools = async () => {
-    setIsLoadingSchools(true);
+  const fetchAllSchools = async () => {
+    setIsLoading(true);
     setError('');
 
     try {
-      const response = await fetch('/api/matching/schools');
+      const response = await fetch('/api/admin/all-schools');
       const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to fetch schools');
       }
 
-      const schools = (data.readyForMatching || []).map((school: any) => ({
-        id: school.id,
-        name: school.name,
-        teacher: `${school.teacher || 'Unknown Teacher'}`,
-        email: school.email || '',
-        region: school.region,
-        grades: school.grades,
-        studentCount: school.studentCount,
-        startMonth: school.startMonth
-      }));
-
-      setAllSchools(schools);
-    } catch (err: any) {
-      setError('Error fetching schools: ' + err.message);
-    } finally {
-      setIsLoadingSchools(false);
-    }
-  };
-
-  const filterSchools = () => {
-    let filtered = allSchools.filter(school => {
-      // Search term matches name, teacher, or email
-      const matchesSearch = searchTerm === '' || 
-        school.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        school.teacher.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        school.email.toLowerCase().includes(searchTerm.toLowerCase());
-
-      // Region filter
-      const matchesRegion = filterRegion === '' || school.region === filterRegion;
-
-      // Grade filter
-      const matchesGrade = filterGrade === '' || school.grades.includes(filterGrade);
-
-      // Start month filter
-      const matchesStartMonth = filterStartMonth === '' || school.startMonth === filterStartMonth;
-
-      return matchesSearch && matchesRegion && matchesGrade && matchesStartMonth;
-    });
-
-    setShowingSchools(filtered);
-  };
-
-  const findSuggestedMatches = async () => {
-    setIsLoading(true);
-    setError('');
-
-    try {
-      const response = await fetch('/api/matching/schools', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ autoMatch: true })
+      setSchools(data.schools || []);
+      setStatusCounts(data.statusCounts || {
+        COLLECTING: 0,
+        READY: 0,
+        MATCHED: 0,
+        CORRESPONDING: 0,
+        DONE: 0
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to find matches');
-      }
-
-      const matches = (data.matches || []).map((match: any) => ({
-        ...match,
-        status: 'suggested' as const
-      }));
-
-      setSuggestedMatches(matches);
-      setActiveTab('suggested');
     } catch (err: any) {
-      setError('Error finding matches: ' + err.message);
+      setError('Error fetching schools: ' + err.message);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const approveMatch = (match: Match, notes: string = '') => {
-    const approvedMatch = {
-      ...match,
-      status: 'approved' as const,
-      notes
+  const getStatusColor = (status: SelectedStatus) => {
+    const colors = {
+      COLLECTING: '#ffc107', // Yellow
+      READY: '#17a2b8',      // Teal
+      MATCHED: '#6f42c1',    // Purple
+      CORRESPONDING: '#28a745', // Green
+      DONE: '#6c757d'        // Gray
     };
+    return colors[status];
+  };
 
-    setApprovedMatches(prev => [...prev, approvedMatch]);
-    setSuggestedMatches(prev => prev.filter(m => m.matchId !== match.matchId));
+  const getStatusIcon = (status: SelectedStatus) => {
+    const icons = {
+      COLLECTING: '📝',
+      READY: '✅',
+      MATCHED: '🤝',
+      CORRESPONDING: '✉️',
+      DONE: '🎉'
+    };
+    return icons[status];
+  };
+
+  const getStatusLabel = (status: SelectedStatus) => {
+    const labels = {
+      COLLECTING: 'Collecting Information',
+      READY: 'Ready for Matching',
+      MATCHED: 'Matched',
+      CORRESPONDING: 'Corresponding',
+      DONE: 'Done'
+    };
+    return labels[status];
+  };
+
+  const getSchoolsByStatus = (status: SelectedStatus): School[] => {
+    return schools.filter(school => school.status === status);
+  };
+
+  const renderSchoolCard = (school: School) => {
+    const teacherName = `${school.teacherFirstName} ${school.teacherLastName}`;
     
-    // TODO: Save to database
-    console.log('Approved match:', approvedMatch);
-  };
-
-  const createManualMatch = (school1: School, school2: School, notes: string = '') => {
-    if (!school1 || !school2 || school1.id === school2.id) return;
-
-    const manualMatch: Match = {
-      matchId: `manual-${school1.id}-${school2.id}`,
-      score: 0, // Manual matches don't have algorithm scores
-      quality: 'Manual',
-      school1,
-      school2,
-      reasons: ['Manually paired by administrator'],
-      status: 'approved',
-      notes
-    };
-
-    setApprovedMatches(prev => [...prev, manualMatch]);
-    setSelectedSchool1(null);
-    setSelectedSchool2(null);
-    
-    // TODO: Save to database
-    console.log('Created manual match:', manualMatch);
-  };
-
-  const getQualityColor = (quality: string) => {
-    switch (quality) {
-      case 'Excellent': return '#28a745';
-      case 'Good': return '#17a2b8';
-      case 'Fair': return '#ffc107';
-      case 'Manual': return '#6f42c1';
-      default: return '#6c757d';
-    }
-  };
-
-  const getRegionColor = (region: string) => {
-    const colors: { [key: string]: string } = {
-      'Northeast': '#e3f2fd',
-      'Southeast': '#f3e5f5', 
-      'Midwest': '#fff3e0',
-      'Southwest': '#fce4ec',
-      'Mountain West': '#e8f5e8',
-      'Pacific': '#fff8e1'
-    };
-    return colors[region] || '#f5f5f5';
-  };
-
-  const regions = ['Northeast', 'Southeast', 'Midwest', 'Southwest', 'Mountain West', 'Pacific'];
-  const grades = ['3', '4', '5', '6', '7', '8'];
-  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
-  const renderSchoolCard = (school: School, isSelectable: boolean = false, isSelected: boolean = false) => (
-    <div 
-      key={school.id}
-      className={`card ${isSelectable ? 'clickable' : ''}`}
-      style={{ 
-        background: isSelected ? '#e8f5e9' : getRegionColor(school.region),
-        border: isSelected ? '2px solid #28a745' : '1px solid #dee2e6',
-        cursor: isSelectable ? 'pointer' : 'default',
-        margin: '0.5rem 0'
-      }}
-      onClick={() => {
-        if (!isSelectable) return;
-        
-        if (!selectedSchool1) {
-          setSelectedSchool1(school);
-        } else if (!selectedSchool2 && school.id !== selectedSchool1.id) {
-          setSelectedSchool2(school);
-        } else {
-          // Deselect if clicking on already selected school
-          if (selectedSchool1?.id === school.id) setSelectedSchool1(null);
-          if (selectedSchool2?.id === school.id) setSelectedSchool2(null);
-        }
-      }}
-    >
-      <h5 style={{ marginBottom: '0.5rem', color: '#2c5aa0' }}>{school.name}</h5>
-      <p style={{ fontSize: '0.9rem', marginBottom: '0.25rem' }}>
-        <strong>{school.teacher}</strong> ({school.email})
-      </p>
-      <div style={{ fontSize: '0.8rem', color: '#6c757d', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.25rem' }}>
-        <p><strong>Region:</strong> {school.region}</p>
-        <p><strong>Grades:</strong> {school.grades.join(', ')}</p>
-        <p><strong>Students:</strong> {school.studentCount}</p>
-        <p><strong>Start:</strong> {school.startMonth}</p>
-      </div>
-      {isSelected && (
-        <div style={{ marginTop: '0.5rem', padding: '0.5rem', background: '#d4edda', borderRadius: '4px' }}>
-          <strong style={{ color: '#155724' }}>Selected for matching</strong>
+    return (
+      <div 
+        key={school.id}
+        className="card"
+        style={{ 
+          background: '#fff',
+          border: '1px solid #dee2e6',
+          borderRadius: '8px',
+          padding: '1.5rem',
+          marginBottom: '1rem',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        }}
+      >
+        {/* School Header */}
+        <div style={{ marginBottom: '1rem' }}>
+          <h4 style={{ margin: '0 0 0.5rem 0', color: '#2c5aa0' }}>
+            {school.schoolName}
+          </h4>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <strong>{teacherName}</strong>
+            <a 
+              href={`mailto:${school.teacherEmail}`}
+              style={{ textDecoration: 'none', fontSize: '1.1rem' }}
+              title={school.teacherEmail}
+            >
+              ✉️
+            </a>
+          </div>
         </div>
-      )}
-    </div>
-  );
 
-  const renderMatchCard = (match: Match, showApprovalButtons: boolean = false) => (
-    <div 
-      key={match.matchId}
-      className="card" 
-      style={{ 
-        background: '#f8f9fa',
-        border: `2px solid ${getQualityColor(match.quality)}`,
-        marginBottom: '1rem'
-      }}
-    >
-      {/* Match Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-        <h4 style={{ margin: '0' }}>
-          {match.school1.name} ↔ {match.school2.name}
-        </h4>
-        <span 
-          style={{ 
-            background: getQualityColor(match.quality),
-            color: 'white',
-            padding: '0.25rem 0.75rem',
+        {/* School Info Grid */}
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+          gap: '0.75rem',
+          fontSize: '0.9rem',
+          color: '#6c757d',
+          marginBottom: '1rem'
+        }}>
+          <div><strong>Region:</strong> {school.region}</div>
+          <div><strong>Grades:</strong> {school.gradeLevel.join(', ')}</div>
+          <div>
+            <strong>Students:</strong> Expected: {school.studentCounts.expected} | 
+            Registered: {school.studentCounts.registered} | 
+            Ready: {school.studentCounts.ready}
+          </div>
+          <div><strong>Start:</strong> {school.startMonth}</div>
+        </div>
+
+        {/* Matched School Info */}
+        {school.status === 'MATCHED' && school.matchedSchool && (
+          <div style={{ 
+            padding: '0.75rem', 
+            background: '#e8f5e9', 
             borderRadius: '4px',
-            fontSize: '0.9rem',
-            fontWeight: '600'
-          }}
-        >
-          {match.quality} {match.score > 0 && `(${match.score})`}
-        </span>
-      </div>
+            marginBottom: '1rem'
+          }}>
+            <strong style={{ color: '#155724' }}>
+              Matched with: {school.matchedSchool.schoolName}
+            </strong>
+            <div style={{ fontSize: '0.9rem', color: '#6c757d', marginTop: '0.25rem' }}>
+              {school.matchedSchool.teacherFirstName} {school.matchedSchool.teacherLastName} - {school.matchedSchool.region}
+            </div>
+          </div>
+        )}
 
-      {/* Schools Comparison */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '1rem', alignItems: 'center', marginBottom: '1rem' }}>
-        {renderSchoolCard(match.school1)}
-        <div style={{ textAlign: 'center', fontSize: '1.5rem' }}>↔️</div>
-        {renderSchoolCard(match.school2)}
+        {/* Correspondence Info */}
+        {school.status === 'CORRESPONDING' && (
+          <div style={{ 
+            padding: '0.75rem', 
+            background: '#d4edda', 
+            borderRadius: '4px',
+            marginBottom: '1rem'
+          }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div><strong>Letters Sent:</strong> {school.lettersSent}</div>
+              <div><strong>Letters Received:</strong> {school.lettersReceived}</div>
+            </div>
+            {school.matchedSchool && (
+              <div style={{ fontSize: '0.9rem', color: '#6c757d', marginTop: '0.5rem' }}>
+                <strong>Partner:</strong> {school.matchedSchool.schoolName} ({school.matchedSchool.region})
+              </div>
+            )}
+          </div>
+        )}
       </div>
+    );
+  };
 
-      {/* Match Reasons */}
-      <div style={{ marginBottom: '1rem' }}>
-        <h6 style={{ marginBottom: '0.5rem', color: '#495057' }}>Match Details:</h6>
-        <ul style={{ marginBottom: '0', paddingLeft: '1.5rem' }}>
-          {match.reasons.map((reason, i) => (
-            <li key={i} style={{ color: '#6c757d', fontSize: '0.9rem' }}>{reason}</li>
-          ))}
-        </ul>
+  const renderMatchedPairs = () => {
+    const matchedSchools = getSchoolsByStatus('MATCHED');
+    const pairs: [School, School][] = [];
+    const processed = new Set<string>();
+
+    matchedSchools.forEach(school => {
+      if (processed.has(school.id) || !school.matchedSchool) return;
+      
+      pairs.push([school, school.matchedSchool]);
+      processed.add(school.id);
+      processed.add(school.matchedSchool.id);
+    });
+
+    return (
+      <div>
+        <h3 style={{ marginBottom: '1.5rem' }}>Matched School Pairs</h3>
+        {pairs.length === 0 ? (
+          <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
+            <h4>No matched schools yet</h4>
+            <p style={{ color: '#6c757d' }}>
+              Schools will appear here after they are paired together.
+            </p>
+          </div>
+        ) : (
+          pairs.map(([school1, school2], index) => (
+            <div 
+              key={`${school1.id}-${school2.id}`}
+              style={{ 
+                display: 'grid', 
+                gridTemplateColumns: '1fr auto 1fr', 
+                gap: '1rem', 
+                alignItems: 'center',
+                marginBottom: '2rem',
+                padding: '1rem',
+                background: '#f8f9fa',
+                borderRadius: '8px',
+                border: '1px solid #dee2e6'
+              }}
+            >
+              {renderSchoolCard(school1)}
+              <div style={{ textAlign: 'center', fontSize: '1.5rem' }}>↔️</div>
+              {renderSchoolCard(school2)}
+            </div>
+          ))
+        )}
       </div>
+    );
+  };
 
-      {/* Notes */}
-      {match.notes && (
-        <div style={{ marginBottom: '1rem', padding: '0.75rem', background: '#e9ecef', borderRadius: '4px' }}>
-          <strong>Admin Notes:</strong> {match.notes}
+  const renderCorrespondingPairs = () => {
+    const correspondingSchools = getSchoolsByStatus('CORRESPONDING');
+    const pairs: [School, School][] = [];
+    const processed = new Set<string>();
+
+    correspondingSchools.forEach(school => {
+      if (processed.has(school.id) || !school.matchedSchool) return;
+      
+      pairs.push([school, school.matchedSchool]);
+      processed.add(school.id);
+      processed.add(school.matchedSchool.id);
+    });
+
+    return (
+      <div>
+        <h3 style={{ marginBottom: '1.5rem' }}>Corresponding School Pairs</h3>
+        {pairs.length === 0 ? (
+          <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
+            <h4>No corresponding schools yet</h4>
+            <p style={{ color: '#6c757d' }}>
+              Schools will appear here when they begin exchanging letters.
+            </p>
+          </div>
+        ) : (
+          pairs.map(([school1, school2], index) => (
+            <div 
+              key={`${school1.id}-${school2.id}`}
+              style={{ 
+                display: 'grid', 
+                gridTemplateColumns: '1fr auto 1fr', 
+                gap: '1rem', 
+                alignItems: 'center',
+                marginBottom: '2rem',
+                padding: '1rem',
+                background: '#f8f9fa',
+                borderRadius: '8px',
+                border: '1px solid #dee2e6'
+              }}
+            >
+              {renderSchoolCard(school1)}
+              <div style={{ textAlign: 'center', fontSize: '1.5rem' }}>
+                ✉️
+                <div style={{ fontSize: '0.8rem', color: '#6c757d' }}>
+                  {school1.lettersSent + school2.lettersSent} letters total
+                </div>
+              </div>
+              {renderSchoolCard(school2)}
+            </div>
+          ))
+        )}
+      </div>
+    );
+  };
+
+  const renderStatusContent = () => {
+    const statusSchools = getSchoolsByStatus(selectedStatus);
+
+    if (selectedStatus === 'MATCHED') {
+      return renderMatchedPairs();
+    }
+
+    if (selectedStatus === 'CORRESPONDING') {
+      return renderCorrespondingPairs();
+    }
+
+    return (
+      <div>
+        <h3 style={{ marginBottom: '1.5rem' }}>
+          {getStatusLabel(selectedStatus)} ({statusSchools.length})
+        </h3>
+        {statusSchools.length === 0 ? (
+          <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
+            <h4>No schools in {getStatusLabel(selectedStatus).toLowerCase()} status</h4>
+            <p style={{ color: '#6c757d' }}>
+              Schools will appear here as they progress through the program.
+            </p>
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '1rem' }}>
+            {statusSchools.map(renderSchoolCard)}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <div className="page">
+        <div className="container" style={{ textAlign: 'center', padding: '3rem' }}>
+          <h2>Loading Dashboard...</h2>
         </div>
-      )}
-
-      {/* Action Buttons */}
-      {showApprovalButtons && (
-        <div style={{ textAlign: 'center' }}>
-          <button 
-            className="btn btn-primary"
-            style={{ marginRight: '0.5rem' }}
-            onClick={() => {
-              const notes = prompt('Optional notes for this match:') || '';
-              approveMatch(match, notes);
-            }}
-          >
-            ✅ Approve Match
-          </button>
-          <button 
-            className="btn btn-secondary"
-            onClick={() => {
-              alert(`Teacher Contacts:\n${match.school1.email}\n${match.school2.email}`);
-            }}
-          >
-            📧 View Teacher Contacts
-          </button>
-        </div>
-      )}
-    </div>
-  );
+      </div>
+    );
+  }
 
   return (
     <div className="page">
@@ -346,35 +378,76 @@ export default function AdminMatching() {
         
         {/* Page Header */}
         <div style={{ marginBottom: '2rem' }}>
-          <h1 style={{ marginBottom: '0.5rem' }}>🎯 School Matching Admin</h1>
+          <h1 style={{ marginBottom: '0.5rem' }}>📊 Administrator Dashboard</h1>
           <p style={{ color: '#6c757d', fontSize: '1.1rem' }}>
-            Find suggested matches or manually pair schools from different regions.
+            Overview of all schools and their progress through the program.
           </p>
         </div>
 
         {error && (
           <div className="alert alert-error" style={{ marginBottom: '2rem' }}>
             <strong>Error:</strong> {error}
+            <button 
+              onClick={fetchAllSchools}
+              style={{ marginLeft: '1rem', padding: '0.25rem 0.5rem' }}
+            >
+              Retry
+            </button>
           </div>
         )}
+
+        {/* Status Boxes */}
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+          gap: '1rem', 
+          marginBottom: '3rem' 
+        }}>
+          {(Object.keys(statusCounts) as SelectedStatus[]).map(status => (
+            <div
+              key={status}
+              onClick={() => setSelectedStatus(status)}
+              style={{
+                background: selectedStatus === status ? getStatusColor(status) : '#f8f9fa',
+                color: selectedStatus === status ? 'white' : '#333',
+                border: `2px solid ${getStatusColor(status)}`,
+                borderRadius: '8px',
+                padding: '1.5rem',
+                textAlign: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                boxShadow: selectedStatus === status ? '0 4px 8px rgba(0,0,0,0.1)' : '0 2px 4px rgba(0,0,0,0.05)'
+              }}
+            >
+              <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>
+                {getStatusIcon(status)}
+              </div>
+              <div style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>
+                {statusCounts[status]}
+              </div>
+              <div style={{ fontSize: '0.9rem', fontWeight: '500' }}>
+                {getStatusLabel(status)}
+              </div>
+            </div>
+          ))}
+        </div>
 
         {/* Action Buttons */}
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
           <button 
-            onClick={fetchSchools}
+            onClick={fetchAllSchools}
             className="btn btn-secondary"
-            disabled={isLoadingSchools}
+            disabled={isLoading}
           >
-            {isLoadingSchools ? '🔄 Loading...' : '🔄 Refresh Schools'}
+            {isLoading ? '🔄 Loading...' : '🔄 Refresh Data'}
           </button>
           
-          <button 
-            onClick={findSuggestedMatches}
+          <Link 
+            href="/api/admin/seed-data"
             className="btn btn-primary"
-            disabled={isLoading || allSchools.length < 2}
           >
-            {isLoading ? '⏳ Finding...' : '🔍 Find Suggested Matches'}
-          </button>
+            🌱 Seed Test Data
+          </Link>
 
           <Link 
             href="/api/admin/clear-data"
@@ -385,210 +458,8 @@ export default function AdminMatching() {
           </Link>
         </div>
 
-        {/* Tabs */}
-        <div style={{ display: 'flex', marginBottom: '2rem', borderBottom: '1px solid #dee2e6' }}>
-          {[
-            { key: 'suggested', label: `🔍 Suggested Matches (${suggestedMatches.length})`, count: suggestedMatches.length },
-            { key: 'manual', label: `🔧 Manual Pairing`, count: 0 },
-            { key: 'approved', label: `✅ Approved Matches (${approvedMatches.length})`, count: approvedMatches.length }
-          ].map(tab => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key as any)}
-              style={{
-                padding: '1rem 1.5rem',
-                border: 'none',
-                background: activeTab === tab.key ? '#4a90e2' : 'transparent',
-                color: activeTab === tab.key ? 'white' : '#6c757d',
-                borderBottom: activeTab === tab.key ? '3px solid #4a90e2' : '3px solid transparent',
-                cursor: 'pointer',
-                fontSize: '1rem',
-                fontWeight: activeTab === tab.key ? '600' : '400'
-              }}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Tab Content */}
-        {activeTab === 'suggested' && (
-          <div>
-            {suggestedMatches.length === 0 ? (
-              <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
-                <h4>No suggested matches yet</h4>
-                <p style={{ color: '#6c757d' }}>
-                  Click "Find Suggested Matches" to see algorithm recommendations.
-                </p>
-              </div>
-            ) : (
-              <div>
-                <h3>🔍 Algorithm Suggestions</h3>
-                <p style={{ color: '#6c757d', marginBottom: '1.5rem' }}>
-                  Review these suggested matches and approve the ones you want to create.
-                </p>
-                {suggestedMatches.map(match => renderMatchCard(match, true))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {activeTab === 'manual' && (
-          <div>
-            <h3>🔧 Manual School Pairing</h3>
-            <p style={{ color: '#6c757d', marginBottom: '1.5rem' }}>
-              Search and filter schools, then click two schools to pair them manually.
-            </p>
-
-            {/* Search and Filters */}
-            <div className="card" style={{ marginBottom: '2rem' }}>
-              <h4>Search & Filter Schools</h4>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
-                <input
-                  type="text"
-                  placeholder="Search name, teacher, email..."
-                  className="form-input"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                
-                <select 
-                  className="form-select"
-                  value={filterRegion}
-                  onChange={(e) => setFilterRegion(e.target.value)}
-                >
-                  <option value="">All Regions</option>
-                  {regions.map(region => (
-                    <option key={region} value={region}>{region}</option>
-                  ))}
-                </select>
-
-                <select 
-                  className="form-select"
-                  value={filterGrade}
-                  onChange={(e) => setFilterGrade(e.target.value)}
-                >
-                  <option value="">All Grades</option>
-                  {grades.map(grade => (
-                    <option key={grade} value={grade}>{grade}th Grade</option>
-                  ))}
-                </select>
-
-                <select 
-                  className="form-select"
-                  value={filterStartMonth}
-                  onChange={(e) => setFilterStartMonth(e.target.value)}
-                >
-                  <option value="">All Start Months</option>
-                  {months.map(month => (
-                    <option key={month} value={month}>{month}</option>
-                  ))}
-                </select>
-              </div>
-
-              <p style={{ color: '#6c757d', fontSize: '0.9rem' }}>
-                Showing {showingSchools.length} of {allSchools.length} schools ready for matching
-              </p>
-            </div>
-
-            {/* Selected Schools */}
-            {(selectedSchool1 || selectedSchool2) && (
-              <div className="card" style={{ marginBottom: '2rem', background: '#e8f5e9' }}>
-                <h4>🎯 Creating Manual Match</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: selectedSchool1 && selectedSchool2 ? '1fr auto 1fr auto' : '1fr', gap: '1rem', alignItems: 'center' }}>
-                  {selectedSchool1 ? (
-                    renderSchoolCard(selectedSchool1, false, true)
-                  ) : (
-                    <div style={{ textAlign: 'center', padding: '2rem', color: '#6c757d', border: '2px dashed #ccc', borderRadius: '8px' }}>
-                      Click a school below to select School #1
-                    </div>
-                  )}
-                  
-                  {selectedSchool1 && (
-                    <>
-                      <div style={{ textAlign: 'center', fontSize: '1.5rem' }}>↔️</div>
-                      {selectedSchool2 ? (
-                        renderSchoolCard(selectedSchool2, false, true)
-                      ) : (
-                        <div style={{ textAlign: 'center', padding: '2rem', color: '#6c757d', border: '2px dashed #ccc', borderRadius: '8px' }}>
-                          Click another school to select School #2
-                        </div>
-                      )}
-                      
-                      {selectedSchool2 && (
-                        <div style={{ textAlign: 'center' }}>
-                          <button 
-                            className="btn btn-primary"
-                            onClick={() => {
-                              const notes = prompt('Optional notes for this manual pairing:') || '';
-                              createManualMatch(selectedSchool1, selectedSchool2, notes);
-                            }}
-                            style={{ marginBottom: '0.5rem', width: '100%' }}
-                          >
-                            ✅ Create Match
-                          </button>
-                          <button 
-                            className="btn btn-secondary"
-                            onClick={() => {
-                              setSelectedSchool1(null);
-                              setSelectedSchool2(null);
-                            }}
-                            style={{ width: '100%' }}
-                          >
-                            ❌ Clear Selection
-                          </button>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Available Schools */}
-            <div className="card">
-              <h4>Available Schools ({showingSchools.length})</h4>
-              {showingSchools.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '2rem', color: '#6c757d' }}>
-                  <h5>No schools match your filters</h5>
-                  <p>Try adjusting your search terms or filters above.</p>
-                </div>
-              ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '1rem' }}>
-                  {showingSchools.map(school => 
-                    renderSchoolCard(
-                      school, 
-                      true, 
-                      selectedSchool1?.id === school.id || selectedSchool2?.id === school.id
-                    )
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'approved' && (
-          <div>
-            {approvedMatches.length === 0 ? (
-              <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
-                <h4>No approved matches yet</h4>
-                <p style={{ color: '#6c757d' }}>
-                  Approved matches will appear here after you approve suggestions or create manual pairings.
-                </p>
-              </div>
-            ) : (
-              <div>
-                <h3>✅ Approved School Matches</h3>
-                <p style={{ color: '#6c757d', marginBottom: '1.5rem' }}>
-                  These school partnerships have been approved and are ready for student-to-student matching.
-                </p>
-                {approvedMatches.map(match => renderMatchCard(match, false))}
-              </div>
-            )}
-          </div>
-        )}
+        {/* Dynamic Content */}
+        {renderStatusContent()}
 
       </main>
 
