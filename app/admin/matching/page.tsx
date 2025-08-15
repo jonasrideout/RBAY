@@ -398,36 +398,52 @@ export default function AdminDashboard() {
 
         {/* Status Boxes */}
         <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-          gap: '1rem', 
-          marginBottom: '3rem' 
+          display: 'flex', 
+          gap: '0', 
+          marginBottom: '3rem',
+          height: '54px', // 0.75 inches = 54px (at 72dpi)
+          borderRadius: '8px',
+          overflow: 'hidden',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
         }}>
-          {(Object.keys(statusCounts) as SelectedStatus[]).map(status => (
+          {(Object.keys(statusCounts) as SelectedStatus[]).map((status, index) => (
             <div
               key={status}
               onClick={() => setSelectedStatus(status)}
               style={{
+                flex: '1',
                 background: selectedStatus === status ? getStatusColor(status) : '#f8f9fa',
                 color: selectedStatus === status ? 'white' : '#333',
-                border: `2px solid ${getStatusColor(status)}`,
-                borderRadius: '8px',
-                padding: '1.5rem',
-                textAlign: 'center',
+                borderRight: index < Object.keys(statusCounts).length - 1 ? '1px solid #dee2e6' : 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.75rem',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
-                boxShadow: selectedStatus === status ? '0 4px 8px rgba(0,0,0,0.1)' : '0 2px 4px rgba(0,0,0,0.05)'
+                position: 'relative',
+                fontWeight: selectedStatus === status ? '600' : '500'
               }}
             >
-              <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>
+              <div style={{ fontSize: '1.5rem' }}>
                 {getStatusIcon(status)}
               </div>
-              <div style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>
+              <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
                 {statusCounts[status]}
               </div>
-              <div style={{ fontSize: '0.9rem', fontWeight: '500' }}>
+              <div style={{ fontSize: '0.9rem' }}>
                 {getStatusLabel(status)}
               </div>
+              {selectedStatus === status && (
+                <div style={{
+                  position: 'absolute',
+                  bottom: '0',
+                  left: '0',
+                  right: '0',
+                  height: '3px',
+                  background: 'rgba(255,255,255,0.8)'
+                }} />
+              )}
             </div>
           ))}
         </div>
