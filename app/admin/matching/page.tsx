@@ -477,7 +477,7 @@ export default function AdminDashboard() {
               <div style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>
                 {statusCounts[status]}
               </div>
-              <div style={{ fontSize: '0.75rem', fontWeight: '600', letterSpacing: '0.5px', lineHeight: '1.2' }}>
+              <div style={{ fontSize: '0.75rem', fontWeight: '600', letterSpacing: '0.5px', lineHeight: '1.2', paddingBottom: '0.5rem' }}>
                 {getStatusLabel(status).toUpperCase()}
               </div>
             </div>
