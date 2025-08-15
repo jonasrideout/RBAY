@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { SchoolStatus } from '@prisma/client';
 
 const INTEREST_OPTIONS = [
   'sports', 'arts', 'reading', 'technology', 'animals', 'entertainment',
@@ -69,7 +70,7 @@ export async function GET() {
         expectedClassSize: 25,
         startMonth: 'March',
         letterFrequency: 'Monthly',
-        status: 'COLLECTING',
+        status: 'COLLECTING' as SchoolStatus,
         programAgreement: true,
         parentNotification: true,
         studentCount: 15, // Less than expected
@@ -91,7 +92,7 @@ export async function GET() {
         expectedClassSize: 20,
         startMonth: 'March',
         letterFrequency: 'Bi-weekly',
-        status: 'READY',
+        status: 'READY' as SchoolStatus,
         readyForMatching: true,
         programAgreement: true,
         parentNotification: true,
@@ -114,7 +115,7 @@ export async function GET() {
         expectedClassSize: 22,
         startMonth: 'March',
         letterFrequency: 'Bi-weekly',
-        status: 'READY',
+        status: 'READY' as SchoolStatus,
         readyForMatching: true,
         programAgreement: true,
         parentNotification: true,
@@ -137,7 +138,7 @@ export async function GET() {
         expectedClassSize: 30,
         startMonth: 'April',
         letterFrequency: 'Monthly',
-        status: 'COLLECTING',
+        status: 'COLLECTING' as SchoolStatus,
         programAgreement: false, // Still working on agreement
         parentNotification: true,
         studentCount: 8, // Way less than expected
@@ -159,7 +160,7 @@ export async function GET() {
         expectedClassSize: 24,
         startMonth: 'February',
         letterFrequency: 'Bi-weekly',
-        status: 'MATCHED',
+        status: 'MATCHED' as SchoolStatus,
         readyForMatching: true,
         programAgreement: true,
         parentNotification: true,
@@ -183,7 +184,7 @@ export async function GET() {
         expectedClassSize: 26,
         startMonth: 'January',
         letterFrequency: 'Weekly',
-        status: 'CORRESPONDING',
+        status: 'CORRESPONDING' as SchoolStatus,
         readyForMatching: true,
         programAgreement: true,
         parentNotification: true,
