@@ -1,340 +1,216 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-interface SchoolForMatching {
-  id: string;
-  schoolName: string;
-  teacherEmail: string;
-  teacherFirstName: string;
-  teacherLastName: string;
-  region: string;
-  gradeLevels: string[];
-  classSize: number;
-  programStartMonth: string;
-  students: { id: string }[];
-}
-
-// Calculate match score between two schools (higher = better match)
-function calculateMatchScore(school1: SchoolForMatching, school2: SchoolForMatching): number {
-  let score = 0;
-  
-  // Different regions is required (if same region, return 0)
-  if (school1.region === school2.region) {
-    return 0;
-  }
-  
-  // Same start month (required)
-  if (school1.programStartMonth !== school2.programStartMonth) {
-    return 0;
-  }
-  
-  // Grade level overlap (required)
-  const gradesOverlap = school1.gradeLevels.some(grade => school2.gradeLevels.includes(grade));
-  if (!gradesOverlap) {
-    return 0;
-  }
-  
-  // Base score for meeting requirements
-  score = 100;
-  
-  // Bonus for exact grade match
-  const exactGradeMatch = school1.gradeLevels.length === school2.gradeLevels.length && 
-                         school1.gradeLevels.every(grade => school2.gradeLevels.includes(grade));
-  if (exactGradeMatch) {
-    score += 50;
-  } else {
-    // Partial bonus for more overlapping grades
-    const overlapCount = school1.gradeLevels.filter(grade => school2.gradeLevels.includes(grade)).length;
-    score += overlapCount * 10;
-  }
-  
-  // Student count compatibility - more flexible for small schools
-  const actualStudents1 = school1.students.length;
-  const actualStudents2 = school2.students.length;
-  const minStudents = Math.min(actualStudents1, actualStudents2);
-  const maxStudents = Math.max(actualStudents1, actualStudents2);
-  
-  // Flexible tolerance: for small schools (<=10), allow ±3 difference
-  // For larger schools, use the original ±5 rule
-  let tolerance = minStudents <= 10 ? 3 : 5;
-  
-  if (minStudents + tolerance >= maxStudents) {
-    score += 30;
-    
-    // Bonus for exact student count match
-    if (actualStudents1 === actualStudents2) {
-      score += 20;
-    }
-  } else {
-    // Outside tolerance, but don't completely disqualify small schools
-    score -= 20; // Reduced penalty for testing
-  }
-  
-  return score;
-}
-
-// Find the best match for a given school
-function findBestMatch(targetSchool: SchoolForMatching, candidateSchools: SchoolForMatching[]): {
-  school: SchoolForMatching;
-  score: number;
-} | null {
-  let bestMatch = null;
-  let bestScore = 0;
-  
-  for (const candidate of candidateSchools) {
-    if (candidate.id === targetSchool.id) continue; // Don't match with self
-    
-    const score = calculateMatchScore(targetSchool, candidate);
-    if (score > bestScore) {
-      bestScore = score;
-      bestMatch = candidate;
-    }
-  }
-  
-  return bestMatch && bestScore > 0 ? { school: bestMatch, score: bestScore } : null;
-}
-
-export async function POST(request: NextRequest) {
+export async function GET() {
   try {
-    const body = await request.json();
-    const { autoMatch = true } = body;
-    
-    // Get all schools ready for matching with their students
-    const schoolsReadyForMatching = await prisma.school.findMany({
+    // Get schools that are ready for matching
+    const schools = await prisma.school.findMany({
       where: {
-        readyForMatching: true,
-        // TODO: Add field to track if already matched
+        status: 'READY'
       },
       include: {
         students: {
+          where: { isActive: true },
           select: {
             id: true,
             firstName: true,
             lastName: true,
             grade: true,
-            interests: true
+            interests: true,
+            profileCompleted: true
           }
         }
+      },
+      orderBy: {
+        createdAt: 'asc'
       }
     });
-    
-    if (schoolsReadyForMatching.length < 2) {
-      return NextResponse.json({
-        success: true,
-        message: `Only ${schoolsReadyForMatching.length} school(s) ready for matching. Need at least 2 schools.`,
-        schoolsFound: schoolsReadyForMatching.length,
-        matches: []
-      });
-    }
-    
-    // Transform to our interface
-    const schools: SchoolForMatching[] = schoolsReadyForMatching.map(school => ({
+
+    // Transform the data for the admin interface
+    const transformedSchools = schools.map(school => ({
       id: school.id,
       schoolName: school.schoolName,
-      teacherEmail: school.teacherEmail,
       teacherFirstName: school.teacherFirstName,
       teacherLastName: school.teacherLastName,
+      teacherEmail: school.teacherEmail,
       region: school.region || 'Unknown',
-      gradeLevels: school.gradeLevels,
-      classSize: school.classSize,
-      programStartMonth: school.programStartMonth,
-      students: school.students
-    }));
-    
-    // Find potential matches
-    const potentialMatches: {
-      school1: SchoolForMatching;
-      school2: SchoolForMatching;
-      score: number;
-      reasons: string[];
-    }[] = [];
-    
-    const processedSchools = new Set<string>();
-    
-    for (const school of schools) {
-      if (processedSchools.has(school.id)) continue;
-      
-      const bestMatch = findBestMatch(school, schools.filter(s => !processedSchools.has(s.id)));
-      
-      if (bestMatch && bestMatch.score > 0) {
-        // Generate match reasons
-        const reasons: string[] = [];
-        const school2 = bestMatch.school;
-        
-        // Check what makes this a good match
-        if (school.region !== school2.region) {
-          reasons.push(`Cross-regional: ${school.region} ↔ ${school2.region}`);
-        }
-        
-        if (school.programStartMonth === school2.programStartMonth) {
-          reasons.push(`Same start time: ${school.programStartMonth}`);
-        }
-        
-        const exactGradeMatch = school.gradeLevels.length === school2.gradeLevels.length && 
-                               school.gradeLevels.every(grade => school2.gradeLevels.includes(grade));
-        if (exactGradeMatch) {
-          reasons.push(`Exact grade match: ${school.gradeLevels.join(', ')}`);
-        } else {
-          const overlap = school.gradeLevels.filter(grade => school2.gradeLevels.includes(grade));
-          reasons.push(`Grade overlap: ${overlap.join(', ')}`);
-        }
-        
-        const students1 = school.students.length;
-        const students2 = school2.students.length;
-        if (students1 === students2) {
-          reasons.push(`Exact student count: ${students1} each`);
-        } else {
-          reasons.push(`Similar student count: ${students1} and ${students2}`);
-        }
-        
-        potentialMatches.push({
-          school1: school,
-          school2: school2,
-          score: bestMatch.score,
-          reasons
-        });
-        
-        // Mark both schools as processed
-        processedSchools.add(school.id);
-        processedSchools.add(school2.id);
+      gradeLevel: school.gradeLevel,
+      expectedClassSize: school.expectedClassSize,
+      startMonth: school.startMonth,
+      letterFrequency: school.letterFrequency,
+      students: school.students,
+      studentCounts: {
+        expected: school.expectedClassSize,
+        registered: school.students.length,
+        ready: school.students.filter(s => s.profileCompleted).length
       }
-    }
-    
-    // Sort matches by score (best first)
-    potentialMatches.sort((a, b) => b.score - a.score);
-    
+    }));
+
     return NextResponse.json({
-      success: true,
-      message: `Found ${potentialMatches.length} potential school matches`,
-      totalSchoolsReady: schools.length,
-      matches: potentialMatches.map(match => ({
-        matchId: `${match.school1.id}-${match.school2.id}`,
-        score: match.score,
-        school1: {
-          id: match.school1.id,
-          name: match.school1.schoolName,
-          teacher: `${match.school1.teacherFirstName} ${match.school1.teacherLastName}`,
-          email: match.school1.teacherEmail,
-          region: match.school1.region,
-          grades: match.school1.gradeLevels,
-          studentCount: match.school1.students.length,
-          startMonth: match.school1.programStartMonth
-        },
-        school2: {
-          id: match.school2.id,
-          name: match.school2.schoolName,
-          teacher: `${match.school2.teacherFirstName} ${match.school2.teacherLastName}`,
-          email: match.school2.teacherEmail,
-          region: match.school2.region,
-          grades: match.school2.gradeLevels,
-          studentCount: match.school2.students.length,
-          startMonth: match.school2.programStartMonth
-        },
-        reasons: match.reasons,
-        quality: match.score >= 200 ? 'Excellent' : match.score >= 150 ? 'Good' : 'Fair'
-      }))
+      schools: transformedSchools,
+      totalCount: transformedSchools.length
     });
-    
-  } catch (error: any) {
-    console.error('School matching error:', error);
+
+  } catch (error) {
+    console.error('Error fetching schools for matching:', error);
     return NextResponse.json(
-      { error: 'Failed to find school matches: ' + (error?.message || 'Unknown error') },
+      { error: 'Failed to fetch schools for matching' },
       { status: 500 }
     );
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const teacherEmail = searchParams.get('teacherEmail');
-    
-    if (teacherEmail) {
-      // Get specific school's matching status (for individual teacher use)
-      const school = await prisma.school.findUnique({
-        where: { teacherEmail },
-        select: {
-          id: true,
-          schoolName: true,
-          readyForMatching: true,
-          updatedAt: true
-        }
-      });
+    const body = await request.json();
+    const { action } = body;
 
-      if (!school) {
-        return NextResponse.json(
-          { error: 'School not found' },
-          { status: 404 }
-        );
-      }
-
-      return NextResponse.json({
-        success: true,
-        school: {
-          id: school.id,
-          schoolName: school.schoolName,
-          readyForMatching: school.readyForMatching,
-          lastUpdated: school.updatedAt
-        }
-      });
-    } else {
-      // Get all schools ready for matching (for admin interface)
-      const schoolsReadyForMatching = await prisma.school.findMany({
+    if (action === 'generateMatches') {
+      // Get all schools ready for matching
+      const readySchools = await prisma.school.findMany({
         where: {
-          readyForMatching: true,
+          status: 'READY'
         },
         include: {
           students: {
-            where: {
-              isActive: true
-            },
-            select: {
-              id: true
+            where: { 
+              isActive: true,
+              profileCompleted: true
             }
           }
         }
       });
-      
-      // Group by region and start month for analysis
-      const summary = schoolsReadyForMatching.reduce((acc, school) => {
-        const key = `${school.region}-${school.programStartMonth}`;
-        if (!acc[key]) {
-          acc[key] = {
-            region: school.region,
-            startMonth: school.programStartMonth,
-            schools: []
-          };
-        }
-        acc[key].schools.push({
-          id: school.id,
-          name: school.schoolName,
-          grades: school.gradeLevels,
-          studentCount: school.students.length
+
+      if (readySchools.length < 2) {
+        return NextResponse.json({
+          matches: [],
+          message: 'Need at least 2 schools ready for matching'
         });
-        return acc;
-      }, {} as any);
-      
+      }
+
+      // Simple matching algorithm - pair schools from different regions
+      const matches = [];
+      const usedSchools = new Set();
+
+      for (let i = 0; i < readySchools.length; i++) {
+        if (usedSchools.has(readySchools[i].id)) continue;
+
+        const school1 = readySchools[i];
+        
+        // Find a compatible school from a different region
+        for (let j = i + 1; j < readySchools.length; j++) {
+          if (usedSchools.has(readySchools[j].id)) continue;
+
+          const school2 = readySchools[j];
+          
+          // Check if schools are from different regions
+          if (school1.region !== school2.region) {
+            // Calculate compatibility score
+            const gradeOverlap = school1.gradeLevel.some(grade => 
+              school2.gradeLevel.includes(grade)
+            );
+            
+            const sizeDifference = Math.abs(school1.students.length - school2.students.length);
+            const sizeCompatibility = sizeDifference <= 10; // Within 10 students
+            
+            const startMonthMatch = school1.startMonth === school2.startMonth;
+            
+            // Calculate score (0-100)
+            let score = 0;
+            if (gradeOverlap) score += 40;
+            if (sizeCompatibility) score += 30;
+            if (startMonthMatch) score += 30;
+
+            matches.push({
+              id: `${school1.id}-${school2.id}`,
+              school1: {
+                id: school1.id,
+                name: school1.schoolName,
+                teacher: `${school1.teacherFirstName} ${school1.teacherLastName}`,
+                region: school1.region,
+                grades: school1.gradeLevel,
+                studentCount: school1.students.length,
+                startMonth: school1.startMonth
+              },
+              school2: {
+                id: school2.id,
+                name: school2.schoolName,
+                teacher: `${school2.teacherFirstName} ${school2.teacherLastName}`,
+                region: school2.region,
+                grades: school2.gradeLevel,
+                studentCount: school2.students.length,
+                startMonth: school2.startMonth
+              },
+              score,
+              compatibility: {
+                gradeOverlap,
+                sizeCompatibility,
+                startMonthMatch,
+                differentRegions: true
+              }
+            });
+
+            usedSchools.add(school1.id);
+            usedSchools.add(school2.id);
+            break;
+          }
+        }
+      }
+
+      // Sort matches by score (highest first)
+      matches.sort((a, b) => b.score - a.score);
+
       return NextResponse.json({
-        success: true,
-        totalSchools: schoolsReadyForMatching.length,
-        summary: Object.values(summary),
-        readyForMatching: schoolsReadyForMatching.map(school => ({
-          id: school.id,
-          name: school.schoolName,
-          teacher: `${school.teacherFirstName} ${school.teacherLastName}`,
-          email: school.teacherEmail,
-          region: school.region || 'Unknown',
-          grades: school.gradeLevels,
-          studentCount: school.students.length,
-          startMonth: school.programStartMonth
-        }))
+        matches,
+        algorithm: 'cross-regional-compatibility',
+        totalReadySchools: readySchools.length,
+        matchedSchools: usedSchools.size,
+        unmatchedSchools: readySchools.length - usedSchools.size
       });
     }
-    
-  } catch (error: any) {
-    console.error('Get matching status error:', error);
+
+    if (action === 'approveMatch') {
+      const { school1Id, school2Id } = body;
+
+      if (!school1Id || !school2Id) {
+        return NextResponse.json(
+          { error: 'Both school IDs are required' },
+          { status: 400 }
+        );
+      }
+
+      // Update both schools to matched status and link them
+      await prisma.school.update({
+        where: { id: school1Id },
+        data: { 
+          status: 'MATCHED',
+          matchedWithSchoolId: school2Id
+        }
+      });
+
+      await prisma.school.update({
+        where: { id: school2Id },
+        data: { 
+          status: 'MATCHED',
+          matchedWithSchoolId: school1Id
+        }
+      });
+
+      return NextResponse.json({
+        message: 'Schools successfully matched',
+        matchedSchools: [school1Id, school2Id]
+      });
+    }
+
     return NextResponse.json(
-      { error: 'Failed to get matching status' },
+      { error: 'Invalid action' },
+      { status: 400 }
+    );
+
+  } catch (error) {
+    console.error('Error in matching operation:', error);
+    return NextResponse.json(
+      { error: 'Failed to process matching request' },
       { status: 500 }
     );
   }
