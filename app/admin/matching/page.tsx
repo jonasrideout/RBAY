@@ -107,31 +107,22 @@ export default function AdminDashboard() {
     return schools.filter(school => school.status === status);
   };
 
-  const getRegionMap = (region: string) => {
-    const regionColor = getStatusColor(selectedStatus);
-
+  const getRegionDisplay = (region: string) => {
     return (
-      <div style={{ textAlign: 'center' }}>
-        <svg 
-          viewBox="0 0 100 60" 
-          style={{ width: '100%', height: '80px', marginBottom: '0.5rem' }}
-        >
-          <path 
-            d="M 15 20 L 85 15 L 95 30 L 90 45 L 75 50 L 50 53 L 25 50 L 10 45 L 5 30 L 15 20 Z"
-            fill="none" 
-            stroke="#999" 
-            strokeWidth="1"
-          />
-          <circle 
-            cx="50" 
-            cy="30" 
-            r="8" 
-            fill={regionColor} 
-            opacity="0.7"
-          />
-        </svg>
-        <div style={{ fontSize: '0.8rem', color: '#6c757d', fontWeight: '500' }}>
-          {region}
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        height: '100%',
+        textAlign: 'center'
+      }}>
+        <div style={{ 
+          fontSize: '0.9rem', 
+          fontWeight: '600', 
+          color: '#4a5568',
+          letterSpacing: '0.5px'
+        }}>
+          {region.toUpperCase()}
         </div>
       </div>
     );
@@ -226,7 +217,7 @@ export default function AdminDashboard() {
           justifyContent: 'center',
           minHeight: '80px'
         }}>
-          {getRegionMap(school.region)}
+          {getRegionDisplay(school.region)}
         </div>
 
         {school.status === 'MATCHED' && school.matchedSchool && (
@@ -456,48 +447,35 @@ export default function AdminDashboard() {
 
         <div style={{ 
           display: 'flex', 
-          gap: '0', 
+          gap: '1rem', 
           marginBottom: '3rem',
-          height: '54px',
-          borderRadius: '8px',
-          overflow: 'hidden',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+          justifyContent: 'center',
+          flexWrap: 'wrap'
         }}>
-          {(Object.keys(statusCounts) as SelectedStatus[]).map((status, index) => (
+          {(Object.keys(statusCounts) as SelectedStatus[]).map((status) => (
             <div
               key={status}
               onClick={() => setSelectedStatus(status)}
               style={{
-                flex: '1',
-                background: selectedStatus === status ? getStatusColor(status) : '#f8f9fa',
+                background: selectedStatus === status ? getStatusColor(status) : '#fff',
                 color: selectedStatus === status ? 'white' : '#333',
-                borderRight: index < Object.keys(statusCounts).length - 1 ? '1px solid #dee2e6' : 'none',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.75rem',
+                border: `2px solid ${selectedStatus === status ? getStatusColor(status) : '#e0e6ed'}`,
+                borderRadius: '12px',
+                padding: '1.5rem 2rem',
+                textAlign: 'center',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
-                position: 'relative',
-                fontWeight: selectedStatus === status ? '600' : '500'
+                boxShadow: selectedStatus === status ? '0 4px 12px rgba(0,0,0,0.15)' : '0 2px 8px rgba(0,0,0,0.08)',
+                minWidth: '140px',
+                transform: selectedStatus === status ? 'translateY(-2px)' : 'translateY(0)'
               }}
             >
-              <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+              <div style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
                 {statusCounts[status]}
               </div>
-              <div style={{ fontSize: '0.9rem' }}>
-                {getStatusLabel(status)}
+              <div style={{ fontSize: '0.8rem', fontWeight: '600', letterSpacing: '0.5px' }}>
+                {getStatusLabel(status).toUpperCase()}
               </div>
-              {selectedStatus === status && (
-                <div style={{
-                  position: 'absolute',
-                  bottom: '0',
-                  left: '0',
-                  right: '0',
-                  height: '3px',
-                  background: 'rgba(255,255,255,0.8)'
-                }} />
-              )}
             </div>
           ))}
         </div>
