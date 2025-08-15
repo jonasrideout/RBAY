@@ -131,95 +131,29 @@ export default function AdminDashboard() {
 
   const getRegionMap = (region: string) => {
     const regionColor = getStatusColor(selectedStatus);
-    
-    // Define which states belong to each region
-    const regionStates: { [key: string]: string[] } = {
-      'Northeast': ['ME', 'NH', 'VT', 'MA', 'RI', 'CT', 'NY', 'NJ', 'PA'],
-      'Southeast': ['DE', 'MD', 'VA', 'WV', 'KY', 'TN', 'NC', 'SC', 'GA', 'FL', 'AL', 'MS'],
-      'Midwest': ['OH', 'IN', 'IL', 'MI', 'WI', 'MN', 'IA', 'MO', 'ND', 'SD', 'NE', 'KS'],
-      'Southwest': ['TX', 'OK', 'AR', 'LA', 'NM', 'AZ'],
-      'Mountain West': ['MT', 'WY', 'CO', 'UT', 'ID', 'NV'],
-      'Pacific': ['WA', 'OR', 'CA', 'AK', 'HI']
-    };
-
-    const highlightedStates = regionStates[region] || [];
 
     return (
       <div style={{ textAlign: 'center' }}>
         <svg 
-          viewBox="0 0 1000 600" 
+          viewBox="0 0 100 60" 
           style={{ width: '100%', height: '80px', marginBottom: '0.5rem' }}
         >
-          {/* US Outline Border - simplified version */}
+          {/* Simple US outline */}
           <path 
-            d="M 158 206 L 850 150 L 950 200 L 980 300 L 950 450 L 850 500 L 700 520 L 500 530 L 300 520 L 150 450 L 100 300 L 150 200 Z"
+            d="M 15 20 L 85 15 L 95 30 L 90 45 L 75 50 L 50 53 L 25 50 L 10 45 L 5 30 L 15 20 Z"
             fill="none" 
             stroke="#999" 
-            strokeWidth="2"
+            strokeWidth="1"
           />
           
-          {/* State shapes - simplified for readability */}
-          
-          {/* Northeast States */}
-          <path d="M 780 250 L 800 245 L 810 255 L 805 265 L 785 260 Z" fill={highlightedStates.includes('ME') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 760 260 L 775 258 L 780 268 L 770 275 L 755 270 Z" fill={highlightedStates.includes('NH') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 745 270 L 760 268 L 765 278 L 755 285 L 740 280 Z" fill={highlightedStates.includes('VT') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 765 280 L 785 278 L 790 288 L 780 295 L 760 290 Z" fill={highlightedStates.includes('MA') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 750 290 L 765 288 L 770 298 L 760 305 L 745 300 Z" fill={highlightedStates.includes('RI') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 735 300 L 750 298 L 755 308 L 745 315 L 730 310 Z" fill={highlightedStates.includes('CT') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 700 290 L 735 285 L 745 310 L 735 340 L 700 335 Z" fill={highlightedStates.includes('NY') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 720 320 L 745 318 L 750 335 L 740 345 L 715 340 Z" fill={highlightedStates.includes('NJ') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 680 340 L 720 335 L 730 360 L 720 375 L 675 370 Z" fill={highlightedStates.includes('PA') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          
-          {/* Southeast States */}
-          <path d="M 720 350 L 740 348 L 745 360 L 735 370 L 715 365 Z" fill={highlightedStates.includes('MD') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 680 370 L 715 365 L 725 390 L 715 405 L 675 400 Z" fill={highlightedStates.includes('VA') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 660 360 L 680 358 L 685 375 L 675 385 L 655 380 Z" fill={highlightedStates.includes('WV') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 620 390 L 660 385 L 670 405 L 660 420 L 615 415 Z" fill={highlightedStates.includes('KY') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 640 420 L 680 415 L 690 440 L 680 455 L 635 450 Z" fill={highlightedStates.includes('TN') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 690 420 L 720 418 L 725 440 L 715 455 L 685 450 Z" fill={highlightedStates.includes('NC') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 710 450 L 730 448 L 735 465 L 725 475 L 705 470 Z" fill={highlightedStates.includes('SC') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 680 470 L 710 465 L 720 490 L 710 510 L 675 505 Z" fill={highlightedStates.includes('GA') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 700 510 L 740 505 L 750 540 L 735 555 L 695 550 Z" fill={highlightedStates.includes('FL') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 640 470 L 675 468 L 680 490 L 670 505 L 635 500 Z" fill={highlightedStates.includes('AL') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 600 480 L 635 478 L 640 500 L 630 515 L 595 510 Z" fill={highlightedStates.includes('MS') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          
-          {/* Midwest States */}
-          <path d="M 640 370 L 670 368 L 675 390 L 665 405 L 635 400 Z" fill={highlightedStates.includes('OH') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 610 380 L 635 378 L 640 400 L 630 415 L 605 410 Z" fill={highlightedStates.includes('IN') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 570 390 L 605 388 L 615 420 L 605 440 L 565 435 Z" fill={highlightedStates.includes('IL') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 590 350 L 620 348 L 625 375 L 615 390 L 585 385 Z" fill={highlightedStates.includes('MI') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 560 350 L 585 348 L 590 375 L 580 390 L 555 385 Z" fill={highlightedStates.includes('WI') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 520 330 L 555 328 L 565 360 L 555 380 L 515 375 Z" fill={highlightedStates.includes('MN') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 530 390 L 560 388 L 565 415 L 555 430 L 525 425 Z" fill={highlightedStates.includes('IA') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 540 430 L 575 428 L 585 455 L 575 475 L 535 470 Z" fill={highlightedStates.includes('MO') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 480 310 L 515 308 L 520 335 L 510 350 L 475 345 Z" fill={highlightedStates.includes('ND') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 480 350 L 515 348 L 520 375 L 510 390 L 475 385 Z" fill={highlightedStates.includes('SD') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 480 390 L 515 388 L 520 415 L 510 430 L 475 425 Z" fill={highlightedStates.includes('NE') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 480 430 L 515 428 L 525 455 L 515 475 L 475 470 Z" fill={highlightedStates.includes('KS') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          
-          {/* Southwest States */}
-          <path d="M 420 460 L 480 455 L 490 500 L 475 520 L 415 515 Z" fill={highlightedStates.includes('TX') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 460 430 L 495 428 L 500 455 L 490 470 L 455 465 Z" fill={highlightedStates.includes('OK') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 520 460 L 545 458 L 550 480 L 540 495 L 515 490 Z" fill={highlightedStates.includes('AR') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 500 500 L 535 498 L 545 520 L 535 535 L 495 530 Z" fill={highlightedStates.includes('LA') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 380 460 L 415 458 L 420 485 L 410 500 L 375 495 Z" fill={highlightedStates.includes('NM') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 340 460 L 375 458 L 380 485 L 370 500 L 335 495 Z" fill={highlightedStates.includes('AZ') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          
-          {/* Mountain West States */}
-          <path d="M 420 350 L 460 348 L 470 385 L 460 405 L 415 400 Z" fill={highlightedStates.includes('MT') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 420 405 L 460 403 L 470 430 L 460 445 L 415 440 Z" fill={highlightedStates.includes('WY') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 420 445 L 460 443 L 470 470 L 460 485 L 415 480 Z" fill={highlightedStates.includes('CO') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 360 430 L 395 428 L 405 460 L 395 480 L 355 475 Z" fill={highlightedStates.includes('UT') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 360 380 L 395 378 L 405 410 L 395 430 L 355 425 Z" fill={highlightedStates.includes('ID') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 300 430 L 335 428 L 345 460 L 335 480 L 295 475 Z" fill={highlightedStates.includes('NV') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          
-          {/* Pacific States */}
-          <path d="M 280 340 L 315 338 L 325 370 L 315 390 L 275 385 Z" fill={highlightedStates.includes('WA') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 280 390 L 315 388 L 325 420 L 315 440 L 275 435 Z" fill={highlightedStates.includes('OR') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 260 440 L 315 435 L 330 490 L 315 520 L 255 515 Z" fill={highlightedStates.includes('CA') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 160 520 L 185 518 L 190 535 L 180 545 L 155 540 Z" fill={highlightedStates.includes('AK') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
-          <path d="M 200 540 L 220 538 L 225 550 L 215 560 L 195 555 Z" fill={highlightedStates.includes('HI') ? regionColor : 'transparent'} stroke="#ddd" strokeWidth="1" />
+          {/* Simple colored region representation */}
+          <circle 
+            cx="50" 
+            cy="30" 
+            r="8" 
+            fill={regionColor} 
+            opacity="0.7"
+          />
         </svg>
         <div style={{ fontSize: '0.8rem', color: '#6c757d', fontWeight: '500' }}>
           {region}
