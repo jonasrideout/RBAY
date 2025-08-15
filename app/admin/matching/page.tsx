@@ -424,10 +424,10 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
+      <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
         
-        <div style={{ marginBottom: '1.5rem' }}>
-          <h1 style={{ marginBottom: '0.5rem', fontSize: '1.8rem' }}>Administrator Dashboard</h1>
+        <div style={{ marginBottom: '2rem' }}>
+          <h1 style={{ marginBottom: '0.5rem' }}>📊 Administrator Dashboard</h1>
           <p style={{ color: '#6c757d', fontSize: '1.1rem' }}>
             Overview of all schools and their progress through the program.
           </p>
@@ -457,27 +457,23 @@ export default function AdminDashboard() {
               key={status}
               onClick={() => setSelectedStatus(status)}
               style={{
-                background: '#fff',
-                color: '#333',
-                border: `2px solid ${selectedStatus === status ? '#ffd700' : '#e0e6ed'}`,
-                borderRadius: '8px',
-                padding: '1rem 1.5rem',
+                background: selectedStatus === status ? getStatusColor(status) : '#fff',
+                color: selectedStatus === status ? 'white' : '#333',
+                border: `2px solid ${selectedStatus === status ? getStatusColor(status) : '#e0e6ed'}`,
+                borderRadius: '12px',
+                padding: '1.5rem 2rem',
                 textAlign: 'center',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                width: '160px',
-                height: '80px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center'
+                boxShadow: selectedStatus === status ? '0 4px 12px rgba(0,0,0,0.15)' : '0 2px 8px rgba(0,0,0,0.08)',
+                minWidth: '160px',
+                transform: selectedStatus === status ? 'translateY(-2px)' : 'translateY(0)'
               }}
             >
-              <div style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>
+              <div style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
                 {statusCounts[status]}
               </div>
-              <div style={{ fontSize: '0.75rem', fontWeight: '600', letterSpacing: '0.5px', lineHeight: '1.2' }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: '600', letterSpacing: '0.5px' }}>
                 {getStatusLabel(status).toUpperCase()}
               </div>
             </div>
