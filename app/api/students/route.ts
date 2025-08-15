@@ -4,33 +4,23 @@ import { prisma } from '@/lib/prisma';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
     const {
-      teacherEmail,
       firstName,
       lastName,
       grade,
       interests,
-      otherInterests,
-      parentName,
+      parentFirstName,
+      parentLastName,
       parentEmail,
-      parentConsent
+      parentPhone,
+      parentConsent,
+      teacherEmail
     } = body;
 
     // Validate required fields
-    if (!teacherEmail || !firstName || !lastName || !grade || 
-        !parentName || !parentEmail || !parentConsent) {
+    if (!firstName || !lastName || !grade || !parentFirstName || !parentLastName || !parentEmail || !teacherEmail) {
       return NextResponse.json(
         { error: 'Missing required fields' },
-        { status: 400 }
-      );
-    }
-
-    // Validate email formats
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(teacherEmail) || !emailRegex.test(parentEmail)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
         { status: 400 }
       );
     }
@@ -42,28 +32,13 @@ export async function POST(request: NextRequest) {
 
     if (!school) {
       return NextResponse.json(
-        { error: 'School not found. Please check the teacher email address.' },
+        { error: 'School not found for this teacher email' },
         { status: 404 }
       );
     }
 
-    // Check if student with same name already exists in this school
-    const existingStudent = await prisma.student.findFirst({
-      where: {
-        AND: [
-          { schoolId: school.id },
-          { firstName },
-          { lastName }
-        ]
-      }
-    });
-
-    if (existingStudent) {
-      return NextResponse.json(
-        { error: 'A student with this name is already registered in this school' },
-        { status: 409 }
-      );
-    }
+    // Check if student interests are completed (has at least one interest)
+    const profileCompleted = interests && interests.length > 0;
 
     // Create the student
     const student = await prisma.student.create({
@@ -72,74 +47,33 @@ export async function POST(request: NextRequest) {
         lastName,
         grade,
         interests: interests || [],
-        otherInterests: otherInterests || null,
-        parentName,
+        parentFirstName,
+        parentLastName,
         parentEmail,
-        parentConsent,
+        parentPhone,
+        parentConsent: parentConsent || false,
+        isActive: true,
+        profileCompleted,
         schoolId: school.id
       }
     });
 
     return NextResponse.json({
-      success: true,
+      message: 'Student registered successfully',
       student: {
         id: student.id,
         firstName: student.firstName,
         lastName: student.lastName,
-        schoolName: school.schoolName
+        grade: student.grade,
+        interests: student.interests,
+        profileCompleted: student.profileCompleted
       }
-    }, { status: 201 });
+    });
 
   } catch (error) {
     console.error('Student registration error:', error);
     return NextResponse.json(
-      { error: 'Failed to register student. Please try again.' },
-      { status: 500 }
-    );
-  }
-}
-
-export async function PUT(request: NextRequest) {
-  try {
-    const body = await request.json();
-    
-    const {
-      studentId,
-      interests,
-      otherInterests
-    } = body;
-
-    if (!studentId) {
-      return NextResponse.json(
-        { error: 'Student ID is required' },
-        { status: 400 }
-      );
-    }
-
-    // Update student interests
-    const student = await prisma.student.update({
-      where: { id: studentId },
-      data: {
-        interests: interests || [],
-        otherInterests: otherInterests || null
-      }
-    });
-
-    return NextResponse.json({
-      success: true,
-      student: {
-        id: student.id,
-        firstName: student.firstName,
-        lastName: student.lastName,
-        interests: student.interests,
-        otherInterests: student.otherInterests
-      }
-    });
-
-  } catch (error) {
-    console.error('Update student error:', error);
-    return NextResponse.json(
-      { error: 'Failed to update student information' },
+      { error: 'Failed to register student' },
       { status: 500 }
     );
   }
@@ -157,33 +91,34 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Find school and its students
+    // Find the school by teacher email
     const school = await prisma.school.findUnique({
       where: { teacherEmail },
       include: {
         students: {
-          orderBy: {
-            createdAt: 'desc'
-          }
+          where: { isActive: true },
+          orderBy: { createdAt: 'asc' }
         }
       }
     });
 
     if (!school) {
       return NextResponse.json(
-        { error: 'School not found' },
+        { error: 'School not found for this teacher email' },
         { status: 404 }
       );
     }
 
+    // Calculate student statistics
+    const totalStudents = school.students.length;
+    const studentsWithInterests = school.students.filter(s => s.profileCompleted).length;
+
     return NextResponse.json({
-      success: true,
       students: school.students,
-      school: {
-        id: school.id,
-        schoolName: school.schoolName,
-        teacherFirstName: school.teacherFirstName,
-        teacherLastName: school.teacherLastName
+      statistics: {
+        total: totalStudents,
+        withInterests: studentsWithInterests,
+        expected: school.expectedClassSize
       }
     });
 
@@ -191,6 +126,49 @@ export async function GET(request: NextRequest) {
     console.error('Get students error:', error);
     return NextResponse.json(
       { error: 'Failed to retrieve students' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { studentId, interests } = body;
+
+    if (!studentId) {
+      return NextResponse.json(
+        { error: 'Student ID is required' },
+        { status: 400 }
+      );
+    }
+
+    // Check if interests are being updated and mark profile as completed
+    const profileCompleted = interests && interests.length > 0;
+
+    const updatedStudent = await prisma.student.update({
+      where: { id: studentId },
+      data: {
+        interests: interests || [],
+        profileCompleted
+      }
+    });
+
+    return NextResponse.json({
+      message: 'Student updated successfully',
+      student: {
+        id: updatedStudent.id,
+        firstName: updatedStudent.firstName,
+        lastName: updatedStudent.lastName,
+        interests: updatedStudent.interests,
+        profileCompleted: updatedStudent.profileCompleted
+      }
+    });
+
+  } catch (error) {
+    console.error('Update student error:', error);
+    return NextResponse.json(
+      { error: 'Failed to update student' },
       { status: 500 }
     );
   }
