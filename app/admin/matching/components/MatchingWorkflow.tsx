@@ -184,7 +184,7 @@ const MatchingWorkflow = ({ schools, selectedStatus, onRefresh }: MatchingWorkfl
                     Unpin
                   </button>
                 </div>
-                <SchoolCard school={pinnedSchool} mode="pinned" />
+                <SchoolCard school={pinnedSchool} isPinned={true} onPin={handleUnpin} />
               </div>
             )}
 
@@ -204,7 +204,7 @@ const MatchingWorkflow = ({ schools, selectedStatus, onRefresh }: MatchingWorkfl
                       <SchoolCard
                         key={school.id}
                         school={school}
-                        mode="selectable"
+                        showMatchIcon={true}
                         onMatch={() => handleMatch(school)}
                       />
                     ))
@@ -224,7 +224,6 @@ const MatchingWorkflow = ({ schools, selectedStatus, onRefresh }: MatchingWorkfl
                       <SchoolCard
                         key={school.id}
                         school={school}
-                        mode="pinnable"
                         onPin={() => handlePin(school)}
                       />
                     ))
@@ -263,15 +262,11 @@ const MatchingWorkflow = ({ schools, selectedStatus, onRefresh }: MatchingWorkfl
                       <div className="flex-1">
                         <SchoolCard 
                           school={school1} 
-                          mode="matched"
-                          partner={school2}
                         />
                       </div>
                       <div className="flex-1">
                         <SchoolCard 
                           school={school2} 
-                          mode="matched"
-                          partner={school1}
                         />
                       </div>
                     </div>
@@ -317,8 +312,6 @@ const MatchingWorkflow = ({ schools, selectedStatus, onRefresh }: MatchingWorkfl
                   <SchoolCard
                     key={school.id}
                     school={school}
-                    mode="corresponding"
-                    partner={schools.find(s => s.id === school.matchedWithSchoolId)}
                   />
                 ))}
               </div>
