@@ -78,92 +78,94 @@ export default function FilterBar({ filters, onFiltersChange, onApplyFilters }: 
     filterKey: keyof typeof dropdownStates,
     options: string[], 
     selectedValues: string[]
-  ) => (
-    <div style={{ position: 'relative', minWidth: '140px' }}>
-      <label style={{ 
-        display: 'block', 
-        fontSize: '0.8rem', 
-        fontWeight: '600', 
-        marginBottom: '4px', 
-        color: '#4a5568' 
-      }}>
-        {label}
-      </label>
-      <button
-        onClick={() => toggleDropdown(filterKey)}
-        style={{
-          width: '100%',
-          height: '36px',
-          padding: '6px 10px',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          backgroundColor: 'white',
-          cursor: 'pointer',
-          fontSize: '0.85rem',
-          textAlign: 'left',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}
-      >
-        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          {selectedValues.length === 0 
-            ? `All ${label}` 
-            : selectedValues.length === 1 
-              ? selectedValues[0]
-              : `${selectedValues.length} selected`
-          }
-        </span>
-        <span style={{ 
-          transform: dropdownStates[filterKey] ? 'rotate(180deg)' : 'rotate(0deg)', 
-          transition: 'transform 0.2s' 
+  ) => {
+    return (
+      <div style={{ position: 'relative', minWidth: '140px' }}>
+        <label style={{ 
+          display: 'block', 
+          fontSize: '0.8rem', 
+          fontWeight: '600', 
+          marginBottom: '4px', 
+          color: '#4a5568' 
         }}>
-          ▼
-        </span>
-      </button>
-      
-      {dropdownStates[filterKey] && (
-        <div style={{
-          position: 'absolute',
-          top: '100%',
-          left: 0,
-          right: 0,
-          backgroundColor: 'white',
-          border: '1px solid #ccc',
-          borderTop: 'none',
-          borderRadius: '0 0 4px 4px',
-          maxHeight: '200px',
-          overflowY: 'auto',
-          zIndex: 1000,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-        }}>
-          {options.map(option => (
-            <label
-              key={option}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                padding: '8px 12px',
-                cursor: 'pointer',
-                fontSize: '0.85rem',
-                backgroundColor: selectedValues.includes(option) ? '#f0f8ff' : 'transparent',
-                borderBottom: '1px solid #f0f0f0'
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <input
-                type="checkbox"
-                checked={selectedValues.includes(option)}
-                onChange={() => handleFilterChange(filterKey, option)}
-                style={{ marginRight: '8px' }}
-              />
-              {option}
-            </label>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+          {label}
+        </label>
+        <button
+          onClick={() => toggleDropdown(filterKey)}
+          style={{
+            width: '100%',
+            height: '36px',
+            padding: '6px 10px',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            backgroundColor: 'white',
+            cursor: 'pointer',
+            fontSize: '0.85rem',
+            textAlign: 'left',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}
+        >
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {selectedValues.length === 0 
+              ? `All ${label}` 
+              : selectedValues.length === 1 
+                ? selectedValues[0]
+                : `${selectedValues.length} selected`
+            }
+          </span>
+          <span style={{ 
+            transform: dropdownStates[filterKey] ? 'rotate(180deg)' : 'rotate(0deg)', 
+            transition: 'transform 0.2s' 
+          }}>
+            ▼
+          </span>
+        </button>
+        
+        {dropdownStates[filterKey] && (
+          <div style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            right: 0,
+            backgroundColor: 'white',
+            border: '1px solid #ccc',
+            borderTop: 'none',
+            borderRadius: '0 0 4px 4px',
+            maxHeight: '200px',
+            overflowY: 'auto',
+            zIndex: 1000,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+          }}>
+            {options.map(option => (
+              <label
+                key={option}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '8px 12px',
+                  cursor: 'pointer',
+                  fontSize: '0.85rem',
+                  backgroundColor: selectedValues.includes(option) ? '#f0f8ff' : 'transparent',
+                  borderBottom: '1px solid #f0f0f0'
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedValues.includes(option)}
+                  onChange={() => handleFilterChange(filterKey, option)}
+                  style={{ marginRight: '8px' }}
+                />
+                {option}
+              </label>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div 
