@@ -30,12 +30,13 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
   const [filteredSchools, setFilteredSchools] = useState<School[]>([]);
   const [filtersApplied, setFiltersApplied] = useState(false);
 
+  // FIXED: Non-overlapping class size buckets
   const classSizeBuckets = [
     { label: 'Under 10', min: 0, max: 9 },
     { label: '10-20', min: 10, max: 20 },
-    { label: '20-30', min: 20, max: 30 },
-    { label: '30-40', min: 30, max: 40 },
-    { label: '40-50', min: 40, max: 50 },
+    { label: '21-30', min: 21, max: 30 },
+    { label: '31-40', min: 31, max: 40 },
+    { label: '41-50', min: 41, max: 50 },
     { label: 'Over 50', min: 51, max: 999 }
   ];
 
@@ -51,14 +52,22 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
     return availableSchools;
   };
 
-  // Apply filters to the available schools
+  // FIXED: Apply filters to the available schools
   const applyFilters = () => {
     let filtered = getAvailableSchools();
 
+    // FIXED: Region filtering logic
     if (filters.regions.length > 0) {
-      filtered = filtered.filter(school => filters.regions.includes(school.region));
+      filtered = filtered.filter(school => {
+        // Ensure both values are strings and compare directly
+        const schoolRegion = String(school.region).toUpperCase();
+        return filters.regions.some(filterRegion => 
+          String(filterRegion).toUpperCase() === schoolRegion
+        );
+      });
     }
 
+    // Class size filtering
     if (filters.classSizes.length > 0) {
       filtered = filtered.filter(school => {
         const studentCount = school.studentCounts.ready;
@@ -69,10 +78,12 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
       });
     }
 
+    // Start month filtering
     if (filters.startDate) {
       filtered = filtered.filter(school => school.startMonth === filters.startDate);
     }
 
+    // Grade filtering
     if (filters.grades.length > 0) {
       filtered = filtered.filter(school => 
         filters.grades.some(grade => school.gradeLevel.includes(grade.replace('Grade ', '')))
@@ -89,6 +100,19 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
 
   const handleApplyFilters = () => {
     applyFilters();
+  };
+
+  // FIXED: Clear filters function
+  const handleClearFilters = () => {
+    const clearedFilters = {
+      regions: [],
+      classSizes: [],
+      startDate: '',
+      grades: []
+    };
+    setFilters(clearedFilters);
+    setFiltersApplied(false);
+    setFilteredSchools(getAvailableSchools());
   };
 
   const handlePinSchool = (school: School) => {
@@ -168,14 +192,7 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
   // Reset filters when no pinned school
   useEffect(() => {
     if (!pinnedSchool) {
-      setFilters({
-        regions: [],
-        classSizes: [],
-        startDate: '',
-        grades: []
-      });
-      setFiltersApplied(false);
-      setFilteredSchools(getAvailableSchools());
+      handleClearFilters();
     }
   }, [pinnedSchool]);
 
@@ -210,6 +227,7 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
           filters={filters}
           onFiltersChange={handleFiltersChange}
           onApplyFilters={handleApplyFilters}
+          onClearFilters={handleClearFilters}
           pinnedSchoolRegion={pinnedSchool.region}
         />
       )}
