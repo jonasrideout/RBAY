@@ -104,7 +104,7 @@ export default function SchoolCard({
               }}
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                              title="Link with pinned school"
+              title="Link with pinned school"
             >
               {renderOutlineIcon('lock', 18)}
             </button>
@@ -180,24 +180,48 @@ export default function SchoolCard({
         </div>
       </div>
 
-      {/* Class Information (25%) */}
+      {/* Class Information (25%) - RIGHT ALIGNED VALUES */}
       <div style={{ 
         display: 'flex', 
         flexDirection: 'column', 
         justifyContent: 'space-evenly',
         fontSize: '0.95rem'
       }}>
-        <div style={{ color: '#4a5568' }}>
-          <strong>Start:</strong> {school.startMonth}
+        <div style={{ 
+          color: '#4a5568',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <strong>Start:</strong> 
+          <span>{school.startMonth}</span>
         </div>
-        <div style={{ color: '#4a5568' }}>
-          <strong>Expected:</strong> {school.studentCounts.expected}
+        <div style={{ 
+          color: '#4a5568',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <strong>Expected:</strong> 
+          <span>{school.studentCounts.expected}</span>
         </div>
-        <div style={{ color: '#4a5568' }}>
-          <strong>Registered:</strong> {school.studentCounts.registered}
+        <div style={{ 
+          color: '#4a5568',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <strong>Registered:</strong> 
+          <span>{school.studentCounts.registered}</span>
         </div>
-        <div style={{ color: '#4a5568' }}>
-          <strong>Ready:</strong> {school.studentCounts.ready}
+        <div style={{ 
+          color: '#4a5568',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <strong>Ready:</strong> 
+          <span>{school.studentCounts.ready}</span>
         </div>
       </div>
 
