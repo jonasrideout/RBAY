@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { School } from '../types';
+import { School, Filters } from '../types';
 import SchoolCard from './SchoolCard';
 import FilterBar from './FilterBar';
 
@@ -11,24 +11,15 @@ interface MatchingWorkflowProps {
   onRefresh: () => void;
 }
 
-interface FilterState {
-  regions: string[];
-  classSizes: string[];
-  grades: string[];
-  startMonths: string[];
-  schoolName: string;
-  teacherSearch: string;
-}
-
 const MatchingWorkflow = ({ schools, selectedStatus, onRefresh }: MatchingWorkflowProps) => {
   const [pinnedSchool, setPinnedSchool] = useState<School | null>(null);
-  const [filters, setFilters] = useState<FilterState>({
+  const [filters, setFilters] = useState<Filters>({
+    schoolSearch: '',
+    teacherSearch: '',
     regions: [],
     classSizes: [],
-    grades: [],
-    startMonths: [],
-    schoolName: '',
-    teacherSearch: ''
+    startDate: '',
+    grades: []
   });
   const [filteredSchools, setFilteredSchools] = useState<School[]>(schools);
 
@@ -94,9 +85,9 @@ const MatchingWorkflow = ({ schools, selectedStatus, onRefresh }: MatchingWorkfl
     let filtered = schools;
 
     // Apply search filters
-    if (filters.schoolName.trim()) {
+    if (filters.schoolSearch.trim()) {
       filtered = filtered.filter(school =>
-        school.schoolName.toLowerCase().includes(filters.schoolName.toLowerCase())
+        school.schoolName.toLowerCase().includes(filters.schoolSearch.toLowerCase())
       );
     }
 
@@ -136,8 +127,8 @@ const MatchingWorkflow = ({ schools, selectedStatus, onRefresh }: MatchingWorkfl
       );
     }
 
-    if (filters.startMonths.length > 0) {
-      filtered = filtered.filter(school => filters.startMonths.includes(school.startMonth));
+    if (filters.startDate) {
+      filtered = filtered.filter(school => school.startMonth === filters.startDate);
     }
 
     setFilteredSchools(filtered);
@@ -145,12 +136,12 @@ const MatchingWorkflow = ({ schools, selectedStatus, onRefresh }: MatchingWorkfl
 
   const clearFilters = () => {
     setFilters({
+      schoolSearch: '',
+      teacherSearch: '',
       regions: [],
       classSizes: [],
-      grades: [],
-      startMonths: [],
-      schoolName: '',
-      teacherSearch: ''
+      startDate: '',
+      grades: []
     });
     setFilteredSchools(schools);
   };
