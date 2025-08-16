@@ -19,8 +19,10 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
   const [selectedMatch, setSelectedMatch] = useState<School | null>(null);
   const [showWarning, setShowWarning] = useState(false);
 
-  // Filter state
+  // Filter state - ENHANCED with search fields
   const [filters, setFilters] = useState<Filters>({
+    schoolSearch: '',
+    teacherSearch: '',
     regions: [],
     classSizes: [],
     startDate: '',
@@ -30,7 +32,6 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
   const [filteredSchools, setFilteredSchools] = useState<School[]>([]);
   const [filtersApplied, setFiltersApplied] = useState(false);
 
-  // FIXED: Non-overlapping class size buckets
   const classSizeBuckets = [
     { label: 'Under 10', min: 0, max: 9 },
     { label: '10-20', min: 10, max: 20 },
@@ -52,14 +53,31 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
     return availableSchools;
   };
 
-  // FIXED: Apply filters to the available schools
+  // ENHANCED: Apply filters including search functionality
   const applyFilters = () => {
     let filtered = getAvailableSchools();
 
-    // FIXED: Region filtering logic
+    // ADDED: School name search (case-insensitive, partial match)
+    if (filters.schoolSearch && filters.schoolSearch.trim()) {
+      const searchTerm = filters.schoolSearch.toLowerCase().trim();
+      filtered = filtered.filter(school => 
+        school.schoolName.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // ADDED: Teacher search (name OR email, case-insensitive, partial match)
+    if (filters.teacherSearch && filters.teacherSearch.trim()) {
+      const searchTerm = filters.teacherSearch.toLowerCase().trim();
+      filtered = filtered.filter(school => {
+        const teacherFullName = `${school.teacherFirstName} ${school.teacherLastName}`.toLowerCase();
+        const teacherEmail = school.teacherEmail.toLowerCase();
+        return teacherFullName.includes(searchTerm) || teacherEmail.includes(searchTerm);
+      });
+    }
+
+    // Region filtering
     if (filters.regions.length > 0) {
       filtered = filtered.filter(school => {
-        // Ensure both values are strings and compare directly
         const schoolRegion = String(school.region).toUpperCase();
         return filters.regions.some(filterRegion => 
           String(filterRegion).toUpperCase() === schoolRegion
@@ -102,9 +120,11 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
     applyFilters();
   };
 
-  // FIXED: Clear filters function
+  // ENHANCED: Clear filters function includes search fields
   const handleClearFilters = () => {
     const clearedFilters = {
+      schoolSearch: '',
+      teacherSearch: '',
       regions: [],
       classSizes: [],
       startDate: '',
@@ -189,14 +209,22 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
     }
   }, [schools, pinnedSchool]);
 
-  // Reset filters when no pinned school
+  // CHANGED: Don't reset filters when no pinned school (requirement #1)
   useEffect(() => {
-    if (!pinnedSchool) {
-      handleClearFilters();
+    // Only reset the region-specific logic, but keep other filters
+    if (!pinnedSchool && filters.regions.some(r => r.startsWith('All except'))) {
+      // Remove "All except" selections when unpinning
+      const cleanedRegions = filters.regions.filter(r => !r.startsWith('All except'));
+      setFilters(prev => ({ ...prev, regions: cleanedRegions }));
     }
   }, [pinnedSchool]);
 
   const displaySchools = filtersApplied ? filteredSchools : getAvailableSchools();
+
+  // ADDED: Check if any filters are active
+  const hasActiveFilters = filters.schoolSearch || filters.teacherSearch || 
+    filters.regions.length > 0 || filters.classSizes.length > 0 || 
+    filters.startDate || filters.grades.length > 0;
 
   return (
     <div>
@@ -221,20 +249,23 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
         </div>
       )}
 
-      {/* Filters - Only show when a school is pinned */}
-      {pinnedSchool && (
-        <FilterBar 
-          filters={filters}
-          onFiltersChange={handleFiltersChange}
-          onApplyFilters={handleApplyFilters}
-          onClearFilters={handleClearFilters}
-          pinnedSchoolRegion={pinnedSchool.region}
-        />
-      )}
+      {/* CHANGED: Filters - Always show (requirement #1) */}
+      <FilterBar 
+        filters={filters}
+        onFiltersChange={handleFiltersChange}
+        onApplyFilters={handleApplyFilters}
+        onClearFilters={handleClearFilters}
+        pinnedSchoolRegion={pinnedSchool?.region}
+      />
 
       {/* School Cards */}
       <h3 style={{ marginBottom: '1.5rem' }}>
         {pinnedSchool ? 'Select a School to Match' : 'Ready for Matching'} ({displaySchools.length})
+        {hasActiveFilters && !pinnedSchool && (
+          <span style={{ fontSize: '0.9rem', color: '#666', fontWeight: 'normal' }}>
+            {' '}- filtered results
+          </span>
+        )}
       </h3>
       
       {displaySchools.length === 0 ? (
@@ -246,13 +277,13 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
           padding: '3rem' 
         }}>
           <h4>
-            {pinnedSchool 
+            {hasActiveFilters || pinnedSchool
               ? 'No schools match the current filters' 
               : 'No schools ready for matching'
             }
           </h4>
           <p style={{ color: '#6c757d' }}>
-            {pinnedSchool 
+            {hasActiveFilters || pinnedSchool
               ? 'Try adjusting your filters or clear them to see all available schools.'
               : 'Schools will appear here when they\'re ready to be matched.'
             }
