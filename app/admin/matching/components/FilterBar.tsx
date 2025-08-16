@@ -8,18 +8,40 @@ interface FilterBarProps {
   filters: Filters;
   onFiltersChange: (filters: Filters) => void;
   onApplyFilters: () => void;
+  pinnedSchoolRegion?: string; // Add this prop to know the pinned school's region
 }
 
-export default function FilterBar({ filters, onFiltersChange, onApplyFilters }: FilterBarProps) {
+export default function FilterBar({ 
+  filters, 
+  onFiltersChange, 
+  onApplyFilters, 
+  pinnedSchoolRegion 
+}: FilterBarProps) {
   const [dropdownStates, setDropdownStates] = useState({
     regions: false,
     classSizes: false,
     grades: false
   });
 
-  const regions = [
+  const allRegions = [
     'NORTHEAST', 'SOUTHEAST', 'MIDWEST', 'SOUTHWEST', 'MOUNTAIN WEST', 'PACIFIC'
   ];
+
+  // Create regions list based on pinned school
+  const getRegionsOptions = () => {
+    if (!pinnedSchoolRegion) {
+      return allRegions;
+    }
+
+    // Filter out the pinned school's region and add "All except X" option
+    const otherRegions = allRegions.filter(region => 
+      region.toUpperCase() !== pinnedSchoolRegion.toUpperCase()
+    );
+    
+    return [`All except ${pinnedSchoolRegion.toUpperCase()}`, ...otherRegions];
+  };
+
+  const regions = getRegionsOptions();
 
   const classSizeBuckets = [
     { label: 'Under 10', min: 0, max: 9 },
@@ -49,7 +71,25 @@ export default function FilterBar({ filters, onFiltersChange, onApplyFilters }: 
   };
 
   const handleFilterChange = (filterType: string, value: string) => {
-    if (filterType === 'regions' || filterType === 'classSizes' || filterType === 'grades') {
+    if (filterType === 'regions') {
+      // Handle special "All except X" option
+      if (value.startsWith('All except') && pinnedSchoolRegion) {
+        // Select all regions except the pinned one
+        const otherRegions = allRegions.filter(region => 
+          region.toUpperCase() !== pinnedSchoolRegion.toUpperCase()
+        );
+        onFiltersChange({ ...filters, regions: otherRegions });
+        return;
+      }
+      
+      // Handle normal region selection
+      const currentValues = filters.regions;
+      const newValues = currentValues.includes(value)
+        ? currentValues.filter(v => v !== value)
+        : [...currentValues, value];
+      
+      onFiltersChange({ ...filters, regions: newValues });
+    } else if (filterType === 'classSizes' || filterType === 'grades') {
       const currentValues = filters[filterType];
       const newValues = currentValues.includes(value)
         ? currentValues.filter(v => v !== value)
@@ -78,6 +118,12 @@ export default function FilterBar({ filters, onFiltersChange, onApplyFilters }: 
     options: string[], 
     selectedValues: string[]
   ) => {
+    // For regions, check if "All except X" is effectively selected
+    const isAllExceptSelected = filterKey === 'regions' && 
+      pinnedSchoolRegion && 
+      selectedValues.length === allRegions.length - 1 &&
+      !selectedValues.includes(pinnedSchoolRegion.toUpperCase());
+
     return (
       <div style={{ position: 'relative', minWidth: '140px' }}>
         <label style={{ 
@@ -109,9 +155,11 @@ export default function FilterBar({ filters, onFiltersChange, onApplyFilters }: 
           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {selectedValues.length === 0 
               ? `All ${label}` 
-              : selectedValues.length === 1 
-                ? selectedValues[0]
-                : `${selectedValues.length} selected`
+              : isAllExceptSelected
+                ? `All except ${pinnedSchoolRegion?.toUpperCase()}`
+                : selectedValues.length === 1 
+                  ? selectedValues[0]
+                  : `${selectedValues.length} selected`
             }
           </span>
           <span style={{ 
@@ -137,29 +185,35 @@ export default function FilterBar({ filters, onFiltersChange, onApplyFilters }: 
             zIndex: 1000,
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
           }}>
-            {options.map(option => (
-              <label
-                key={option}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: '8px 12px',
-                  cursor: 'pointer',
-                  fontSize: '0.85rem',
-                  backgroundColor: selectedValues.includes(option) ? '#f0f8ff' : 'transparent',
-                  borderBottom: '1px solid #f0f0f0'
-                }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedValues.includes(option)}
-                  onChange={() => handleFilterChange(filterKey, option)}
-                  style={{ marginRight: '8px' }}
-                />
-                {option}
-              </label>
-            ))}
+            {options.map(option => {
+              const isSelected = option.startsWith('All except') 
+                ? isAllExceptSelected
+                : selectedValues.includes(option);
+                
+              return (
+                <label
+                  key={option}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '8px 12px',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    backgroundColor: isSelected ? '#f0f8ff' : 'transparent',
+                    borderBottom: '1px solid #f0f0f0'
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    onChange={() => handleFilterChange(filterKey, option)}
+                    style={{ marginRight: '8px' }}
+                  />
+                  {option}
+                </label>
+              );
+            })}
           </div>
         )}
       </div>
