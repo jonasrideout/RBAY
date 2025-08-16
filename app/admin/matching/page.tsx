@@ -204,7 +204,8 @@ export default function AdminDashboard() {
       return (
         <MatchingWorkflow 
           schools={schools} 
-          onSchoolsUpdate={handleSchoolsUpdate}
+          selectedStatus={selectedStatus}
+          onRefresh={fetchAllSchools}
         />
       );
     }
