@@ -1,5 +1,4 @@
 // app/admin/matching/types.ts
-
 export interface School {
   id: string;
   schoolName: string;
@@ -33,7 +32,10 @@ export interface StatusCounts {
 
 export type SelectedStatus = keyof StatusCounts;
 
+// ENHANCED: Added search fields
 export interface Filters {
+  schoolSearch: string;
+  teacherSearch: string;
   regions: string[];
   classSizes: string[];
   startDate: string;
