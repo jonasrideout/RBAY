@@ -115,7 +115,7 @@ const MatchingWorkflow = ({ schools, selectedStatus, onRefresh }: MatchingWorkfl
 
     if (filters.classSizes.length > 0) {
       filtered = filtered.filter(school => {
-        const classSize = school.expectedStudents;
+        const classSize = school.expectedClassSize;
         return filters.classSizes.some(size => {
           switch (size) {
             case 'under-10': return classSize < 10;
@@ -132,7 +132,7 @@ const MatchingWorkflow = ({ schools, selectedStatus, onRefresh }: MatchingWorkfl
 
     if (filters.grades.length > 0) {
       filtered = filtered.filter(school =>
-        filters.grades.some(grade => school.gradeLevels.includes(grade))
+        filters.grades.some(grade => school.gradeLevel.includes(grade))
       );
     }
 
