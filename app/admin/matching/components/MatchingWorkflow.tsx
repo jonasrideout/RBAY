@@ -183,24 +183,24 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
 
   return (
     <div>
-      {/* Pinned School - Full Card Display */}
+      {/* Pinned School - Full Card Display - Sticky */}
       {pinnedSchool && (
-        <div style={{ marginBottom: '2rem' }}>
-          <h3 style={{ marginBottom: '1rem', color: '#1976d2' }}>
+        <div style={{ 
+          position: 'sticky',
+          top: 0,
+          zIndex: 100,
+          backgroundColor: 'white',
+          paddingBottom: '1rem',
+          marginBottom: '1rem'
+        }}>
+          <h3 style={{ marginBottom: '1rem', color: '#1976d2', marginTop: 0 }}>
             📌 Pinned School - Select a match below
           </h3>
-          <div style={{
-            padding: '1rem',
-            backgroundColor: '#e3f2fd',
-            borderRadius: '8px',
-            border: '2px solid #2196f3'
-          }}>
-            <SchoolCard
-              school={pinnedSchool}
-              isPinned={true}
-              onPin={() => handlePinSchool(pinnedSchool)}
-            />
-          </div>
+          <SchoolCard
+            school={pinnedSchool}
+            isPinned={false}
+            onPin={() => pinnedSchool && handlePinSchool(pinnedSchool)}
+          />
         </div>
       )}
 
