@@ -8,7 +8,7 @@ interface FilterBarProps {
   filters: Filters;
   onFiltersChange: (filters: Filters) => void;
   onApplyFilters: () => void;
-  onClearFilters: () => void; // ADDED: Direct clear function
+  onClearFilters: () => void;
   pinnedSchoolRegion?: string;
 }
 
@@ -16,7 +16,7 @@ export default function FilterBar({
   filters, 
   onFiltersChange, 
   onApplyFilters,
-  onClearFilters, // ADDED: Use this instead of internal logic
+  onClearFilters,
   pinnedSchoolRegion 
 }: FilterBarProps) {
   const [dropdownStates, setDropdownStates] = useState({
@@ -45,7 +45,6 @@ export default function FilterBar({
 
   const regions = getRegionsOptions();
 
-  // FIXED: Non-overlapping class size buckets
   const classSizeBuckets = [
     { label: 'Under 10', min: 0, max: 9 },
     { label: '10-20', min: 10, max: 20 },
@@ -100,6 +99,7 @@ export default function FilterBar({
       
       onFiltersChange({ ...filters, [filterType]: newValues });
     } else {
+      // Handle search and other single-value filters
       onFiltersChange({ ...filters, [filterType]: value });
     }
   };
@@ -229,6 +229,62 @@ export default function FilterBar({
       }}
       onClick={closeAllDropdowns}
     >
+      {/* Search School Name */}
+      <div style={{ minWidth: '160px' }}>
+        <label style={{ 
+          display: 'block', 
+          fontSize: '0.8rem', 
+          fontWeight: '600', 
+          marginBottom: '4px', 
+          color: '#4a5568' 
+        }}>
+          School Name
+        </label>
+        <input
+          type="text"
+          placeholder="Search schools..."
+          value={filters.schoolSearch || ''}
+          onChange={(e) => handleFilterChange('schoolSearch', e.target.value)}
+          style={{
+            width: '100%',
+            height: '36px',
+            padding: '6px 10px',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            fontSize: '0.85rem',
+            backgroundColor: 'white'
+          }}
+        />
+      </div>
+
+      {/* Search Teacher */}
+      <div style={{ minWidth: '160px' }}>
+        <label style={{ 
+          display: 'block', 
+          fontSize: '0.8rem', 
+          fontWeight: '600', 
+          marginBottom: '4px', 
+          color: '#4a5568' 
+        }}>
+          Teacher
+        </label>
+        <input
+          type="text"
+          placeholder="Name or email..."
+          value={filters.teacherSearch || ''}
+          onChange={(e) => handleFilterChange('teacherSearch', e.target.value)}
+          style={{
+            width: '100%',
+            height: '36px',
+            padding: '6px 10px',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            fontSize: '0.85rem',
+            backgroundColor: 'white'
+          }}
+        />
+      </div>
+
       {/* Regions Filter */}
       <div onClick={(e) => e.stopPropagation()}>
         {renderMultiSelectDropdown('Regions', 'regions', regions, filters.regions)}
@@ -256,7 +312,7 @@ export default function FilterBar({
           Start Month
         </label>
         <select
-          value={filters.startDate}
+          value={filters.startDate || ''}
           onChange={(e) => handleFilterChange('startDate', e.target.value)}
           style={{
             width: '100%',
@@ -302,12 +358,12 @@ export default function FilterBar({
         Go
       </button>
 
-      {/* FIXED: Clear All Button */}
+      {/* Clear All Button */}
       <button
         onClick={(e) => {
           e.stopPropagation();
           closeAllDropdowns();
-          onClearFilters(); // Use the passed function instead of internal logic
+          onClearFilters();
         }}
         style={{
           height: '36px',
