@@ -119,10 +119,12 @@ export default function FilterBar({
     selectedValues: string[]
   ) => {
     // For regions, check if "All except X" is effectively selected
-    const isAllExceptSelected = filterKey === 'regions' && 
+    const isAllExceptSelected = Boolean(
+      filterKey === 'regions' && 
       pinnedSchoolRegion && 
       selectedValues.length === allRegions.length - 1 &&
-      !selectedValues.includes(pinnedSchoolRegion.toUpperCase());
+      !selectedValues.includes(pinnedSchoolRegion.toUpperCase())
+    );
 
     return (
       <div style={{ position: 'relative', minWidth: '140px' }}>
@@ -206,7 +208,7 @@ export default function FilterBar({
                 >
                   <input
                     type="checkbox"
-                    checked={isSelected}
+                    checked={Boolean(isSelected)}
                     onChange={() => handleFilterChange(filterKey, option)}
                     style={{ marginRight: '8px' }}
                   />
