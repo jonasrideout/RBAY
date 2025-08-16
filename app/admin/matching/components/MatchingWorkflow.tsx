@@ -207,7 +207,7 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
               key={school.id}
               school={school}
               isPinned={pinnedSchool?.id === school.id}
-              showMatchIcon={pinnedSchool && pinnedSchool.id !== school.id}
+              showMatchIcon={!!(pinnedSchool && pinnedSchool.id !== school.id)}
               onPin={() => handlePinSchool(school)}
               onMatch={() => handleMatchRequest(school)}
             />
