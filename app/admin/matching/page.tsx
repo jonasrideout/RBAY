@@ -50,7 +50,180 @@ export default function AdminDashboard() {
     } finally {
       setIsLoading(false);
     }
+  const renderStatusContent = () => {
+    if (selectedStatus === 'READY') {
+      return (
+        <MatchingWorkflow 
+          schools={schools} 
+          onSchoolsUpdate={handleSchoolsUpdate}
+        />
+      );
+    }
+
+    if (selectedStatus === 'MATCHED') {
+      return renderMatchedPairs();
+    }
+
+    if (selectedStatus === 'CORRESPONDING') {
+      return renderCorrespondingPairs();
+    }
+
+    // COLLECTING and DONE statuses
+    const statusSchools = getSchoolsByStatus(selectedStatus);
+
+    return (
+      <div>
+        <h3 style={{ marginBottom: '1.5rem' }}>
+          {getStatusLabel(selectedStatus)} ({statusSchools.length})
+        </h3>
+        {statusSchools.length === 0 ? (
+          <div style={{ 
+            background: '#fff',
+            border: '1px solid #e0e6ed',
+            borderRadius: '12px',
+            textAlign: 'center', 
+            padding: '3rem' 
+          }}>
+            <h4>No schools in {getStatusLabel(selectedStatus).toLowerCase()} status</h4>
+            <p style={{ color: '#6c757d' }}>
+              Schools will appear here as they progress through the program.
+            </p>
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(500px, 1fr))', gap: '1rem' }}>
+            {statusSchools.map(school => (
+              <SchoolCard key={school.id} school={school} />
+            ))}
+          </div>
+        )}
+      </div>
+    );
   };
+
+  if (isLoading) {
+    return (
+      <div className="page">
+        <div className="container" style={{ textAlign: 'center', padding: '3rem' }}>
+          <h2>Loading Dashboard...</h2>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="page">
+      <header className="header">
+        <div className="container">
+          <div className="header-content">
+            <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
+              The Right Back at You Project
+            </Link>
+            <nav className="nav">
+              <Link href="/" className="nav-link">Home</Link>
+              <Link href="/admin/matching" className="nav-link">Admin</Link>
+            </nav>
+          </div>
+        </div>
+      </header>
+
+      <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
+        
+        <div style={{ marginBottom: '1.5rem' }}>
+          <h1 style={{ marginBottom: '0.5rem', fontSize: '1.8rem' }}>Administrator Dashboard</h1>
+          <p style={{ color: '#6c757d', fontSize: '1.1rem' }}>
+            Overview of all schools and their progress through the program.
+          </p>
+        </div>
+
+        {error && (
+          <div className="alert alert-error" style={{ marginBottom: '2rem' }}>
+            <strong>Error:</strong> {error}
+            <button 
+              onClick={fetchAllSchools}
+              style={{ marginLeft: '1rem', padding: '0.25rem 0.5rem' }}
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        <div style={{ 
+          display: 'flex', 
+          gap: '1rem', 
+          marginBottom: '3rem',
+          justifyContent: 'center',
+          flexWrap: 'wrap'
+        }}>
+          {(Object.keys(statusCounts) as SelectedStatus[]).map((status) => (
+            <div
+              key={status}
+              onClick={() => setSelectedStatus(status)}
+              style={{
+                background: '#fff',
+                color: '#333',
+                border: `2px solid ${selectedStatus === status ? '#ffd700' : '#e0e6ed'}`,
+                borderRadius: '8px',
+                padding: '1rem 1.5rem',
+                textAlign: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                width: '160px',
+                height: '80px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
+              <div style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>
+                {statusCounts[status]}
+              </div>
+              <div style={{ fontSize: '0.75rem', fontWeight: '600', letterSpacing: '0.5px', lineHeight: '1.2', paddingBottom: '0.5rem' }}>
+                {getStatusLabel(status).toUpperCase()}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
+          <button 
+            onClick={fetchAllSchools}
+            className="btn btn-secondary"
+            disabled={isLoading}
+          >
+            {isLoading ? '🔄 Loading...' : '🔄 Refresh Data'}
+          </button>
+          
+          <Link 
+            href="/api/admin/seed-data"
+            className="btn btn-primary"
+          >
+            🌱 Seed Test Data
+          </Link>
+
+          <Link 
+            href="/api/admin/clear-data"
+            className="btn"
+            style={{ backgroundColor: '#dc3545', color: 'white' }}
+          >
+            🗑️ Clear All Data
+          </Link>
+        </div>
+
+        {renderStatusContent()}
+
+      </main>
+
+      <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
+        <div className="container text-center">
+          <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
+        </div>
+      </footer>
+    </div>
+  );
+}
 
   const handleSchoolsUpdate = (updatedSchools: School[]) => {
     setSchools(updatedSchools);
