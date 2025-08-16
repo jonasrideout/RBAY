@@ -1,18 +1,25 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { School, Filters } from '../types';
+import React from 'react';
 import SchoolCard from './SchoolCard';
 import FilterBar from './FilterBar';
+import ConfirmationDialog from './ConfirmationDialog';
+import { School, Filters } from '../types';
 
 interface MatchingWorkflowProps {
   schools: School[];
-  selectedStatus: string;
-  onRefresh: () => void;
+  onSchoolsUpdate: (schools: School[]) => void;
 }
 
-const MatchingWorkflow = ({ schools, selectedStatus, onRefresh }: MatchingWorkflowProps) => {
+export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingWorkflowProps) {
+  // Matching state
   const [pinnedSchool, setPinnedSchool] = useState<School | null>(null);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [selectedMatch, setSelectedMatch] = useState<School | null>(null);
+  const [showWarning, setShowWarning] = useState(false);
+
+  // Filter state - ENHANCED with search fields
   const [filters, setFilters] = useState<Filters>({
     schoolSearch: '',
     teacherSearch: '',
@@ -21,347 +28,305 @@ const MatchingWorkflow = ({ schools, selectedStatus, onRefresh }: MatchingWorkfl
     startDate: '',
     grades: []
   });
-  const [filteredSchools, setFilteredSchools] = useState<School[]>(schools);
 
-  useEffect(() => {
-    setFilteredSchools(schools);
-  }, [schools]);
+  const [filteredSchools, setFilteredSchools] = useState<School[]>([]);
+  const [filtersApplied, setFiltersApplied] = useState(false);
 
-  const handlePin = (school: School) => {
-    setPinnedSchool(school);
-  };
+  const classSizeBuckets = [
+    { label: 'Under 10', min: 0, max: 9 },
+    { label: '10-20', min: 10, max: 20 },
+    { label: '21-30', min: 21, max: 30 },
+    { label: '31-40', min: 31, max: 40 },
+    { label: '41-50', min: 41, max: 50 },
+    { label: 'Over 50', min: 51, max: 999 }
+  ];
 
-  const handleUnpin = () => {
-    setPinnedSchool(null);
-  };
-
-  const handleMatch = async (targetSchool: School) => {
-    if (!pinnedSchool) return;
+  // Get all ready schools, excluding the pinned one
+  const getAvailableSchools = () => {
+    let availableSchools = schools.filter(school => school.status === 'READY');
     
-    // Check if same region
-    const sameRegion = pinnedSchool.region === targetSchool.region;
-    
-    if (sameRegion) {
-      const confirmed = window.confirm(
-        `Warning: Both schools are in the ${pinnedSchool.region} region. Cross-regional matching is preferred for the program goals. Do you want to proceed anyway?`
-      );
-      if (!confirmed) return;
+    // Remove pinned school from the list
+    if (pinnedSchool) {
+      availableSchools = availableSchools.filter(school => school.id !== pinnedSchool.id);
     }
-
-    // Show confirmation dialog
-    const matchConfirmed = window.confirm(
-      `Match ${pinnedSchool.schoolName} with ${targetSchool.schoolName}?`
-    );
     
-    if (matchConfirmed) {
-      try {
-        // TODO: Replace with actual API call
-        console.log('Matching schools:', pinnedSchool.id, targetSchool.id);
-        
-        // Ask about pen pal assignment
-        const assignPenPals = window.confirm(
-          'Schools matched successfully! Do you want to assign pen pals now?'
-        );
-        
-        if (assignPenPals) {
-          window.location.href = `/admin/matching/students?school1=${pinnedSchool.id}&school2=${targetSchool.id}`;
-        } else {
-          // Reset state and refresh
-          setPinnedSchool(null);
-          onRefresh();
-        }
-      } catch (error) {
-        console.error('Error matching schools:', error);
-        alert('Error matching schools. Please try again.');
-      }
-    }
+    return availableSchools;
   };
 
-  const handleAssignPenPals = (school1Id: string, school2Id: string) => {
-    window.location.href = `/admin/matching/students?school1=${school1Id}&school2=${school2Id}`;
-  };
-
+  // ENHANCED: Apply filters including search functionality
   const applyFilters = () => {
-    let filtered = schools;
+    let filtered = getAvailableSchools();
 
-    // Apply search filters
-    if (filters.schoolSearch.trim()) {
-      filtered = filtered.filter(school =>
-        school.schoolName.toLowerCase().includes(filters.schoolSearch.toLowerCase())
+    // ADDED: School name search (case-insensitive, partial match)
+    if (filters.schoolSearch && filters.schoolSearch.trim()) {
+      const searchTerm = filters.schoolSearch.toLowerCase().trim();
+      filtered = filtered.filter(school => 
+        school.schoolName.toLowerCase().includes(searchTerm)
       );
     }
 
-    if (filters.teacherSearch.trim()) {
-      filtered = filtered.filter(school =>
-        school.teacherFirstName.toLowerCase().includes(filters.teacherSearch.toLowerCase()) ||
-        school.teacherLastName.toLowerCase().includes(filters.teacherSearch.toLowerCase()) ||
-        school.teacherEmail.toLowerCase().includes(filters.teacherSearch.toLowerCase())
-      );
+    // ADDED: Teacher search (name OR email, case-insensitive, partial match)
+    if (filters.teacherSearch && filters.teacherSearch.trim()) {
+      const searchTerm = filters.teacherSearch.toLowerCase().trim();
+      filtered = filtered.filter(school => {
+        const teacherFullName = `${school.teacherFirstName} ${school.teacherLastName}`.toLowerCase();
+        const teacherEmail = school.teacherEmail.toLowerCase();
+        return teacherFullName.includes(searchTerm) || teacherEmail.includes(searchTerm);
+      });
     }
 
-    // Apply other filters
+    // Region filtering
     if (filters.regions.length > 0) {
-      filtered = filtered.filter(school => filters.regions.includes(school.region));
+      filtered = filtered.filter(school => {
+        const schoolRegion = String(school.region).toUpperCase();
+        return filters.regions.some(filterRegion => 
+          String(filterRegion).toUpperCase() === schoolRegion
+        );
+      });
     }
 
+    // Class size filtering
     if (filters.classSizes.length > 0) {
       filtered = filtered.filter(school => {
-        const classSize = school.expectedClassSize;
-        return filters.classSizes.some(size => {
-          switch (size) {
-            case 'under-10': return classSize < 10;
-            case '10-20': return classSize >= 10 && classSize <= 20;
-            case '20-30': return classSize >= 20 && classSize <= 30;
-            case '30-40': return classSize >= 30 && classSize <= 40;
-            case '40-50': return classSize >= 40 && classSize <= 50;
-            case 'over-50': return classSize > 50;
-            default: return false;
-          }
+        const studentCount = school.studentCounts.ready;
+        return filters.classSizes.some(bucket => {
+          const bucketData = classSizeBuckets.find(b => b.label === bucket);
+          return bucketData && studentCount >= bucketData.min && studentCount <= bucketData.max;
         });
       });
     }
 
-    if (filters.grades.length > 0) {
-      filtered = filtered.filter(school =>
-        filters.grades.some(grade => school.gradeLevel.includes(grade))
-      );
-    }
-
+    // Start month filtering
     if (filters.startDate) {
       filtered = filtered.filter(school => school.startMonth === filters.startDate);
     }
 
+    // Grade filtering
+    if (filters.grades.length > 0) {
+      filtered = filtered.filter(school => 
+        filters.grades.some(grade => school.gradeLevel.includes(grade.replace('Grade ', '')))
+      );
+    }
+
     setFilteredSchools(filtered);
+    setFiltersApplied(true);
   };
 
-  const clearFilters = () => {
-    setFilters({
+  const handleFiltersChange = (newFilters: Filters) => {
+    setFilters(newFilters);
+  };
+
+  const handleApplyFilters = () => {
+    applyFilters();
+  };
+
+  // ENHANCED: Clear filters function includes search fields
+  const handleClearFilters = () => {
+    const clearedFilters = {
       schoolSearch: '',
       teacherSearch: '',
       regions: [],
       classSizes: [],
       startDate: '',
       grades: []
-    });
-    setFilteredSchools(schools);
+    };
+    setFilters(clearedFilters);
+    setFiltersApplied(false);
+    setFilteredSchools(getAvailableSchools());
   };
 
-  const getAvailableSchools = () => {
-    if (!pinnedSchool) return filteredSchools;
+  const handlePinSchool = (school: School) => {
+    if (pinnedSchool && pinnedSchool.id === school.id) {
+      // Unpin if clicking the same school
+      setPinnedSchool(null);
+    } else {
+      setPinnedSchool(school);
+    }
     
-    return filteredSchools.filter(school => 
-      school.id !== pinnedSchool.id && 
-      school.region !== pinnedSchool.region
-    );
-  };
-
-  const renderContent = () => {
-    switch (selectedStatus) {
-      case 'COLLECTING':
-      case 'READY':
-        return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            {/* Filter Bar */}
-            <FilterBar
-              filters={filters}
-              onFiltersChange={setFilters}
-              onApplyFilters={applyFilters}
-              onClearFilters={clearFilters}
-              pinnedSchoolRegion={pinnedSchool?.region}
-            />
-
-            {/* Pinned School Display */}
-            {pinnedSchool && (
-              <div style={{ 
-                border: '2px solid #3b82f6', 
-                borderRadius: '8px', 
-                padding: '1rem', 
-                backgroundColor: '#eff6ff' 
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                  <h3 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#1e40af' }}>
-                    Pinned School (Select a partner from below)
-                  </h3>
-                  <button
-                    onClick={handleUnpin}
-                    style={{ color: '#2563eb', fontWeight: '500', background: 'none', border: 'none', cursor: 'pointer' }}
-                  >
-                    Unpin
-                  </button>
-                </div>
-                <SchoolCard school={pinnedSchool} isPinned={true} onPin={handleUnpin} />
-              </div>
-            )}
-
-            {/* Schools Grid */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {pinnedSchool ? (
-                <>
-                  <h3 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#374151' }}>
-                    Available Partner Schools ({getAvailableSchools().length})
-                  </h3>
-                  {getAvailableSchools().length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
-                      No schools available for matching with the current filters.
-                    </div>
-                  ) : (
-                    getAvailableSchools().map(school => (
-                      <SchoolCard
-                        key={school.id}
-                        school={school}
-                        showMatchIcon={true}
-                        onMatch={() => handleMatch(school)}
-                      />
-                    ))
-                  )}
-                </>
-              ) : (
-                <>
-                  <h3 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#374151' }}>
-                    Select a School to Pin ({filteredSchools.length} available)
-                  </h3>
-                  {filteredSchools.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
-                      No schools match the current filters.
-                    </div>
-                  ) : (
-                    filteredSchools.map(school => (
-                      <SchoolCard
-                        key={school.id}
-                        school={school}
-                        onPin={() => handlePin(school)}
-                      />
-                    ))
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-        );
-
-      case 'MATCHED':
-        const matchedPairs = schools.reduce((pairs: Array<[School, School]>, school) => {
-          if (school.matchedWithSchoolId && !pairs.some(pair => 
-            pair[0].id === school.matchedWithSchoolId || pair[1].id === school.matchedWithSchoolId
-          )) {
-            const partner = schools.find(s => s.id === school.matchedWithSchoolId);
-            if (partner) {
-              pairs.push([school, partner]);
-            }
-          }
-          return pairs;
-        }, []);
-
-        return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            {matchedPairs.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '3rem', color: '#6b7280' }}>
-                No matched school pairs found.
-              </div>
-            ) : (
-              matchedPairs.map(([school1, school2], index) => (
-                <div key={`${school1.id}-${school2.id}`} style={{ 
-                  border: '1px solid #e5e7eb', 
-                  borderRadius: '8px', 
-                  padding: '1.5rem', 
-                  backgroundColor: 'white' 
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    {/* Two school cards side by side */}
-                    <div style={{ display: 'flex', gap: '1.5rem', flex: 1 }}>
-                      <div style={{ flex: 1 }}>
-                        <SchoolCard 
-                          school={school1} 
-                        />
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <SchoolCard 
-                          school={school2} 
-                        />
-                      </div>
-                    </div>
-                    
-                    {/* Assign Pen Pals Button */}
-                    <div style={{ marginLeft: '1.5rem' }}>
-                      <button
-                        onClick={() => handleAssignPenPals(school1.id, school2.id)}
-                        style={{
-                          backgroundColor: '#2563eb',
-                          color: 'white',
-                          padding: '0.75rem 1.5rem',
-                          borderRadius: '8px',
-                          fontWeight: '500',
-                          transitionDuration: '200ms',
-                          whiteSpace: 'nowrap',
-                          border: 'none',
-                          cursor: 'pointer'
-                        }}
-                        onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#1d4ed8'}
-                        onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
-                      >
-                        Assign Pen Pals
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        );
-
-      case 'CORRESPONDING':
-        const correspondingPairs = schools.reduce((pairs: Array<[School, School]>, school) => {
-          if (school.matchedWithSchoolId && !pairs.some(pair => 
-            pair[0].id === school.matchedWithSchoolId || pair[1].id === school.matchedWithSchoolId
-          )) {
-            const partner = schools.find(s => s.id === school.matchedWithSchoolId);
-            if (partner) {
-              pairs.push([school, partner]);
-            }
-          }
-          return pairs;
-        }, []);
-
-        return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            {correspondingPairs.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '3rem', color: '#6b7280' }}>
-                No corresponding school pairs found.
-              </div>
-            ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.5rem' }}>
-                {correspondingPairs.map(([school1, school2]) => [school1, school2]).flat().map(school => (
-                  <SchoolCard
-                    key={school.id}
-                    school={school}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        );
-
-      case 'DONE':
-        return (
-          <div style={{ textAlign: 'center', padding: '3rem', color: '#6b7280' }}>
-            Program completed schools will be displayed here.
-          </div>
-        );
-
-      default:
-        return (
-          <div style={{ textAlign: 'center', padding: '3rem', color: '#6b7280' }}>
-            Select a status to view schools.
-          </div>
-        );
+    // Reapply filters after pinning/unpinning
+    if (filtersApplied) {
+      applyFilters();
     }
   };
 
+  const handleMatchRequest = (school: School) => {
+    if (!pinnedSchool) return;
+    
+    setSelectedMatch(school);
+    
+    // Check if same region for warning
+    if (pinnedSchool.region === school.region) {
+      setShowWarning(true);
+    } else {
+      setShowWarning(false);
+    }
+    
+    setShowConfirmDialog(true);
+  };
+
+  const confirmMatch = async () => {
+    if (!pinnedSchool || !selectedMatch) return;
+
+    try {
+      // TODO: Replace with actual API call
+      console.log('Matching schools:', pinnedSchool, selectedMatch);
+      
+      // Update school statuses locally
+      const updatedSchools = schools.map(school => {
+        if (school.id === pinnedSchool.id || school.id === selectedMatch.id) {
+          return { ...school, status: 'MATCHED' as const };
+        }
+        return school;
+      });
+      
+      // Notify parent component
+      onSchoolsUpdate(updatedSchools);
+      
+      // Reset state
+      setPinnedSchool(null);
+      setShowConfirmDialog(false);
+      setSelectedMatch(null);
+      setShowWarning(false);
+      
+      // Ask about pen pal assignment
+      const assignPenPals = window.confirm(
+        'Schools matched successfully! Do you want to assign pen pals now?'
+      );
+      
+      if (assignPenPals) {
+        window.location.href = `/admin/matching/students?school1=${pinnedSchool.id}&school2=${selectedMatch.id}`;
+      }
+      
+    } catch (err) {
+      console.error('Error matching schools:', err);
+    }
+  };
+
+  const cancelMatch = () => {
+    setShowConfirmDialog(false);
+    setSelectedMatch(null);
+    setShowWarning(false);
+  };
+
+  // Update filtered schools when schools prop changes
+  useEffect(() => {
+    if (filtersApplied) {
+      applyFilters();
+    } else {
+      // If no filters applied, show all available schools
+      setFilteredSchools(getAvailableSchools());
+    }
+  }, [schools, pinnedSchool]);
+
+  // CHANGED: Don't reset filters when no pinned school (requirement #1)
+  useEffect(() => {
+    // Only reset the region-specific logic, but keep other filters
+    if (!pinnedSchool && filters.regions.some(r => r.startsWith('All except'))) {
+      // Remove "All except" selections when unpinning
+      const cleanedRegions = filters.regions.filter(r => !r.startsWith('All except'));
+      setFilters(prev => ({ ...prev, regions: cleanedRegions }));
+    }
+  }, [pinnedSchool]);
+
+  const displaySchools = filtersApplied ? filteredSchools : getAvailableSchools();
+
+  // ADDED: Check if any filters are active
+  const hasActiveFilters = filters.schoolSearch || filters.teacherSearch || 
+    filters.regions.length > 0 || filters.classSizes.length > 0 || 
+    filters.startDate || filters.grades.length > 0;
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      {renderContent()}
+    <div>
+      {/* Pinned School - Full Card Display - Sticky */}
+      {pinnedSchool && (
+        <div style={{ 
+          position: 'sticky',
+          top: 0,
+          zIndex: 100,
+          backgroundColor: 'white',
+          paddingBottom: '1rem',
+          marginBottom: '1rem'
+        }}>
+          <h3 style={{ marginBottom: '1rem', color: '#1976d2', marginTop: 0 }}>
+            📌 Pinned School - Select a match below
+          </h3>
+          <SchoolCard
+            school={pinnedSchool!}
+            isPinned={true}
+            onPin={() => handlePinSchool(pinnedSchool!)}
+          />
+        </div>
+      )}
+
+      {/* CHANGED: Filters - Always show (requirement #1) */}
+      <FilterBar 
+        filters={filters}
+        onFiltersChange={handleFiltersChange}
+        onApplyFilters={handleApplyFilters}
+        onClearFilters={handleClearFilters}
+        pinnedSchoolRegion={pinnedSchool?.region}
+      />
+
+      {/* School Cards */}
+      <h3 style={{ marginBottom: '1.5rem' }}>
+        {pinnedSchool ? 'Select a School to Match' : 'Ready for Matching'} ({displaySchools.length})
+        {hasActiveFilters && !pinnedSchool && (
+          <span style={{ fontSize: '0.9rem', color: '#666', fontWeight: 'normal' }}>
+            {' '}- filtered results
+          </span>
+        )}
+      </h3>
+      
+      {displaySchools.length === 0 ? (
+        <div style={{ 
+          background: '#fff',
+          border: '1px solid #e0e6ed',
+          borderRadius: '12px',
+          textAlign: 'center', 
+          padding: '3rem' 
+        }}>
+          <h4>
+            {hasActiveFilters || pinnedSchool
+              ? 'No schools match the current filters' 
+              : 'No schools ready for matching'
+            }
+          </h4>
+          <p style={{ color: '#6c757d' }}>
+            {hasActiveFilters || pinnedSchool
+              ? 'Try adjusting your filters or clear them to see all available schools.'
+              : 'Schools will appear here when they\'re ready to be matched.'
+            }
+          </p>
+        </div>
+      ) : (
+        <div style={{ 
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem' 
+        }}>
+          {displaySchools.map(school => (
+            <SchoolCard
+              key={school.id}
+              school={school}
+              isPinned={false}
+              showMatchIcon={!!pinnedSchool}
+              onPin={() => handlePinSchool(school)}
+              onMatch={() => handleMatchRequest(school)}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Confirmation Dialog */}
+      {showConfirmDialog && pinnedSchool && selectedMatch && (
+        <ConfirmationDialog
+          pinnedSchool={pinnedSchool}
+          selectedMatch={selectedMatch}
+          showWarning={showWarning}
+          onConfirm={confirmMatch}
+          onCancel={cancelMatch}
+        />
+      )}
     </div>
   );
-};
-
-export default MatchingWorkflow;
+}
