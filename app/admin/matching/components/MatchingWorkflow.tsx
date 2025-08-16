@@ -197,9 +197,8 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
             📌 Pinned School - Select a match below
           </h3>
           <SchoolCard
-            school={pinnedSchool as School}
-            isPinned={false}
-            onPin={() => handlePinSchool(pinnedSchool as School)}
+            school={pinnedSchool}
+            isPinned={true}
           />
         </div>
       )}
