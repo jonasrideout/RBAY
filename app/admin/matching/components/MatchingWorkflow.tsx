@@ -291,8 +291,8 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
         </div>
       ) : (
         <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fill, minmax(500px, 1fr))', 
+          display: 'flex',
+          flexDirection: 'column',
           gap: '1rem' 
         }}>
           {displaySchools.map(school => (
