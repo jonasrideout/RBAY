@@ -1,22 +1,25 @@
 // app/admin/matching/components/ConfirmationDialog.tsx
 "use client";
-
 import { School } from '../types';
 
 interface ConfirmationDialogProps {
   pinnedSchool: School;
   selectedMatch: School;
   showWarning: boolean;
+  isMatched?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
+  onAssignPenPals?: () => void;
 }
 
 export default function ConfirmationDialog({
   pinnedSchool,
   selectedMatch,
   showWarning,
+  isMatched = false,
   onConfirm,
-  onCancel
+  onCancel,
+  onAssignPenPals
 }: ConfirmationDialogProps) {
   return (
     <div style={{
@@ -40,10 +43,10 @@ export default function ConfirmationDialog({
         boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
       }}>
         <h3 style={{ margin: '0 0 20px 0', color: '#333' }}>
-          Confirm School Match
+          {isMatched ? 'Schools Matched Successfully!' : 'Confirm School Match'}
         </h3>
         
-        {showWarning && (
+        {showWarning && !isMatched && (
           <div style={{
             backgroundColor: '#fff3cd',
             border: '1px solid #ffeaa7',
@@ -61,8 +64,9 @@ export default function ConfirmationDialog({
           <div style={{ 
             marginBottom: '15px', 
             padding: '10px', 
-            backgroundColor: '#f8f9fa', 
-            borderRadius: '4px' 
+            backgroundColor: isMatched ? '#e8f5e9' : '#f8f9fa', 
+            borderRadius: '4px',
+            border: isMatched ? '1px solid #4caf50' : 'none'
           }}>
             <strong>{pinnedSchool.schoolName}</strong><br />
             <span style={{ fontSize: '14px', color: '#666' }}>
@@ -70,12 +74,15 @@ export default function ConfirmationDialog({
             </span>
           </div>
           
-          <div style={{ textAlign: 'center', margin: '10px 0' }}>↕️</div>
+          <div style={{ textAlign: 'center', margin: '10px 0' }}>
+            {isMatched ? '🤝' : '↕️'}
+          </div>
           
           <div style={{ 
             padding: '10px', 
-            backgroundColor: '#f8f9fa', 
-            borderRadius: '4px' 
+            backgroundColor: isMatched ? '#e8f5e9' : '#f8f9fa', 
+            borderRadius: '4px',
+            border: isMatched ? '1px solid #4caf50' : 'none'
           }}>
             <strong>{selectedMatch.schoolName}</strong><br />
             <span style={{ fontSize: '14px', color: '#666' }}>
@@ -96,22 +103,58 @@ export default function ConfirmationDialog({
               fontSize: '0.9rem'
             }}
           >
-            Cancel
+            {isMatched ? 'Close' : 'Cancel'}
           </button>
-          <button
-            onClick={onConfirm}
-            style={{
-              padding: '10px 20px',
-              border: 'none',
-              borderRadius: '4px',
-              backgroundColor: '#2196f3',
-              color: 'white',
-              cursor: 'pointer',
-              fontSize: '0.9rem'
-            }}
-          >
-            Confirm Match
-          </button>
+          
+          {isMatched ? (
+            <button
+              onClick={onAssignPenPals}
+              style={{
+                padding: '10px 20px',
+                border: 'none',
+                borderRadius: '4px',
+                backgroundColor: '#2196f3',
+                color: 'white',
+                cursor: 'pointer',
+                fontSize: '0.9rem'
+              }}
+            >
+              Assign Pen Pals
+            </button>
+          ) : (
+            <button
+              onClick={onConfirm}
+              style={{
+                padding: '10px 20px',
+                border: 'none',
+                borderRadius: '4px',
+                backgroundColor: '#2196f3',
+                color: 'white',
+                cursor: 'pointer',
+                fontSize: '0.9rem'
+              }}
+            >
+              Confirm Match
+            </button>
+          )}
+          
+          {isMatched && (
+            <button
+              onClick={onConfirm}
+              style={{
+                padding: '10px 20px',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+                backgroundColor: '#f5f5f5',
+                color: '#666',
+                cursor: 'default',
+                fontSize: '0.9rem'
+              }}
+              disabled
+            >
+              Matched
+            </button>
+          )}
         </div>
       </div>
     </div>
