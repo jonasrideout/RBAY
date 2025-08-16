@@ -160,7 +160,7 @@ const MatchingWorkflow = ({ schools, selectedStatus, onRefresh }: MatchingWorkfl
       case 'COLLECTING':
       case 'READY':
         return (
-          <div className="space-y-6">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             {/* Filter Bar */}
             <FilterBar
               filters={filters}
@@ -172,14 +172,19 @@ const MatchingWorkflow = ({ schools, selectedStatus, onRefresh }: MatchingWorkfl
 
             {/* Pinned School Display */}
             {pinnedSchool && (
-              <div className="border-2 border-blue-500 rounded-lg p-4 bg-blue-50">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-lg font-semibold text-blue-800">
+              <div style={{ 
+                border: '2px solid #3b82f6', 
+                borderRadius: '8px', 
+                padding: '1rem', 
+                backgroundColor: '#eff6ff' 
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                  <h3 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#1e40af' }}>
                     Pinned School (Select a partner from below)
                   </h3>
                   <button
                     onClick={handleUnpin}
-                    className="text-blue-600 hover:text-blue-800 font-medium"
+                    style={{ color: '#2563eb', fontWeight: '500', background: 'none', border: 'none', cursor: 'pointer' }}
                   >
                     Unpin
                   </button>
@@ -189,14 +194,14 @@ const MatchingWorkflow = ({ schools, selectedStatus, onRefresh }: MatchingWorkfl
             )}
 
             {/* Schools Grid */}
-            <div className="space-y-4">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {pinnedSchool ? (
                 <>
-                  <h3 className="text-lg font-semibold text-gray-800">
+                  <h3 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#374151' }}>
                     Available Partner Schools ({getAvailableSchools().length})
                   </h3>
                   {getAvailableSchools().length === 0 ? (
-                    <div className="text-center py-8 text-gray-500">
+                    <div style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
                       No schools available for matching with the current filters.
                     </div>
                   ) : (
@@ -212,11 +217,11 @@ const MatchingWorkflow = ({ schools, selectedStatus, onRefresh }: MatchingWorkfl
                 </>
               ) : (
                 <>
-                  <h3 className="text-lg font-semibold text-gray-800">
+                  <h3 style={{ fontSize: '1.125rem', fontWeight: '600', color: '#374151' }}>
                     Select a School to Pin ({filteredSchools.length} available)
                   </h3>
                   {filteredSchools.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500">
+                    <div style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
                       No schools match the current filters.
                     </div>
                   ) : (
@@ -248,23 +253,28 @@ const MatchingWorkflow = ({ schools, selectedStatus, onRefresh }: MatchingWorkfl
         }, []);
 
         return (
-          <div className="space-y-6">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             {matchedPairs.length === 0 ? (
-              <div className="text-center py-12 text-gray-500">
+              <div style={{ textAlign: 'center', padding: '3rem', color: '#6b7280' }}>
                 No matched school pairs found.
               </div>
             ) : (
               matchedPairs.map(([school1, school2], index) => (
-                <div key={`${school1.id}-${school2.id}`} className="border rounded-lg p-6 bg-white">
-                  <div className="flex items-center justify-between">
+                <div key={`${school1.id}-${school2.id}`} style={{ 
+                  border: '1px solid #e5e7eb', 
+                  borderRadius: '8px', 
+                  padding: '1.5rem', 
+                  backgroundColor: 'white' 
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     {/* Two school cards side by side */}
-                    <div className="flex gap-6 flex-1">
-                      <div className="flex-1">
+                    <div style={{ display: 'flex', gap: '1.5rem', flex: 1 }}>
+                      <div style={{ flex: 1 }}>
                         <SchoolCard 
                           school={school1} 
                         />
                       </div>
-                      <div className="flex-1">
+                      <div style={{ flex: 1 }}>
                         <SchoolCard 
                           school={school2} 
                         />
@@ -272,10 +282,22 @@ const MatchingWorkflow = ({ schools, selectedStatus, onRefresh }: MatchingWorkfl
                     </div>
                     
                     {/* Assign Pen Pals Button */}
-                    <div className="ml-6">
+                    <div style={{ marginLeft: '1.5rem' }}>
                       <button
                         onClick={() => handleAssignPenPals(school1.id, school2.id)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 whitespace-nowrap"
+                        style={{
+                          backgroundColor: '#2563eb',
+                          color: 'white',
+                          padding: '0.75rem 1.5rem',
+                          borderRadius: '8px',
+                          fontWeight: '500',
+                          transitionDuration: '200ms',
+                          whiteSpace: 'nowrap',
+                          border: 'none',
+                          cursor: 'pointer'
+                        }}
+                        onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#1d4ed8'}
+                        onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
                       >
                         Assign Pen Pals
                       </button>
@@ -301,13 +323,13 @@ const MatchingWorkflow = ({ schools, selectedStatus, onRefresh }: MatchingWorkfl
         }, []);
 
         return (
-          <div className="space-y-6">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             {correspondingPairs.length === 0 ? (
-              <div className="text-center py-12 text-gray-500">
+              <div style={{ textAlign: 'center', padding: '3rem', color: '#6b7280' }}>
                 No corresponding school pairs found.
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-6">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.5rem' }}>
                 {correspondingPairs.map(([school1, school2]) => [school1, school2]).flat().map(school => (
                   <SchoolCard
                     key={school.id}
@@ -321,14 +343,14 @@ const MatchingWorkflow = ({ schools, selectedStatus, onRefresh }: MatchingWorkfl
 
       case 'DONE':
         return (
-          <div className="text-center py-12 text-gray-500">
+          <div style={{ textAlign: 'center', padding: '3rem', color: '#6b7280' }}>
             Program completed schools will be displayed here.
           </div>
         );
 
       default:
         return (
-          <div className="text-center py-12 text-gray-500">
+          <div style={{ textAlign: 'center', padding: '3rem', color: '#6b7280' }}>
             Select a status to view schools.
           </div>
         );
@@ -336,7 +358,7 @@ const MatchingWorkflow = ({ schools, selectedStatus, onRefresh }: MatchingWorkfl
   };
 
   return (
-    <div className="space-y-6">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       {renderContent()}
     </div>
   );
