@@ -219,4 +219,56 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
         {pinnedSchool ? 'Select a School to Match' : 'Ready for Matching'} ({displaySchools.length})
       </h3>
       
-      {displaySch
+      {displaySchools.length === 0 ? (
+        <div style={{ 
+          background: '#fff',
+          border: '1px solid #e0e6ed',
+          borderRadius: '12px',
+          textAlign: 'center', 
+          padding: '3rem' 
+        }}>
+          <h4>
+            {pinnedSchool 
+              ? 'No schools match the current filters' 
+              : 'No schools ready for matching'
+            }
+          </h4>
+          <p style={{ color: '#6c757d' }}>
+            {pinnedSchool 
+              ? 'Try adjusting your filters or clear them to see all available schools.'
+              : 'Schools will appear here when they\'re ready to be matched.'
+            }
+          </p>
+        </div>
+      ) : (
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fill, minmax(500px, 1fr))', 
+          gap: '1rem' 
+        }}>
+          {displaySchools.map(school => (
+            <SchoolCard
+              key={school.id}
+              school={school}
+              isPinned={false}
+              showMatchIcon={!!pinnedSchool}
+              onPin={() => handlePinSchool(school)}
+              onMatch={() => handleMatchRequest(school)}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Confirmation Dialog */}
+      {showConfirmDialog && pinnedSchool && selectedMatch && (
+        <ConfirmationDialog
+          pinnedSchool={pinnedSchool}
+          selectedMatch={selectedMatch}
+          showWarning={showWarning}
+          onConfirm={confirmMatch}
+          onCancel={cancelMatch}
+        />
+      )}
+    </div>
+  );
+}
