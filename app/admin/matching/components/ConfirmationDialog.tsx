@@ -66,4 +66,54 @@ export default function ConfirmationDialog({
           }}>
             <strong>{pinnedSchool.schoolName}</strong><br />
             <span style={{ fontSize: '14px', color: '#666' }}>
-              {pinn
+              {pinnedSchool.region} | {pinnedSchool.studentCounts.ready} students | Starts {pinnedSchool.startMonth}
+            </span>
+          </div>
+          
+          <div style={{ textAlign: 'center', margin: '10px 0' }}>↕️</div>
+          
+          <div style={{ 
+            padding: '10px', 
+            backgroundColor: '#f8f9fa', 
+            borderRadius: '4px' 
+          }}>
+            <strong>{selectedMatch.schoolName}</strong><br />
+            <span style={{ fontSize: '14px', color: '#666' }}>
+              {selectedMatch.region} | {selectedMatch.studentCounts.ready} students | Starts {selectedMatch.startMonth}
+            </span>
+          </div>
+        </div>
+        
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+          <button
+            onClick={onCancel}
+            style={{
+              padding: '10px 20px',
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+              backgroundColor: 'white',
+              cursor: 'pointer',
+              fontSize: '0.9rem'
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            style={{
+              padding: '10px 20px',
+              border: 'none',
+              borderRadius: '4px',
+              backgroundColor: '#2196f3',
+              color: 'white',
+              cursor: 'pointer',
+              fontSize: '0.9rem'
+            }}
+          >
+            Confirm Match
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
