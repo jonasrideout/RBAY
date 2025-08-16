@@ -86,6 +86,10 @@ export default function AdminDashboard() {
       processed.add(school.matchedSchool.id);
     });
 
+    const handleAssignPenPals = (school1Id: string, school2Id: string) => {
+      window.location.href = `/admin/matching/students?school1=${school1Id}&school2=${school2Id}`;
+    };
+
     return (
       <div>
         <h3 style={{ marginBottom: '1.5rem' }}>Matched School Pairs</h3>
@@ -102,7 +106,7 @@ export default function AdminDashboard() {
               key={`${school1.id}-${school2.id}`}
               style={{ 
                 display: 'grid', 
-                gridTemplateColumns: '1fr auto 1fr', 
+                gridTemplateColumns: '1fr auto 1fr auto', 
                 gap: '1rem', 
                 alignItems: 'center',
                 marginBottom: '2rem',
@@ -115,6 +119,25 @@ export default function AdminDashboard() {
               <SchoolCard school={school1} />
               <div style={{ textAlign: 'center', fontSize: '1.5rem' }}>↔️</div>
               <SchoolCard school={school2} />
+              <button
+                onClick={() => handleAssignPenPals(school1.id, school2.id)}
+                style={{
+                  backgroundColor: '#007bff',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  padding: '0.75rem 1rem',
+                  fontSize: '0.9rem',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'background-color 0.2s ease'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#0056b3'}
+                onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#007bff'}
+              >
+                Assign Pen Pals
+              </button>
             </div>
           ))
         )}
