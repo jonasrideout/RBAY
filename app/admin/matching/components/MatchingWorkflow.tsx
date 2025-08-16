@@ -77,7 +77,7 @@ const MatchingWorkflow = ({ schools, selectedStatus, onRefresh }: MatchingWorkfl
     }
   };
 
-  const handleAssignPenPals = (school1Id: number, school2Id: number) => {
+  const handleAssignPenPals = (school1Id: string, school2Id: string) => {
     window.location.href = `/admin/matching/students?school1=${school1Id}&school2=${school2Id}`;
   };
 
