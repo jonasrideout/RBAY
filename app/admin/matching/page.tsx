@@ -856,219 +856,218 @@ export default function AdminDashboard() {
   if (isLoading) {
     return (
       <div className="page">
-        <div
-          <div className="container" style={{ textAlign: 'center', padding: '3rem' }}>
-         <h2>Loading Dashboard...</h2>
-       </div>
-     </div>
-   );
- }
+        <div className="container" style={{ textAlign: 'center', padding: '3rem' }}>
+          <h2>Loading Dashboard...</h2>
+        </div>
+      </div>
+    );
+  }
 
- return (
-   <div className="page">
-     <header className="header">
-       <div className="container">
-         <div className="header-content">
-           <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-             <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
-             The Right Back at You Project
-           </Link>
-           <nav className="nav">
-             <Link href="/" className="nav-link">Home</Link>
-             <Link href="/admin/matching" className="nav-link">Admin</Link>
-           </nav>
-         </div>
-       </div>
-     </header>
+  return (
+    <div className="page">
+      <header className="header">
+        <div className="container">
+          <div className="header-content">
+            <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
+              The Right Back at You Project
+            </Link>
+            <nav className="nav">
+              <Link href="/" className="nav-link">Home</Link>
+              <Link href="/admin/matching" className="nav-link">Admin</Link>
+            </nav>
+          </div>
+        </div>
+      </header>
 
-     <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
-       
-       <div style={{ marginBottom: '1.5rem' }}>
-         <h1 style={{ marginBottom: '0.5rem', fontSize: '1.8rem' }}>Administrator Dashboard</h1>
-         <p style={{ color: '#6c757d', fontSize: '1.1rem' }}>
-           Overview of all schools and their progress through the program.
-         </p>
-       </div>
+      <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
+        
+        <div style={{ marginBottom: '1.5rem' }}>
+          <h1 style={{ marginBottom: '0.5rem', fontSize: '1.8rem' }}>Administrator Dashboard</h1>
+          <p style={{ color: '#6c757d', fontSize: '1.1rem' }}>
+            Overview of all schools and their progress through the program.
+          </p>
+        </div>
 
-       {error && (
-         <div className="alert alert-error" style={{ marginBottom: '2rem' }}>
-           <strong>Error:</strong> {error}
-           <button 
-             onClick={fetchAllSchools}
-             style={{ marginLeft: '1rem', padding: '0.25rem 0.5rem' }}
-           >
-             Retry
-           </button>
-         </div>
-       )}
+        {error && (
+          <div className="alert alert-error" style={{ marginBottom: '2rem' }}>
+            <strong>Error:</strong> {error}
+            <button 
+              onClick={fetchAllSchools}
+              style={{ marginLeft: '1rem', padding: '0.25rem 0.5rem' }}
+            >
+              Retry
+            </button>
+          </div>
+        )}
 
-       <div style={{ 
-         display: 'flex', 
-         gap: '1rem', 
-         marginBottom: '3rem',
-         justifyContent: 'center',
-         flexWrap: 'wrap'
-       }}>
-         {(Object.keys(statusCounts) as SelectedStatus[]).map((status) => (
-           <div
-             key={status}
-             onClick={() => setSelectedStatus(status)}
-             style={{
-               background: '#fff',
-               color: '#333',
-               border: `2px solid ${selectedStatus === status ? '#ffd700' : '#e0e6ed'}`,
-               borderRadius: '8px',
-               padding: '1rem 1.5rem',
-               textAlign: 'center',
-               cursor: 'pointer',
-               transition: 'all 0.2s ease',
-               boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-               width: '160px',
-               height: '80px',
-               display: 'flex',
-               flexDirection: 'column',
-               justifyContent: 'center',
-               alignItems: 'center'
-             }}
-           >
-             <div style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>
-               {statusCounts[status]}
-             </div>
-             <div style={{ fontSize: '0.75rem', fontWeight: '600', letterSpacing: '0.5px', lineHeight: '1.2', paddingBottom: '0.5rem' }}>
-               {getStatusLabel(status).toUpperCase()}
-             </div>
-           </div>
-         ))}
-       </div>
+        <div style={{ 
+          display: 'flex', 
+          gap: '1rem', 
+          marginBottom: '3rem',
+          justifyContent: 'center',
+          flexWrap: 'wrap'
+        }}>
+          {(Object.keys(statusCounts) as SelectedStatus[]).map((status) => (
+            <div
+              key={status}
+              onClick={() => setSelectedStatus(status)}
+              style={{
+                background: '#fff',
+                color: '#333',
+                border: `2px solid ${selectedStatus === status ? '#ffd700' : '#e0e6ed'}`,
+                borderRadius: '8px',
+                padding: '1rem 1.5rem',
+                textAlign: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                width: '160px',
+                height: '80px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
+              <div style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>
+                {statusCounts[status]}
+              </div>
+              <div style={{ fontSize: '0.75rem', fontWeight: '600', letterSpacing: '0.5px', lineHeight: '1.2', paddingBottom: '0.5rem' }}>
+                {getStatusLabel(status).toUpperCase()}
+              </div>
+            </div>
+          ))}
+        </div>
 
-       {renderFilters()}
+        {renderFilters()}
 
-       <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
-         <button 
-           onClick={fetchAllSchools}
-           className="btn btn-secondary"
-           disabled={isLoading}
-         >
-           {isLoading ? '🔄 Loading...' : '🔄 Refresh Data'}
-         </button>
-         
-         <Link 
-           href="/api/admin/seed-data"
-           className="btn btn-primary"
-         >
-           🌱 Seed Test Data
-         </Link>
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
+          <button 
+            onClick={fetchAllSchools}
+            className="btn btn-secondary"
+            disabled={isLoading}
+          >
+            {isLoading ? '🔄 Loading...' : '🔄 Refresh Data'}
+          </button>
+          
+          <Link 
+            href="/api/admin/seed-data"
+            className="btn btn-primary"
+          >
+            🌱 Seed Test Data
+          </Link>
 
-         <Link 
-           href="/api/admin/clear-data"
-           className="btn"
-           style={{ backgroundColor: '#dc3545', color: 'white' }}
-         >
-           🗑️ Clear All Data
-         </Link>
-       </div>
+          <Link 
+            href="/api/admin/clear-data"
+            className="btn"
+            style={{ backgroundColor: '#dc3545', color: 'white' }}
+          >
+            🗑️ Clear All Data
+          </Link>
+        </div>
 
-       {renderStatusContent()}
+        {renderStatusContent()}
 
-     </main>
+      </main>
 
-     {/* Confirmation Dialog */}
-     {showConfirmDialog && (
-       <div style={{
-         position: 'fixed',
-         top: 0,
-         left: 0,
-         right: 0,
-         bottom: 0,
-         backgroundColor: 'rgba(0,0,0,0.5)',
-         display: 'flex',
-         alignItems: 'center',
-         justifyContent: 'center',
-         zIndex: 1000
-       }}>
-         <div style={{
-           backgroundColor: 'white',
-           padding: '30px',
-           borderRadius: '8px',
-           maxWidth: '500px',
-           width: '90%'
-         }}>
-           <h3 style={{ margin: '0 0 20px 0', color: '#333' }}>
-             Confirm School Match
-           </h3>
-           
-           {showWarning && (
-             <div style={{
-               backgroundColor: '#fff3cd',
-               border: '1px solid #ffeaa7',
-               borderRadius: '4px',
-               padding: '10px',
-               marginBottom: '15px',
-               color: '#856404'
-             }}>
-               ⚠️ Warning: Both schools are in the same region ({pinnedSchool?.region}). 
-               Cross-regional matches are preferred for this program.
-             </div>
-           )}
-           
-           <div style={{ marginBottom: '20px' }}>
-             <div style={{ marginBottom: '15px', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
-               <strong>{pinnedSchool?.schoolName}</strong><br />
-               <span style={{ fontSize: '14px', color: '#666' }}>
-                 {pinnedSchool?.region} | {pinnedSchool?.studentCounts.ready} students | Starts {pinnedSchool?.startMonth}
-               </span>
-             </div>
-             
-             <div style={{ textAlign: 'center', margin: '10px 0' }}>↕️</div>
-             
-             <div style={{ padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
-               <strong>{selectedMatch?.schoolName}</strong><br />
-               <span style={{ fontSize: '14px', color: '#666' }}>
-                 {selectedMatch?.region} | {selectedMatch?.studentCounts.ready} students | Starts {selectedMatch?.startMonth}
-               </span>
-             </div>
-           </div>
-           
-           <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-             <button
-               onClick={() => {
-                 setShowConfirmDialog(false);
-                 setSelectedMatch(null);
-                 setShowWarning(false);
-               }}
-               style={{
-                 padding: '10px 20px',
-                 border: '1px solid #ccc',
-                 borderRadius: '4px',
-                 backgroundColor: 'white',
-                 cursor: 'pointer'
-               }}
-             >
-               Cancel
-             </button>
-             <button
-               onClick={confirmMatch}
-               style={{
-                 padding: '10px 20px',
-                 border: 'none',
-                 borderRadius: '4px',
-                 backgroundColor: '#2196f3',
-                 color: 'white',
-                 cursor: 'pointer'
-               }}
-             >
-               Confirm Match
-             </button>
-           </div>
-         </div>
-       </div>
-     )}
+      {/* Confirmation Dialog */}
+      {showConfirmDialog && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '30px',
+            borderRadius: '8px',
+            maxWidth: '500px',
+            width: '90%'
+          }}>
+            <h3 style={{ margin: '0 0 20px 0', color: '#333' }}>
+              Confirm School Match
+            </h3>
+            
+            {showWarning && (
+              <div style={{
+                backgroundColor: '#fff3cd',
+                border: '1px solid #ffeaa7',
+                borderRadius: '4px',
+                padding: '10px',
+                marginBottom: '15px',
+                color: '#856404'
+              }}>
+                ⚠️ Warning: Both schools are in the same region ({pinnedSchool?.region}). 
+                Cross-regional matches are preferred for this program.
+              </div>
+            )}
+            
+            <div style={{ marginBottom: '20px' }}>
+              <div style={{ marginBottom: '15px', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
+                <strong>{pinnedSchool?.schoolName}</strong><br />
+                <span style={{ fontSize: '14px', color: '#666' }}>
+                  {pinnedSchool?.region} | {pinnedSchool?.studentCounts.ready} students | Starts {pinnedSchool?.startMonth}
+                </span>
+              </div>
+              
+              <div style={{ textAlign: 'center', margin: '10px 0' }}>↕️</div>
+              
+              <div style={{ padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
+                <strong>{selectedMatch?.schoolName}</strong><br />
+                <span style={{ fontSize: '14px', color: '#666' }}>
+                  {selectedMatch?.region} | {selectedMatch?.studentCounts.ready} students | Starts {selectedMatch?.startMonth}
+                </span>
+              </div>
+            </div>
+            
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => {
+                  setShowConfirmDialog(false);
+                  setSelectedMatch(null);
+                  setShowWarning(false);
+                }}
+                style={{
+                  padding: '10px 20px',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px',
+                  backgroundColor: 'white',
+                  cursor: 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmMatch}
+                style={{
+                  padding: '10px 20px',
+                  border: 'none',
+                  borderRadius: '4px',
+                  backgroundColor: '#2196f3',
+                  color: 'white',
+                  cursor: 'pointer'
+                }}
+              >
+                Confirm Match
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
-     <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
-       <div className="container text-center">
-         <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
-       </div>
-     </footer>
-   </div>
- );
+      <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
+        <div className="container text-center">
+          <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
+        </div>
+      </footer>
+    </div>
+  );
 }
