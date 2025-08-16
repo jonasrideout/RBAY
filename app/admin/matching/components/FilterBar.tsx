@@ -8,13 +8,15 @@ interface FilterBarProps {
   filters: Filters;
   onFiltersChange: (filters: Filters) => void;
   onApplyFilters: () => void;
-  pinnedSchoolRegion?: string; // Add this prop to know the pinned school's region
+  onClearFilters: () => void; // ADDED: Direct clear function
+  pinnedSchoolRegion?: string;
 }
 
 export default function FilterBar({ 
   filters, 
   onFiltersChange, 
-  onApplyFilters, 
+  onApplyFilters,
+  onClearFilters, // ADDED: Use this instead of internal logic
   pinnedSchoolRegion 
 }: FilterBarProps) {
   const [dropdownStates, setDropdownStates] = useState({
@@ -43,12 +45,13 @@ export default function FilterBar({
 
   const regions = getRegionsOptions();
 
+  // FIXED: Non-overlapping class size buckets
   const classSizeBuckets = [
     { label: 'Under 10', min: 0, max: 9 },
     { label: '10-20', min: 10, max: 20 },
-    { label: '20-30', min: 20, max: 30 },
-    { label: '30-40', min: 30, max: 40 },
-    { label: '40-50', min: 40, max: 50 },
+    { label: '21-30', min: 21, max: 30 },
+    { label: '31-40', min: 31, max: 40 },
+    { label: '41-50', min: 41, max: 50 },
     { label: 'Over 50', min: 51, max: 999 }
   ];
 
@@ -99,17 +102,6 @@ export default function FilterBar({
     } else {
       onFiltersChange({ ...filters, [filterType]: value });
     }
-  };
-
-  const clearFilters = () => {
-    onFiltersChange({
-      regions: [],
-      classSizes: [],
-      startDate: '',
-      grades: []
-    });
-    closeAllDropdowns();
-    onApplyFilters();
   };
 
   const renderMultiSelectDropdown = (
@@ -310,11 +302,12 @@ export default function FilterBar({
         Go
       </button>
 
-      {/* Clear All Button */}
+      {/* FIXED: Clear All Button */}
       <button
         onClick={(e) => {
           e.stopPropagation();
-          clearFilters();
+          closeAllDropdowns();
+          onClearFilters(); // Use the passed function instead of internal logic
         }}
         style={{
           height: '36px',
