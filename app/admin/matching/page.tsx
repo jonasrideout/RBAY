@@ -1,4 +1,7 @@
+"use client";
+
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 interface School {
   id: string;
@@ -113,121 +116,8 @@ export default function AdminDashboard() {
     }
   };
 
-  // Mock data for demonstration
   useEffect(() => {
-    const mockSchools: School[] = [
-      {
-        id: '1',
-        schoolName: 'Pacific Elementary',
-        teacherFirstName: 'Sarah',
-        teacherLastName: 'Johnson',
-        teacherEmail: 'sarah.johnson@pacific-elem.edu',
-        region: 'PACIFIC',
-        gradeLevel: ['3', '4', '5'],
-        expectedClassSize: 25,
-        startMonth: 'September',
-        letterFrequency: 'monthly',
-        status: 'READY',
-        lettersSent: 0,
-        lettersReceived: 0,
-        studentCounts: {
-          expected: 25,
-          registered: 23,
-          ready: 20
-        }
-      },
-      {
-        id: '2',
-        schoolName: 'Northeast Academy',
-        teacherFirstName: 'Michael',
-        teacherLastName: 'Chen',
-        teacherEmail: 'michael.chen@northeast-academy.edu',
-        region: 'NORTHEAST',
-        gradeLevel: ['4', '5'],
-        expectedClassSize: 18,
-        startMonth: 'October',
-        letterFrequency: 'monthly',
-        status: 'READY',
-        lettersSent: 0,
-        lettersReceived: 0,
-        studentCounts: {
-          expected: 18,
-          registered: 16,
-          ready: 15
-        }
-      },
-      {
-        id: '3',
-        schoolName: 'Mountain View Elementary',
-        teacherFirstName: 'Lisa',
-        teacherLastName: 'Rodriguez',
-        teacherEmail: 'lisa.rodriguez@mountain-view.edu',
-        region: 'MOUNTAIN WEST',
-        gradeLevel: ['3', '4', '5', '6'],
-        expectedClassSize: 30,
-        startMonth: 'September',
-        letterFrequency: 'monthly',
-        status: 'READY',
-        lettersSent: 0,
-        lettersReceived: 0,
-        studentCounts: {
-          expected: 30,
-          registered: 28,
-          ready: 25
-        }
-      },
-      {
-        id: '4',
-        schoolName: 'Midwest Elementary',
-        teacherFirstName: 'David',
-        teacherLastName: 'Thompson',
-        teacherEmail: 'david.thompson@midwest-elem.edu',
-        region: 'MIDWEST',
-        gradeLevel: ['2', '3', '4'],
-        expectedClassSize: 22,
-        startMonth: 'September',
-        letterFrequency: 'monthly',
-        status: 'COLLECTING',
-        lettersSent: 0,
-        lettersReceived: 0,
-        studentCounts: {
-          expected: 22,
-          registered: 18,
-          ready: 12
-        }
-      },
-      {
-        id: '5',
-        schoolName: 'Southwest Elementary',
-        teacherFirstName: 'Maria',
-        teacherLastName: 'Garcia',
-        teacherEmail: 'maria.garcia@southwest-elem.edu',
-        region: 'SOUTHWEST',
-        gradeLevel: ['4', '5', '6'],
-        expectedClassSize: 20,
-        startMonth: 'October',
-        letterFrequency: 'monthly',
-        status: 'COLLECTING',
-        lettersSent: 0,
-        lettersReceived: 0,
-        studentCounts: {
-          expected: 20,
-          registered: 15,
-          ready: 8
-        }
-      }
-    ];
-
-    setSchools(mockSchools);
-    setFilteredSchools(mockSchools);
-    setStatusCounts({
-      COLLECTING: 2,
-      READY: 3,
-      MATCHED: 0,
-      CORRESPONDING: 0,
-      DONE: 0
-    });
-    setIsLoading(false);
+    fetchAllSchools();
   }, []);
 
   // Apply filters whenever filters change or schools change
@@ -274,8 +164,30 @@ export default function AdminDashboard() {
   const fetchAllSchools = async () => {
     setIsLoading(true);
     setError('');
-    console.log('Refreshing school data...');
-    setIsLoading(false);
+
+    try {
+      const response = await fetch('/api/admin/all-schools');
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch schools');
+      }
+
+      setSchools(data.schools || []);
+      setFilteredSchools(data.schools || []);
+      setStatusCounts(data.statusCounts || {
+        COLLECTING: 0,
+        READY: 0,
+        MATCHED: 0,
+        CORRESPONDING: 0,
+        DONE: 0
+      });
+
+    } catch (err: any) {
+      setError('Error fetching schools: ' + err.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handlePinSchool = (school: School) => {
@@ -319,12 +231,8 @@ export default function AdminDashboard() {
       setSelectedMatch(null);
       setShowWarning(false);
       
-      setStatusCounts(prev => ({
-        ...prev,
-        READY: prev.READY - 2,
-        MATCHED: prev.MATCHED + 2
-      }));
-      
+      // Refresh data to get updated counts
+      await fetchAllSchools();
     } catch (err) {
       console.error('Error matching schools:', err);
     }
@@ -337,6 +245,17 @@ export default function AdminDashboard() {
       startDate: '',
       grades: []
     });
+  };
+
+  const getStatusColor = (status: SelectedStatus) => {
+    const colors = {
+      COLLECTING: '#ffc107', // Yellow
+      READY: '#17a2b8',      // Teal
+      MATCHED: '#6f42c1',    // Purple
+      CORRESPONDING: '#28a745', // Green
+      DONE: '#6c757d'        // Gray
+    };
+    return colors[status];
   };
 
   const getStatusLabel = (status: SelectedStatus) => {
@@ -445,6 +364,8 @@ export default function AdminDashboard() {
                   color: '#28a745',
                   transition: 'background-color 0.2s ease'
                 }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                 title="Match with pinned school"
               >
                 {renderOutlineIcon('lock', 18)}
@@ -463,6 +384,8 @@ export default function AdminDashboard() {
                   color: isPinned ? '#2196f3' : '#666',
                   transition: 'all 0.2s ease'
                 }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                 title={isPinned ? "Unpin school" : "Pin school"}
               >
                 {renderOutlineIcon('pin', 18)}
@@ -546,6 +469,45 @@ export default function AdminDashboard() {
         }}>
           {getRegionDisplay(school.region)}
         </div>
+
+        {school.status === 'MATCHED' && school.matchedSchool && (
+          <div style={{ 
+            gridColumn: '1 / -1',
+            padding: '0.75rem', 
+            background: 'linear-gradient(135deg, #f0fff4 0%, #e8f5e9 100%)', 
+            borderRadius: '8px',
+            marginTop: '1rem',
+            borderLeft: '4px solid #38a169'
+          }}>
+            <strong style={{ color: '#2f855a' }}>
+              🤝 Matched with: {school.matchedSchool.schoolName}
+            </strong>
+            <div style={{ fontSize: '0.9rem', color: '#4a5568', marginTop: '0.25rem' }}>
+              {school.matchedSchool.teacherFirstName} {school.matchedSchool.teacherLastName} - {school.matchedSchool.region}
+            </div>
+          </div>
+        )}
+
+        {school.status === 'CORRESPONDING' && (
+          <div style={{ 
+            gridColumn: '1 / -1',
+            padding: '0.75rem', 
+            background: 'linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%)', 
+            borderRadius: '8px',
+            marginTop: '1rem',
+            borderLeft: '4px solid #4299e1'
+          }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '0.5rem' }}>
+              <div style={{ color: '#2d3748' }}><strong>📤 Letters Sent:</strong> {school.lettersSent}</div>
+              <div style={{ color: '#2d3748' }}><strong>📥 Letters Received:</strong> {school.lettersReceived}</div>
+            </div>
+            {school.matchedSchool && (
+              <div style={{ fontSize: '0.9rem', color: '#4a5568' }}>
+                <strong>✉️ Partner:</strong> {school.matchedSchool.schoolName} ({school.matchedSchool.region})
+              </div>
+            )}
+          </div>
+        )}
       </div>
     );
   };
@@ -733,8 +695,119 @@ export default function AdminDashboard() {
     );
   };
 
+  const renderMatchedPairs = () => {
+    const matchedSchools = getSchoolsByStatus('MATCHED');
+    const pairs: [School, School][] = [];
+    const processed = new Set<string>();
+
+    matchedSchools.forEach(school => {
+      if (processed.has(school.id) || !school.matchedSchool) return;
+      
+      pairs.push([school, school.matchedSchool]);
+      processed.add(school.id);
+      processed.add(school.matchedSchool.id);
+    });
+
+    return (
+      <div>
+        <h3 style={{ marginBottom: '1.5rem' }}>Matched School Pairs</h3>
+        {pairs.length === 0 ? (
+          <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
+            <h4>No matched schools yet</h4>
+            <p style={{ color: '#6c757d' }}>
+              Schools will appear here after they are paired together.
+            </p>
+          </div>
+        ) : (
+          pairs.map(([school1, school2], index) => (
+            <div 
+              key={`${school1.id}-${school2.id}`}
+              style={{ 
+                display: 'grid', 
+                gridTemplateColumns: '1fr auto 1fr', 
+                gap: '1rem', 
+                alignItems: 'center',
+                marginBottom: '2rem',
+                padding: '1rem',
+                background: '#f8f9fa',
+                borderRadius: '8px',
+                border: '1px solid #dee2e6'
+              }}
+            >
+              {renderSchoolCard(school1)}
+              <div style={{ textAlign: 'center', fontSize: '1.5rem' }}>↔️</div>
+              {renderSchoolCard(school2)}
+            </div>
+          ))
+        )}
+      </div>
+    );
+  };
+
+  const renderCorrespondingPairs = () => {
+    const correspondingSchools = getSchoolsByStatus('CORRESPONDING');
+    const pairs: [School, School][] = [];
+    const processed = new Set<string>();
+
+    correspondingSchools.forEach(school => {
+      if (processed.has(school.id) || !school.matchedSchool) return;
+      
+      pairs.push([school, school.matchedSchool]);
+      processed.add(school.id);
+      processed.add(school.matchedSchool.id);
+    });
+
+    return (
+      <div>
+        <h3 style={{ marginBottom: '1.5rem' }}>Corresponding School Pairs</h3>
+        {pairs.length === 0 ? (
+          <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
+            <h4>No corresponding schools yet</h4>
+            <p style={{ color: '#6c757d' }}>
+              Schools will appear here when they begin exchanging letters.
+            </p>
+          </div>
+        ) : (
+          pairs.map(([school1, school2], index) => (
+            <div 
+              key={`${school1.id}-${school2.id}`}
+              style={{ 
+                display: 'grid', 
+                gridTemplateColumns: '1fr auto 1fr', 
+                gap: '1rem', 
+                alignItems: 'center',
+                marginBottom: '2rem',
+                padding: '1rem',
+                background: '#f8f9fa',
+                borderRadius: '8px',
+                border: '1px solid #dee2e6'
+              }}
+            >
+              {renderSchoolCard(school1)}
+              <div style={{ textAlign: 'center', fontSize: '1.5rem' }}>
+                ✉️
+                <div style={{ fontSize: '0.8rem', color: '#6c757d' }}>
+                  {school1.lettersSent + school2.lettersSent} letters total
+                </div>
+              </div>
+              {renderSchoolCard(school2)}
+            </div>
+          ))
+        )}
+      </div>
+    );
+  };
+
   const renderStatusContent = () => {
     const statusSchools = getSchoolsByStatus(selectedStatus);
+
+    if (selectedStatus === 'MATCHED') {
+      return renderMatchedPairs();
+    }
+
+    if (selectedStatus === 'CORRESPONDING') {
+      return renderCorrespondingPairs();
+    }
 
     return (
       <div>
@@ -765,13 +838,7 @@ export default function AdminDashboard() {
           {getStatusLabel(selectedStatus)} ({statusSchools.length})
         </h3>
         {statusSchools.length === 0 ? (
-          <div style={{ 
-            background: '#fff',
-            border: '1px solid #e0e6ed',
-            borderRadius: '12px',
-            textAlign: 'center', 
-            padding: '3rem' 
-          }}>
+          <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
             <h4>No schools in {getStatusLabel(selectedStatus).toLowerCase()} status</h4>
             <p style={{ color: '#6c757d' }}>
               Schools will appear here as they progress through the program.
@@ -788,229 +855,220 @@ export default function AdminDashboard() {
 
   if (isLoading) {
     return (
-      <div style={{ 
-        minHeight: '100vh', 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        fontFamily: 'Arial, sans-serif'
-      }}>
-        <div style={{ textAlign: 'center', padding: '3rem' }}>
-          <h2>Loading Dashboard...</h2>
-        </div>
-      </div>
-    );
-  }
+      <div className="page">
+        <div
+          <div className="container" style={{ textAlign: 'center', padding: '3rem' }}>
+         <h2>Loading Dashboard...</h2>
+       </div>
+     </div>
+   );
+ }
 
-  return (
-    <div style={{ 
-      minHeight: '100vh', 
-      display: 'flex', 
-      flexDirection: 'column',
-      fontFamily: 'Arial, sans-serif'
-    }}>
-      <header style={{
-        backgroundColor: '#fff',
-        borderBottom: '1px solid #e0e6ed',
-        padding: '1rem 0'
-      }}>
-        <div style={{ 
-          maxWidth: '1200px', 
-          margin: '0 auto', 
-          padding: '0 1rem',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ fontSize: '1.2rem', fontWeight: '600' }}>The Right Back at You Project</span>
-          </div>
-          <nav style={{ display: 'flex', gap: '1rem' }}>
-            <a href="#" style={{ textDecoration: 'none', color: '#4a5568', fontWeight: '500' }}>Home</a>
-            <a href="#" style={{ textDecoration: 'none', color: '#2196f3', fontWeight: '500' }}>Admin</a>
-          </nav>
-        </div>
-      </header>
+ return (
+   <div className="page">
+     <header className="header">
+       <div className="container">
+         <div className="header-content">
+           <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+             <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
+             The Right Back at You Project
+           </Link>
+           <nav className="nav">
+             <Link href="/" className="nav-link">Home</Link>
+             <Link href="/admin/matching" className="nav-link">Admin</Link>
+           </nav>
+         </div>
+       </div>
+     </header>
 
-      <main style={{ 
-        flex: 1, 
-        maxWidth: '1200px', 
-        margin: '0 auto', 
-        padding: '1.5rem 1rem' 
-      }}>
-        
-        <div style={{ marginBottom: '1.5rem' }}>
-          <h1 style={{ marginBottom: '0.5rem', fontSize: '1.8rem' }}>Administrator Dashboard</h1>
-          <p style={{ color: '#6c757d', fontSize: '1.1rem' }}>
-            Overview of all schools and their progress through the program.
-          </p>
-        </div>
+     <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
+       
+       <div style={{ marginBottom: '1.5rem' }}>
+         <h1 style={{ marginBottom: '0.5rem', fontSize: '1.8rem' }}>Administrator Dashboard</h1>
+         <p style={{ color: '#6c757d', fontSize: '1.1rem' }}>
+           Overview of all schools and their progress through the program.
+         </p>
+       </div>
 
-        <div style={{ 
-          display: 'flex', 
-          gap: '1rem', 
-          marginBottom: '3rem',
-          justifyContent: 'center',
-          flexWrap: 'wrap'
-        }}>
-          {(Object.keys(statusCounts) as SelectedStatus[]).map((status) => (
-            <div
-              key={status}
-              onClick={() => setSelectedStatus(status)}
-              style={{
-                background: '#fff',
-                color: '#333',
-                border: `2px solid ${selectedStatus === status ? '#ffd700' : '#e0e6ed'}`,
-                borderRadius: '8px',
-                padding: '1rem 1.5rem',
-                textAlign: 'center',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                width: '160px',
-                height: '80px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}
-            >
-              <div style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>
-                {statusCounts[status]}
-              </div>
-              <div style={{ fontSize: '0.75rem', fontWeight: '600', letterSpacing: '0.5px', lineHeight: '1.2', paddingBottom: '0.5rem' }}>
-                {getStatusLabel(status).toUpperCase()}
-              </div>
-            </div>
-          ))}
-        </div>
+       {error && (
+         <div className="alert alert-error" style={{ marginBottom: '2rem' }}>
+           <strong>Error:</strong> {error}
+           <button 
+             onClick={fetchAllSchools}
+             style={{ marginLeft: '1rem', padding: '0.25rem 0.5rem' }}
+           >
+             Retry
+           </button>
+         </div>
+       )}
 
-        {renderFilters()}
+       <div style={{ 
+         display: 'flex', 
+         gap: '1rem', 
+         marginBottom: '3rem',
+         justifyContent: 'center',
+         flexWrap: 'wrap'
+       }}>
+         {(Object.keys(statusCounts) as SelectedStatus[]).map((status) => (
+           <div
+             key={status}
+             onClick={() => setSelectedStatus(status)}
+             style={{
+               background: '#fff',
+               color: '#333',
+               border: `2px solid ${selectedStatus === status ? '#ffd700' : '#e0e6ed'}`,
+               borderRadius: '8px',
+               padding: '1rem 1.5rem',
+               textAlign: 'center',
+               cursor: 'pointer',
+               transition: 'all 0.2s ease',
+               boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+               width: '160px',
+               height: '80px',
+               display: 'flex',
+               flexDirection: 'column',
+               justifyContent: 'center',
+               alignItems: 'center'
+             }}
+           >
+             <div style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>
+               {statusCounts[status]}
+             </div>
+             <div style={{ fontSize: '0.75rem', fontWeight: '600', letterSpacing: '0.5px', lineHeight: '1.2', paddingBottom: '0.5rem' }}>
+               {getStatusLabel(status).toUpperCase()}
+             </div>
+           </div>
+         ))}
+       </div>
 
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
-          <button 
-            onClick={fetchAllSchools}
-            disabled={isLoading}
-            style={{
-              padding: '0.5rem 1rem',
-              border: '1px solid #6c757d',
-              borderRadius: '4px',
-              backgroundColor: '#6c757d',
-              color: 'white',
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              fontSize: '0.9rem'
-            }}
-          >
-            {isLoading ? '🔄 Loading...' : '🔄 Refresh Data'}
-          </button>
-        </div>
+       {renderFilters()}
 
-        {renderStatusContent()}
+       <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
+         <button 
+           onClick={fetchAllSchools}
+           className="btn btn-secondary"
+           disabled={isLoading}
+         >
+           {isLoading ? '🔄 Loading...' : '🔄 Refresh Data'}
+         </button>
+         
+         <Link 
+           href="/api/admin/seed-data"
+           className="btn btn-primary"
+         >
+           🌱 Seed Test Data
+         </Link>
 
-      </main>
+         <Link 
+           href="/api/admin/clear-data"
+           className="btn"
+           style={{ backgroundColor: '#dc3545', color: 'white' }}
+         >
+           🗑️ Clear All Data
+         </Link>
+       </div>
 
-      {showConfirmDialog && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000
-        }}>
-          <div style={{
-            backgroundColor: 'white',
-            padding: '30px',
-            borderRadius: '8px',
-            maxWidth: '500px',
-            width: '90%'
-          }}>
-            <h3 style={{ margin: '0 0 20px 0', color: '#333' }}>
-              Confirm School Match
-            </h3>
-            
-            {showWarning && (
-              <div style={{
-                backgroundColor: '#fff3cd',
-                border: '1px solid #ffeaa7',
-                borderRadius: '4px',
-                padding: '10px',
-                marginBottom: '15px',
-                color: '#856404'
-              }}>
-                ⚠️ Warning: Both schools are in the same region ({pinnedSchool?.region}). 
-                Cross-regional matches are preferred for this program.
-              </div>
-            )}
-            
-            <div style={{ marginBottom: '20px' }}>
-              <div style={{ marginBottom: '15px', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
-                <strong>{pinnedSchool?.schoolName}</strong><br />
-                <span style={{ fontSize: '14px', color: '#666' }}>
-                  {pinnedSchool?.region} | {pinnedSchool?.studentCounts.ready} students | Starts {pinnedSchool?.startMonth}
-                </span>
-              </div>
-              
-              <div style={{ textAlign: 'center', margin: '10px 0' }}>↕️</div>
-              
-              <div style={{ padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
-                <strong>{selectedMatch?.schoolName}</strong><br />
-                <span style={{ fontSize: '14px', color: '#666' }}>
-                  {selectedMatch?.region} | {selectedMatch?.studentCounts.ready} students | Starts {selectedMatch?.startMonth}
-                </span>
-              </div>
-            </div>
-            
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-              <button
-                onClick={() => {
-                  setShowConfirmDialog(false);
-                  setSelectedMatch(null);
-                  setShowWarning(false);
-                }}
-                style={{
-                  padding: '10px 20px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  backgroundColor: 'white',
-                  cursor: 'pointer'
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmMatch}
-                style={{
-                  padding: '10px 20px',
-                  border: 'none',
-                  borderRadius: '4px',
-                  backgroundColor: '#2196f3',
-                  color: 'white',
-                  cursor: 'pointer'
-                }}
-              >
-                Confirm Match
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+       {renderStatusContent()}
 
-      <footer style={{ 
-        backgroundColor: '#343a40', 
-        color: 'white', 
-        padding: '2rem 0', 
-        marginTop: '3rem',
-        textAlign: 'center'
-      }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1rem' }}>
-          <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
-        </div>
-      </footer>
-    </div>
-  );
+     </main>
+
+     {/* Confirmation Dialog */}
+     {showConfirmDialog && (
+       <div style={{
+         position: 'fixed',
+         top: 0,
+         left: 0,
+         right: 0,
+         bottom: 0,
+         backgroundColor: 'rgba(0,0,0,0.5)',
+         display: 'flex',
+         alignItems: 'center',
+         justifyContent: 'center',
+         zIndex: 1000
+       }}>
+         <div style={{
+           backgroundColor: 'white',
+           padding: '30px',
+           borderRadius: '8px',
+           maxWidth: '500px',
+           width: '90%'
+         }}>
+           <h3 style={{ margin: '0 0 20px 0', color: '#333' }}>
+             Confirm School Match
+           </h3>
+           
+           {showWarning && (
+             <div style={{
+               backgroundColor: '#fff3cd',
+               border: '1px solid #ffeaa7',
+               borderRadius: '4px',
+               padding: '10px',
+               marginBottom: '15px',
+               color: '#856404'
+             }}>
+               ⚠️ Warning: Both schools are in the same region ({pinnedSchool?.region}). 
+               Cross-regional matches are preferred for this program.
+             </div>
+           )}
+           
+           <div style={{ marginBottom: '20px' }}>
+             <div style={{ marginBottom: '15px', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
+               <strong>{pinnedSchool?.schoolName}</strong><br />
+               <span style={{ fontSize: '14px', color: '#666' }}>
+                 {pinnedSchool?.region} | {pinnedSchool?.studentCounts.ready} students | Starts {pinnedSchool?.startMonth}
+               </span>
+             </div>
+             
+             <div style={{ textAlign: 'center', margin: '10px 0' }}>↕️</div>
+             
+             <div style={{ padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
+               <strong>{selectedMatch?.schoolName}</strong><br />
+               <span style={{ fontSize: '14px', color: '#666' }}>
+                 {selectedMatch?.region} | {selectedMatch?.studentCounts.ready} students | Starts {selectedMatch?.startMonth}
+               </span>
+             </div>
+           </div>
+           
+           <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+             <button
+               onClick={() => {
+                 setShowConfirmDialog(false);
+                 setSelectedMatch(null);
+                 setShowWarning(false);
+               }}
+               style={{
+                 padding: '10px 20px',
+                 border: '1px solid #ccc',
+                 borderRadius: '4px',
+                 backgroundColor: 'white',
+                 cursor: 'pointer'
+               }}
+             >
+               Cancel
+             </button>
+             <button
+               onClick={confirmMatch}
+               style={{
+                 padding: '10px 20px',
+                 border: 'none',
+                 borderRadius: '4px',
+                 backgroundColor: '#2196f3',
+                 color: 'white',
+                 cursor: 'pointer'
+               }}
+             >
+               Confirm Match
+             </button>
+           </div>
+         </div>
+       </div>
+     )}
+
+     <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
+       <div className="container text-center">
+         <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
+       </div>
+     </footer>
+   </div>
+ );
 }
