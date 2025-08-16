@@ -18,6 +18,7 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [selectedMatch, setSelectedMatch] = useState<School | null>(null);
   const [showWarning, setShowWarning] = useState(false);
+  const [isMatched, setIsMatched] = useState(false);
 
   // Filter state - ENHANCED with search fields
   const [filters, setFilters] = useState<Filters>({
@@ -161,6 +162,7 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
       setShowWarning(false);
     }
     
+    setIsMatched(false);
     setShowConfirmDialog(true);
   };
 
@@ -182,23 +184,37 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
       // Notify parent component
       onSchoolsUpdate(updatedSchools);
       
-      // Reset state
-      setPinnedSchool(null);
-      setShowConfirmDialog(false);
-      setSelectedMatch(null);
-      setShowWarning(false);
-      
-      // Ask about pen pal assignment
-      const assignPenPals = window.confirm(
-        'Schools matched successfully! Do you want to assign pen pals now?'
-      );
-      
-      if (assignPenPals) {
-        window.location.href = `/admin/matching/students?school1=${pinnedSchool.id}&school2=${selectedMatch.id}`;
-      }
+      // Set matched state to show new buttons
+      setIsMatched(true);
       
     } catch (err) {
       console.error('Error matching schools:', err);
+      alert('Error matching schools. Please try again.');
+    }
+  };
+
+  const handleAssignPenPals = async () => {
+    if (!pinnedSchool || !selectedMatch) return;
+
+    try {
+      // TODO: Replace with actual API call to assign pen pals
+      console.log('Assigning pen pals for schools:', pinnedSchool.id, selectedMatch.id);
+      
+      // Close dialog after 1 second delay
+      setTimeout(() => {
+        setShowConfirmDialog(false);
+        setSelectedMatch(null);
+        setShowWarning(false);
+        setIsMatched(false);
+        setPinnedSchool(null);
+        
+        // Stay on current page and refresh (parent will handle this)
+        // The user should see the MATCHED status view
+      }, 1000);
+      
+    } catch (err) {
+      console.error('Error assigning pen pals:', err);
+      alert('Error assigning pen pals. Please try again.');
     }
   };
 
@@ -206,6 +222,7 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
     setShowConfirmDialog(false);
     setSelectedMatch(null);
     setShowWarning(false);
+    setIsMatched(false);
   };
 
   // Update filtered schools when schools prop changes
@@ -323,8 +340,10 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
           pinnedSchool={pinnedSchool}
           selectedMatch={selectedMatch}
           showWarning={showWarning}
+          isMatched={isMatched}
           onConfirm={confirmMatch}
           onCancel={cancelMatch}
+          onAssignPenPals={handleAssignPenPals}
         />
       )}
     </div>
