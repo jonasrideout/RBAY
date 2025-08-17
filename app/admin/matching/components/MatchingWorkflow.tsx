@@ -5,7 +5,7 @@ import React from 'react';
 import SchoolCard from './SchoolCard';
 import FilterBar from './FilterBar';
 import ConfirmationDialog from './ConfirmationDialog';
-import { School, Filters } from '../types';
+import { School, Filters, SelectedStatus } from '../types';
 
 interface MatchingWorkflowProps {
   schools: School[];
