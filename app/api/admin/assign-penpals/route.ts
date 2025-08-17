@@ -15,18 +15,24 @@ export async function POST(request: NextRequest) {
     }
 
     // DEBUG: Log what we're looking for
-    console.log('=== DEBUG assign-penpals ===');
+    console.log('=== ENHANCED DEBUG assign-penpals ===');
     console.log('Received payload:', { school1Id, school2Id });
-    console.log('school1Id type:', typeof school1Id);
-    console.log('school2Id type:', typeof school2Id);
-    console.log('school1Id length:', school1Id.length);
-    console.log('school2Id length:', school2Id.length);
+    console.log('school1Id type:', typeof school1Id, 'length:', school1Id.length);
+    console.log('school2Id type:', typeof school2Id, 'length:', school2Id.length);
+    
+    // Character-by-character analysis
+    console.log('school1Id chars:', school1Id.split('').map((c, i) => `${i}:${c}`));
+    console.log('school2Id chars:', school2Id.split('').map((c, i) => `${i}:${c}`));
 
     // DEBUG: Check if schools exist at all
     const allSchools = await prisma.school.findMany({
       select: { id: true, schoolName: true, status: true }
     });
-    console.log('All schools in database:', allSchools);
+    console.log('=== ALL SCHOOLS IN DATABASE ===');
+    allSchools.forEach((school, index) => {
+      console.log(`${index}: ID="${school.id}" NAME="${school.schoolName}" STATUS="${school.status}"`);
+      console.log(`   ID length: ${school.id.length}, chars: ${school.id.split('').slice(0, 10).join('')}...`);
+    });
     console.log('Total schools found:', allSchools.length);
 
     // DEBUG: Check exact ID matches
@@ -38,8 +44,27 @@ export async function POST(request: NextRequest) {
     if (school1Exists) console.log('school1 details:', school1Exists);
     if (school2Exists) console.log('school2 details:', school2Exists);
 
+    // DEBUG: String comparison analysis
+    if (!school1Exists) {
+      console.log('=== SCHOOL1 ID COMPARISON ===');
+      allSchools.forEach(school => {
+        const match = school.id === school1Id;
+        const startsSame = school.id.substring(0, 5) === school1Id.substring(0, 5);
+        console.log(`DB: "${school.id}" vs SENT: "${school1Id}" - Match: ${match}, StartsSame: ${startsSame}`);
+      });
+    }
+
+    if (!school2Exists) {
+      console.log('=== SCHOOL2 ID COMPARISON ===');
+      allSchools.forEach(school => {
+        const match = school.id === school2Id;
+        const startsSame = school.id.substring(0, 5) === school2Id.substring(0, 5);
+        console.log(`DB: "${school.id}" vs SENT: "${school2Id}" - Match: ${match}, StartsSame: ${startsSame}`);
+      });
+    }
+
     // DEBUG: Try direct prisma queries
-    console.log('Attempting individual Prisma queries...');
+    console.log('=== ATTEMPTING INDIVIDUAL PRISMA QUERIES ===');
     const directSchool1 = await prisma.school.findUnique({ where: { id: school1Id } });
     const directSchool2 = await prisma.school.findUnique({ where: { id: school2Id } });
     console.log('Direct query school1:', directSchool1 ? 'FOUND' : 'NOT FOUND');
@@ -75,11 +100,26 @@ export async function POST(request: NextRequest) {
     console.log('Found school2 with students:', school2 ? school2.schoolName : 'NOT FOUND');
 
     if (!school1 || !school2) {
-      console.log('ERROR: School lookup failed');
+      console.log('=== ERROR: School lookup failed ===');
       console.log('school1 result:', school1);
       console.log('school2 result:', school2);
+      
+      // Additional debugging: Check prisma client status
+      console.log('Prisma client status check...');
+      const testQuery = await prisma.school.count();
+      console.log('Total schools via count():', testQuery);
+      
       return NextResponse.json(
-        { error: 'One or both schools not found' },
+        { 
+          error: 'One or both schools not found',
+          debug: {
+            school1Id,
+            school2Id,
+            school1Found: !!school1,
+            school2Found: !!school2,
+            totalSchoolsInDb: allSchools.length
+          }
+        },
         { status: 404 }
       );
     }
