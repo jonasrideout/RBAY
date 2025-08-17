@@ -43,6 +43,33 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
     { label: 'Over 50', min: 51, max: 999 }
   ];
 
+  // FIXED: Update pinned/selected schools when data refreshes to prevent stale ID issues
+  useEffect(() => {
+    if (pinnedSchool) {
+      // Find the same school in the updated schools array by name (more reliable than ID)
+      const updatedPinnedSchool = schools.find(s => 
+        s.schoolName === pinnedSchool.schoolName && 
+        s.teacherEmail === pinnedSchool.teacherEmail
+      );
+      if (updatedPinnedSchool && updatedPinnedSchool.id !== pinnedSchool.id) {
+        console.log('Updating pinned school ID:', pinnedSchool.id, '->', updatedPinnedSchool.id);
+        setPinnedSchool(updatedPinnedSchool);
+      }
+    }
+    
+    if (selectedMatch) {
+      // Find the same school in the updated schools array by name (more reliable than ID)
+      const updatedSelectedMatch = schools.find(s => 
+        s.schoolName === selectedMatch.schoolName && 
+        s.teacherEmail === selectedMatch.teacherEmail
+      );
+      if (updatedSelectedMatch && updatedSelectedMatch.id !== selectedMatch.id) {
+        console.log('Updating selected match ID:', selectedMatch.id, '->', updatedSelectedMatch.id);
+        setSelectedMatch(updatedSelectedMatch);
+      }
+    }
+  }, [schools]);
+
   // Get all ready schools, excluding the pinned one
   const getAvailableSchools = () => {
     let availableSchools = schools.filter(school => school.status === 'READY');
@@ -187,6 +214,11 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
     if (!pinnedSchool || !selectedMatch) return;
 
     try {
+      console.log('Assigning pen pals with current IDs:', {
+        pinnedSchoolId: pinnedSchool.id,
+        selectedMatchId: selectedMatch.id
+      });
+
       // UPDATED: Make actual API call to assign pen pals (which also updates school statuses)
       const response = await fetch('/api/admin/assign-penpals', {
         method: 'POST',
