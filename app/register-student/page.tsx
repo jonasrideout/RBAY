@@ -11,6 +11,7 @@ interface StudentFormData {
   grade: string;
   interests: string[];
   otherInterests: string;
+  penpalPreference: 'ONE' | 'MULTIPLE';
   parentName: string;
   parentEmail: string;
   parentConsent: boolean;
@@ -50,6 +51,7 @@ function RegisterStudentForm() {
     grade: '',
     interests: [],
     otherInterests: '',
+    penpalPreference: 'ONE',
     parentName: '',
     parentEmail: '',
     parentConsent: false
@@ -354,6 +356,76 @@ function RegisterStudentForm() {
             onChange={(e) => updateFormData('otherInterests', e.target.value)}
             disabled={isLoading}
           />
+        </div>
+
+        {/* NEW: Pen Pal Preference Section */}
+        <div className="form-group">
+          <label className="form-label">Pen Pal Preference</label>
+          <p style={{ color: '#6c757d', fontSize: '0.9rem', marginBottom: '1rem' }}>
+            Would you like to have one pen pal or would you be excited to write to multiple pen pals?
+          </p>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <label style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.75rem', 
+              padding: '1rem', 
+              border: formData.penpalPreference === 'ONE' ? '2px solid #2196f3' : '1px solid #dee2e6',
+              borderRadius: '8px', 
+              cursor: 'pointer',
+              backgroundColor: formData.penpalPreference === 'ONE' ? '#f0f8ff' : 'white',
+              transition: 'all 0.2s ease'
+            }}>
+              <input 
+                type="radio" 
+                name="penpalPreference"
+                value="ONE"
+                checked={formData.penpalPreference === 'ONE'}
+                onChange={() => updateFormData('penpalPreference', 'ONE')}
+                disabled={isLoading}
+                style={{ fontSize: '1.1rem' }}
+              />
+              <div>
+                <div style={{ fontWeight: '500', marginBottom: '0.25rem' }}>
+                  📝 I'd prefer just one pen pal
+                </div>
+                <div style={{ fontSize: '0.85rem', color: '#6c757d' }}>
+                  Focus on building one great friendship
+                </div>
+              </div>
+            </label>
+            
+            <label style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.75rem', 
+              padding: '1rem', 
+              border: formData.penpalPreference === 'MULTIPLE' ? '2px solid #2196f3' : '1px solid #dee2e6',
+              borderRadius: '8px', 
+              cursor: 'pointer',
+              backgroundColor: formData.penpalPreference === 'MULTIPLE' ? '#f0f8ff' : 'white',
+              transition: 'all 0.2s ease'
+            }}>
+              <input 
+                type="radio" 
+                name="penpalPreference"
+                value="MULTIPLE"
+                checked={formData.penpalPreference === 'MULTIPLE'}
+                onChange={() => updateFormData('penpalPreference', 'MULTIPLE')}
+                disabled={isLoading}
+                style={{ fontSize: '1.1rem' }}
+              />
+              <div>
+                <div style={{ fontWeight: '500', marginBottom: '0.25rem' }}>
+                  ✉️ I'd love multiple pen pals if possible!
+                </div>
+                <div style={{ fontSize: '0.85rem', color: '#6c757d' }}>
+                  I'm excited to write to 2-3 different students
+                </div>
+              </div>
+            </label>
+          </div>
         </div>
 
         <div className="card" style={{ background: '#f8f9fa', padding: '1.5rem', margin: '1.5rem 0' }}>
