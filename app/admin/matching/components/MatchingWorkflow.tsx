@@ -195,12 +195,19 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
       
       // FIXED: Update school statuses here after pen pals are assigned
       const updatedSchools = schools.map(school => {
-        if (school.id === pinnedSchool.id || school.id === selectedMatch.id) {
+        if (school.id === pinnedSchool.id) {
           return { 
             ...school, 
             status: 'MATCHED' as const,
-            matchedWithSchoolId: school.id === pinnedSchool.id ? selectedMatch.id : pinnedSchool.id,
-            matchedSchool: school.id === pinnedSchool.id ? selectedMatch : pinnedSchool
+            matchedWithSchoolId: selectedMatch.id,
+            matchedSchool: { ...selectedMatch }  // Create complete copy
+          };
+        } else if (school.id === selectedMatch.id) {
+          return { 
+            ...school, 
+            status: 'MATCHED' as const,
+            matchedWithSchoolId: pinnedSchool.id,
+            matchedSchool: { ...pinnedSchool }  // Create complete copy
           };
         }
         return school;
