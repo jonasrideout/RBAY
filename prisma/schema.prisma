@@ -18,6 +18,11 @@ enum SchoolStatus {
   DONE
 }
 
+enum PenpalPreference {
+  ONE
+  MULTIPLE
+}
+
 model School {
   id                    String        @id @default(cuid())
   // Teacher information
@@ -66,38 +71,41 @@ model School {
 }
 
 model Student {
-  id                    String          @id @default(cuid())
+  id                    String            @id @default(cuid())
   firstName             String
   lastName              String
   grade                 String
-  interests             String[]        @default([])
+  interests             String[]          @default([])
+  
+  // NEW: Pen pal preference
+  penpalPreference      PenpalPreference  @default(ONE)
   
   // Parent information
   parentFirstName       String
   parentLastName        String
   parentEmail           String
   parentPhone           String?
-  parentConsent         Boolean         @default(false)
+  parentConsent         Boolean           @default(false)
   
   // Status tracking
-  isActive              Boolean         @default(true)
-  profileCompleted      Boolean         @default(false) // New field to track completion
+  isActive              Boolean           @default(true)
+  profileCompleted      Boolean           @default(false) // New field to track completion
   
   // School relationship
-  school                School          @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  school                School            @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   schoolId              String
   
   // Penpal relationships
-  sentPenpals           StudentPenpal[] @relation("SentPenpals")
-  receivedPenpals       StudentPenpal[] @relation("ReceivedPenpals")
+  sentPenpals           StudentPenpal[]   @relation("SentPenpals")
+  receivedPenpals       StudentPenpal[]   @relation("ReceivedPenpals")
   
   // Letters
-  sentLetters           Letter[]        @relation("SentLetters")
-  receivedLetters       Letter[]        @relation("ReceivedLetters")
+  sentLetters           Letter[]          @relation("SentLetters")
+  receivedLetters       Letter[]          @relation("ReceivedLetters")
   
   // Timestamps
-  createdAt             DateTime        @default(now())
-  updatedAt             DateTime        @updatedAt
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
   
   @@map("students")
 }
