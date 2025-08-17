@@ -128,6 +128,43 @@ export default function AdminDashboard() {
     }
   };
 
+  // FIXED: Added handlers for seed and clear operations
+  const handleSeedData = async () => {
+    if (confirm('This will create test schools. Continue?')) {
+      try {
+        const response = await fetch('/api/admin/seed-data');
+        const data = await response.json();
+        
+        if (response.ok) {
+          alert('Test data seeded successfully!');
+          await fetchAllSchools(); // Refresh the data
+        } else {
+          alert('Error seeding data: ' + (data.error || 'Unknown error'));
+        }
+      } catch (err) {
+        alert('Error seeding data: ' + err);
+      }
+    }
+  };
+
+  const handleClearData = async () => {
+    if (confirm('This will permanently delete ALL schools and students. Are you sure?')) {
+      try {
+        const response = await fetch('/api/admin/clear-data');
+        const data = await response.json();
+        
+        if (response.ok) {
+          alert('All data cleared successfully!');
+          await fetchAllSchools(); // Refresh the data
+        } else {
+          alert('Error clearing data: ' + (data.error || 'Unknown error'));
+        }
+      } catch (err) {
+        alert('Error clearing data: ' + err);
+      }
+    }
+  };
+
   const renderMatchedPairs = () => {
     const matchedSchools = getSchoolsByStatus('MATCHED');
     const pairs: [School, School][] = [];
@@ -491,20 +528,22 @@ export default function AdminDashboard() {
             {isLoading ? '🔄 Loading...' : '🔄 Refresh Data'}
           </button>
           
-          <Link 
-            href="/api/admin/seed-data"
+          {/* FIXED: Changed from Link to button to prevent auto-navigation */}
+          <button 
+            onClick={handleSeedData}
             className="btn btn-primary"
           >
             🌱 Seed Test Data
-          </Link>
+          </button>
 
-          <Link 
-            href="/api/admin/clear-data"
+          {/* FIXED: Changed from Link to button to prevent auto-navigation */}
+          <button 
+            onClick={handleClearData}
             className="btn"
             style={{ backgroundColor: '#dc3545', color: 'white' }}
           >
             🗑️ Clear All Data
-          </Link>
+          </button>
         </div>
 
         {renderStatusContent()}
