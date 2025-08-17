@@ -207,9 +207,8 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
       const result = await response.json();
       console.log('Pen pals assigned successfully:', result);
 
-      // UPDATED: Refresh data from server instead of manipulating local state
-      // This ensures we get the latest data including the MATCHED status
-      await onSchoolsUpdate([]);  // This will trigger a fresh fetch in the parent component
+      // FIXED: Just refresh data from server without manipulating local state
+      await onSchoolsUpdate([]);  // Empty array triggers fresh fetch in parent
       
       // Close dialog and reset state after successful assignment
       setTimeout(() => {
