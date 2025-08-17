@@ -15,7 +15,7 @@ const testDatabases = async () => {
       const schoolCount = await prisma1.school.count();
       const sampleSchools = await prisma1.school.findMany({ 
         take: 3,
-        select: { id: true, name: true, region: true, status: true }
+        select: { id: true, schoolName: true, region: true, status: true }
       });
       await prisma1.$disconnect();
       
@@ -42,7 +42,7 @@ const testDatabases = async () => {
       const schoolCount = await prisma2.school.count();
       const sampleSchools = await prisma2.school.findMany({ 
         take: 3,
-        select: { id: true, name: true, region: true, status: true }
+        select: { id: true, schoolName: true, region: true, status: true }
       });
       await prisma2.$disconnect();
       
@@ -69,7 +69,7 @@ const testDatabases = async () => {
       const schoolCount = await prisma3.school.count();
       const sampleSchools = await prisma3.school.findMany({ 
         take: 3,
-        select: { id: true, name: true, region: true, status: true }
+        select: { id: true, schoolName: true, region: true, status: true }
       });
       await prisma3.$disconnect();
       
@@ -115,7 +115,7 @@ export async function GET() {
     const currentSchoolCount = await prisma.school.count();
     const currentSampleSchools = await prisma.school.findMany({ 
       take: 5,
-      select: { id: true, name: true, region: true, status: true }
+      select: { id: true, schoolName: true, region: true, status: true }
     });
 
     const diagnosticReport = {
