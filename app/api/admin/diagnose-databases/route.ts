@@ -135,7 +135,7 @@ export async function GET() {
       .filter((result: any) => result.status === 'connected')
       .map((result: any) => result.schoolCount);
     
-    const maxSchools = Math.max(...schoolCounts);
+    const maxSchools = schoolCounts.length > 0 ? Math.max(...schoolCounts) : 0;
     const databasesWithData = Object.entries(databaseResults)
       .filter(([_, result]: [string, any]) => result.status === 'connected' && result.schoolCount > 0);
 
