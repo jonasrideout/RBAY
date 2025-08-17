@@ -49,12 +49,28 @@ export async function GET() {
       };
       
       // Check if this database contains the specific schools from your error
-      const hasTargetSchools = schools.some(s => 
-        s.id === 'cmeg2tg120021g5qo08deevqt' || 
-        s.id === 'cmeg2tg2k0032g5qod2nbip5u'
-      );
+      const targetSchoolIds = [
+        'cmeg2tg120021g5qo08deevqt', 
+        'cmeg2tg2k0032g5qod2nbip5u',
+        'cmeg2tsr700h4g5qoq3ck6127', // Pacific Elementary
+        'cmeg2tst800i5g5qo4oqbkfdi'  // Northeast Academy
+      ];
       
-      if (hasTargetSchools) {
+      const hasTargetSchools = schools.some(s => targetSchoolIds.includes(s.id));
+      
+      // Check for current schools specifically
+      const currentTargetSchools = await testPrisma.school.findMany({
+        where: {
+          id: {
+            in: ['cmeg2tsr700h4g5qoq3ck6127', 'cmeg2tst800i5g5qo4oqbkfdi']
+          }
+        },
+        select: { id: true, schoolName: true, status: true }
+      });
+      
+      results[name].currentTargetSchools = currentTargetSchools;
+      
+      if (hasTargetSchools || currentTargetSchools.length > 0) {
         results[name].hasTargetSchools = true;
       }
       
@@ -95,7 +111,9 @@ export async function GET() {
     timestamp: new Date().toISOString(),
     targetSchoolIds: [
       'cmeg2tg120021g5qo08deevqt', 
-      'cmeg2tg2k0032g5qod2nbip5u'
+      'cmeg2tg2k0032g5qod2nbip5u',
+      'cmeg2tsr700h4g5qoq3ck6127', // Pacific Elementary  
+      'cmeg2tst800i5g5qo4oqbkfdi'  // Northeast Academy
     ],
     databaseResults: results,
     recommendation: 'Look for the database that contains the most schools or the target school IDs'
