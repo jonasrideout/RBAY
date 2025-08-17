@@ -49,10 +49,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify schools are matched
-    if (school1.status !== 'MATCHED' || school2.status !== 'MATCHED') {
+    // UPDATED: Accept schools in READY status and update them to MATCHED
+    if (school1.status !== 'READY' && school1.status !== 'MATCHED') {
       return NextResponse.json(
-        { error: 'Schools must be in MATCHED status to assign pen pals' },
+        { error: `School ${school1.schoolName} must be in READY status to be matched` },
+        { status: 400 }
+      );
+    }
+
+    if (school2.status !== 'READY' && school2.status !== 'MATCHED') {
+      return NextResponse.json(
+        { error: `School ${school2.schoolName} must be in READY status to be matched` },
         { status: 400 }
       );
     }
@@ -83,6 +90,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // ADDED: Update both schools to MATCHED status and set their matchedWithSchoolId
+    await Promise.all([
+      prisma.school.update({
+        where: { id: school1Id },
+        data: { 
+          status: 'MATCHED',
+          matchedWithSchoolId: school2Id
+        }
+      }),
+      prisma.school.update({
+        where: { id: school2Id },
+        data: { 
+          status: 'MATCHED',
+          matchedWithSchoolId: school1Id
+        }
+      })
+    ]);
+
     // Generate student matches using the matching algorithm
     const matches = matchStudents(school1Students, school2Students);
     const summary = generateMatchingSummary(matches, school1Students, school2Students);
@@ -100,17 +125,27 @@ export async function POST(request: NextRequest) {
       )
     );
 
-    // TODO: After pen pals are assigned, schools could transition to CORRESPONDING status
-    // For now, we'll leave them in MATCHED status
-
+    // Return success with updated school info
     return NextResponse.json({
       success: true,
-      message: 'Pen pals assigned successfully',
+      message: 'Schools matched and pen pals assigned successfully',
       data: {
         totalMatches: matches.length,
         matches: matches,
         summary: summary,
-        penpalRecords: penpalRecords.length
+        penpalRecords: penpalRecords.length,
+        school1: {
+          id: school1Id,
+          name: school1.schoolName,
+          status: 'MATCHED',
+          matchedWithSchoolId: school2Id
+        },
+        school2: {
+          id: school2Id,
+          name: school2.schoolName,
+          status: 'MATCHED',
+          matchedWithSchoolId: school1Id
+        }
       }
     });
 
