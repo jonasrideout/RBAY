@@ -273,7 +273,7 @@ export default function AdminDashboard() {
                   {/* 3-Column Layout */}
                   <div style={{
                     display: 'grid',
-                    gridTemplateColumns: '1fr 1fr auto',
+                    gridTemplateColumns: '1fr 1fr 220px',
                     gap: '1.5rem',
                     alignItems: 'center'
                   }}>
@@ -332,7 +332,8 @@ export default function AdminDashboard() {
                       display: 'flex',
                       flexDirection: 'column',
                       gap: '0.5rem',
-                      minWidth: '180px'
+                      width: '220px',
+                      minWidth: '220px'
                     }}>
                       {/* CONDITIONAL: Show Assign button if no assignments, hide if assignments exist */}
                       {!hasAssignments ? (
