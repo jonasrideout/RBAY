@@ -53,10 +53,16 @@ export default function AdminDashboard() {
   }; // FIXED: Added missing closing brace and semicolon
 
   const handleSchoolsUpdate = async (updatedSchools: School[]) => {
-    // 1. Update local state immediately for instant UI update
+    // UPDATED: If empty array is passed, just refresh from API
+    if (updatedSchools.length === 0) {
+      await fetchAllSchools();
+      return Promise.resolve();
+    }
+    
+    // Otherwise, update local state (for other use cases)
     setSchools(updatedSchools);
     
-    // 2. Calculate and update status counts locally for immediate feedback
+    // Calculate and update status counts locally
     const newStatusCounts = updatedSchools.reduce((counts, school) => {
       counts[school.status] = (counts[school.status] || 0) + 1;
       return counts;
@@ -69,14 +75,12 @@ export default function AdminDashboard() {
     });
     setStatusCounts(newStatusCounts);
     
-    // 3. Sync with API in background and wait for completion
+    // Sync with API in background
     try {
       await fetchAllSchools();
-      // Return success - MatchingWorkflow can now switch tabs
       return Promise.resolve();
     } catch (error) {
       console.error('Failed to sync with API:', error);
-      // Even if API sync fails, we have local state updated
       return Promise.resolve();
     }
   };
