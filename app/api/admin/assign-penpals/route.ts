@@ -19,12 +19,31 @@ export async function POST(request: NextRequest) {
     console.log('Received payload:', { school1Id, school2Id });
     console.log('school1Id type:', typeof school1Id);
     console.log('school2Id type:', typeof school2Id);
+    console.log('school1Id length:', school1Id.length);
+    console.log('school2Id length:', school2Id.length);
 
     // DEBUG: Check if schools exist at all
     const allSchools = await prisma.school.findMany({
       select: { id: true, schoolName: true, status: true }
     });
     console.log('All schools in database:', allSchools);
+    console.log('Total schools found:', allSchools.length);
+
+    // DEBUG: Check exact ID matches
+    const school1Exists = allSchools.find(s => s.id === school1Id);
+    const school2Exists = allSchools.find(s => s.id === school2Id);
+    console.log('school1Id exact match:', school1Exists ? 'FOUND' : 'NOT FOUND');
+    console.log('school2Id exact match:', school2Exists ? 'FOUND' : 'NOT FOUND');
+
+    if (school1Exists) console.log('school1 details:', school1Exists);
+    if (school2Exists) console.log('school2 details:', school2Exists);
+
+    // DEBUG: Try direct prisma queries
+    console.log('Attempting individual Prisma queries...');
+    const directSchool1 = await prisma.school.findUnique({ where: { id: school1Id } });
+    const directSchool2 = await prisma.school.findUnique({ where: { id: school2Id } });
+    console.log('Direct query school1:', directSchool1 ? 'FOUND' : 'NOT FOUND');
+    console.log('Direct query school2:', directSchool2 ? 'FOUND' : 'NOT FOUND');
 
     // Fetch schools with their students
     const [school1, school2] = await Promise.all([
@@ -52,11 +71,13 @@ export async function POST(request: NextRequest) {
       })
     ]);
 
-    console.log('Found school1:', school1 ? school1.schoolName : 'NOT FOUND');
-    console.log('Found school2:', school2 ? school2.schoolName : 'NOT FOUND');
+    console.log('Found school1 with students:', school1 ? school1.schoolName : 'NOT FOUND');
+    console.log('Found school2 with students:', school2 ? school2.schoolName : 'NOT FOUND');
 
     if (!school1 || !school2) {
       console.log('ERROR: School lookup failed');
+      console.log('school1 result:', school1);
+      console.log('school2 result:', school2);
       return NextResponse.json(
         { error: 'One or both schools not found' },
         { status: 404 }
