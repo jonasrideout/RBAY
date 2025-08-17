@@ -323,6 +323,7 @@ export default function AdminDashboard() {
         <MatchingWorkflow 
           schools={schools} 
           onSchoolsUpdate={handleSchoolsUpdate}
+          onTabChange={setSelectedStatus}
         />
       );
     }
