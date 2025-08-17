@@ -19,6 +19,8 @@ export default function AdminDashboard() {
   const [selectedStatus, setSelectedStatus] = useState<SelectedStatus>('COLLECTING');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  // NEW: Track which school pairs have pen pal assignments
+  const [pairAssignments, setPairAssignments] = useState<{[key: string]: boolean}>({});
 
   useEffect(() => {
     fetchAllSchools();
@@ -45,12 +47,51 @@ export default function AdminDashboard() {
         DONE: 0
       });
 
+      // NEW: Check pen pal assignments for matched schools
+      await checkPenPalAssignments(data.schools || []);
+
     } catch (err: any) {
       setError('Error fetching schools: ' + err.message);
     } finally {
       setIsLoading(false);
     }
-  }; // FIXED: Added missing closing brace and semicolon
+  };
+
+  // NEW: Function to check if pen pal assignments exist for school pairs
+  const checkPenPalAssignments = async (schoolsList: School[]) => {
+    const matchedSchools = schoolsList.filter(school => school.status === 'MATCHED');
+    const assignments: {[key: string]: boolean} = {};
+    
+    // Group schools into pairs and check each pair
+    const processed = new Set<string>();
+    
+    for (const school of matchedSchools) {
+      if (processed.has(school.id) || !school.matchedSchool) continue;
+      
+      const pairKey = [school.id, school.matchedSchool.id].sort().join('-');
+      
+      try {
+        // Check if any students from school1 have pen pal assignments with students from school2
+        const response = await fetch(`/api/admin/download-pairings?schoolId=${school.id}`);
+        if (response.ok) {
+          const data = await response.json();
+          // Check if any students have pen pal assignments
+          const hasAssignments = data.pairings && data.pairings.some((pairing: any) => pairing.penpal !== null);
+          assignments[pairKey] = hasAssignments;
+        } else {
+          assignments[pairKey] = false;
+        }
+      } catch (error) {
+        console.error(`Error checking assignments for ${pairKey}:`, error);
+        assignments[pairKey] = false;
+      }
+      
+      processed.add(school.id);
+      processed.add(school.matchedSchool.id);
+    }
+    
+    setPairAssignments(assignments);
+  };
 
   const handleSchoolsUpdate = async (updatedSchools: School[]) => {
     // UPDATED: If empty array is passed, just refresh from API
@@ -128,6 +169,19 @@ export default function AdminDashboard() {
     }
   };
 
+  // NEW: Function to handle download
+  const handleDownloadPairings = (schoolId: string, schoolName: string) => {
+    const downloadUrl = `/api/admin/download-pairings?schoolId=${schoolId}`;
+    
+    // Create a temporary link and click it to trigger download
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = `${schoolName}_pen_pal_assignments.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // FIXED: Added handlers for seed and clear operations
   const handleSeedData = async () => {
     if (confirm('This will create test schools. Continue?')) {
@@ -200,134 +254,163 @@ export default function AdminDashboard() {
             flexDirection: 'column', 
             gap: '1.5rem' 
           }}>
-            {pairs.map(([school1, school2], index) => (
-              <div 
-                key={`${school1.id}-${school2.id}`}
-                style={{
-                  background: '#fff',
-                  border: '1px solid #e0e6ed',
-                  borderRadius: '12px',
-                  padding: '1.5rem',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
-                }}
-              >
-                {/* 3-Column Layout */}
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr auto',
-                  gap: '1.5rem',
-                  alignItems: 'center'
-                }}>
-                  {/* School 1 */}
-                  <div style={{
-                    padding: '1rem',
-                    background: '#f8f9fa',
-                    borderRadius: '8px',
-                    border: '1px solid #dee2e6'
-                  }}>
-                    <h4 style={{ margin: '0 0 0.5rem 0', color: '#1a365d' }}>
-                      {school1.schoolName}
-                    </h4>
-                    <div style={{ fontSize: '0.9rem', color: '#4a5568', marginBottom: '0.5rem' }}>
-                      <strong>{school1.teacherFirstName} {school1.teacherLastName}</strong>
-                      <a 
-                        href={`mailto:${school1.teacherEmail}`}
-                        style={{ marginLeft: '0.5rem', textDecoration: 'none', opacity: 0.7 }}
-                        title={school1.teacherEmail}
-                      >
-                        ✉️
-                      </a>
-                    </div>
-                    <div style={{ fontSize: '0.85rem', color: '#718096' }}>
-                      <strong>{school1.region}</strong> | {school1.studentCounts?.ready || 0} students | Starts {school1.startMonth}
-                    </div>
-                  </div>
+            {pairs.map(([school1, school2], index) => {
+              // NEW: Check if this pair has pen pal assignments
+              const pairKey = [school1.id, school2.id].sort().join('-');
+              const hasAssignments = pairAssignments[pairKey] || false;
 
-                  {/* School 2 */}
+              return (
+                <div 
+                  key={`${school1.id}-${school2.id}`}
+                  style={{
+                    background: '#fff',
+                    border: '1px solid #e0e6ed',
+                    borderRadius: '12px',
+                    padding: '1.5rem',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                  }}
+                >
+                  {/* 3-Column Layout */}
                   <div style={{
-                    padding: '1rem',
-                    background: '#f8f9fa',
-                    borderRadius: '8px',
-                    border: '1px solid #dee2e6'
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr auto',
+                    gap: '1.5rem',
+                    alignItems: 'center'
                   }}>
-                    <h4 style={{ margin: '0 0 0.5rem 0', color: '#1a365d' }}>
-                      {school2.schoolName}
-                    </h4>
-                    <div style={{ fontSize: '0.9rem', color: '#4a5568', marginBottom: '0.5rem' }}>
-                      <strong>{school2.teacherFirstName} {school2.teacherLastName}</strong>
-                      <a 
-                        href={`mailto:${school2.teacherEmail}`}
-                        style={{ marginLeft: '0.5rem', textDecoration: 'none', opacity: 0.7 }}
-                        title={school2.teacherEmail}
-                      >
-                        ✉️
-                      </a>
-                    </div>
-                    <div style={{ fontSize: '0.85rem', color: '#718096' }}>
-                      <strong>{school2.region}</strong> | {school2.studentCounts?.ready || 0} students | Starts {school2.startMonth}
-                    </div>
-                  </div>
-
-                  {/* Actions Column */}
-                  <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '0.5rem',
-                    minWidth: '180px'
-                  }}>
-                    {/* Check if students are assigned - for now just show assign button */}
-                    <button
-                      onClick={() => handleAssignPenPals(school1.id, school2.id)}
-                      style={{
-                        backgroundColor: '#2563eb',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '6px',
-                        padding: '0.75rem 1rem',
-                        fontSize: '0.9rem',
-                        fontWeight: '500',
-                        cursor: 'pointer',
-                        whiteSpace: 'nowrap'
-                      }}
-                      onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#1d4ed8'}
-                      onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
-                    >
-                      Assign Pen Pals
-                    </button>
-
-                    {/* Placeholder download links - will be implemented later */}
-                    <div style={{ 
-                      display: 'none', // Hidden until pen pals are assigned
-                      flexDirection: 'column', 
-                      gap: '0.25rem' 
+                    {/* School 1 */}
+                    <div style={{
+                      padding: '1rem',
+                      background: '#f8f9fa',
+                      borderRadius: '8px',
+                      border: '1px solid #dee2e6'
                     }}>
-                      <a
-                        href={`/api/admin/download-pairings?schoolId=${school1.id}`}
-                        style={{
-                          color: '#2563eb',
-                          textDecoration: 'none',
-                          fontSize: '0.85rem',
-                          padding: '0.25rem'
-                        }}
-                      >
-                        📄 Download {school1.schoolName} List
-                      </a>
-                      <a
-                        href={`/api/admin/download-pairings?schoolId=${school2.id}`}
-                        style={{
-                          color: '#2563eb',
-                          textDecoration: 'none',
-                          fontSize: '0.85rem',
-                          padding: '0.25rem'
-                        }}
-                      >
-                        📄 Download {school2.schoolName} List
-                      </a>
+                      <h4 style={{ margin: '0 0 0.5rem 0', color: '#1a365d' }}>
+                        {school1.schoolName}
+                      </h4>
+                      <div style={{ fontSize: '0.9rem', color: '#4a5568', marginBottom: '0.5rem' }}>
+                        <strong>{school1.teacherFirstName} {school1.teacherLastName}</strong>
+                        <a 
+                          href={`mailto:${school1.teacherEmail}`}
+                          style={{ marginLeft: '0.5rem', textDecoration: 'none', opacity: 0.7 }}
+                          title={school1.teacherEmail}
+                        >
+                          ✉️
+                        </a>
+                      </div>
+                      <div style={{ fontSize: '0.85rem', color: '#718096' }}>
+                        <strong>{school1.region}</strong> | {school1.studentCounts?.ready || 0} students | Starts {school1.startMonth}
+                      </div>
+                    </div>
+
+                    {/* School 2 */}
+                    <div style={{
+                      padding: '1rem',
+                      background: '#f8f9fa',
+                      borderRadius: '8px',
+                      border: '1px solid #dee2e6'
+                    }}>
+                      <h4 style={{ margin: '0 0 0.5rem 0', color: '#1a365d' }}>
+                        {school2.schoolName}
+                      </h4>
+                      <div style={{ fontSize: '0.9rem', color: '#4a5568', marginBottom: '0.5rem' }}>
+                        <strong>{school2.teacherFirstName} {school2.teacherLastName}</strong>
+                        <a 
+                          href={`mailto:${school2.teacherEmail}`}
+                          style={{ marginLeft: '0.5rem', textDecoration: 'none', opacity: 0.7 }}
+                          title={school2.teacherEmail}
+                        >
+                          ✉️
+                        </a>
+                      </div>
+                      <div style={{ fontSize: '0.85rem', color: '#718096' }}>
+                        <strong>{school2.region}</strong> | {school2.studentCounts?.ready || 0} students | Starts {school2.startMonth}
+                      </div>
+                    </div>
+
+                    {/* Actions Column - UPDATED with conditional logic */}
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.5rem',
+                      minWidth: '180px'
+                    }}>
+                      {/* CONDITIONAL: Show Assign button if no assignments, hide if assignments exist */}
+                      {!hasAssignments ? (
+                        <button
+                          onClick={() => handleAssignPenPals(school1.id, school2.id)}
+                          style={{
+                            backgroundColor: '#2563eb',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            padding: '0.75rem 1rem',
+                            fontSize: '0.9rem',
+                            fontWeight: '500',
+                            cursor: 'pointer',
+                            whiteSpace: 'nowrap'
+                          }}
+                          onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#1d4ed8'}
+                          onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
+                        >
+                          Assign Pen Pals
+                        </button>
+                      ) : (
+                        // CONDITIONAL: Show download links if assignments exist
+                        <div style={{ 
+                          display: 'flex', 
+                          flexDirection: 'column', 
+                          gap: '0.5rem' 
+                        }}>
+                          <button
+                            onClick={() => handleDownloadPairings(school1.id, school1.schoolName)}
+                            style={{
+                              color: '#2563eb',
+                              backgroundColor: 'white',
+                              border: '1px solid #2563eb',
+                              borderRadius: '4px',
+                              padding: '0.5rem',
+                              fontSize: '0.85rem',
+                              cursor: 'pointer',
+                              textAlign: 'left'
+                            }}
+                            onMouseOver={(e) => {
+                              e.currentTarget.style.backgroundColor = '#f0f8ff';
+                            }}
+                            onMouseOut={(e) => {
+                              e.currentTarget.style.backgroundColor = 'white';
+                            }}
+                          >
+                            📄 Download {school1.schoolName} List
+                          </button>
+                          
+                          <button
+                            onClick={() => handleDownloadPairings(school2.id, school2.schoolName)}
+                            style={{
+                              color: '#2563eb',
+                              backgroundColor: 'white',
+                              border: '1px solid #2563eb',
+                              borderRadius: '4px',
+                              padding: '0.5rem',
+                              fontSize: '0.85rem',
+                              cursor: 'pointer',
+                              textAlign: 'left'
+                            }}
+                            onMouseOver={(e) => {
+                              e.currentTarget.style.backgroundColor = '#f0f8ff';
+                            }}
+                            onMouseOut={(e) => {
+                              e.currentTarget.style.backgroundColor = 'white';
+                            }}
+                          >
+                            📄 Download {school2.schoolName} List
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
