@@ -1,9 +1,7 @@
 // app/api/admin/assign-penpals/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { matchStudents, generateMatchingSummary } from '@/app/lib/student-matching';
-
-const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   try {
