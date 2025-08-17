@@ -198,7 +198,7 @@ export default function AdminDashboard() {
                       </a>
                     </div>
                     <div style={{ fontSize: '0.85rem', color: '#718096' }}>
-                      <strong>{school1.region}</strong> | {school1.studentCounts.ready} students | Starts {school1.startMonth}
+                      <strong>{school1.region}</strong> | {school1.studentCounts?.ready || 0} students | Starts {school1.startMonth}
                     </div>
                   </div>
 
@@ -223,7 +223,7 @@ export default function AdminDashboard() {
                       </a>
                     </div>
                     <div style={{ fontSize: '0.85rem', color: '#718096' }}>
-                      <strong>{school2.region}</strong> | {school2.studentCounts.ready} students | Starts {school2.startMonth}
+                      <strong>{school2.region}</strong> | {school2.studentCounts?.ready || 0} students | Starts {school2.startMonth}
                     </div>
                   </div>
 
