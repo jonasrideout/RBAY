@@ -171,18 +171,15 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
     if (!pinnedSchool || !selectedMatch) return;
 
     try {
-      // TODO: Replace with actual API call
-      console.log('Matching schools:', pinnedSchool, selectedMatch);
-      
-      // FIXED: Don't update parent component yet - keep dialog open
-      // The parent update will happen after pen pals are assigned
+      // Just confirm the match visually - no API call yet
+      console.log('Match confirmed:', pinnedSchool.schoolName, 'with', selectedMatch.schoolName);
       
       // Set matched state to show new buttons in dialog
       setIsMatched(true);
       
     } catch (err) {
-      console.error('Error matching schools:', err);
-      alert('Error matching schools. Please try again.');
+      console.error('Error confirming match:', err);
+      alert('Error confirming match. Please try again.');
     }
   };
 
@@ -190,33 +187,31 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
     if (!pinnedSchool || !selectedMatch) return;
 
     try {
-      // TODO: Replace with actual API call to assign pen pals
-      console.log('Assigning pen pals for schools:', pinnedSchool.id, selectedMatch.id);
-      
-      // FIXED: Update school statuses here after pen pals are assigned
-      const updatedSchools = schools.map(school => {
-        if (school.id === pinnedSchool.id) {
-          return { 
-            ...school, 
-            status: 'MATCHED' as const,
-            matchedWithSchoolId: selectedMatch.id,
-            matchedSchool: { ...selectedMatch }  // Create complete copy
-          };
-        } else if (school.id === selectedMatch.id) {
-          return { 
-            ...school, 
-            status: 'MATCHED' as const,
-            matchedWithSchoolId: pinnedSchool.id,
-            matchedSchool: { ...pinnedSchool }  // Create complete copy
-          };
-        }
-        return school;
+      // UPDATED: Make actual API call to assign pen pals (which also updates school statuses)
+      const response = await fetch('/api/admin/assign-penpals', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          school1Id: pinnedSchool.id,
+          school2Id: selectedMatch.id
+        }),
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to assign pen pals');
+      }
+
+      const result = await response.json();
+      console.log('Pen pals assigned successfully:', result);
+
+      // UPDATED: Refresh data from server instead of manipulating local state
+      // This ensures we get the latest data including the MATCHED status
+      await onSchoolsUpdate([]);  // This will trigger a fresh fetch in the parent component
       
-      // Wait for parent component to update state and sync with API
-      await onSchoolsUpdate(updatedSchools);
-      
-      // Close dialog after 1 second delay, then switch tabs
+      // Close dialog and reset state after successful assignment
       setTimeout(() => {
         setShowConfirmDialog(false);
         setSelectedMatch(null);
@@ -232,7 +227,7 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
       
     } catch (err) {
       console.error('Error assigning pen pals:', err);
-      alert('Error assigning pen pals. Please try again.');
+      alert(`Error assigning pen pals: ${err instanceof Error ? err.message : 'Please try again.'}`);
     }
   };
 
