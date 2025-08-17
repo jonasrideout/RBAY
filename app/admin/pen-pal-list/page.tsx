@@ -9,6 +9,7 @@ interface Student {
   name: string;
   grade: string;
   interests: string[];
+  penpalPreference?: string;
 }
 
 interface Penpal {
@@ -20,18 +21,27 @@ interface Penpal {
 
 interface StudentPairing {
   student: Student;
-  penpal: Penpal | null;
+  penpals: Penpal[]; // CHANGED: Array of pen pals instead of single penpal
+  penpalCount: number;
 }
 
 interface SchoolData {
   name: string;
   teacher: string;
   email: string;
+  partnerSchool?: string; // NEW: Partner school name
 }
 
 interface PenPalData {
   school: SchoolData;
   pairings: StudentPairing[];
+  summary?: {
+    totalStudents: number;
+    studentsWithPenpals: number;
+    studentsWithoutPenpals: number;
+    totalPenpalConnections: number;
+    averagePenpalsPerStudent: string;
+  };
   generatedAt: string;
 }
 
@@ -197,20 +207,14 @@ function PenPalListContent() {
 
           {/* School and partner information */}
           <div style={{ marginBottom: '2rem' }}>
-            {(() => {
-              // Get partner school name from pen pal data
-              const partnerSchool = data.pairings.find(p => p.penpal)?.penpal?.school;
-              return (
-                <h2 style={{ 
-                  fontSize: '1.4rem', 
-                  fontWeight: '600',
-                  margin: '0 0 1rem 0',
-                  color: '#1a365d'
-                }}>
-                  {data.school.name}{partnerSchool ? ` and ${partnerSchool}` : ' and Partner School'}
-                </h2>
-              );
-            })()}
+            <h2 style={{ 
+              fontSize: '1.4rem', 
+              fontWeight: '600',
+              margin: '0 0 1rem 0',
+              color: '#1a365d'
+            }}>
+              {data.school.name}{data.school.partnerSchool ? ` and ${data.school.partnerSchool}` : ' and Partner School'}
+            </h2>
             
             <h3 style={{ 
               fontSize: '1.1rem', 
@@ -222,7 +226,7 @@ function PenPalListContent() {
             </h3>
           </div>
 
-          {/* Student listings */}
+          {/* Student listings - UPDATED for multiple pen pals */}
           <div style={{ lineHeight: '1.6' }}>
             {data.pairings.map((pairing, index) => (
               <div key={index} style={{ marginBottom: '1.5rem' }}>
@@ -231,16 +235,18 @@ function PenPalListContent() {
                   <strong>{pairing.student.name}</strong>: {pairing.student.interests.join(', ')}
                 </div>
                 
-                {/* Pen pal matches */}
-                {pairing.penpal ? (
+                {/* Multiple pen pal matches - like your PDF examples */}
+                {pairing.penpals.length > 0 ? (
                   <div style={{ 
                     marginLeft: '1rem',
                     paddingLeft: '1rem',
                     borderLeft: '2px solid #e0e6ed'
                   }}>
-                    <div style={{ color: '#4a5568' }}>
-                      ● <strong>Matched with {pairing.penpal.name}</strong>: {pairing.penpal.interests.join(', ')}
-                    </div>
+                    {pairing.penpals.map((penpal, penpalIndex) => (
+                      <div key={penpalIndex} style={{ color: '#4a5568', marginBottom: '0.25rem' }}>
+                        ● <strong>Matched with {penpal.name}</strong>: {penpal.interests.join(', ')}
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <div style={{ 
@@ -254,6 +260,26 @@ function PenPalListContent() {
               </div>
             ))}
           </div>
+
+          {/* Summary information - NEW */}
+          {data.summary && (
+            <div style={{ 
+              marginTop: '2rem',
+              padding: '1rem',
+              backgroundColor: '#f8f9fa',
+              borderRadius: '6px',
+              border: '1px solid #e0e6ed',
+              fontSize: '0.9rem',
+              color: '#4a5568'
+            }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
+                <div><strong>Total Students:</strong> {data.summary.totalStudents}</div>
+                <div><strong>Students with Pen Pals:</strong> {data.summary.studentsWithPenpals}</div>
+                <div><strong>Total Connections:</strong> {data.summary.totalPenpalConnections}</div>
+                <div><strong>Average per Student:</strong> {data.summary.averagePenpalsPerStudent}</div>
+              </div>
+            </div>
+          )}
 
           {/* Footer info */}
           <div style={{ 
