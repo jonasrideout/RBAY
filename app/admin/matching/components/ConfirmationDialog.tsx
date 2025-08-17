@@ -92,6 +92,7 @@ export default function ConfirmationDialog({
         </div>
         
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+          {/* Cancel Button - Always active */}
           <button
             onClick={onCancel}
             style={{
@@ -103,58 +104,42 @@ export default function ConfirmationDialog({
               fontSize: '0.9rem'
             }}
           >
-            {isMatched ? 'Close' : 'Cancel'}
+            Cancel
           </button>
           
-          {isMatched ? (
-            <button
-              onClick={onAssignPenPals}
-              style={{
-                padding: '10px 20px',
-                border: 'none',
-                borderRadius: '4px',
-                backgroundColor: '#2196f3',
-                color: 'white',
-                cursor: 'pointer',
-                fontSize: '0.9rem'
-              }}
-            >
-              Assign Pen Pals
-            </button>
-          ) : (
-            <button
-              onClick={onConfirm}
-              style={{
-                padding: '10px 20px',
-                border: 'none',
-                borderRadius: '4px',
-                backgroundColor: '#2196f3',
-                color: 'white',
-                cursor: 'pointer',
-                fontSize: '0.9rem'
-              }}
-            >
-              Confirm Match
-            </button>
-          )}
+          {/* Confirm Match Button - Active when not matched, disabled when matched */}
+          <button
+            onClick={onConfirm}
+            disabled={isMatched}
+            style={{
+              padding: '10px 20px',
+              border: 'none',
+              borderRadius: '4px',
+              backgroundColor: isMatched ? '#f5f5f5' : '#2196f3',
+              color: isMatched ? '#666' : 'white',
+              cursor: isMatched ? 'default' : 'pointer',
+              fontSize: '0.9rem'
+            }}
+          >
+            Confirm Match
+          </button>
           
-          {isMatched && (
-            <button
-              onClick={onConfirm}
-              style={{
-                padding: '10px 20px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                backgroundColor: '#f5f5f5',
-                color: '#666',
-                cursor: 'default',
-                fontSize: '0.9rem'
-              }}
-              disabled
-            >
-              Matched
-            </button>
-          )}
+          {/* Assign Pen Pals Button - Disabled when not matched, active when matched */}
+          <button
+            onClick={onAssignPenPals}
+            disabled={!isMatched}
+            style={{
+              padding: '10px 20px',
+              border: 'none',
+              borderRadius: '4px',
+              backgroundColor: isMatched ? '#2196f3' : '#f5f5f5',
+              color: isMatched ? 'white' : '#666',
+              cursor: isMatched ? 'pointer' : 'default',
+              fontSize: '0.9rem'
+            }}
+          >
+            Assign Pen Pals
+          </button>
         </div>
       </div>
     </div>
