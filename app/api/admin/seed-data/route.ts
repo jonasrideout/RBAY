@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { SchoolStatus } from '@prisma/client';
+import { SchoolStatus, PenpalPreference } from '@prisma/client';
 
 const INTEREST_OPTIONS = [
   'sports', 'arts', 'reading', 'technology', 'animals', 'entertainment',
@@ -42,6 +42,20 @@ function getRandomInterests(count: number = 3): string[] {
 
 function getRandomFromArray<T>(array: T[]): T {
   return array[Math.floor(Math.random() * array.length)];
+}
+
+// NEW: Function to get realistic pen pal preference distribution
+function getPenpalPreference(studentIndex: number, totalStudents: number): PenpalPreference {
+  // Approximately 30% of students prefer multiple pen pals, 70% prefer one
+  // This creates realistic test data for the algorithm
+  const multiplePreferenceRatio = 0.3;
+  
+  // Use deterministic distribution based on index for consistent test data
+  if (studentIndex < Math.floor(totalStudents * multiplePreferenceRatio)) {
+    return PenpalPreference.MULTIPLE;
+  } else {
+    return PenpalPreference.ONE;
+  }
 }
 
 export async function GET() {
@@ -384,12 +398,16 @@ export async function GET() {
         const hasCompletedProfile = i < studentsWithInterests;
         const interests = hasCompletedProfile ? getRandomInterests() : [];
 
+        // NEW: Generate realistic pen pal preference distribution
+        const penpalPreference = getPenpalPreference(i, studentsWithInterests);
+
         await prisma.student.create({
           data: {
             firstName,
             lastName,
             grade: getRandomFromArray(schoolData.gradeLevel),
             interests,
+            penpalPreference, // NEW: Add pen pal preference
             parentFirstName: getRandomFromArray(['John', 'Jane', 'Mike', 'Sarah', 'David', 'Lisa', 'Chris', 'Amy', 'Mark', 'Jessica']),
             parentLastName: lastName,
             parentEmail: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@email.com`,
@@ -436,7 +454,7 @@ export async function GET() {
       });
     }
 
-    // Get final counts for response
+    // Get final counts for response - including pen pal preference breakdown
     const schoolCounts = await prisma.school.groupBy({
       by: ['status'],
       _count: { status: true }
@@ -447,13 +465,25 @@ export async function GET() {
       where: { profileCompleted: true }
     });
 
+    // NEW: Get pen pal preference statistics
+    const penpalPreferenceCounts = await prisma.student.groupBy({
+      by: ['penpalPreference'],
+      where: { profileCompleted: true },
+      _count: { penpalPreference: true }
+    });
+
     const response = {
-      message: 'Enhanced seed data created successfully!',
+      message: 'Enhanced seed data created successfully with pen pal preferences!',
       schools: createdSchools.length,
       students: totalStudents,
       studentsWithProfiles: studentsWithCompletedProfiles,
       schoolsByStatus: schoolCounts.reduce((acc, curr) => {
         acc[curr.status] = curr._count.status;
+        return acc;
+      }, {} as Record<string, number>),
+      // NEW: Pen pal preference breakdown
+      penpalPreferences: penpalPreferenceCounts.reduce((acc, curr) => {
+        acc[curr.penpalPreference] = curr._count.penpalPreference;
         return acc;
       }, {} as Record<string, number>),
       readySchoolsForMatching: createdSchools
