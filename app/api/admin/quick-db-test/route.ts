@@ -5,10 +5,10 @@ import { PrismaClient } from '@prisma/client';
 export async function GET() {
   console.log('🔍 QUICK DATABASE TEST STARTED');
   
-  const results: any = {};
+  const results: Record<string, any> = {};
   
   // Test each potential database URL
-  const urlsToTest = [
+  const urlsToTest: Array<[string, string | undefined]> = [
     ['DATABASE_URL', process.env.DATABASE_URL],
     ['POSTGRES_URL', process.env.POSTGRES_URL],
     ['POSTGRES_PRISMA_URL', process.env.POSTGRES_PRISMA_URL],
