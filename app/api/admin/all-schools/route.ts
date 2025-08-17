@@ -1,6 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+// TEMPORARY DEBUG
+console.log('=== ALL-SCHOOLS DEBUG ===');
+const debugSchools = await prisma.school.findMany({
+  select: { id: true, schoolName: true }
+});
+console.log('All-schools endpoint sees schools:');
+debugSchools.forEach((school, index) => {
+  console.log(`${index}: ID="${school.id}" NAME="${school.schoolName}"`);
+});
+
 export async function GET() {
   try {
     // Get all schools with their matched school data and student counts
