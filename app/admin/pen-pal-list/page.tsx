@@ -1,7 +1,7 @@
 // app/admin/pen-pal-list/page.tsx
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
@@ -35,7 +35,7 @@ interface PenPalData {
   generatedAt: string;
 }
 
-export default function PenPalListPage() {
+function PenPalListContent() {
   const searchParams = useSearchParams();
   const schoolId = searchParams.get('schoolId');
   
@@ -312,5 +312,19 @@ export default function PenPalListPage() {
         }
       `}</style>
     </div>
+  );
+}
+
+export default function PenPalListPage() {
+  return (
+    <Suspense fallback={
+      <div className="page">
+        <div className="container" style={{ textAlign: 'center', padding: '3rem' }}>
+          <h2>Loading...</h2>
+        </div>
+      </div>
+    }>
+      <PenPalListContent />
+    </Suspense>
   );
 }
