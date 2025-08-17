@@ -74,17 +74,6 @@ function PenPalListContent() {
     window.print();
   };
 
-  const handleDownloadFile = () => {
-    // This will trigger the actual file download
-    const downloadUrl = `/api/admin/download-pairings?schoolId=${schoolId}`;
-    const link = document.createElement('a');
-    link.href = downloadUrl;
-    link.download = `${data?.school.name}_pen_pal_assignments.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   if (isLoading) {
     return (
       <div className="page">
@@ -158,13 +147,7 @@ function PenPalListContent() {
               onClick={handleDownloadPrint}
               className="btn btn-primary"
             >
-              🖨️ Print List
-            </button>
-            <button 
-              onClick={handleDownloadFile}
-              className="btn btn-primary"
-            >
-              💾 Download File
+              🖨️ Print / Download PDF
             </button>
           </div>
         </div>
@@ -172,10 +155,8 @@ function PenPalListContent() {
         {/* Formatted Pen Pal List - matches your PDF examples */}
         <div style={{ 
           backgroundColor: 'white',
-          padding: '2rem',
-          borderRadius: '8px',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-          maxWidth: '800px',
+          padding: '3rem 4rem',
+          maxWidth: '1000px',
           margin: '0 auto'
         }}>
           {/* Header with logo - matches PDF format */}
@@ -205,21 +186,31 @@ function PenPalListContent() {
                 PROJECT
               </h2>
             </div>
-            <div style={{ fontSize: '2rem' }}>
-              📚👥
+            <div>
+              <img 
+                src="/RB@Y-logo.jpg" 
+                alt="Right Back at You Logo" 
+                style={{ height: '60px' }} 
+              />
             </div>
           </div>
 
           {/* School and partner information */}
           <div style={{ marginBottom: '2rem' }}>
-            <h2 style={{ 
-              fontSize: '1.4rem', 
-              fontWeight: '600',
-              margin: '0 0 1rem 0',
-              color: '#1a365d'
-            }}>
-              {data.school.name} and Partner School
-            </h2>
+            {(() => {
+              // Get partner school name from pen pal data
+              const partnerSchool = data.pairings.find(p => p.penpal)?.penpal?.school;
+              return (
+                <h2 style={{ 
+                  fontSize: '1.4rem', 
+                  fontWeight: '600',
+                  margin: '0 0 1rem 0',
+                  color: '#1a365d'
+                }}>
+                  {data.school.name}{partnerSchool ? ` and ${partnerSchool}` : ' and Partner School'}
+                </h2>
+              );
+            })()}
             
             <h3 style={{ 
               fontSize: '1.1rem', 
@@ -250,16 +241,6 @@ function PenPalListContent() {
                     <div style={{ color: '#4a5568' }}>
                       ● <strong>Matched with {pairing.penpal.name}</strong>: {pairing.penpal.interests.join(', ')}
                     </div>
-                    {pairing.penpal.school && (
-                      <div style={{ 
-                        fontSize: '0.9rem', 
-                        color: '#718096',
-                        marginTop: '0.25rem',
-                        marginLeft: '1rem'
-                      }}>
-                        from {pairing.penpal.school}
-                      </div>
-                    )}
                   </div>
                 ) : (
                   <div style={{ 
