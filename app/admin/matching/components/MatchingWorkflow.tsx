@@ -173,18 +173,10 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
       // TODO: Replace with actual API call
       console.log('Matching schools:', pinnedSchool, selectedMatch);
       
-      // Update school statuses locally
-      const updatedSchools = schools.map(school => {
-        if (school.id === pinnedSchool.id || school.id === selectedMatch.id) {
-          return { ...school, status: 'MATCHED' as const };
-        }
-        return school;
-      });
+      // FIXED: Don't update parent component yet - keep dialog open
+      // The parent update will happen after pen pals are assigned
       
-      // Notify parent component
-      onSchoolsUpdate(updatedSchools);
-      
-      // Set matched state to show new buttons
+      // Set matched state to show new buttons in dialog
       setIsMatched(true);
       
     } catch (err) {
@@ -200,6 +192,22 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
       // TODO: Replace with actual API call to assign pen pals
       console.log('Assigning pen pals for schools:', pinnedSchool.id, selectedMatch.id);
       
+      // FIXED: Update school statuses here after pen pals are assigned
+      const updatedSchools = schools.map(school => {
+        if (school.id === pinnedSchool.id || school.id === selectedMatch.id) {
+          return { 
+            ...school, 
+            status: 'MATCHED' as const,
+            matchedWithSchoolId: school.id === pinnedSchool.id ? selectedMatch.id : pinnedSchool.id,
+            matchedSchool: school.id === pinnedSchool.id ? selectedMatch : pinnedSchool
+          };
+        }
+        return school;
+      });
+      
+      // Notify parent component with updated schools
+      onSchoolsUpdate(updatedSchools);
+      
       // Close dialog after 1 second delay
       setTimeout(() => {
         setShowConfirmDialog(false);
@@ -208,8 +216,7 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
         setIsMatched(false);
         setPinnedSchool(null);
         
-        // Stay on current page and refresh (parent will handle this)
-        // The user should see the MATCHED status view
+        // User will now see the schools in MATCHED status
       }, 1000);
       
     } catch (err) {
