@@ -16,6 +16,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // DEBUG: Log what we're looking for
+    console.log('=== DEBUG assign-penpals ===');
+    console.log('Received payload:', { school1Id, school2Id });
+    console.log('school1Id type:', typeof school1Id);
+    console.log('school2Id type:', typeof school2Id);
+
+    // DEBUG: Check if schools exist at all
+    const allSchools = await prisma.school.findMany({
+      select: { id: true, schoolName: true, status: true }
+    });
+    console.log('All schools in database:', allSchools);
+
     // Fetch schools with their students
     const [school1, school2] = await Promise.all([
       prisma.school.findUnique({
@@ -42,7 +54,11 @@ export async function POST(request: NextRequest) {
       })
     ]);
 
+    console.log('Found school1:', school1 ? school1.schoolName : 'NOT FOUND');
+    console.log('Found school2:', school2 ? school2.schoolName : 'NOT FOUND');
+
     if (!school1 || !school2) {
+      console.log('ERROR: School lookup failed');
       return NextResponse.json(
         { error: 'One or both schools not found' },
         { status: 404 }
