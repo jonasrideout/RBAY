@@ -10,9 +10,10 @@ import { School, Filters } from '../types';
 interface MatchingWorkflowProps {
   schools: School[];
   onSchoolsUpdate: (schools: School[]) => void;
+  onTabChange?: (status: SelectedStatus) => void;
 }
 
-export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingWorkflowProps) {
+export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange }: MatchingWorkflowProps) {
   // Matching state
   const [pinnedSchool, setPinnedSchool] = useState<School | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -216,7 +217,10 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate }: MatchingW
         setIsMatched(false);
         setPinnedSchool(null);
         
-        // User will now see the schools in MATCHED status
+        // Switch to MATCHED tab to show the 3-column layout
+        if (onTabChange) {
+          onTabChange('MATCHED');
+        }
       }, 1000);
       
     } catch (err) {
