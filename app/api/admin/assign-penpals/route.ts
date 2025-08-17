@@ -21,8 +21,8 @@ export async function POST(request: NextRequest) {
     console.log('school2Id type:', typeof school2Id, 'length:', school2Id.length);
     
     // Character-by-character analysis
-    console.log('school1Id chars:', school1Id.split('').map((c, i) => `${i}:${c}`));
-    console.log('school2Id chars:', school2Id.split('').map((c, i) => `${i}:${c}`));
+    console.log('school1Id chars:', school1Id.split('').map((c: string, i: number) => `${i}:${c}`));
+    console.log('school2Id chars:', school2Id.split('').map((c: string, i: number) => `${i}:${c}`));
 
     // DEBUG: Check if schools exist at all
     const allSchools = await prisma.school.findMany({
