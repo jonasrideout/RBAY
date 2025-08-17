@@ -32,7 +32,7 @@ export async function GET() {
         take: 3,
         select: { 
           id: true, 
-          name: true, 
+          schoolName: true, 
           region: true, 
           status: true 
         }
@@ -72,7 +72,7 @@ export async function GET() {
     const currentCount = await prisma.school.count();
     const currentSchools = await prisma.school.findMany({
       take: 3,
-      select: { id: true, name: true, region: true, status: true }
+      select: { id: true, schoolName: true, region: true, status: true }
     });
     
     results.CURRENT_PRISMA_CLIENT = {
