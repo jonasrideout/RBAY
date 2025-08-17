@@ -62,10 +62,19 @@ export async function GET() {
       const currentTargetSchools = await testPrisma.school.findMany({
         where: {
           id: {
-            in: ['cmeg2tsr700h4g5qoq3ck6127', 'cmeg2tst800i5g5qo4oqbkfdi']
+            in: [
+              'cmeg4yj9k01a5h82ixemz3jpc', // Pacific Elementary
+              'cmeg4yjbb01b6h82ioql6pxzh'  // Northeast Academy
+            ]
           }
         },
-        select: { id: true, schoolName: true, status: true }
+        select: { 
+          id: true, 
+          schoolName: true, 
+          status: true,
+          region: true,
+          matchedWithSchoolId: true
+        }
       });
       
       results[name].currentTargetSchools = currentTargetSchools;
