@@ -9,7 +9,7 @@ import { School, Filters, SelectedStatus } from '../types';
 
 interface MatchingWorkflowProps {
   schools: School[];
-  onSchoolsUpdate: (schools: School[]) => void;
+  onSchoolsUpdate: (schools: School[]) => Promise<void>;
   onTabChange?: (status: SelectedStatus) => void;
 }
 
@@ -213,10 +213,10 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
         return school;
       });
       
-      // Notify parent component with updated schools
-      onSchoolsUpdate(updatedSchools);
+      // Wait for parent component to update state and sync with API
+      await onSchoolsUpdate(updatedSchools);
       
-      // Close dialog after 1 second delay
+      // Close dialog after 1 second delay, then switch tabs
       setTimeout(() => {
         setShowConfirmDialog(false);
         setSelectedMatch(null);
