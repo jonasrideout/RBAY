@@ -356,23 +356,24 @@ export default function AdminDashboard() {
                           Assign Pen Pals
                         </button>
                       ) : (
-                        // CONDITIONAL: Show download links if assignments exist
+                        // CONDITIONAL: Show pen pal list links if assignments exist
                         <div style={{ 
                           display: 'flex', 
                           flexDirection: 'column', 
                           gap: '0.5rem' 
                         }}>
                           <button
-                            onClick={() => handleDownloadPairings(school1.id, school1.schoolName)}
+                            onClick={() => window.open(`/admin/pen-pal-list?schoolId=${school1.id}`, '_blank')}
                             style={{
                               color: '#2563eb',
                               backgroundColor: 'white',
                               border: '1px solid #2563eb',
                               borderRadius: '4px',
-                              padding: '0.5rem',
+                              padding: '0.75rem',
                               fontSize: '0.85rem',
                               cursor: 'pointer',
-                              textAlign: 'left'
+                              textAlign: 'center',
+                              lineHeight: '1.2'
                             }}
                             onMouseOver={(e) => {
                               e.currentTarget.style.backgroundColor = '#f0f8ff';
@@ -381,20 +382,26 @@ export default function AdminDashboard() {
                               e.currentTarget.style.backgroundColor = 'white';
                             }}
                           >
-                            📄 Download {school1.schoolName} List
+                            <div style={{ fontWeight: '600', marginBottom: '2px' }}>
+                              {school1.schoolName}
+                            </div>
+                            <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>
+                              Download Pen Pals
+                            </div>
                           </button>
                           
                           <button
-                            onClick={() => handleDownloadPairings(school2.id, school2.schoolName)}
+                            onClick={() => window.open(`/admin/pen-pal-list?schoolId=${school2.id}`, '_blank')}
                             style={{
                               color: '#2563eb',
                               backgroundColor: 'white',
                               border: '1px solid #2563eb',
                               borderRadius: '4px',
-                              padding: '0.5rem',
+                              padding: '0.75rem',
                               fontSize: '0.85rem',
                               cursor: 'pointer',
-                              textAlign: 'left'
+                              textAlign: 'center',
+                              lineHeight: '1.2'
                             }}
                             onMouseOver={(e) => {
                               e.currentTarget.style.backgroundColor = '#f0f8ff';
@@ -403,7 +410,12 @@ export default function AdminDashboard() {
                               e.currentTarget.style.backgroundColor = 'white';
                             }}
                           >
-                            📄 Download {school2.schoolName} List
+                            <div style={{ fontWeight: '600', marginBottom: '2px' }}>
+                              {school2.schoolName}
+                            </div>
+                            <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>
+                              Download Pen Pals
+                            </div>
                           </button>
                         </div>
                       )}
