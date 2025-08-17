@@ -127,7 +127,7 @@ export async function GET() {
         sampleSchools: currentSampleSchools,
         usingUrl: 'Determined by /lib/prisma.ts configuration'
       },
-      recommendations: []
+      recommendations: [] as string[]
     };
 
     // Generate recommendations
