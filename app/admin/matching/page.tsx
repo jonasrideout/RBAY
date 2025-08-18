@@ -57,7 +57,7 @@ export default function AdminDashboard() {
     }
   };
 
-  // NEW: Function to check if pen pal assignments exist for school pairs
+  // FIXED: Function to check if pen pal assignments exist for school pairs
   const checkPenPalAssignments = async (schoolsList: School[]) => {
     const matchedSchools = schoolsList.filter(school => school.status === 'MATCHED');
     const assignments: {[key: string]: boolean} = {};
@@ -75,9 +75,20 @@ export default function AdminDashboard() {
         const response = await fetch(`/api/admin/download-pairings?schoolId=${school.id}`);
         if (response.ok) {
           const data = await response.json();
-          // Check if any students have pen pal assignments
-          const hasAssignments = data.pairings && data.pairings.some((pairing: any) => pairing.penpal !== null);
+          
+          // FIXED: Check for multiple pen pals structure (penpals array and penpalCount)
+          const hasAssignments = data.pairings && data.pairings.some((pairing: any) => 
+            pairing.penpalCount > 0 || (pairing.penpals && pairing.penpals.length > 0)
+          );
+          
           assignments[pairKey] = hasAssignments;
+          
+          // DEBUG: Log to help troubleshoot
+          console.log(`Checking assignments for pair ${pairKey}:`, {
+            hasAssignments,
+            samplePairing: data.pairings?.[0],
+            totalPairings: data.pairings?.length
+          });
         } else {
           assignments[pairKey] = false;
         }
@@ -255,7 +266,7 @@ export default function AdminDashboard() {
             gap: '1.5rem' 
           }}>
             {pairs.map(([school1, school2], index) => {
-              // NEW: Check if this pair has pen pal assignments
+              // FIXED: Check if this pair has pen pal assignments using updated structure
               const pairKey = [school1.id, school2.id].sort().join('-');
               const hasAssignments = pairAssignments[pairKey] || false;
 
@@ -327,13 +338,15 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
-                    {/* Actions Column - UPDATED with conditional logic */}
+                    {/* Actions Column - FIXED: Conditional logic based on actual pen pal assignments */}
                     <div style={{
                       display: 'flex',
                       flexDirection: 'column',
                       gap: '0.5rem',
                       width: '220px',
-                      minWidth: '220px'
+                      minWidth: '220px',
+                      justifyContent: 'center',
+                      alignItems: 'center'
                     }}>
                       {/* CONDITIONAL: Show Assign button if no assignments, hide if assignments exist */}
                       {!hasAssignments ? (
@@ -348,7 +361,9 @@ export default function AdminDashboard() {
                             fontSize: '0.9rem',
                             fontWeight: '500',
                             cursor: 'pointer',
-                            whiteSpace: 'nowrap'
+                            whiteSpace: 'nowrap',
+                            width: '100%',
+                            textAlign: 'center'
                           }}
                           onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#1d4ed8'}
                           onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
@@ -360,7 +375,8 @@ export default function AdminDashboard() {
                         <div style={{ 
                           display: 'flex', 
                           flexDirection: 'column', 
-                          gap: '0.5rem' 
+                          gap: '0.5rem',
+                          width: '100%'
                         }}>
                           <button
                             onClick={() => window.open(`/admin/pen-pal-list?schoolId=${school1.id}`, '_blank')}
@@ -373,7 +389,8 @@ export default function AdminDashboard() {
                               fontSize: '0.85rem',
                               cursor: 'pointer',
                               textAlign: 'center',
-                              lineHeight: '1.2'
+                              lineHeight: '1.2',
+                              width: '100%'
                             }}
                             onMouseOver={(e) => {
                               e.currentTarget.style.backgroundColor = '#f0f8ff';
@@ -386,7 +403,7 @@ export default function AdminDashboard() {
                               {school1.schoolName}
                             </div>
                             <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>
-                              Download Pen Pals
+                              View Pen Pal List
                             </div>
                           </button>
                           
@@ -401,7 +418,8 @@ export default function AdminDashboard() {
                               fontSize: '0.85rem',
                               cursor: 'pointer',
                               textAlign: 'center',
-                              lineHeight: '1.2'
+                              lineHeight: '1.2',
+                              width: '100%'
                             }}
                             onMouseOver={(e) => {
                               e.currentTarget.style.backgroundColor = '#f0f8ff';
@@ -414,7 +432,7 @@ export default function AdminDashboard() {
                               {school2.schoolName}
                             </div>
                             <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>
-                              Download Pen Pals
+                              View Pen Pal List
                             </div>
                           </button>
                         </div>
