@@ -47,7 +47,15 @@ function calculateMatchScore(student1: Student, student2: Student): number {
 }
 
 /**
+ * Get the effective pen pal preference for a student (defaults to 'ONE' if not specified)
+ */
+function getEffectivePreference(student: Student): 'ONE' | 'MULTIPLE' {
+  return student.penpalPreference === 'MULTIPLE' ? 'MULTIPLE' : 'ONE';
+}
+
+/**
  * Calculate how many pen pals each student should get to ensure fair distribution
+ * while respecting individual preferences
  */
 function calculateDistribution(
   school1Students: Student[],
@@ -60,59 +68,63 @@ function calculateDistribution(
   const school1Count = school1Students.length;
   const school2Count = school2Students.length;
   
-  // Total connections needed = max(school1Count, school2Count)
-  // This ensures everyone gets at least one pen pal
-  const totalConnectionsNeeded = Math.max(school1Count, school2Count);
-  
-  // Calculate base distribution
-  const school1BaseConnections = Math.floor(totalConnectionsNeeded / school1Count);
-  const school1ExtraConnections = totalConnectionsNeeded % school1Count;
-  
-  const school2BaseConnections = Math.floor(totalConnectionsNeeded / school2Count);
-  const school2ExtraConnections = totalConnectionsNeeded % school2Count;
-  
-  // Helper function to distribute connections fairly
-  function distributeConnections(
-    students: Student[], 
-    baseConnections: number, 
-    extraConnections: number
-  ): Map<string, number> {
+  // Helper function to distribute connections with preference limits
+  function distributeConnections(students: Student[]): Map<string, number> {
     const distribution = new Map<string, number>();
     
-    // Students who prefer multiple pen pals
-    const multiplePreferenceStudents = students.filter(s => s.penpalPreference === 'MULTIPLE');
-    const singlePreferenceStudents = students.filter(s => s.penpalPreference !== 'MULTIPLE');
+    // Separate students by preference
+    const onePreferenceStudents = students.filter(s => getEffectivePreference(s) === 'ONE');
+    const multiplePreferenceStudents = students.filter(s => getEffectivePreference(s) === 'MULTIPLE');
     
-    // Give everyone the base number of connections
-    students.forEach(student => {
-      distribution.set(student.id, baseConnections);
+    // FIXED: Students with 'ONE' preference get exactly 1, never more
+    onePreferenceStudents.forEach(student => {
+      distribution.set(student.id, 1);
     });
     
-    // Distribute extra connections
-    let extraToDistribute = extraConnections;
+    // Students with 'MULTIPLE' preference start with 1 and can get more
+    multiplePreferenceStudents.forEach(student => {
+      distribution.set(student.id, 1);
+    });
     
-    // First, try to give extra connections to students who want multiple pen pals
-    for (const student of multiplePreferenceStudents) {
-      if (extraToDistribute > 0) {
-        distribution.set(student.id, (distribution.get(student.id) || 0) + 1);
-        extraToDistribute--;
-      }
-    }
+    // Calculate how many extra connections we can distribute
+    const otherSchoolSize = students === school1Students ? school2Count : school1Count;
+    const maxPossibleConnections = Math.max(students.length, otherSchoolSize);
+    const baseConnections = students.length; // Everyone gets at least 1
+    const extraConnections = maxPossibleConnections - baseConnections;
     
-    // If we still have extra connections and no more multiple-preference students,
-    // distribute to single-preference students (they still get at least 1)
-    for (const student of singlePreferenceStudents) {
-      if (extraToDistribute > 0) {
-        distribution.set(student.id, (distribution.get(student.id) || 0) + 1);
-        extraToDistribute--;
-      }
+    // Distribute extra connections ONLY to students who want MULTIPLE pen pals
+    let extraToDistribute = Math.max(0, extraConnections);
+    const multipleStudentCount = multiplePreferenceStudents.length;
+    
+    if (multipleStudentCount > 0 && extraToDistribute > 0) {
+      // Distribute extras evenly among MULTIPLE preference students
+      const extraPerStudent = Math.floor(extraToDistribute / multipleStudentCount);
+      const remainderExtras = extraToDistribute % multipleStudentCount;
+      
+      multiplePreferenceStudents.forEach((student, index) => {
+        const currentCount = distribution.get(student.id) || 1;
+        let extraForThisStudent = extraPerStudent;
+        
+        // Give remainder to first few students
+        if (index < remainderExtras) {
+          extraForThisStudent += 1;
+        }
+        
+        distribution.set(student.id, currentCount + extraForThisStudent);
+      });
     }
     
     return distribution;
   }
   
-  const school1Distribution = distributeConnections(school1Students, school1BaseConnections, school1ExtraConnections);
-  const school2Distribution = distributeConnections(school2Students, school2BaseConnections, school2ExtraConnections);
+  const school1Distribution = distributeConnections(school1Students);
+  const school2Distribution = distributeConnections(school2Students);
+  
+  // Calculate total connections needed (sum of all individual limits)
+  const totalConnectionsNeeded = Math.min(
+    Array.from(school1Distribution.values()).reduce((sum, count) => sum + count, 0),
+    Array.from(school2Distribution.values()).reduce((sum, count) => sum + count, 0)
+  );
   
   return {
     school1Distribution,
@@ -131,7 +143,7 @@ export function matchStudents(
   const matches: StudentMatch[] = [];
   
   // Calculate how many pen pals each student should get
-  const { school1Distribution, school2Distribution, totalConnectionsNeeded } = 
+  const { school1Distribution, school2Distribution } = 
     calculateDistribution(school1Students, school2Students);
   
   // Track how many connections each student currently has
@@ -166,7 +178,7 @@ export function matchStudents(
   // Sort by match score (highest first)
   allPossibleMatches.sort((a, b) => b.matchScore - a.matchScore);
   
-  // Greedily assign matches based on distribution limits
+  // FIXED: Greedily assign matches while respecting individual preference limits
   for (const match of allPossibleMatches) {
     const student1CurrentConnections = school1Connections.get(match.student1Id) || 0;
     const student2CurrentConnections = school2Connections.get(match.student2Id) || 0;
@@ -189,12 +201,10 @@ export function matchStudents(
       school1Connections.set(match.student1Id, student1CurrentConnections + 1);
       school2Connections.set(match.student2Id, student2CurrentConnections + 1);
     }
-    
-    // Stop when we've created enough total connections
-    if (matches.length >= totalConnectionsNeeded) {
-      break;
-    }
   }
+  
+  // FIXED: Continue until we can't make any more valid matches (not just a total count)
+  // The loop above will naturally stop when no more valid matches can be made
   
   return matches;
 }
@@ -240,7 +250,7 @@ export function generateMatchingSummary(
   const school2StudentsWithPenpals = Array.from(school2PenpalCounts.values()).filter(count => count > 0).length;
   
   const school1StudentsWithoutPenpals = school1Students.length - school1StudentsWithPenpals;
-  const school2StudentsWithoutPenpals = school2Students.length - school2StudentsWithPenpals;
+  const school2StudentsWithoutPenpals = school2Students.length - school2StudentsWithoutPenpals;
   
   // Find most common shared interests
   const interestCounts: Record<string, number> = {};
@@ -255,19 +265,19 @@ export function generateMatchingSummary(
     .slice(0, 5)
     .map(([interest]) => interest);
   
-  // Create distribution summary
+  // FIXED: Use getEffectivePreference for consistent preference handling
   const distributionSummary = {
     school1: school1Students.map(student => ({
       studentId: student.id,
       name: `${student.firstName} ${student.lastName}`,
       penpalCount: school1PenpalCounts.get(student.id) || 0,
-      preference: student.penpalPreference || 'ONE'
+      preference: getEffectivePreference(student)
     })),
     school2: school2Students.map(student => ({
       studentId: student.id,
       name: `${student.firstName} ${student.lastName}`,
       penpalCount: school2PenpalCounts.get(student.id) || 0,
-      preference: student.penpalPreference || 'ONE'
+      preference: getEffectivePreference(student)
     }))
   };
   
