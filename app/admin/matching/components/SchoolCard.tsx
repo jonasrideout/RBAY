@@ -1,6 +1,7 @@
 // app/admin/matching/components/SchoolCard.tsx
 "use client";
 
+import { useState } from 'react';
 import { School } from '../types';
 
 interface SchoolCardProps {
@@ -25,17 +26,19 @@ export default function SchoolCard({
   const getDashboardUrl = () => {
     if (typeof window !== 'undefined') {
       const currentOrigin = window.location.origin;
-      return `${currentOrigin}/teacher-dashboard?schoolId=${school.id}`;
+      return `${currentOrigin}/dashboard?teacher=${encodeURIComponent(school.teacherEmail)}`;
     }
-    return `/teacher-dashboard?schoolId=${school.id}`;
+    return `/dashboard?teacher=${encodeURIComponent(school.teacherEmail)}`;
   };
+
+  const [buttonText, setButtonText] = useState('Teacher Dashboard');
 
   const copyDashboardUrl = async () => {
     const url = getDashboardUrl();
     try {
       await navigator.clipboard.writeText(url);
-      // Simple feedback - could enhance with toast notification
-      alert('Teacher dashboard URL copied to clipboard!');
+      setButtonText('Copied!');
+      setTimeout(() => setButtonText('Teacher Dashboard'), 2000);
     } catch (err) {
       // Fallback for older browsers
       console.error('Failed to copy URL:', err);
@@ -193,7 +196,7 @@ export default function SchoolCard({
               ✉️
             </a>
           </div>
-          {/* NEW: Teacher Dashboard Link */}
+          {/* Teacher Dashboard Link */}
           <button
             onClick={copyDashboardUrl}
             style={{
@@ -214,7 +217,7 @@ export default function SchoolCard({
             onMouseLeave={(e) => e.currentTarget.style.opacity = '0.8'}
             title="Click to copy teacher dashboard URL"
           >
-            📋 Teacher Dashboard
+            {buttonText}
           </button>
         </div>
         <div style={{ 
