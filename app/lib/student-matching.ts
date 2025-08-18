@@ -97,6 +97,9 @@ function calculateDistribution(
     const multipleStudentCount = multiplePreferenceStudents.length;
     
     if (multipleStudentCount > 0 && extraToDistribute > 0) {
+      // Shuffle the array so extras are distributed fairly (not just to first students)
+      multiplePreferenceStudents.sort(() => Math.random() - 0.5);
+      
       // Distribute extras evenly among MULTIPLE preference students
       const extraPerStudent = Math.floor(extraToDistribute / multipleStudentCount);
       const remainderExtras = extraToDistribute % multipleStudentCount;
