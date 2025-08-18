@@ -139,14 +139,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get students ready for matching
+    // FIXED: Get students ready for matching - now including penpalPreference
     const school1Students = school1.students.map(student => ({
       id: student.id,
       firstName: student.firstName,
       lastName: student.lastName,
       grade: student.grade,
       interests: student.interests,
-      schoolId: student.schoolId
+      schoolId: student.schoolId,
+      penpalPreference: student.penpalPreference  // ✅ ADDED: This was missing!
     }));
 
     const school2Students = school2.students.map(student => ({
@@ -155,7 +156,8 @@ export async function POST(request: NextRequest) {
       lastName: student.lastName,
       grade: student.grade,
       interests: student.interests,
-      schoolId: student.schoolId
+      schoolId: student.schoolId,
+      penpalPreference: student.penpalPreference  // ✅ ADDED: This was missing!
     }));
 
     if (school1Students.length === 0 || school2Students.length === 0) {
@@ -164,6 +166,17 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // DEBUG: Log penpalPreference data to verify it's being passed
+    console.log('=== PENPAL PREFERENCE DEBUG ===');
+    console.log('School1 students with preferences:', school1Students.map(s => ({ 
+      name: `${s.firstName} ${s.lastName}`, 
+      preference: s.penpalPreference 
+    })));
+    console.log('School2 students with preferences:', school2Students.map(s => ({ 
+      name: `${s.firstName} ${s.lastName}`, 
+      preference: s.penpalPreference 
+    })));
 
     // ADDED: Update both schools to MATCHED status and set their matchedWithSchoolId
     await Promise.all([
