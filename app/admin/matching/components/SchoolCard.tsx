@@ -21,6 +21,28 @@ export default function SchoolCard({
   const teacherName = `${school.teacherFirstName} ${school.teacherLastName}`;
   const isReady = school.status === 'READY';
 
+  // Get the current domain dynamically
+  const getDashboardUrl = () => {
+    if (typeof window !== 'undefined') {
+      const currentOrigin = window.location.origin;
+      return `${currentOrigin}/teacher-dashboard?schoolId=${school.id}`;
+    }
+    return `/teacher-dashboard?schoolId=${school.id}`;
+  };
+
+  const copyDashboardUrl = async () => {
+    const url = getDashboardUrl();
+    try {
+      await navigator.clipboard.writeText(url);
+      // Simple feedback - could enhance with toast notification
+      alert('Teacher dashboard URL copied to clipboard!');
+    } catch (err) {
+      // Fallback for older browsers
+      console.error('Failed to copy URL:', err);
+      prompt('Copy this URL:', url);
+    }
+  };
+
   const renderOutlineIcon = (type: 'pin' | 'lock', size = 16) => {
     if (type === 'pin') {
       return (
@@ -154,7 +176,8 @@ export default function SchoolCard({
             alignItems: 'center', 
             gap: '0.5rem',
             color: '#4a5568',
-            fontSize: '1rem'
+            fontSize: '1rem',
+            marginBottom: '0.5rem'
           }}>
             <span style={{ fontWeight: '500' }}>{teacherName}</span>
             <a 
@@ -170,6 +193,29 @@ export default function SchoolCard({
               ✉️
             </a>
           </div>
+          {/* NEW: Teacher Dashboard Link */}
+          <button
+            onClick={copyDashboardUrl}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#2563eb',
+              fontSize: '0.9rem',
+              cursor: 'pointer',
+              textDecoration: 'underline',
+              padding: '0',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.25rem',
+              opacity: 0.8,
+              transition: 'opacity 0.2s ease'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+            onMouseLeave={(e) => e.currentTarget.style.opacity = '0.8'}
+            title="Click to copy teacher dashboard URL"
+          >
+            📋 Teacher Dashboard
+          </button>
         </div>
         <div style={{ 
           color: '#718096', 
