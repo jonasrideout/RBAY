@@ -250,7 +250,7 @@ export function generateMatchingSummary(
   const school2StudentsWithPenpals = Array.from(school2PenpalCounts.values()).filter(count => count > 0).length;
   
   const school1StudentsWithoutPenpals = school1Students.length - school1StudentsWithPenpals;
-  const school2StudentsWithoutPenpals = school2Students.length - school2StudentsWithoutPenpals;
+  const school2StudentsWithoutPenpals = school2Students.length - school2StudentsWithPenpals;
   
   // Find most common shared interests
   const interestCounts: Record<string, number> = {};
