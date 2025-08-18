@@ -3,6 +3,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
+// Define the pen pal type for TypeScript
+interface PenpalData {
+  name: string;
+  grade: string;
+  school: string | undefined;
+  interests: string[];
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -55,7 +63,7 @@ export async function GET(request: NextRequest) {
     // UPDATED: Handle multiple pen pals per student
     const studentsWithPenpals = school.students.map(student => {
       // Collect ALL pen pals (both sent and received relationships)
-      const allPenpals = [];
+      const allPenpals: PenpalData[] = []; // ✅ FIXED: Added explicit typing
       
       // Add pen pals from sent relationships (this student -> other students)
       student.sentPenpals.forEach(sentPenpal => {
