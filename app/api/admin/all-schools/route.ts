@@ -1,16 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// TEMPORARY DEBUG
-console.log('=== ALL-SCHOOLS DEBUG ===');
-const debugSchools = await prisma.school.findMany({
-  select: { id: true, schoolName: true }
-});
-console.log('All-schools endpoint sees schools:');
-debugSchools.forEach((school, index) => {
-  console.log(`${index}: ID="${school.id}" NAME="${school.schoolName}"`);
-});
-
 export async function GET() {
   try {
     // Get all schools with their matched school data and student counts
@@ -27,8 +17,7 @@ export async function GET() {
           select: {
             id: true,
             schoolName: true,
-            teacherFirstName: true,
-            teacherLastName: true,
+            teacherName: true,
             region: true
           }
         }
@@ -42,15 +31,15 @@ export async function GET() {
     const transformedSchools = schools.map(school => ({
       id: school.id,
       schoolName: school.schoolName,
-      teacherFirstName: school.teacherFirstName,
-      teacherLastName: school.teacherLastName,
+      teacherName: school.teacherName,
       teacherEmail: school.teacherEmail,
       region: school.region,
       gradeLevel: school.gradeLevel,
       expectedClassSize: school.expectedClassSize,
       startMonth: school.startMonth,
-      letterFrequency: school.letterFrequency,
+      specialConsiderations: school.specialConsiderations,
       status: school.status,
+      letterFrequency: school.letterFrequency,
       lettersSent: school.lettersSent,
       lettersReceived: school.lettersReceived,
       matchedWithSchoolId: school.matchedWithSchoolId,
