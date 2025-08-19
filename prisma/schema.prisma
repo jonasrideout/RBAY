@@ -36,6 +36,17 @@ model School {
   status               SchoolStatus  @default(COLLECTING)
   region               String
   isActive             Boolean       @default(true)
+  
+  // One-to-one school pairing
+  matchedWithSchoolId  String?       @unique
+  matchedWithSchool    School?       @relation("SchoolPairing", fields: [matchedWithSchoolId], references: [id])
+  pairedSchool         School?       @relation("SchoolPairing")
+  
+  // Future letter tracking fields (optional for now)
+  letterFrequency      String?
+  lettersSent          Int?          @default(0)
+  lettersReceived      Int?          @default(0)
+  
   students             Student[]
   schoolPairings       SchoolPairing[] @relation("School1Pairings")
   pairedWithSchools    SchoolPairing[] @relation("School2Pairings")
