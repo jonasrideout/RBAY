@@ -14,7 +14,8 @@ export async function POST(request: NextRequest) {
       parentEmail,
       parentPhone,
       parentConsent,
-      teacherEmail
+      teacherEmail,
+      penpalPreference  // Added this missing field
     } = body;
 
     // Validate required fields
@@ -52,6 +53,7 @@ export async function POST(request: NextRequest) {
         parentEmail,
         parentPhone,
         parentConsent: parentConsent || false,
+        penpalPreference: penpalPreference || 'ONE',  // Added with default value
         isActive: true,
         profileCompleted,
         schoolId: school.id
@@ -66,6 +68,7 @@ export async function POST(request: NextRequest) {
         lastName: student.lastName,
         grade: student.grade,
         interests: student.interests,
+        penpalPreference: student.penpalPreference,  // Added to response
         profileCompleted: student.profileCompleted
       }
     });
@@ -134,7 +137,7 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { studentId, interests } = body;
+    const { studentId, interests, penpalPreference } = body;  // Added penpalPreference here too
 
     if (!studentId) {
       return NextResponse.json(
@@ -146,12 +149,22 @@ export async function PUT(request: NextRequest) {
     // Check if interests are being updated and mark profile as completed
     const profileCompleted = interests && interests.length > 0;
 
+    // Prepare update data
+    const updateData: any = {
+      profileCompleted
+    };
+
+    if (interests !== undefined) {
+      updateData.interests = interests;
+    }
+
+    if (penpalPreference !== undefined) {
+      updateData.penpalPreference = penpalPreference;
+    }
+
     const updatedStudent = await prisma.student.update({
       where: { id: studentId },
-      data: {
-        interests: interests || [],
-        profileCompleted
-      }
+      data: updateData
     });
 
     return NextResponse.json({
@@ -161,6 +174,7 @@ export async function PUT(request: NextRequest) {
         firstName: updatedStudent.firstName,
         lastName: updatedStudent.lastName,
         interests: updatedStudent.interests,
+        penpalPreference: updatedStudent.penpalPreference,  // Added to response
         profileCompleted: updatedStudent.profileCompleted
       }
     });
