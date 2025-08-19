@@ -1,0 +1,115 @@
+// /app/register-school/components/SuccessPage.tsx
+
+import Link from 'next/link';
+
+interface SuccessPageProps {
+  registeredSchool: {
+    teacherEmail: string;
+    schoolName: string;
+  };
+}
+
+export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
+  const generateStudentLink = () => {
+    if (typeof window !== 'undefined' && registeredSchool) {
+      const encodedEmail = encodeURIComponent(registeredSchool.teacherEmail);
+      return `${window.location.origin}/register-student?teacher=${encodedEmail}`;
+    }
+    return '';
+  };
+
+  const generateDashboardLink = () => {
+    if (typeof window !== 'undefined' && registeredSchool) {
+      const encodedEmail = encodeURIComponent(registeredSchool.teacherEmail);
+      return `${window.location.origin}/dashboard?teacher=${encodedEmail}`;
+    }
+    return '';
+  };
+
+  return (
+    <div className="page">
+      {/* Header */}
+      <header className="header">
+        <div className="container">
+          <div className="header-content">
+            <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
+              The Right Back at You Project
+            </Link>
+            <nav className="nav">
+              <Link href={generateDashboardLink()} className="nav-link">Dashboard</Link>
+              <Link href="/logout" className="nav-link">Logout</Link>
+            </nav>
+          </div>
+        </div>
+      </header>
+
+      <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          {/* Success Message */}
+          <div className="card text-center" style={{ background: '#d4edda' }}>
+            <h2 style={{ color: '#155724' }}>🎉 School Registration Complete!</h2>
+            <p style={{ color: '#155724', fontSize: '1.2rem', marginBottom: '1.5rem' }}>
+              {registeredSchool?.schoolName} has been successfully registered for The Right Back at You Project.
+            </p>
+            
+            <div style={{ background: 'white', padding: '1.5rem', borderRadius: '6px', marginBottom: '2rem', border: '1px solid #c3e6cb' }}>
+              <h3 style={{ color: '#155724', marginBottom: '1rem' }}>Next Steps:</h3>
+              <div style={{ textAlign: 'left', color: '#155724' }}>
+                <p><strong>1. Save Your Dashboard Link:</strong></p>
+                <div style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '4px', marginBottom: '1rem', border: '1px solid #dee2e6' }}>
+                  <code style={{ color: '#e83e8c', fontSize: '0.9rem', wordBreak: 'break-all' }}>
+                    {generateDashboardLink()}
+                  </code>
+                </div>
+                
+                <p><strong>2. Share Student Registration Link:</strong></p>
+                <div style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '4px', marginBottom: '1rem', border: '1px solid #dee2e6' }}>
+                  <code style={{ color: '#e83e8c', fontSize: '0.9rem', wordBreak: 'break-all' }}>
+                    {generateStudentLink()}
+                  </code>
+                </div>
+                
+                <p><strong>3. Monitor Student Registration:</strong> Use your dashboard to track student signups</p>
+                <p><strong>4. Complete Student Information:</strong> Help students add their interests</p>
+                <p><strong>5. Request Matching:</strong> When all students are ready, request partner school matching</p>
+                <p><strong>6. Start Writing:</strong> Begin the penpal correspondence!</p>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Link 
+                href={generateDashboardLink()}
+                className="btn btn-primary"
+              >
+                Go to Dashboard
+              </Link>
+              <button 
+                onClick={() => {
+                  const dashboardLink = generateDashboardLink();
+                  navigator.clipboard.writeText(dashboardLink);
+                }}
+                className="btn btn-secondary"
+              >
+                📋 Copy Dashboard Link
+              </button>
+              <button 
+                onClick={() => navigator.clipboard.writeText(generateStudentLink())}
+                className="btn btn-outline"
+              >
+                📋 Copy Student Link
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
+        <div className="container text-center">
+          <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
+        </div>
+      </footer>
+    </div>
+  );
+}
