@@ -11,7 +11,6 @@ export async function POST(request: NextRequest) {
       teacherFirstName,
       teacherLastName,
       teacherEmail,
-      teacherPhone,
       schoolName,
       schoolAddress,
       schoolCity,
@@ -82,7 +81,6 @@ export async function POST(request: NextRequest) {
       data: {
         teacherName,
         teacherEmail,
-        teacherPhone: teacherPhone || null,
         schoolName,
         schoolAddress: schoolAddress || null, // Optional - empty for now
         schoolCity: schoolCity || null, // Optional - may be provided
