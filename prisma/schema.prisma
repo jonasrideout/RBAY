@@ -1,5 +1,8 @@
 // /prisma/schema.prisma
 
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,83 +10,6 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-model School {
-  id                    String   @id @default(cuid())
-  teacherFirstName      String
-  teacherLastName       String
-  teacherEmail          String   @unique
-  teacherPhone          String?
-  schoolName            String
-  schoolAddress         String?
-  schoolCity            String?
-  schoolState           String
-  schoolZip             String?
-  region                String
-  gradeLevel            String
-  expectedClassSize     Int
-  startMonth            String
-  letterFrequency       String
-  specialConsiderations String?
-  status                SchoolStatus @default(COLLECTING)
-  programAgreement      Boolean
-  parentNotification    Boolean
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-  
-  students              Student[]
-  schoolPairings1       SchoolPairing[] @relation("School1Pairings")
-  schoolPairings2       SchoolPairing[] @relation("School2Pairings")
-  
-  @@map("schools")
-}
-
-model Student {
-  id               String           @id @default(cuid())
-  firstName        String
-  lastName         String
-  grade            String
-  teacherEmail     String
-  interests        String[]
-  otherInterests   String?
-  profileCompleted Boolean          @default(false)
-  parentConsent    Boolean          @default(false)
-  isActive         Boolean          @default(true)
-  penpalPreference PenpalPreference @default(ONE)
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
-  
-  school           School           @relation(fields: [teacherEmail], references: [teacherEmail])
-  penpalPairings   StudentPenpal[]
-  
-  @@map("students")
-}
-
-model SchoolPairing {
-  id          String   @id @default(cuid())
-  school1Id   String
-  school2Id   String
-  status      String   @default("ACTIVE")
-  createdAt   DateTime @default(now())
-  
-  school1     School   @relation("School1Pairings", fields: [school1Id], references: [id])
-  school2     School   @relation("School2Pairings", fields: [school2Id], references: [id])
-  
-  @@unique([school1Id, school2Id])
-  @@map("school_pairings")
-}
-
-model StudentPenpal {
-  id        String   @id @default(cuid())
-  studentId String
-  penpalId  String
-  createdAt DateTime @default(now())
-  
-  student   Student  @relation(fields: [studentId], references: [id])
-  
-  @@unique([studentId, penpalId])
-  @@map("student_penpals")
 }
 
 enum SchoolStatus {
@@ -97,4 +23,136 @@ enum SchoolStatus {
 enum PenpalPreference {
   ONE
   MULTIPLE
+}
+
+model School {
+  id                    String        @id @default(cuid())
+  // Teacher information
+  teacherFirstName      String
+  teacherLastName       String
+  teacherEmail          String        @unique
+  teacherPhone          String?
+  
+  // School details
+  schoolName            String
+  schoolAddress         String
+  schoolCity            String
+  schoolState           String
+  schoolZip             String
+  region                String        // Calculated from state
+  
+  // Program details
+  gradeLevel            String[]      // Array to support multiple grades
+  expectedClassSize     Int
+  startMonth            String
+  letterFrequency       String
+  specialConsiderations String?       // NEW: Optional field for special notes
+  
+  // Status and tracking
+  status                SchoolStatus  @default(COLLECTING)
+  readyForMatching      Boolean       @default(false) // Keep for backward compatibility
+  programAgreement      Boolean       @default(false)
+  parentNotification    Boolean       @default(false)
+  
+  // Relationships
+  students              Student[]
+  
+  // Matching relationships
+  matchedWithSchool     School?       @relation("SchoolMatches", fields: [matchedWithSchoolId], references: [id])
+  matchedWithSchoolId   String?
+  matchedSchools        School[]      @relation("SchoolMatches")
+  
+  // Letter tracking
+  lettersSent           Int           @default(0)
+  lettersReceived       Int           @default(0)
+  
+  // Timestamps
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  
+  @@map("schools")
+}
+
+model Student {
+  id                    String            @id @default(cuid())
+  firstName             String
+  lastName              String
+  grade                 String
+  interests             String[]          @default([])
+  
+  // NEW: Pen pal preference
+  penpalPreference      PenpalPreference  @default(ONE)
+  
+  // Parent information
+  parentFirstName       String
+  parentLastName        String
+  parentEmail           String
+  parentPhone           String?
+  parentConsent         Boolean           @default(false)
+  
+  // Status tracking
+  isActive              Boolean           @default(true)
+  profileCompleted      Boolean           @default(false) // New field to track completion
+  
+  // School relationship
+  school                School            @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  schoolId              String
+  
+  // Penpal relationships
+  sentPenpals           StudentPenpal[]   @relation("SentPenpals")
+  receivedPenpals       StudentPenpal[]   @relation("ReceivedPenpals")
+  
+  // Letters
+  sentLetters           Letter[]          @relation("SentLetters")
+  receivedLetters       Letter[]          @relation("ReceivedLetters")
+  
+  // Timestamps
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  
+  @@map("students")
+}
+
+model StudentPenpal {
+  id                    String          @id @default(cuid())
+  
+  // Student relationships
+  student1              Student         @relation("SentPenpals", fields: [student1Id], references: [id])
+  student1Id            String
+  student2              Student         @relation("ReceivedPenpals", fields: [student2Id], references: [id])
+  student2Id            String
+  
+  // Status
+  status                String          @default("active") // active, inactive, completed
+  
+  // Timestamps
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+  
+  @@unique([student1Id, student2Id])
+  @@map("student_penpals")
+}
+
+model Letter {
+  id                    String          @id @default(cuid())
+  
+  // Author and recipient
+  author                Student         @relation("SentLetters", fields: [authorId], references: [id])
+  authorId              String
+  recipient             Student         @relation("ReceivedLetters", fields: [recipientId], references: [id])
+  recipientId           String
+  
+  // Content
+  subject               String?
+  content               String
+  
+  // Status
+  status                String          @default("sent") // sent, delivered, read
+  
+  // Timestamps
+  sentAt                DateTime        @default(now())
+  deliveredAt           DateTime?
+  readAt                DateTime?
+  
+  @@map("letters")
 }
