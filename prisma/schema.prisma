@@ -36,9 +36,9 @@ model School {
   // School details
   schoolName            String
   schoolAddress         String?
-  schoolCity            String
+  schoolCity            String?
   schoolState           String
-  schoolZip             String
+  schoolZip             String?
   region                String        // Calculated from state
   
   // Program details
