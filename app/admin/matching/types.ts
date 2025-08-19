@@ -36,3 +36,12 @@ export interface StatusCounts {
 }
 
 export type SelectedStatus = 'COLLECTING' | 'READY' | 'MATCHED' | 'CORRESPONDING' | 'DONE';
+
+export interface Filters {
+  schoolSearch?: string;
+  teacherSearch?: string;
+  regions: string[];
+  classSizes: string[];
+  grades: string[];
+  startDate?: string;
+}
