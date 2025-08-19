@@ -1,21 +1,26 @@
-// app/admin/matching/types.ts
+// /app/admin/matching/types.ts
+
 export interface School {
   id: string;
   schoolName: string;
-  teacherFirstName: string;
-  teacherLastName: string;
+  teacherName: string; // UPDATED: Single field instead of separate first/last
   teacherEmail: string;
+  schoolAddress?: string;
+  schoolCity?: string;
+  schoolState: string;
+  schoolZip?: string;
   region: string;
-  gradeLevel: string[];
+  gradeLevel: string; // UPDATED: String format instead of array
   expectedClassSize: number;
   startMonth: string;
-  letterFrequency: string;
+  letterFrequency?: string;
   status: 'COLLECTING' | 'READY' | 'MATCHED' | 'CORRESPONDING' | 'DONE';
-  lettersSent: number;
-  lettersReceived: number;
+  specialConsiderations?: string;
+  createdAt: Date;
+  updatedAt: Date;
   matchedWithSchoolId?: string;
   matchedSchool?: School;
-  studentCounts: {
+  studentCounts?: {
     expected: number;
     registered: number;
     ready: number;
@@ -30,21 +35,4 @@ export interface StatusCounts {
   DONE: number;
 }
 
-export type SelectedStatus = keyof StatusCounts;
-
-// ENHANCED: Added search fields
-export interface Filters {
-  schoolSearch: string;
-  teacherSearch: string;
-  regions: string[];
-  classSizes: string[];
-  startDate: string;
-  grades: string[];
-}
-
-export interface MatchingState {
-  pinnedSchool: School | null;
-  selectedMatch: School | null;
-  showConfirmDialog: boolean;
-  showWarning: boolean;
-}
+export type SelectedStatus = 'COLLECTING' | 'READY' | 'MATCHED' | 'CORRESPONDING' | 'DONE';
