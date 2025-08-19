@@ -19,7 +19,8 @@ export default function SchoolCard({
   onPin, 
   onMatch 
 }: SchoolCardProps) {
-  const teacherName = `${school.teacherFirstName} ${school.teacherLastName}`;
+  // FIXED: Use single teacherName field instead of concatenating first/last names
+  const teacherName = school.teacherName;
   const isReady = school.status === 'READY';
 
   // Get the current domain dynamically
@@ -225,7 +226,8 @@ export default function SchoolCard({
           fontSize: '0.95rem',
           marginTop: '0.5rem'
         }}>
-          <strong>Grades:</strong> {school.gradeLevel.join(', ')}
+          {/* FIXED: Handle gradeLevel as string instead of array */}
+          <strong>Grades:</strong> {school.gradeLevel}
         </div>
       </div>
 
@@ -252,7 +254,7 @@ export default function SchoolCard({
           alignItems: 'center'
         }}>
           <strong>Expected:</strong> 
-          <span>{school.studentCounts.expected}</span>
+          <span>{school.studentCounts?.expected || 0}</span>
         </div>
         <div style={{ 
           color: '#4a5568',
@@ -261,7 +263,7 @@ export default function SchoolCard({
           alignItems: 'center'
         }}>
           <strong>Registered:</strong> 
-          <span>{school.studentCounts.registered}</span>
+          <span>{school.studentCounts?.registered || 0}</span>
         </div>
         <div style={{ 
           color: '#4a5568',
@@ -270,7 +272,7 @@ export default function SchoolCard({
           alignItems: 'center'
         }}>
           <strong>Ready:</strong> 
-          <span>{school.studentCounts.ready}</span>
+          <span>{school.studentCounts?.ready || 0}</span>
         </div>
       </div>
 
@@ -298,7 +300,8 @@ export default function SchoolCard({
             🤝 Matched with: {school.matchedSchool.schoolName}
           </strong>
           <div style={{ fontSize: '0.9rem', color: '#4a5568', marginTop: '0.25rem' }}>
-            {school.matchedSchool.teacherFirstName} {school.matchedSchool.teacherLastName} - {school.matchedSchool.region}
+            {/* FIXED: Use single teacherName field for matched school */}
+            {school.matchedSchool.teacherName} - {school.matchedSchool.region}
           </div>
         </div>
       )}
