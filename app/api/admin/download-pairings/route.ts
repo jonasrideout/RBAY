@@ -30,18 +30,18 @@ export async function GET(request: NextRequest) {
         students: {
           where: { isActive: true },
           include: {
-            sentPenpals: {
+            penpalConnections: {
               include: {
-                student2: {
+                penpal: {
                   include: {
                     school: true
                   }
                 }
               }
             },
-            receivedPenpals: {
+            penpalOf: {
               include: {
-                student1: {
+                student: {
                   include: {
                     school: true
                   }
@@ -60,31 +60,31 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // UPDATED: Handle multiple pen pals per student
+    // Handle multiple pen pals per student
     const studentsWithPenpals = school.students.map(student => {
-      // Collect ALL pen pals (both sent and received relationships)
-      const allPenpals: PenpalData[] = []; // ✅ FIXED: Added explicit typing
+      // Collect ALL pen pals (both directions of relationships)
+      const allPenpals: PenpalData[] = [];
       
-      // Add pen pals from sent relationships (this student -> other students)
-      student.sentPenpals.forEach(sentPenpal => {
-        if (sentPenpal.student2) {
+      // Add pen pals from penpalConnections (this student -> other students)
+      student.penpalConnections.forEach(connection => {
+        if (connection.penpal) {
           allPenpals.push({
-            name: `${sentPenpal.student2.firstName} ${sentPenpal.student2.lastName}`,
-            grade: sentPenpal.student2.grade,
-            school: sentPenpal.student2.school?.schoolName,
-            interests: sentPenpal.student2.interests
+            name: `${connection.penpal.firstName} ${connection.penpal.lastName}`,
+            grade: connection.penpal.grade,
+            school: connection.penpal.school?.schoolName,
+            interests: connection.penpal.interests
           });
         }
       });
       
-      // Add pen pals from received relationships (other students -> this student)
-      student.receivedPenpals.forEach(receivedPenpal => {
-        if (receivedPenpal.student1) {
+      // Add pen pals from penpalOf (other students -> this student)
+      student.penpalOf.forEach(connection => {
+        if (connection.student) {
           allPenpals.push({
-            name: `${receivedPenpal.student1.firstName} ${receivedPenpal.student1.lastName}`,
-            grade: receivedPenpal.student1.grade,
-            school: receivedPenpal.student1.school?.schoolName,
-            interests: receivedPenpal.student1.interests
+            name: `${connection.student.firstName} ${connection.student.lastName}`,
+            grade: connection.student.grade,
+            school: connection.student.school?.schoolName,
+            interests: connection.student.interests
           });
         }
       });
@@ -99,9 +99,9 @@ export async function GET(request: NextRequest) {
           name: `${student.firstName} ${student.lastName}`,
           grade: student.grade,
           interests: student.interests,
-          penpalPreference: student.penpalPreference // Include preference for reference
+          penpalPreference: student.penpalPreference
         },
-        penpals: uniquePenpals, // CHANGED: Array of pen pals instead of single penpal
+        penpals: uniquePenpals,
         penpalCount: uniquePenpals.length
       };
     });
@@ -114,9 +114,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       school: {
         name: school.schoolName,
-        teacher: `${school.teacherFirstName} ${school.teacherLastName}`,
+        teacher: school.teacherName,  // Fixed: use single teacherName field
         email: school.teacherEmail,
-        partnerSchool: partnerSchoolName || 'Partner School' // For header display
+        partnerSchool: partnerSchoolName || 'Partner School'
       },
       pairings: studentsWithPenpals,
       summary: {
