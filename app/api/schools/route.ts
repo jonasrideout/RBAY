@@ -74,11 +74,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Combine teacher first and last name into single field
+    const teacherName = `${teacherFirstName} ${teacherLastName}`.trim();
+
     // Create the school - address fields are now optional
     const school = await prisma.school.create({
       data: {
-        teacherFirstName,
-        teacherLastName,
+        teacherName,
         teacherEmail,
         teacherPhone: teacherPhone || null,
         schoolName,
