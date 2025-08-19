@@ -1,3 +1,5 @@
+// /app/api/matching/schools/route.ts
+
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -105,9 +107,11 @@ export async function POST(request: NextRequest) {
           
           // Check if schools are from different regions
           if (school1.region !== school2.region) {
-            // Calculate compatibility score
-            const gradeOverlap = school1.gradeLevel.some(grade => 
-              school2.gradeLevel.includes(grade)
+            // FIXED: Calculate grade overlap for string format
+            const school1Grades = school1.gradeLevel.split(', ').map(g => g.trim());
+            const school2Grades = school2.gradeLevel.split(', ').map(g => g.trim());
+            const gradeOverlap = school1Grades.some(grade => 
+              school2Grades.includes(grade)
             );
             
             const sizeDifference = Math.abs(school1.students.length - school2.students.length);
