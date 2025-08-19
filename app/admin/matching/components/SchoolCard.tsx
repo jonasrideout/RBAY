@@ -306,8 +306,8 @@ export default function SchoolCard({
         </div>
       )}
 
-      {/* Corresponding Display */}
-      {school.status === 'CORRESPONDING' && (
+      {/* Corresponding Display - TODO: Re-implement letter tracking UI when lettersSent/lettersReceived fields are added to schema */}
+      {school.status === 'CORRESPONDING' && school.matchedSchool && (
         <div style={{ 
           gridColumn: '1 / -1',
           padding: '0.75rem', 
@@ -316,15 +316,9 @@ export default function SchoolCard({
           marginTop: '1rem',
           borderLeft: '4px solid #4299e1'
         }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '0.5rem' }}>
-            <div style={{ color: '#2d3748' }}><strong>📤 Letters Sent:</strong> {school.lettersSent}</div>
-            <div style={{ color: '#2d3748' }}><strong>📥 Letters Received:</strong> {school.lettersReceived}</div>
+          <div style={{ fontSize: '0.9rem', color: '#4a5568' }}>
+            <strong>✉️ Corresponding with:</strong> {school.matchedSchool.schoolName} ({school.matchedSchool.region})
           </div>
-          {school.matchedSchool && (
-            <div style={{ fontSize: '0.9rem', color: '#4a5568' }}>
-              <strong>✉️ Partner:</strong> {school.matchedSchool.schoolName} ({school.matchedSchool.region})
-            </div>
-          )}
         </div>
       )}
     </div>
