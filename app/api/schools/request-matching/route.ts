@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if school is already ready for matching
-    if (school.status === 'READY' || school.readyForMatching) {
+    if (school.status === 'READY') {
       return NextResponse.json(
         { error: 'School has already requested matching' },
         { status: 409 }
@@ -96,7 +96,6 @@ export async function POST(request: NextRequest) {
       where: { teacherEmail },
       data: { 
         status: 'READY',
-        readyForMatching: true,
         updatedAt: new Date()
       },
       include: {
@@ -124,7 +123,6 @@ export async function POST(request: NextRequest) {
         schoolName: updatedSchool.schoolName,
         teacherEmail: updatedSchool.teacherEmail,
         status: updatedSchool.status,
-        readyForMatching: updatedSchool.readyForMatching,
         studentCount: updatedSchool.students.length,
         gradeLevel: updatedSchool.gradeLevel,
         startMonth: updatedSchool.startMonth,
@@ -165,7 +163,6 @@ export async function GET(request: NextRequest) {
         id: true,
         schoolName: true,
         status: true,
-        readyForMatching: true,
         updatedAt: true
       }
     });
@@ -183,7 +180,7 @@ export async function GET(request: NextRequest) {
         id: school.id,
         schoolName: school.schoolName,
         status: school.status,
-        readyForMatching: school.readyForMatching,
+        readyForMatching: school.status === 'READY',
         lastUpdated: school.updatedAt
       }
     });
