@@ -10,8 +10,7 @@ export async function GET() {
         teacherEmail: true,
         schoolName: true,
         status: true,
-        teacherFirstName: true,
-        teacherLastName: true,
+        teacherName: true,
         createdAt: true
       },
       orderBy: {
@@ -43,7 +42,6 @@ export async function GET() {
       jenniferSchoolData: jenniferSchool,
       testEmails: schools.map(s => s.teacherEmail)
     });
-
   } catch (error) {
     console.error('Test schools error:', error);
     return NextResponse.json({
