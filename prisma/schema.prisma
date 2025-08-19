@@ -35,14 +35,14 @@ model School {
   
   // School details
   schoolName            String
-  schoolAddress         String?
-  schoolCity            String?
+  schoolAddress         String?       // CHANGED: Optional for later collection
+  schoolCity            String?       // CHANGED: Optional for later collection
   schoolState           String
-  schoolZip             String?
+  schoolZip             String?       // CHANGED: Optional for later collection
   region                String        // Calculated from state
   
   // Program details
-  gradeLevel            String[]      // Array to support multiple grades
+  gradeLevel            String        // CHANGED: From String[] to String
   expectedClassSize     Int
   startMonth            String
   letterFrequency       String
