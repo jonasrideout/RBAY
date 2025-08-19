@@ -21,15 +21,13 @@ export async function POST(request: NextRequest) {
       expectedClassSize,
       startMonth,
       letterFrequency,
-      specialConsiderations,
-      programAgreement,
-      parentNotification
+      specialConsiderations
     } = body;
 
     // Updated validation - only these fields are required now
     if (!teacherFirstName || !teacherLastName || !teacherEmail || !schoolName || 
         !schoolState || !gradeLevel || !expectedClassSize || !startMonth || 
-        !letterFrequency || !programAgreement || !parentNotification) {
+        !letterFrequency) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -92,9 +90,7 @@ export async function POST(request: NextRequest) {
         startMonth,
         letterFrequency,
         status: 'COLLECTING', // New schools start in collecting status
-        specialConsiderations: specialConsiderations || null,
-        programAgreement,
-        parentNotification
+        specialConsiderations: specialConsiderations || null
       }
     });
 
