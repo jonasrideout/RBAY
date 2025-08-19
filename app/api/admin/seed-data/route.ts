@@ -1,3 +1,5 @@
+// /app/api/admin/seed-data/route.ts
+
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { SchoolStatus, PenpalPreference } from '@prisma/client';
@@ -368,11 +370,12 @@ export async function GET() {
 
     // Create schools and students
     for (const schoolData of schoolsData) {
-      const { studentCount, studentsWithInterests, lettersSent, ...schoolFields } = schoolData;
+      const { studentCount, studentsWithInterests, lettersSent, gradeLevel, ...schoolFields } = schoolData;
       
       const school = await prisma.school.create({
         data: {
           ...schoolFields,
+          gradeLevel: gradeLevel.join(', '), // FIXED: Convert array to comma-separated string
           lettersSent: lettersSent || 0,
           lettersReceived: lettersSent || 0 // Set received to same as sent for simplicity
         }
@@ -405,7 +408,7 @@ export async function GET() {
           data: {
             firstName,
             lastName,
-            grade: getRandomFromArray(schoolData.gradeLevel),
+            grade: getRandomFromArray(gradeLevel), // Use the original array for student grade selection
             interests,
             penpalPreference, // NEW: Add pen pal preference
             parentFirstName: getRandomFromArray(['John', 'Jane', 'Mike', 'Sarah', 'David', 'Lisa', 'Chris', 'Amy', 'Mark', 'Jessica']),
