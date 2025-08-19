@@ -9,17 +9,17 @@ export async function POST(request: NextRequest) {
       lastName,
       grade,
       interests,
-      parentFirstName,
-      parentLastName,
+      parentName,
       parentEmail,
       parentPhone,
       parentConsent,
       teacherEmail,
-      penpalPreference  // Added this missing field
+      penpalPreference,
+      otherInterests
     } = body;
 
     // Validate required fields
-    if (!firstName || !lastName || !grade || !parentFirstName || !parentLastName || !parentEmail || !teacherEmail) {
+    if (!firstName || !lastName || !grade || !parentName || !parentEmail || !teacherEmail) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -48,12 +48,11 @@ export async function POST(request: NextRequest) {
         lastName,
         grade,
         interests: interests || [],
-        parentFirstName,
-        parentLastName,
+        parentName,
         parentEmail,
         parentPhone,
         parentConsent: parentConsent || false,
-        penpalPreference: penpalPreference || 'ONE',  // Added with default value
+        penpalPreference: penpalPreference || 'ONE',
         isActive: true,
         profileCompleted,
         schoolId: school.id
@@ -68,7 +67,7 @@ export async function POST(request: NextRequest) {
         lastName: student.lastName,
         grade: student.grade,
         interests: student.interests,
-        penpalPreference: student.penpalPreference,  // Added to response
+        penpalPreference: student.penpalPreference,
         profileCompleted: student.profileCompleted
       }
     });
@@ -137,7 +136,7 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { studentId, interests, penpalPreference } = body;  // Added penpalPreference here too
+    const { studentId, interests, penpalPreference } = body;
 
     if (!studentId) {
       return NextResponse.json(
@@ -174,7 +173,7 @@ export async function PUT(request: NextRequest) {
         firstName: updatedStudent.firstName,
         lastName: updatedStudent.lastName,
         interests: updatedStudent.interests,
-        penpalPreference: updatedStudent.penpalPreference,  // Added to response
+        penpalPreference: updatedStudent.penpalPreference,
         profileCompleted: updatedStudent.profileCompleted
       }
     });
