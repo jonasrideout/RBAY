@@ -288,7 +288,7 @@ export default function AdminDashboard() {
                     gap: '1.5rem',
                     alignItems: 'center'
                   }}>
-                    {/* School 1 */}
+                    {/* School 1 - FIXED: Use single teacherName field */}
                     <div style={{
                       padding: '1rem',
                       background: '#f8f9fa',
@@ -299,7 +299,7 @@ export default function AdminDashboard() {
                         {school1.schoolName}
                       </h4>
                       <div style={{ fontSize: '0.9rem', color: '#4a5568', marginBottom: '0.5rem' }}>
-                        <strong>{school1.teacherFirstName} {school1.teacherLastName}</strong>
+                        <strong>{school1.teacherName}</strong>
                         <a 
                           href={`mailto:${school1.teacherEmail}`}
                           style={{ marginLeft: '0.5rem', textDecoration: 'none', opacity: 0.7 }}
@@ -313,7 +313,7 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
-                    {/* School 2 */}
+                    {/* School 2 - FIXED: Use single teacherName field */}
                     <div style={{
                       padding: '1rem',
                       background: '#f8f9fa',
@@ -324,7 +324,7 @@ export default function AdminDashboard() {
                         {school2.schoolName}
                       </h4>
                       <div style={{ fontSize: '0.9rem', color: '#4a5568', marginBottom: '0.5rem' }}>
-                        <strong>{school2.teacherFirstName} {school2.teacherLastName}</strong>
+                        <strong>{school2.teacherName}</strong>
                         <a 
                           href={`mailto:${school2.teacherEmail}`}
                           style={{ marginLeft: '0.5rem', textDecoration: 'none', opacity: 0.7 }}
