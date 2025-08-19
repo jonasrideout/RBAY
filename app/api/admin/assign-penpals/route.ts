@@ -14,62 +14,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // DEBUG: Log what we're looking for
-    console.log('=== ENHANCED DEBUG assign-penpals ===');
-    console.log('Received payload:', { school1Id, school2Id });
-    console.log('school1Id type:', typeof school1Id, 'length:', school1Id.length);
-    console.log('school2Id type:', typeof school2Id, 'length:', school2Id.length);
-    
-    // Character-by-character analysis
-    console.log('school1Id chars:', school1Id.split('').map((c: string, i: number) => `${i}:${c}`));
-    console.log('school2Id chars:', school2Id.split('').map((c: string, i: number) => `${i}:${c}`));
-
-    // DEBUG: Check if schools exist at all
-    const allSchools = await prisma.school.findMany({
-      select: { id: true, schoolName: true, status: true }
-    });
-    console.log('=== ALL SCHOOLS IN DATABASE ===');
-    allSchools.forEach((school, index) => {
-      console.log(`${index}: ID="${school.id}" NAME="${school.schoolName}" STATUS="${school.status}"`);
-      console.log(`   ID length: ${school.id.length}, chars: ${school.id.split('').slice(0, 10).join('')}...`);
-    });
-    console.log('Total schools found:', allSchools.length);
-
-    // DEBUG: Check exact ID matches
-    const school1Exists = allSchools.find(s => s.id === school1Id);
-    const school2Exists = allSchools.find(s => s.id === school2Id);
-    console.log('school1Id exact match:', school1Exists ? 'FOUND' : 'NOT FOUND');
-    console.log('school2Id exact match:', school2Exists ? 'FOUND' : 'NOT FOUND');
-
-    if (school1Exists) console.log('school1 details:', school1Exists);
-    if (school2Exists) console.log('school2 details:', school2Exists);
-
-    // DEBUG: String comparison analysis
-    if (!school1Exists) {
-      console.log('=== SCHOOL1 ID COMPARISON ===');
-      allSchools.forEach(school => {
-        const match = school.id === school1Id;
-        const startsSame = school.id.substring(0, 5) === school1Id.substring(0, 5);
-        console.log(`DB: "${school.id}" vs SENT: "${school1Id}" - Match: ${match}, StartsSame: ${startsSame}`);
-      });
-    }
-
-    if (!school2Exists) {
-      console.log('=== SCHOOL2 ID COMPARISON ===');
-      allSchools.forEach(school => {
-        const match = school.id === school2Id;
-        const startsSame = school.id.substring(0, 5) === school2Id.substring(0, 5);
-        console.log(`DB: "${school.id}" vs SENT: "${school2Id}" - Match: ${match}, StartsSame: ${startsSame}`);
-      });
-    }
-
-    // DEBUG: Try direct prisma queries
-    console.log('=== ATTEMPTING INDIVIDUAL PRISMA QUERIES ===');
-    const directSchool1 = await prisma.school.findUnique({ where: { id: school1Id } });
-    const directSchool2 = await prisma.school.findUnique({ where: { id: school2Id } });
-    console.log('Direct query school1:', directSchool1 ? 'FOUND' : 'NOT FOUND');
-    console.log('Direct query school2:', directSchool2 ? 'FOUND' : 'NOT FOUND');
-
     // Fetch schools with their students
     const [school1, school2] = await Promise.all([
       prisma.school.findUnique({
@@ -96,19 +40,7 @@ export async function POST(request: NextRequest) {
       })
     ]);
 
-    console.log('Found school1 with students:', school1 ? school1.schoolName : 'NOT FOUND');
-    console.log('Found school2 with students:', school2 ? school2.schoolName : 'NOT FOUND');
-
     if (!school1 || !school2) {
-      console.log('=== ERROR: School lookup failed ===');
-      console.log('school1 result:', school1);
-      console.log('school2 result:', school2);
-      
-      // Additional debugging: Check prisma client status
-      console.log('Prisma client status check...');
-      const testQuery = await prisma.school.count();
-      console.log('Total schools via count():', testQuery);
-      
       return NextResponse.json(
         { 
           error: 'One or both schools not found',
@@ -116,15 +48,14 @@ export async function POST(request: NextRequest) {
             school1Id,
             school2Id,
             school1Found: !!school1,
-            school2Found: !!school2,
-            totalSchoolsInDb: allSchools.length
+            school2Found: !!school2
           }
         },
         { status: 404 }
       );
     }
 
-    // UPDATED: Accept schools in READY status and update them to MATCHED
+    // Accept schools in READY status and update them to MATCHED
     if (school1.status !== 'READY' && school1.status !== 'MATCHED') {
       return NextResponse.json(
         { error: `School ${school1.schoolName} must be in READY status to be matched` },
@@ -139,7 +70,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // FIXED: Get students ready for matching - now including penpalPreference
+    // Get students ready for matching - including penpalPreference
     const school1Students = school1.students.map(student => ({
       id: student.id,
       firstName: student.firstName,
@@ -147,7 +78,7 @@ export async function POST(request: NextRequest) {
       grade: student.grade,
       interests: student.interests,
       schoolId: student.schoolId,
-      penpalPreference: student.penpalPreference  // ✅ ADDED: This was missing!
+      penpalPreference: student.penpalPreference
     }));
 
     const school2Students = school2.students.map(student => ({
@@ -157,7 +88,7 @@ export async function POST(request: NextRequest) {
       grade: student.grade,
       interests: student.interests,
       schoolId: student.schoolId,
-      penpalPreference: student.penpalPreference  // ✅ ADDED: This was missing!
+      penpalPreference: student.penpalPreference
     }));
 
     if (school1Students.length === 0 || school2Students.length === 0) {
@@ -167,18 +98,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // DEBUG: Log penpalPreference data to verify it's being passed
-    console.log('=== PENPAL PREFERENCE DEBUG ===');
-    console.log('School1 students with preferences:', school1Students.map(s => ({ 
-      name: `${s.firstName} ${s.lastName}`, 
-      preference: s.penpalPreference 
-    })));
-    console.log('School2 students with preferences:', school2Students.map(s => ({ 
-      name: `${s.firstName} ${s.lastName}`, 
-      preference: s.penpalPreference 
-    })));
-
-    // ADDED: Update both schools to MATCHED status and set their matchedWithSchoolId
+    // Update both schools to MATCHED status and set their matchedWithSchoolId
     await Promise.all([
       prisma.school.update({
         where: { id: school1Id },
@@ -200,14 +120,14 @@ export async function POST(request: NextRequest) {
     const matches = matchStudents(school1Students, school2Students);
     const summary = generateMatchingSummary(matches, school1Students, school2Students);
 
-    // Create StudentPenpal records in database
+    // Create StudentPenpal records in database - FIXED field names
     const penpalRecords = await Promise.all(
       matches.map(match => 
         prisma.studentPenpal.create({
           data: {
-            student1Id: match.student1Id,
-            student2Id: match.student2Id,
-            status: 'active'
+            studentId: match.student1Id,  // Fixed: was student1Id
+            penpalId: match.student2Id    // Fixed: was student2Id
+            // Removed: status field doesn't exist in our schema
           }
         })
       )
