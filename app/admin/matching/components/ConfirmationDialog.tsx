@@ -70,7 +70,7 @@ export default function ConfirmationDialog({
           }}>
             <strong>{pinnedSchool.schoolName}</strong><br />
             <span style={{ fontSize: '14px', color: '#666' }}>
-              {pinnedSchool.region} | {pinnedSchool.studentCounts.ready} students | Starts {pinnedSchool.startMonth}
+              {pinnedSchool.region} | {pinnedSchool.studentCounts?.ready || 0} students | Starts {pinnedSchool.startMonth}
             </span>
           </div>
           
@@ -86,7 +86,7 @@ export default function ConfirmationDialog({
           }}>
             <strong>{selectedMatch.schoolName}</strong><br />
             <span style={{ fontSize: '14px', color: '#666' }}>
-              {selectedMatch.region} | {selectedMatch.studentCounts.ready} students | Starts {selectedMatch.startMonth}
+              {selectedMatch.region} | {selectedMatch.studentCounts?.ready || 0} students | Starts {selectedMatch.startMonth}
             </span>
           </div>
         </div>
