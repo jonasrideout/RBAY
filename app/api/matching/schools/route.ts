@@ -32,8 +32,7 @@ export async function GET() {
     const transformedSchools = schools.map(school => ({
       id: school.id,
       schoolName: school.schoolName,
-      teacherFirstName: school.teacherFirstName,
-      teacherLastName: school.teacherLastName,
+      teacherName: school.teacherName,
       teacherEmail: school.teacherEmail,
       region: school.region || 'Unknown',
       gradeLevel: school.gradeLevel,
@@ -130,7 +129,7 @@ export async function POST(request: NextRequest) {
               school1: {
                 id: school1.id,
                 name: school1.schoolName,
-                teacher: `${school1.teacherFirstName} ${school1.teacherLastName}`,
+                teacher: school1.teacherName,
                 region: school1.region,
                 grades: school1.gradeLevel,
                 studentCount: school1.students.length,
@@ -139,7 +138,7 @@ export async function POST(request: NextRequest) {
               school2: {
                 id: school2.id,
                 name: school2.schoolName,
-                teacher: `${school2.teacherFirstName} ${school2.teacherLastName}`,
+                teacher: school2.teacherName,
                 region: school2.region,
                 grades: school2.gradeLevel,
                 studentCount: school2.students.length,
