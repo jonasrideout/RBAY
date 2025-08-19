@@ -35,7 +35,7 @@ model School {
   
   // School details
   schoolName            String
-  schoolAddress         String
+  schoolAddress         String?
   schoolCity            String
   schoolState           String
   schoolZip             String
