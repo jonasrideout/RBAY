@@ -95,12 +95,13 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
     }
 
     // ADDED: Teacher search (name OR email, case-insensitive, partial match)
+    // FIXED: Use single teacherName field instead of concatenating first/last names
     if (filters.teacherSearch && filters.teacherSearch.trim()) {
       const searchTerm = filters.teacherSearch.toLowerCase().trim();
       filtered = filtered.filter(school => {
-        const teacherFullName = `${school.teacherFirstName} ${school.teacherLastName}`.toLowerCase();
+        const teacherName = school.teacherName.toLowerCase();
         const teacherEmail = school.teacherEmail.toLowerCase();
-        return teacherFullName.includes(searchTerm) || teacherEmail.includes(searchTerm);
+        return teacherName.includes(searchTerm) || teacherEmail.includes(searchTerm);
       });
     }
 
@@ -117,7 +118,7 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
     // Class size filtering
     if (filters.classSizes.length > 0) {
       filtered = filtered.filter(school => {
-        const studentCount = school.studentCounts.ready;
+        const studentCount = school.studentCounts?.ready || 0;
         return filters.classSizes.some(bucket => {
           const bucketData = classSizeBuckets.find(b => b.label === bucket);
           return bucketData && studentCount >= bucketData.min && studentCount <= bucketData.max;
