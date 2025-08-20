@@ -32,6 +32,7 @@ export default function SchoolCard({
   };
 
   const [copyButtonText, setCopyButtonText] = useState('COPY URL');
+  const [emailCopyText, setEmailCopyText] = useState('✉️');
 
   const openDashboard = () => {
     const url = getDashboardUrl();
@@ -47,6 +48,17 @@ export default function SchoolCard({
     } catch (err) {
       console.error('Failed to copy URL:', err);
       prompt('Copy this URL:', url);
+    }
+  };
+
+  const copyEmailAddress = async () => {
+    try {
+      await navigator.clipboard.writeText(school.teacherEmail);
+      setEmailCopyText('✓');
+      setTimeout(() => setEmailCopyText('✉️'), 1500);
+    } catch (err) {
+      console.error('Failed to copy email:', err);
+      prompt('Copy this email:', school.teacherEmail);
     }
   };
 
@@ -68,27 +80,6 @@ export default function SchoolCard({
         </svg>
       );
     }
-  };
-
-  const getRegionDisplay = (region: string) => {
-    return (
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        height: '100%',
-        textAlign: 'center'
-      }}>
-        <div style={{ 
-          fontSize: '0.8rem', 
-          fontWeight: '600', 
-          color: '#4a5568',
-          letterSpacing: '0.5px'
-        }}>
-          {region.toUpperCase()}
-        </div>
-      </div>
-    );
   };
 
   return (
@@ -163,7 +154,7 @@ export default function SchoolCard({
         </div>
       )}
 
-      {/* School Information (60%) - Modernized Layout */}
+      {/* School Information (60%) - NO REGION HERE */}
       <div style={{ 
         display: 'flex', 
         flexDirection: 'column', 
@@ -181,7 +172,7 @@ export default function SchoolCard({
           {school.schoolName}
         </h3>
 
-        {/* Teacher Name with Email */}
+        {/* Teacher Name with Email - IMPROVED */}
         <div style={{ 
           display: 'flex', 
           alignItems: 'center', 
@@ -190,28 +181,31 @@ export default function SchoolCard({
           fontSize: '0.95rem'
         }}>
           <span style={{ fontWeight: '500' }}>{teacherName}</span>
-          <a 
-            href={`mailto:${school.teacherEmail}`}
+          <button
+            onClick={copyEmailAddress}
             style={{ 
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
               textDecoration: 'none', 
               fontSize: '1rem',
-              opacity: 0.6,
-              transition: 'opacity 0.2s ease'
+              color: '#2563eb',
+              opacity: 0.8,
+              transition: 'all 0.2s ease',
+              padding: '2px'
             }}
-            title={school.teacherEmail}
-            onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
-            onMouseLeave={(e) => e.currentTarget.style.opacity = '0.6'}
+            title={`Copy email: ${school.teacherEmail}`}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.opacity = '1';
+              e.currentTarget.style.transform = 'scale(1.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.opacity = '0.8';
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
           >
-            ✉️
-          </a>
-        </div>
-
-        {/* Region */}
-        <div style={{ 
-          color: '#6b7280', 
-          fontSize: '0.9rem'
-        }}>
-          <span style={{ fontWeight: '500' }}>Region:</span> {school.region.toUpperCase()}
+            {emailCopyText}
+          </button>
         </div>
 
         {/* Grades */}
@@ -237,7 +231,7 @@ export default function SchoolCard({
         )}
       </div>
 
-      {/* Data & Actions (40%) - Region + student counts + dashboard links */}
+      {/* Data & Actions (40%) - FIXED ALIGNMENT */}
       <div style={{ 
         display: 'flex', 
         flexDirection: 'column', 
@@ -245,7 +239,7 @@ export default function SchoolCard({
         fontSize: '0.9rem',
         gap: '0.5rem'
       }}>
-        {/* Data rows - Region first, then student counts */}
+        {/* Data rows - FIXED: proper right alignment */}
         <div style={{
           display: 'flex',
           flexDirection: 'column',
@@ -254,47 +248,52 @@ export default function SchoolCard({
           <div style={{ 
             color: '#4b5563',
             display: 'flex',
+            justifyContent: 'space-between',
             alignItems: 'center',
             minHeight: '1.1rem'
           }}>
             <span style={{ fontWeight: '500' }}>Region:</span> 
-            <span style={{ marginLeft: 'auto', textAlign: 'center', flex: 1 }}>{school.region.toUpperCase()}</span>
+            <span>{school.region.toUpperCase()}</span>
           </div>
           <div style={{ 
             color: '#4b5563',
             display: 'flex',
+            justifyContent: 'space-between',
             alignItems: 'center',
             minHeight: '1.1rem'
           }}>
             <span style={{ fontWeight: '500' }}>Start:</span> 
-            <span style={{ marginLeft: 'auto', textAlign: 'center', flex: 1 }}>{school.startMonth}</span>
+            <span>{school.startMonth}</span>
           </div>
           <div style={{ 
             color: '#4b5563',
             display: 'flex',
+            justifyContent: 'space-between',
             alignItems: 'center',
             minHeight: '1.1rem'
           }}>
             <span style={{ fontWeight: '500' }}>Expected:</span> 
-            <span style={{ marginLeft: 'auto', textAlign: 'center', flex: 1 }}>{school.studentCounts?.expected || 0}</span>
+            <span>{school.studentCounts?.expected || 0}</span>
           </div>
           <div style={{ 
             color: '#4b5563',
             display: 'flex',
+            justifyContent: 'space-between',
             alignItems: 'center',
             minHeight: '1.1rem'
           }}>
             <span style={{ fontWeight: '500' }}>Registered:</span> 
-            <span style={{ marginLeft: 'auto', textAlign: 'center', flex: 1 }}>{school.studentCounts?.registered || 0}</span>
+            <span>{school.studentCounts?.registered || 0}</span>
           </div>
           <div style={{ 
             color: '#4b5563',
             display: 'flex',
+            justifyContent: 'space-between',
             alignItems: 'center',
             minHeight: '1.1rem'
           }}>
             <span style={{ fontWeight: '500' }}>Ready:</span> 
-            <span style={{ marginLeft: 'auto', textAlign: 'center', flex: 1 }}>{school.studentCounts?.ready || 0}</span>
+            <span>{school.studentCounts?.ready || 0}</span>
           </div>
         </div>
 
