@@ -104,7 +104,7 @@ export default function SchoolCard({
           : '0 2px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.1)',
         transition: 'all 0.2s ease',
         display: 'grid',
-        gridTemplateColumns: '50% 25% 20%',
+        gridTemplateColumns: '65% 35%',
         gap: '1.25rem',
         alignItems: 'stretch',
         minHeight: '120px',
@@ -163,7 +163,7 @@ export default function SchoolCard({
         </div>
       )}
 
-      {/* School Information (50%) - Modernized Layout */}
+      {/* School Information (65%) - Modernized Layout */}
       <div style={{ 
         display: 'flex', 
         flexDirection: 'column', 
@@ -204,6 +204,14 @@ export default function SchoolCard({
           >
             ✉️
           </a>
+        </div>
+
+        {/* Region */}
+        <div style={{ 
+          color: '#6b7280', 
+          fontSize: '0.9rem'
+        }}>
+          <span style={{ fontWeight: '500' }}>Region:</span> {school.region.toUpperCase()}
         </div>
 
         {/* Grades */}
@@ -281,20 +289,21 @@ export default function SchoolCard({
         </div>
       </div>
 
-      {/* Class Information (25%) - Tighter spacing */}
+      {/* Class Information (35%) - Much tighter spacing */}
       <div style={{ 
         display: 'flex', 
         flexDirection: 'column', 
         justifyContent: 'space-between',
         fontSize: '0.9rem',
-        gap: '0.4rem',
+        gap: '0.25rem',
         paddingTop: '0.25rem'
       }}>
         <div style={{ 
           color: '#4b5563',
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center'
+          alignItems: 'center',
+          minHeight: '1.2rem'
         }}>
           <span style={{ fontWeight: '500' }}>Start:</span> 
           <span>{school.startMonth}</span>
@@ -303,7 +312,8 @@ export default function SchoolCard({
           color: '#4b5563',
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center'
+          alignItems: 'center',
+          minHeight: '1.2rem'
         }}>
           <span style={{ fontWeight: '500' }}>Expected:</span> 
           <span>{school.studentCounts?.expected || 0}</span>
@@ -312,7 +322,8 @@ export default function SchoolCard({
           color: '#4b5563',
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center'
+          alignItems: 'center',
+          minHeight: '1.2rem'
         }}>
           <span style={{ fontWeight: '500' }}>Registered:</span> 
           <span>{school.studentCounts?.registered || 0}</span>
@@ -321,21 +332,12 @@ export default function SchoolCard({
           color: '#4b5563',
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center'
+          alignItems: 'center',
+          minHeight: '1.2rem'
         }}>
           <span style={{ fontWeight: '500' }}>Ready:</span> 
           <span>{school.studentCounts?.ready || 0}</span>
         </div>
-      </div>
-
-      {/* Region Display (20%) - Slightly smaller */}
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        minHeight: '80px'
-      }}>
-        {getRegionDisplay(school.region)}
       </div>
 
       {/* Matched School Display */}
