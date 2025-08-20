@@ -1,4 +1,3 @@
-// app/api/admin/download-pairings/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
@@ -9,6 +8,7 @@ interface PenpalData {
   grade: string;
   school: string | undefined;
   interests: string[];
+  otherInterests: string | null;
 }
 
 export async function GET(request: NextRequest) {
@@ -72,7 +72,8 @@ export async function GET(request: NextRequest) {
             name: `${connection.penpal.firstName} ${connection.penpal.lastName}`,
             grade: connection.penpal.grade,
             school: connection.penpal.school?.schoolName,
-            interests: connection.penpal.interests
+            interests: connection.penpal.interests,
+            otherInterests: connection.penpal.otherInterests
           });
         }
       });
@@ -84,7 +85,8 @@ export async function GET(request: NextRequest) {
             name: `${connection.student.firstName} ${connection.student.lastName}`,
             grade: connection.student.grade,
             school: connection.student.school?.schoolName,
-            interests: connection.student.interests
+            interests: connection.student.interests,
+            otherInterests: connection.student.otherInterests
           });
         }
       });
@@ -99,6 +101,7 @@ export async function GET(request: NextRequest) {
           name: `${student.firstName} ${student.lastName}`,
           grade: student.grade,
           interests: student.interests,
+          otherInterests: student.otherInterests,
           penpalPreference: student.penpalPreference
         },
         penpals: uniquePenpals,
