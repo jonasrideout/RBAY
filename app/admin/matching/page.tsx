@@ -236,11 +236,15 @@ export default function AdminDashboard() {
     const processed = new Set<string>();
 
     matchedSchools.forEach(school => {
-      if (processed.has(school.id) || !school.matchedSchool) return;
+      if (processed.has(school.id) || !school.matchedWithSchoolId) return;
       
-      pairs.push([school, school.matchedSchool]);
+      // FIXED: Find the complete school object instead of using limited matchedSchool data
+      const matchedSchoolFull = schools.find(s => s.id === school.matchedWithSchoolId);
+      if (!matchedSchoolFull) return;
+      
+      pairs.push([school, matchedSchoolFull]);
       processed.add(school.id);
-      processed.add(school.matchedSchool.id);
+      processed.add(matchedSchoolFull.id);
     });
 
     return (
@@ -313,7 +317,7 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
-                    {/* School 2 - FIXED: Use single teacherName field */}
+                    {/* School 2 - FIXED: Now using complete school data */}
                     <div style={{
                       padding: '1rem',
                       background: '#f8f9fa',
