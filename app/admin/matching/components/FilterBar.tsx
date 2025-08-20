@@ -316,49 +316,55 @@ export default function FilterBar({
         {renderMultiSelectDropdown('Grades', 'grades', grades.map(g => `Grade ${g}`), filters.grades)}
       </div>
 
-      {/* Go Button */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          closeAllDropdowns();
-          onApplyFilters();
-        }}
-        style={{
-          height: '36px',
-          padding: '0 20px',
-          border: 'none',
-          borderRadius: '4px',
-          backgroundColor: '#2196f3',
-          color: 'white',
-          cursor: 'pointer',
-          fontSize: '0.85rem',
-          fontWeight: '600'
-        }}
-      >
-        Go
-      </button>
+      {/* Stacked Buttons */}
+      <div style={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        gap: '4px',
+        alignItems: 'center'
+      }}>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            closeAllDropdowns();
+            onApplyFilters();
+          }}
+          style={{
+            height: '28px',
+            padding: '0 16px',
+            border: 'none',
+            borderRadius: '4px',
+            backgroundColor: '#2196f3',
+            color: 'white',
+            cursor: 'pointer',
+            fontSize: '0.8rem',
+            fontWeight: '600'
+          }}
+        >
+          Go
+        </button>
 
-      {/* Clear All Button */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          closeAllDropdowns();
-          onClearFilters();
-        }}
-        style={{
-          height: '36px',
-          padding: '0 16px',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          backgroundColor: 'white',
-          cursor: 'pointer',
-          fontSize: '0.85rem',
-          fontWeight: '500',
-          color: '#666'
-        }}
-      >
-        Clear All
-      </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            closeAllDropdowns();
+            onClearFilters();
+          }}
+          style={{
+            height: '28px',
+            padding: '0 14px',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            backgroundColor: 'white',
+            cursor: 'pointer',
+            fontSize: '0.8rem',
+            fontWeight: '500',
+            color: '#666'
+          }}
+        >
+          Clear
+        </button>
+      </div>
     </div>
   );
 }
