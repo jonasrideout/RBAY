@@ -55,10 +55,10 @@ export default function SchoolRegistrationForm({
 
             <form onSubmit={onSubmit}>
               
-              {/* Teacher Information */}
+              {/* Instructor Information */}
               <div className="form-section" style={{ marginBottom: '2rem' }}>
                 <h3 style={{ color: '#2c5aa0', borderBottom: '2px solid #e9ecef', paddingBottom: '0.5rem', marginBottom: '1.5rem' }}>
-                  Teacher Information
+                  Instructor Information
                 </h3>
                 
                 <div className="grid grid-2" style={{ gap: '1rem' }}>
@@ -68,7 +68,6 @@ export default function SchoolRegistrationForm({
                       type="text" 
                       id="teacher-first-name" 
                       className="form-input" 
-                      placeholder="Sarah"
                       value={formData.teacherFirstName}
                       onChange={(e) => onUpdateFormData('teacherFirstName', e.target.value)}
                       disabled={isLoading}
@@ -82,7 +81,6 @@ export default function SchoolRegistrationForm({
                       type="text" 
                       id="teacher-last-name" 
                       className="form-input" 
-                      placeholder="Johnson"
                       value={formData.teacherLastName}
                       onChange={(e) => onUpdateFormData('teacherLastName', e.target.value)}
                       disabled={isLoading}
@@ -98,7 +96,6 @@ export default function SchoolRegistrationForm({
                       type="email" 
                       id="teacher-email" 
                       className="form-input" 
-                      placeholder="s.johnson@school.edu"
                       value={formData.teacherEmail}
                       onChange={(e) => onUpdateFormData('teacherEmail', e.target.value)}
                       disabled={isLoading}
@@ -115,7 +112,6 @@ export default function SchoolRegistrationForm({
                       type="tel" 
                       id="teacher-phone" 
                       className="form-input" 
-                      placeholder="(555) 123-4567"
                       value={formData.teacherPhone}
                       onChange={(e) => onUpdateFormData('teacherPhone', e.target.value)}
                       disabled={isLoading}
@@ -136,7 +132,6 @@ export default function SchoolRegistrationForm({
                     type="text" 
                     id="school-name" 
                     className="form-input" 
-                    placeholder="Lincoln Elementary School"
                     value={formData.schoolName}
                     onChange={(e) => onUpdateFormData('schoolName', e.target.value)}
                     disabled={isLoading}
@@ -151,7 +146,6 @@ export default function SchoolRegistrationForm({
                       type="text" 
                       id="school-city" 
                       className="form-input" 
-                      placeholder="Springfield"
                       value={formData.schoolCity}
                       onChange={(e) => onUpdateFormData('schoolCity', e.target.value)}
                       disabled={isLoading}
@@ -229,7 +223,6 @@ export default function SchoolRegistrationForm({
                       type="number" 
                       id="class-size" 
                       className="form-input" 
-                      placeholder="25"
                       min="1"
                       max="50"
                       value={formData.classSize}
@@ -259,6 +252,7 @@ export default function SchoolRegistrationForm({
                       required
                     >
                       <option value="">Select month</option>
+                      <option value="Not sure yet">Not sure yet</option>
                       {[
                         'January', 'February', 'March', 'April', 'May', 'June',
                         'July', 'August', 'September', 'October', 'November', 'December'
@@ -279,6 +273,7 @@ export default function SchoolRegistrationForm({
                       required
                     >
                       <option value="">Select frequency</option>
+                      <option value="Not sure yet">Not sure yet</option>
                       <option value="weekly">Weekly</option>
                       <option value="bi-weekly">Every Two Weeks</option>
                       <option value="monthly">Monthly</option>
@@ -301,7 +296,6 @@ export default function SchoolRegistrationForm({
                   <textarea 
                     id="special-considerations" 
                     className="form-textarea" 
-                    placeholder="Any special needs, accommodations, or information about your class that would help with matching..."
                     rows={4}
                     value={formData.specialConsiderations}
                     onChange={(e) => onUpdateFormData('specialConsiderations', e.target.value)}
