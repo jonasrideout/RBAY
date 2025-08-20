@@ -86,23 +86,39 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
   const applyFilters = () => {
     let filtered = getAvailableSchools();
 
-    // ADDED: School name search (case-insensitive, partial match)
-    if (filters.schoolSearch && filters.schoolSearch.trim()) {
+    // FIXED: Combined search logic - if both search fields have the same value, treat as combined search
+    if (filters.schoolSearch && filters.teacherSearch && 
+        filters.schoolSearch === filters.teacherSearch) {
+      // Combined search: school name OR teacher name OR teacher email
       const searchTerm = filters.schoolSearch.toLowerCase().trim();
-      filtered = filtered.filter(school => 
-        school.schoolName.toLowerCase().includes(searchTerm)
-      );
-    }
-
-    // ADDED: Teacher search (name OR email, case-insensitive, partial match)
-    // FIXED: Use single teacherName field instead of concatenating first/last names
-    if (filters.teacherSearch && filters.teacherSearch.trim()) {
-      const searchTerm = filters.teacherSearch.toLowerCase().trim();
       filtered = filtered.filter(school => {
+        const schoolName = school.schoolName.toLowerCase();
         const teacherName = school.teacherName.toLowerCase();
         const teacherEmail = school.teacherEmail.toLowerCase();
-        return teacherName.includes(searchTerm) || teacherEmail.includes(searchTerm);
+        return schoolName.includes(searchTerm) || 
+               teacherName.includes(searchTerm) || 
+               teacherEmail.includes(searchTerm);
       });
+    } else {
+      // Separate searches (legacy behavior for when fields differ)
+      
+      // School name search (case-insensitive, partial match)
+      if (filters.schoolSearch && filters.schoolSearch.trim()) {
+        const searchTerm = filters.schoolSearch.toLowerCase().trim();
+        filtered = filtered.filter(school => 
+          school.schoolName.toLowerCase().includes(searchTerm)
+        );
+      }
+
+      // Teacher search (name OR email, case-insensitive, partial match)
+      if (filters.teacherSearch && filters.teacherSearch.trim()) {
+        const searchTerm = filters.teacherSearch.toLowerCase().trim();
+        filtered = filtered.filter(school => {
+          const teacherName = school.teacherName.toLowerCase();
+          const teacherEmail = school.teacherEmail.toLowerCase();
+          return teacherName.includes(searchTerm) || teacherEmail.includes(searchTerm);
+        });
+      }
     }
 
     // Region filtering
