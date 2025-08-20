@@ -197,7 +197,7 @@ export default function FilterBar({
             {selectedValues.length === 0 
               ? `All ${label}` 
               : isAllExceptSelected
-                ? `All except ${pinnedSchoolRegion?.charAt(0).toUpperCase() + pinnedSchoolRegion?.slice(1).toLowerCase()}`
+                ? `All except ${pinnedSchoolRegion ? pinnedSchoolRegion.charAt(0).toUpperCase() + pinnedSchoolRegion.slice(1).toLowerCase() : ''}`
                 : selectedValues.length === 1 
                   ? selectedValues[0]
                   : `${selectedValues.length} selected`
@@ -392,7 +392,7 @@ export default function FilterBar({
           marginBottom: '4px', 
           color: '#4a5568' 
         }}>
-          Search Schools or Teachers
+          Search schools or teachers
         </label>
         <input
           type="text"
