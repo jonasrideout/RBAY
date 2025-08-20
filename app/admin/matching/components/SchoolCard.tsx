@@ -358,7 +358,7 @@ export default function SchoolCard({
           borderLeft: '4px solid #38a169'
         }}>
           <strong style={{ color: '#2f855a' }}>
-            🤝 Matched with: {school.matchedSchool.schoolName}
+            Matched with: {school.matchedSchool.schoolName}
           </strong>
           <div style={{ fontSize: '0.9rem', color: '#4a5568', marginTop: '0.25rem' }}>
             {/* FIXED: Use single teacherName field for matched school */}
