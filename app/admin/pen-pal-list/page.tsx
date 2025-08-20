@@ -9,6 +9,7 @@ interface Student {
   name: string;
   grade: string;
   interests: string[];
+  otherInterests: string | null;
   penpalPreference?: string;
 }
 
@@ -17,6 +18,7 @@ interface Penpal {
   grade: string;
   school: string;
   interests: string[];
+  otherInterests: string | null;
 }
 
 interface StudentPairing {
@@ -82,6 +84,23 @@ function PenPalListContent() {
 
   const handleDownloadPrint = () => {
     window.print();
+  };
+
+  // Helper function to format interests display
+  const formatInterests = (interests: string[], otherInterests: string | null) => {
+    const parts = [];
+    
+    // Add checkbox interests if any
+    if (interests && interests.length > 0) {
+      parts.push(interests.join(', '));
+    }
+    
+    // Add other interests if any
+    if (otherInterests && otherInterests.trim()) {
+      parts.push(otherInterests.trim());
+    }
+    
+    return parts.length > 0 ? parts.join(', ') : 'No interests listed';
   };
 
   if (isLoading) {
@@ -226,16 +245,16 @@ function PenPalListContent() {
             </h3>
           </div>
 
-          {/* Student listings - UPDATED for multiple pen pals */}
+          {/* Student listings - UPDATED to show both interests and otherInterests */}
           <div style={{ lineHeight: '1.6' }}>
             {data.pairings.map((pairing, index) => (
               <div key={index} style={{ marginBottom: '1.5rem' }}>
-                {/* Student info */}
+                {/* Student info with combined interests */}
                 <div style={{ marginBottom: '0.5rem' }}>
-                  <strong>{pairing.student.name}</strong>: {pairing.student.interests.join(', ')}
+                  <strong>{pairing.student.name}</strong>: {formatInterests(pairing.student.interests, pairing.student.otherInterests)}
                 </div>
                 
-                {/* Multiple pen pal matches - like your PDF examples */}
+                {/* Multiple pen pal matches - with combined interests */}
                 {pairing.penpals.length > 0 ? (
                   <div style={{ 
                     marginLeft: '1rem',
@@ -244,7 +263,7 @@ function PenPalListContent() {
                   }}>
                     {pairing.penpals.map((penpal, penpalIndex) => (
                       <div key={penpalIndex} style={{ color: '#4a5568', marginBottom: '0.25rem' }}>
-                        ● <strong>Matched with {penpal.name}</strong>: {penpal.interests.join(', ')}
+                        ● <strong>Matched with {penpal.name}</strong>: {formatInterests(penpal.interests, penpal.otherInterests)}
                       </div>
                     ))}
                   </div>
