@@ -104,7 +104,7 @@ export default function SchoolCard({
           : '0 2px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.1)',
         transition: 'all 0.2s ease',
         display: 'grid',
-        gridTemplateColumns: '65% 35%',
+        gridTemplateColumns: '50% 50%',
         gap: '1.25rem',
         alignItems: 'stretch',
         minHeight: '120px',
@@ -163,7 +163,7 @@ export default function SchoolCard({
         </div>
       )}
 
-      {/* School Information (65%) - Modernized Layout */}
+      {/* School Information (50%) - Modernized Layout */}
       <div style={{ 
         display: 'flex', 
         flexDirection: 'column', 
@@ -204,6 +204,14 @@ export default function SchoolCard({
           >
             ✉️
           </a>
+        </div>
+
+        {/* Region */}
+        <div style={{ 
+          color: '#6b7280', 
+          fontSize: '0.9rem'
+        }}>
+          <span style={{ fontWeight: '500' }}>Region:</span> {school.region.toUpperCase()}
         </div>
 
         {/* Region */}
@@ -289,54 +297,76 @@ export default function SchoolCard({
         </div>
       </div>
 
-      {/* Class Information (35%) - Much tighter spacing */}
+      {/* Student Counts & Region (50%) - Region at top, then tight student counts */}
       <div style={{ 
         display: 'flex', 
         flexDirection: 'column', 
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
         fontSize: '0.9rem',
-        gap: '0.25rem',
+        gap: '0.5rem',
         paddingTop: '0.25rem'
       }}>
+        {/* Region at top of right column */}
         <div style={{ 
           color: '#4b5563',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          minHeight: '1.2rem'
+          fontSize: '0.8rem',
+          fontWeight: '600',
+          letterSpacing: '0.5px',
+          textAlign: 'center',
+          padding: '0.5rem',
+          backgroundColor: '#f8fafc',
+          borderRadius: '6px',
+          border: '1px solid #e2e8f0'
         }}>
-          <span style={{ fontWeight: '500' }}>Start:</span> 
-          <span>{school.startMonth}</span>
+          {school.region.toUpperCase()}
         </div>
-        <div style={{ 
-          color: '#4b5563',
+
+        {/* Student counts - much tighter */}
+        <div style={{
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          minHeight: '1.2rem'
+          flexDirection: 'column',
+          gap: '0.15rem'
         }}>
-          <span style={{ fontWeight: '500' }}>Expected:</span> 
-          <span>{school.studentCounts?.expected || 0}</span>
-        </div>
-        <div style={{ 
-          color: '#4b5563',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          minHeight: '1.2rem'
-        }}>
-          <span style={{ fontWeight: '500' }}>Registered:</span> 
-          <span>{school.studentCounts?.registered || 0}</span>
-        </div>
-        <div style={{ 
-          color: '#4b5563',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          minHeight: '1.2rem'
-        }}>
-          <span style={{ fontWeight: '500' }}>Ready:</span> 
-          <span>{school.studentCounts?.ready || 0}</span>
+          <div style={{ 
+            color: '#4b5563',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            minHeight: '1.1rem'
+          }}>
+            <span style={{ fontWeight: '500' }}>Start:</span> 
+            <span>{school.startMonth}</span>
+          </div>
+          <div style={{ 
+            color: '#4b5563',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            minHeight: '1.1rem'
+          }}>
+            <span style={{ fontWeight: '500' }}>Expected:</span> 
+            <span>{school.studentCounts?.expected || 0}</span>
+          </div>
+          <div style={{ 
+            color: '#4b5563',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            minHeight: '1.1rem'
+          }}>
+            <span style={{ fontWeight: '500' }}>Registered:</span> 
+            <span>{school.studentCounts?.registered || 0}</span>
+          </div>
+          <div style={{ 
+            color: '#4b5563',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            minHeight: '1.1rem'
+          }}>
+            <span style={{ fontWeight: '500' }}>Ready:</span> 
+            <span>{school.studentCounts?.ready || 0}</span>
+          </div>
         </div>
       </div>
 
