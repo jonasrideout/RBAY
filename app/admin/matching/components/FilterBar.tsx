@@ -230,147 +230,135 @@ export default function FilterBar({
         padding: '16px 20px',
         backgroundColor: '#f8f9fa',
         borderRadius: '8px',
-        border: '1px solid #e0e6ed'
+        border: '1px solid #e0e6ed',
+        display: 'flex',
+        gap: '12px',
+        alignItems: 'flex-end',
+        flexWrap: 'wrap'
       }}
       onClick={closeAllDropdowns}
     >
-      {/* Row 1: Combined Search */}
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center',
-        marginBottom: '12px'
-      }}>
-        <div style={{ minWidth: '200px' }}>
-          <label style={{ 
-            display: 'block', 
-            fontSize: '0.8rem', 
-            fontWeight: '600', 
-            marginBottom: '4px', 
-            color: '#4a5568' 
-          }}>
-            Search schools or teachers
-          </label>
-          <input
-            type="text"
-            value={filters.schoolSearch || ''}
-            onChange={(e) => handleFilterChange('combinedSearch', e.target.value)}
-            style={{
-              width: '100%',
-              height: '36px',
-              padding: '6px 10px',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              fontSize: '0.85rem',
-              backgroundColor: 'white'
-            }}
-          />
-        </div>
+      {/* Combined Search */}
+      <div style={{ minWidth: '160px' }}>
+        <label style={{ 
+          display: 'block', 
+          fontSize: '0.8rem', 
+          fontWeight: '600', 
+          marginBottom: '4px', 
+          color: '#4a5568' 
+        }}>
+          Search schools or teachers
+        </label>
+        <input
+          type="text"
+          value={filters.schoolSearch || ''}
+          onChange={(e) => handleFilterChange('combinedSearch', e.target.value)}
+          style={{
+            width: '100%',
+            height: '36px',
+            padding: '6px 10px',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            fontSize: '0.85rem',
+            backgroundColor: 'white'
+          }}
+        />
       </div>
 
-      {/* Row 2: Four Dropdowns */}
-      <div style={{ 
-        display: 'flex', 
-        gap: '8px', 
-        justifyContent: 'center',
-        marginBottom: '12px',
-        flexWrap: 'wrap'
-      }} onClick={(e) => e.stopPropagation()}>
-        
-        {/* Regions Filter */}
+      {/* Regions Filter */}
+      <div onClick={(e) => e.stopPropagation()}>
         {renderMultiSelectDropdown('Regions', 'regions', regions, filters.regions)}
+      </div>
 
-        {/* Class Size Filter */}
+      {/* Class Size Filter */}
+      <div onClick={(e) => e.stopPropagation()}>
         {renderMultiSelectDropdown(
           'Class Size', 
           'classSizes', 
           classSizeBuckets.map(b => b.label), 
           filters.classSizes
         )}
+      </div>
 
-        {/* Start Month Filter */}
-        <div style={{ minWidth: '100px' }}>
-          <label style={{ 
-            display: 'block', 
-            fontSize: '0.8rem', 
-            fontWeight: '600', 
-            marginBottom: '4px', 
-            color: '#4a5568' 
-          }}>
-            Start Month
-          </label>
-          <select
-            value={filters.startDate || ''}
-            onChange={(e) => handleFilterChange('startDate', e.target.value)}
-            style={{
-              width: '100%',
-              height: '36px',
-              padding: '6px 8px',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              fontSize: '0.75rem',
-              backgroundColor: 'white'
-            }}
-          >
-            <option value="">All Months</option>
-            {startMonths.map(month => (
-              <option key={month} value={month}>{month}</option>
-            ))}
-          </select>
-        </div>
+      {/* Start Month Filter */}
+      <div style={{ minWidth: '100px' }}>
+        <label style={{ 
+          display: 'block', 
+          fontSize: '0.8rem', 
+          fontWeight: '600', 
+          marginBottom: '4px', 
+          color: '#4a5568' 
+        }}>
+          Start Month
+        </label>
+        <select
+          value={filters.startDate || ''}
+          onChange={(e) => handleFilterChange('startDate', e.target.value)}
+          style={{
+            width: '100%',
+            height: '36px',
+            padding: '6px 8px',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            fontSize: '0.75rem',
+            backgroundColor: 'white'
+          }}
+        >
+          <option value="">All Months</option>
+          {startMonths.map(month => (
+            <option key={month} value={month}>{month}</option>
+          ))}
+        </select>
+      </div>
 
-        {/* Grades Filter */}
+      {/* Grades Filter */}
+      <div onClick={(e) => e.stopPropagation()}>
         {renderMultiSelectDropdown('Grades', 'grades', grades.map(g => `Grade ${g}`), filters.grades)}
       </div>
 
-      {/* Row 3: Stacked Buttons */}
-      <div style={{ 
-        display: 'flex', 
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: '8px'
-      }}>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            closeAllDropdowns();
-            onApplyFilters();
-          }}
-          style={{
-            height: '36px',
-            padding: '0 20px',
-            border: 'none',
-            borderRadius: '4px',
-            backgroundColor: '#2196f3',
-            color: 'white',
-            cursor: 'pointer',
-            fontSize: '0.85rem',
-            fontWeight: '600'
-          }}
-        >
-          Go
-        </button>
+      {/* Go Button */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          closeAllDropdowns();
+          onApplyFilters();
+        }}
+        style={{
+          height: '36px',
+          padding: '0 20px',
+          border: 'none',
+          borderRadius: '4px',
+          backgroundColor: '#2196f3',
+          color: 'white',
+          cursor: 'pointer',
+          fontSize: '0.85rem',
+          fontWeight: '600'
+        }}
+      >
+        Go
+      </button>
 
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            closeAllDropdowns();
-            onClearFilters();
-          }}
-          style={{
-            height: '36px',
-            padding: '0 16px',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            backgroundColor: 'white',
-            cursor: 'pointer',
-            fontSize: '0.85rem',
-            fontWeight: '500',
-            color: '#666'
-          }}
-        >
-          Clear All
-        </button>
-      </div>
+      {/* Clear All Button */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          closeAllDropdowns();
+          onClearFilters();
+        }}
+        style={{
+          height: '36px',
+          padding: '0 16px',
+          border: '1px solid #ccc',
+          borderRadius: '4px',
+          backgroundColor: 'white',
+          cursor: 'pointer',
+          fontSize: '0.85rem',
+          fontWeight: '500',
+          color: '#666'
+        }}
+      >
+        Clear All
+      </button>
     </div>
   );
 }
