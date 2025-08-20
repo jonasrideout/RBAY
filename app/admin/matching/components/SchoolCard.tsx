@@ -32,14 +32,19 @@ export default function SchoolCard({
     return `/dashboard?teacher=${encodeURIComponent(school.teacherEmail)}`;
   };
 
-  const [buttonText, setButtonText] = useState('Teacher Dashboard');
+  const [copyButtonText, setCopyButtonText] = useState('COPY URL');
+
+  const openDashboard = () => {
+    const url = getDashboardUrl();
+    window.open(url, '_blank');
+  };
 
   const copyDashboardUrl = async () => {
     const url = getDashboardUrl();
     try {
       await navigator.clipboard.writeText(url);
-      setButtonText('Copied!');
-      setTimeout(() => setButtonText('Teacher Dashboard'), 2000);
+      setCopyButtonText('COPIED!');
+      setTimeout(() => setCopyButtonText('COPY URL'), 2000);
     } catch (err) {
       // Fallback for older browsers
       console.error('Failed to copy URL:', err);
@@ -158,76 +163,132 @@ export default function SchoolCard({
         </div>
       )}
 
-      {/* School Information (50%) */}
+      {/* School Information (50%) - UPDATED LAYOUT */}
       <div style={{ 
         display: 'flex', 
         flexDirection: 'column', 
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
         paddingTop: '0'
       }}>
-        <div>
-          <h3 style={{ 
-            margin: '0 0 0.5rem 0', 
-            color: '#1a365d', 
-            fontSize: '1.3rem',
-            fontWeight: '600',
-            lineHeight: '1.2'
-          }}>
-            {school.schoolName}
-          </h3>
+        {/* School Name */}
+        <h3 style={{ 
+          margin: '0 0 0.5rem 0', 
+          color: '#1a365d', 
+          fontSize: '1.3rem',
+          fontWeight: '600',
+          lineHeight: '1.2'
+        }}>
+          {school.schoolName}
+        </h3>
+
+        {/* Teacher Name with Email */}
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '0.5rem',
+          color: '#4a5568',
+          fontSize: '1rem',
+          marginBottom: '0.5rem'
+        }}>
+          <span style={{ fontWeight: '500' }}>{teacherName}</span>
+          <a 
+            href={`mailto:${school.teacherEmail}`}
+            style={{ 
+              textDecoration: 'none', 
+              fontSize: '1.1rem',
+              opacity: 0.7,
+              transition: 'opacity 0.2s ease'
+            }}
+            title={school.teacherEmail}
+          >
+            ✉️
+          </a>
+        </div>
+
+        {/* Grades */}
+        <div style={{ 
+          color: '#718096', 
+          fontSize: '0.95rem',
+          marginBottom: '0.5rem'
+        }}>
+          <strong>Grades:</strong> {school.gradeLevel}
+        </div>
+
+        {/* Special Considerations - NEW */}
+        {school.specialConsiderations && (
           <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '0.5rem',
-            color: '#4a5568',
-            fontSize: '1rem',
-            marginBottom: '0.5rem'
+            color: '#4a5568', 
+            fontSize: '0.9rem',
+            fontStyle: 'italic',
+            marginBottom: '0.75rem',
+            padding: '0.5rem',
+            backgroundColor: '#f7fafc',
+            borderRadius: '4px',
+            borderLeft: '3px solid #cbd5e0'
           }}>
-            <span style={{ fontWeight: '500' }}>{teacherName}</span>
-            <a 
-              href={`mailto:${school.teacherEmail}`}
-              style={{ 
-                textDecoration: 'none', 
-                fontSize: '1.1rem',
-                opacity: 0.7,
-                transition: 'opacity 0.2s ease'
-              }}
-              title={school.teacherEmail}
-            >
-              ✉️
-            </a>
+            <strong>Special considerations:</strong> {school.specialConsiderations}
           </div>
-          {/* Teacher Dashboard Link */}
+        )}
+
+        {/* Dashboard Links - UPDATED */}
+        <div style={{
+          display: 'flex',
+          gap: '0.75rem',
+          marginTop: 'auto'
+        }}>
+          <button
+            onClick={openDashboard}
+            style={{
+              background: 'none',
+              border: '1px solid #2563eb',
+              color: '#2563eb',
+              fontSize: '0.7rem',
+              fontWeight: '600',
+              letterSpacing: '0.5px',
+              cursor: 'pointer',
+              padding: '0.4rem 0.6rem',
+              borderRadius: '4px',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#2563eb';
+              e.currentTarget.style.color = 'white';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.color = '#2563eb';
+            }}
+            title="Open teacher dashboard in new tab"
+          >
+            OPEN DASHBOARD
+          </button>
+
           <button
             onClick={copyDashboardUrl}
             style={{
               background: 'none',
-              border: 'none',
-              color: '#2563eb',
-              fontSize: '0.9rem',
+              border: '1px solid #718096',
+              color: '#718096',
+              fontSize: '0.7rem',
+              fontWeight: '600',
+              letterSpacing: '0.5px',
               cursor: 'pointer',
-              textDecoration: 'underline',
-              padding: '0',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.25rem',
-              opacity: 0.8,
-              transition: 'opacity 0.2s ease'
+              padding: '0.4rem 0.6rem',
+              borderRadius: '4px',
+              transition: 'all 0.2s ease'
             }}
-            onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-            onMouseLeave={(e) => e.currentTarget.style.opacity = '0.8'}
-            title="Click to copy teacher dashboard URL"
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#718096';
+              e.currentTarget.style.color = 'white';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.color = '#718096';
+            }}
+            title="Copy teacher dashboard URL to clipboard"
           >
-            {buttonText}
+            {copyButtonText}
           </button>
-        </div>
-        <div style={{ 
-          color: '#718096', 
-          fontSize: '0.95rem',
-          marginTop: '0.5rem'
-        }}>
-          {/* FIXED: Handle gradeLevel as string instead of array */}
-          <strong>Grades:</strong> {school.gradeLevel}
         </div>
       </div>
 
