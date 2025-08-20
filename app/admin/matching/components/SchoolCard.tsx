@@ -19,7 +19,6 @@ export default function SchoolCard({
   onPin, 
   onMatch 
 }: SchoolCardProps) {
-  // FIXED: Use single teacherName field instead of concatenating first/last names
   const teacherName = school.teacherName;
   const isReady = school.status === 'READY';
 
@@ -46,7 +45,6 @@ export default function SchoolCard({
       setCopyButtonText('COPIED!');
       setTimeout(() => setCopyButtonText('COPY URL'), 2000);
     } catch (err) {
-      // Fallback for older browsers
       console.error('Failed to copy URL:', err);
       prompt('Copy this URL:', url);
     }
@@ -82,7 +80,7 @@ export default function SchoolCard({
         textAlign: 'center'
       }}>
         <div style={{ 
-          fontSize: '0.9rem', 
+          fontSize: '0.8rem', 
           fontWeight: '600', 
           color: '#4a5568',
           letterSpacing: '0.5px'
@@ -97,15 +95,17 @@ export default function SchoolCard({
     <div 
       style={{ 
         background: '#fff',
-        border: isPinned ? '2px solid #2196f3' : '1px solid #e0e6ed',
+        border: isPinned ? '2px solid #2196f3' : '1px solid #e2e8f0',
         borderRadius: '12px',
-        padding: '1.5rem',
+        padding: '1.25rem',
         marginBottom: '1rem',
-        boxShadow: isPinned ? '0 4px 12px rgba(33, 150, 243, 0.2)' : '0 4px 6px rgba(0,0,0,0.07)',
+        boxShadow: isPinned 
+          ? '0 8px 25px rgba(33, 150, 243, 0.15), 0 2px 8px rgba(0,0,0,0.1)' 
+          : '0 2px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.1)',
         transition: 'all 0.2s ease',
         display: 'grid',
         gridTemplateColumns: '50% 25% 20%',
-        gap: '1.5rem',
+        gap: '1.25rem',
         alignItems: 'stretch',
         minHeight: '120px',
         position: 'relative'
@@ -115,8 +115,8 @@ export default function SchoolCard({
       {isReady && (onPin || onMatch) && (
         <div style={{ 
           position: 'absolute', 
-          top: '15px', 
-          right: '15px',
+          top: '12px', 
+          right: '12px',
           zIndex: 10
         }}>
           {showMatchIcon ? (
@@ -127,13 +127,13 @@ export default function SchoolCard({
                 border: 'none',
                 cursor: 'pointer',
                 padding: '4px',
-                borderRadius: '4px',
+                borderRadius: '6px',
                 display: 'flex',
                 alignItems: 'center',
                 color: '#28a745',
-                transition: 'background-color 0.2s ease'
+                transition: 'all 0.2s ease'
               }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f8f0'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               title="Link with pinned school"
             >
@@ -147,13 +147,13 @@ export default function SchoolCard({
                 border: 'none',
                 cursor: 'pointer',
                 padding: '4px',
-                borderRadius: '4px',
+                borderRadius: '6px',
                 display: 'flex',
                 alignItems: 'center',
-                color: isPinned ? '#2196f3' : '#666',
+                color: isPinned ? '#2196f3' : '#6b7280',
                 transition: 'all 0.2s ease'
               }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f3f4f6'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               title={isPinned ? "Unpin school" : "Pin school"}
             >
@@ -163,20 +163,20 @@ export default function SchoolCard({
         </div>
       )}
 
-      {/* School Information (50%) - UPDATED LAYOUT */}
+      {/* School Information (50%) - Modernized Layout */}
       <div style={{ 
         display: 'flex', 
         flexDirection: 'column', 
         justifyContent: 'flex-start',
-        paddingTop: '0'
+        gap: '0.5rem'
       }}>
         {/* School Name */}
         <h3 style={{ 
-          margin: '0 0 0.5rem 0', 
-          color: '#1a365d', 
+          margin: '0', 
+          color: '#1f2937', 
           fontSize: '1.3rem',
           fontWeight: '600',
-          lineHeight: '1.2'
+          lineHeight: '1.3'
         }}>
           {school.schoolName}
         </h3>
@@ -186,20 +186,21 @@ export default function SchoolCard({
           display: 'flex', 
           alignItems: 'center', 
           gap: '0.5rem',
-          color: '#4a5568',
-          fontSize: '1rem',
-          marginBottom: '0.5rem'
+          color: '#4b5563',
+          fontSize: '0.95rem'
         }}>
           <span style={{ fontWeight: '500' }}>{teacherName}</span>
           <a 
             href={`mailto:${school.teacherEmail}`}
             style={{ 
               textDecoration: 'none', 
-              fontSize: '1.1rem',
-              opacity: 0.7,
+              fontSize: '1rem',
+              opacity: 0.6,
               transition: 'opacity 0.2s ease'
             }}
             title={school.teacherEmail}
+            onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
+            onMouseLeave={(e) => e.currentTarget.style.opacity = '0.6'}
           >
             ✉️
           </a>
@@ -207,57 +208,50 @@ export default function SchoolCard({
 
         {/* Grades */}
         <div style={{ 
-          color: '#718096', 
-          fontSize: '0.95rem',
-          marginBottom: '0.5rem'
+          color: '#6b7280', 
+          fontSize: '0.9rem'
         }}>
-          <strong>Grades:</strong> {school.gradeLevel}
+          <span style={{ fontWeight: '500' }}>Grades:</span> {school.gradeLevel}
         </div>
 
-        {/* Special Considerations - NEW */}
+        {/* Special Considerations - Subtle styling */}
         {school.specialConsiderations && (
           <div style={{ 
-            color: '#4a5568', 
-            fontSize: '0.9rem',
+            color: '#4b5563', 
+            fontSize: '0.85rem',
             fontStyle: 'italic',
-            marginBottom: '0.75rem',
-            padding: '0.5rem',
-            backgroundColor: '#f7fafc',
-            borderRadius: '4px',
-            borderLeft: '3px solid #cbd5e0'
+            paddingLeft: '0.75rem',
+            borderLeft: '2px solid #e5e7eb',
+            marginTop: '0.25rem'
           }}>
-            <strong>Special considerations:</strong> {school.specialConsiderations}
+            <span style={{ fontWeight: '500' }}>Special considerations:</span> {school.specialConsiderations}
           </div>
         )}
 
-        {/* Dashboard Links - UPDATED */}
+        {/* Dashboard Links - Ghost buttons */}
         <div style={{
           display: 'flex',
           gap: '0.75rem',
-          marginTop: 'auto'
+          marginTop: 'auto',
+          paddingTop: '0.5rem'
         }}>
           <button
             onClick={openDashboard}
             style={{
-              background: 'none',
-              border: '1px solid #2563eb',
-              color: '#2563eb',
+              background: 'transparent',
+              border: 'none',
+              color: '#6b7280',
               fontSize: '0.7rem',
               fontWeight: '600',
               letterSpacing: '0.5px',
               cursor: 'pointer',
-              padding: '0.4rem 0.6rem',
-              borderRadius: '4px',
-              transition: 'all 0.2s ease'
+              padding: '0.35rem 0',
+              textDecoration: 'underline',
+              textUnderlineOffset: '2px',
+              transition: 'color 0.2s ease'
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#2563eb';
-              e.currentTarget.style.color = 'white';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-              e.currentTarget.style.color = '#2563eb';
-            }}
+            onMouseEnter={(e) => e.currentTarget.style.color = '#374151'}
+            onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
             title="Open teacher dashboard in new tab"
           >
             OPEN DASHBOARD
@@ -266,25 +260,20 @@ export default function SchoolCard({
           <button
             onClick={copyDashboardUrl}
             style={{
-              background: 'none',
-              border: '1px solid #718096',
-              color: '#718096',
+              background: 'transparent',
+              border: 'none',
+              color: '#6b7280',
               fontSize: '0.7rem',
               fontWeight: '600',
               letterSpacing: '0.5px',
               cursor: 'pointer',
-              padding: '0.4rem 0.6rem',
-              borderRadius: '4px',
-              transition: 'all 0.2s ease'
+              padding: '0.35rem 0',
+              textDecoration: 'underline',
+              textUnderlineOffset: '2px',
+              transition: 'color 0.2s ease'
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#718096';
-              e.currentTarget.style.color = 'white';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-              e.currentTarget.style.color = '#718096';
-            }}
+            onMouseEnter={(e) => e.currentTarget.style.color = '#374151'}
+            onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
             title="Copy teacher dashboard URL to clipboard"
           >
             {copyButtonText}
@@ -292,52 +281,54 @@ export default function SchoolCard({
         </div>
       </div>
 
-      {/* Class Information (25%) - RIGHT ALIGNED VALUES */}
+      {/* Class Information (25%) - Tighter spacing */}
       <div style={{ 
         display: 'flex', 
         flexDirection: 'column', 
-        justifyContent: 'space-evenly',
-        fontSize: '0.95rem'
+        justifyContent: 'space-between',
+        fontSize: '0.9rem',
+        gap: '0.4rem',
+        paddingTop: '0.25rem'
       }}>
         <div style={{ 
-          color: '#4a5568',
+          color: '#4b5563',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center'
         }}>
-          <strong>Start:</strong> 
+          <span style={{ fontWeight: '500' }}>Start:</span> 
           <span>{school.startMonth}</span>
         </div>
         <div style={{ 
-          color: '#4a5568',
+          color: '#4b5563',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center'
         }}>
-          <strong>Expected:</strong> 
+          <span style={{ fontWeight: '500' }}>Expected:</span> 
           <span>{school.studentCounts?.expected || 0}</span>
         </div>
         <div style={{ 
-          color: '#4a5568',
+          color: '#4b5563',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center'
         }}>
-          <strong>Registered:</strong> 
+          <span style={{ fontWeight: '500' }}>Registered:</span> 
           <span>{school.studentCounts?.registered || 0}</span>
         </div>
         <div style={{ 
-          color: '#4a5568',
+          color: '#4b5563',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center'
         }}>
-          <strong>Ready:</strong> 
+          <span style={{ fontWeight: '500' }}>Ready:</span> 
           <span>{school.studentCounts?.ready || 0}</span>
         </div>
       </div>
 
-      {/* Region Display (20%) */}
+      {/* Region Display (20%) - Slightly smaller */}
       <div style={{ 
         display: 'flex', 
         alignItems: 'center', 
@@ -354,30 +345,29 @@ export default function SchoolCard({
           padding: '0.75rem', 
           background: 'linear-gradient(135deg, #f0fff4 0%, #e8f5e9 100%)', 
           borderRadius: '8px',
-          marginTop: '1rem',
-          borderLeft: '4px solid #38a169'
+          marginTop: '0.75rem',
+          borderLeft: '3px solid #38a169'
         }}>
-          <strong style={{ color: '#2f855a' }}>
+          <strong style={{ color: '#2f855a', fontSize: '0.9rem' }}>
             Matched with: {school.matchedSchool.schoolName}
           </strong>
-          <div style={{ fontSize: '0.9rem', color: '#4a5568', marginTop: '0.25rem' }}>
-            {/* FIXED: Use single teacherName field for matched school */}
+          <div style={{ fontSize: '0.85rem', color: '#4b5563', marginTop: '0.25rem' }}>
             {school.matchedSchool.teacherName} - {school.matchedSchool.region}
           </div>
         </div>
       )}
 
-      {/* Corresponding Display - TODO: Re-implement letter tracking UI when lettersSent/lettersReceived fields are added to schema */}
+      {/* Corresponding Display */}
       {school.status === 'CORRESPONDING' && school.matchedSchool && (
         <div style={{ 
           gridColumn: '1 / -1',
           padding: '0.75rem', 
           background: 'linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%)', 
           borderRadius: '8px',
-          marginTop: '1rem',
-          borderLeft: '4px solid #4299e1'
+          marginTop: '0.75rem',
+          borderLeft: '3px solid #4299e1'
         }}>
-          <div style={{ fontSize: '0.9rem', color: '#4a5568' }}>
+          <div style={{ fontSize: '0.85rem', color: '#4b5563' }}>
             <strong>✉️ Corresponding with:</strong> {school.matchedSchool.schoolName} ({school.matchedSchool.region})
           </div>
         </div>
