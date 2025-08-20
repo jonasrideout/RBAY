@@ -224,7 +224,7 @@ export default function SchoolRegistrationForm({
                   </div>
                   
                   <div className="form-group">
-                    <label htmlFor="class-size" className="form-label">Expected Number of Students *</label>
+                    <label htmlFor="class-size" className="form-label">Estimated Number of Students *</label>
                     <input 
                       type="number" 
                       id="class-size" 
