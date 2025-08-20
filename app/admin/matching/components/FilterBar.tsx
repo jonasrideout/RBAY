@@ -434,12 +434,11 @@ export default function FilterBar({
         {renderMultiSelectDropdown('Grades', 'grades', grades.map(g => `Grade ${g}`), filters.grades)}
       </div>
 
-      {/* Stacked Buttons - FIXED: Vertically stacked, half height each */}
+      {/* Side-by-side Buttons - FIXED: 45px width each, 2px gap, 36px height to match filters */}
       <div style={{ 
         display: 'flex', 
-        flexDirection: 'column',
         gap: '2px',
-        alignItems: 'center'
+        alignItems: 'flex-end'
       }}>
         <button
           onClick={(e) => {
@@ -448,14 +447,14 @@ export default function FilterBar({
             onApplyFilters();
           }}
           style={{
-            height: '16px',
-            width: '60px',
+            height: '36px',
+            width: '45px',
             border: hasActiveFilters ? 'none' : '1px solid #ccc',
             borderRadius: '4px',
             backgroundColor: hasActiveFilters ? '#2196f3' : 'white',
             color: hasActiveFilters ? 'white' : '#666',
             cursor: 'pointer',
-            fontSize: '0.7rem',
+            fontSize: '0.8rem',
             fontWeight: '500'
           }}
         >
@@ -469,13 +468,13 @@ export default function FilterBar({
             onClearFilters();
           }}
           style={{
-            height: '16px',
-            width: '60px',
+            height: '36px',
+            width: '45px',
             border: '1px solid #ccc',
             borderRadius: '4px',
             backgroundColor: 'white',
             cursor: 'pointer',
-            fontSize: '0.7rem',
+            fontSize: '0.8rem',
             fontWeight: '500',
             color: '#666'
           }}
