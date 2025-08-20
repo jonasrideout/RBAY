@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
         schoolState: "California",
         schoolZip: "94102",
         gradeLevel: "3,4,5",
-        expectedClassSize: 25,
+        expectedClassSize: 18,
         startMonth: "September",
         specialConsiderations: "We have several students learning English as a second language",
         status: "READY",
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
         schoolState: "Massachusetts",
         schoolZip: "02101",
         gradeLevel: "3,4,5",
-        expectedClassSize: 22,
+        expectedClassSize: 12,
         startMonth: "September",
         specialConsiderations: "Students are very excited about cross-country pen pal connections",
         status: "READY",
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
 
     console.log('Schools created, creating students...');
 
-    // Pacific students with realistic pen pal preferences (30% MULTIPLE, 70% ONE)
+    // Pacific students with realistic pen pal preferences (30% MULTIPLE, 70% ONE) - 18 total
     const pacificStudents = [
       { name: "Emma Wilson", grade: "3", interests: ["reading", "art"], preference: "ONE", parent: "Jennifer Wilson" },
       { name: "Liam Rodriguez", grade: "4", interests: ["sports", "science"], preference: "MULTIPLE", parent: "Carlos Rodriguez" },
@@ -65,10 +65,17 @@ export async function POST(request: NextRequest) {
       { name: "Mia Johnson", grade: "3", interests: ["art", "crafts"], preference: "ONE", parent: "Amy Johnson" },
       { name: "Alexander Lee", grade: "5", interests: ["reading", "history"], preference: "ONE", parent: "Kevin Lee" },
       { name: "Charlotte Martinez", grade: "4", interests: ["science", "experiments"], preference: "MULTIPLE", parent: "Rosa Martinez" },
-      { name: "William Taylor", grade: "3", interests: ["animals", "pets"], preference: "ONE", parent: "Tom Taylor" }
+      { name: "William Taylor", grade: "3", interests: ["animals", "pets"], preference: "ONE", parent: "Tom Taylor" },
+      // Additional 6 Pacific students
+      { name: "Grace Patterson", grade: "4", interests: ["reading", "writing"], preference: "MULTIPLE", parent: "Susan Patterson" },
+      { name: "James Mitchell", grade: "5", interests: ["sports", "soccer"], preference: "ONE", parent: "Brian Mitchell" },
+      { name: "Lily Cooper", grade: "3", interests: ["art", "drawing"], preference: "ONE", parent: "Rachel Cooper" },
+      { name: "Owen Turner", grade: "4", interests: ["technology", "robots"], preference: "MULTIPLE", parent: "Mark Turner" },
+      { name: "Zoe Adams", grade: "5", interests: ["music", "singing"], preference: "ONE", parent: "Kelly Adams" },
+      { name: "Caleb Morgan", grade: "3", interests: ["nature", "camping"], preference: "ONE", parent: "Jason Morgan" }
     ];
 
-    // Northeast students with realistic pen pal preferences
+    // Northeast students with realistic pen pal preferences - 12 total
     const northeastStudents = [
       { name: "Olivia Anderson", grade: "3", interests: ["reading", "writing"], preference: "ONE", parent: "Linda Anderson" },
       { name: "Lucas White", grade: "4", interests: ["sports", "basketball"], preference: "MULTIPLE", parent: "Robert White" },
