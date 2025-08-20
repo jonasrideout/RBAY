@@ -95,7 +95,7 @@ export default function SchoolCard({
           : '0 2px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.1)',
         transition: 'all 0.2s ease',
         display: 'grid',
-        gridTemplateColumns: '60% 40%',
+        gridTemplateColumns: '70% 30%',
         gap: '1.25rem',
         alignItems: 'stretch',
         minHeight: '120px',
@@ -154,7 +154,7 @@ export default function SchoolCard({
         </div>
       )}
 
-      {/* School Information (60%) - NO REGION HERE */}
+      {/* School Information (70%) - NO REGION HERE */}
       <div style={{ 
         display: 'flex', 
         flexDirection: 'column', 
@@ -184,24 +184,32 @@ export default function SchoolCard({
           <button
             onClick={copyEmailAddress}
             style={{ 
-              background: 'none',
-              border: 'none',
+              background: 'rgba(37, 99, 235, 0.1)',
+              border: '2px solid #2563eb',
+              borderRadius: '50%',
               cursor: 'pointer',
               textDecoration: 'none', 
-              fontSize: '1rem',
+              fontSize: '1.1rem',
               color: '#2563eb',
-              opacity: 0.8,
+              opacity: 0.9,
               transition: 'all 0.2s ease',
-              padding: '2px'
+              padding: '4px',
+              width: '24px',
+              height: '24px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
             title={`Copy email: ${school.teacherEmail}`}
             onMouseEnter={(e) => {
               e.currentTarget.style.opacity = '1';
               e.currentTarget.style.transform = 'scale(1.1)';
+              e.currentTarget.style.background = 'rgba(37, 99, 235, 0.2)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.opacity = '0.8';
+              e.currentTarget.style.opacity = '0.9';
               e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.background = 'rgba(37, 99, 235, 0.1)';
             }}
           >
             {emailCopyText}
@@ -231,7 +239,7 @@ export default function SchoolCard({
         )}
       </div>
 
-      {/* Data & Actions (40%) - FIXED ALIGNMENT */}
+      {/* Data & Actions (30%) - FIXED ALIGNMENT */}
       <div style={{ 
         display: 'flex', 
         flexDirection: 'column', 
