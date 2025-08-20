@@ -48,6 +48,7 @@ export async function POST(request: NextRequest) {
         lastName,
         grade,
         interests: interests || [],
+        otherInterests: otherInterests || null,
         parentName,
         parentEmail,
         parentPhone,
@@ -67,6 +68,7 @@ export async function POST(request: NextRequest) {
         lastName: student.lastName,
         grade: student.grade,
         interests: student.interests,
+        otherInterests: student.otherInterests,
         penpalPreference: student.penpalPreference,
         profileCompleted: student.profileCompleted
       }
@@ -136,7 +138,7 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { studentId, interests, penpalPreference } = body;
+    const { studentId, interests, penpalPreference, otherInterests } = body;
 
     if (!studentId) {
       return NextResponse.json(
@@ -157,6 +159,10 @@ export async function PUT(request: NextRequest) {
       updateData.interests = interests;
     }
 
+    if (otherInterests !== undefined) {
+      updateData.otherInterests = otherInterests;
+    }
+
     if (penpalPreference !== undefined) {
       updateData.penpalPreference = penpalPreference;
     }
@@ -173,6 +179,7 @@ export async function PUT(request: NextRequest) {
         firstName: updatedStudent.firstName,
         lastName: updatedStudent.lastName,
         interests: updatedStudent.interests,
+        otherInterests: updatedStudent.otherInterests,
         penpalPreference: updatedStudent.penpalPreference,
         profileCompleted: updatedStudent.profileCompleted
       }
