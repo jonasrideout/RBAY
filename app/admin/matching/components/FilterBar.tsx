@@ -369,8 +369,6 @@ export default function FilterBar({
     <div 
       ref={containerRef}
       style={{
-        maxWidth: '800px',
-        margin: '0 auto',
         marginBottom: '2rem',
         padding: '16px 20px',
         backgroundColor: '#f8f9fa',
