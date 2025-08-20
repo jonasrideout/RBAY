@@ -157,6 +157,7 @@ export async function GET(request: NextRequest) {
             lastName: true,
             grade: true,
             interests: true,
+            otherInterests: true,
             profileCompleted: true,
             parentConsent: true,
             createdAt: true
