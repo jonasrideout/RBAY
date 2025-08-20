@@ -57,6 +57,16 @@ export default function FilterBar({
   const grades = ['K', '1', '2', '3', '4', '5', '6', '7', '8'];
   const startMonths = ['September', 'October', 'November', 'December', 'January', 'February'];
 
+  // Check if any filters are active
+  const hasActiveFilters = Boolean(
+    (filters.schoolSearch && filters.schoolSearch.trim()) ||
+    (filters.teacherSearch && filters.teacherSearch.trim()) ||
+    filters.regions.length > 0 ||
+    filters.classSizes.length > 0 ||
+    filters.grades.length > 0 ||
+    (filters.startDate && filters.startDate.trim())
+  );
+
   const toggleDropdown = (dropdown: keyof typeof dropdownStates) => {
     setDropdownStates(prev => ({
       ...prev,
@@ -316,10 +326,9 @@ export default function FilterBar({
         {renderMultiSelectDropdown('Grades', 'grades', grades.map(g => `Grade ${g}`), filters.grades)}
       </div>
 
-      {/* Stacked Buttons */}
+      {/* Side-by-side Buttons */}
       <div style={{ 
         display: 'flex', 
-        flexDirection: 'column', 
         gap: '4px',
         alignItems: 'center'
       }}>
@@ -331,14 +340,14 @@ export default function FilterBar({
           }}
           style={{
             height: '28px',
-            padding: '0 16px',
-            border: 'none',
+            padding: '0 14px',
+            border: hasActiveFilters ? 'none' : '1px solid #ccc',
             borderRadius: '4px',
-            backgroundColor: '#2196f3',
-            color: 'white',
+            backgroundColor: hasActiveFilters ? '#2196f3' : 'white',
+            color: hasActiveFilters ? 'white' : '#666',
             cursor: 'pointer',
             fontSize: '0.8rem',
-            fontWeight: '600'
+            fontWeight: '500'
           }}
         >
           Go
