@@ -326,11 +326,11 @@ export default function FilterBar({
         {renderMultiSelectDropdown('Grades', 'grades', grades.map(g => `Grade ${g}`), filters.grades)}
       </div>
 
-      {/* Side-by-side Buttons */}
+      {/* Side-by-side Buttons - FIXED: Same height as filters (36px) and same width as each other */}
       <div style={{ 
         display: 'flex', 
         gap: '4px',
-        alignItems: 'center'
+        alignItems: 'flex-end'
       }}>
         <button
           onClick={(e) => {
@@ -339,8 +339,8 @@ export default function FilterBar({
             onApplyFilters();
           }}
           style={{
-            height: '28px',
-            padding: '0 14px',
+            height: '36px',
+            width: '60px',
             border: hasActiveFilters ? 'none' : '1px solid #ccc',
             borderRadius: '4px',
             backgroundColor: hasActiveFilters ? '#2196f3' : 'white',
@@ -360,8 +360,8 @@ export default function FilterBar({
             onClearFilters();
           }}
           style={{
-            height: '28px',
-            padding: '0 14px',
+            height: '36px',
+            width: '60px',
             border: '1px solid #ccc',
             borderRadius: '4px',
             backgroundColor: 'white',
