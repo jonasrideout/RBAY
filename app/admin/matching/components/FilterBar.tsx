@@ -35,15 +35,18 @@ export default function FilterBar({
   // Create regions list based on pinned school
   const getRegionsOptions = () => {
     if (!pinnedSchoolRegion) {
-      return allRegions;
+      return allRegions.map(region => 
+        region.charAt(0).toUpperCase() + region.slice(1).toLowerCase()
+      );
     }
 
     // Filter out the pinned school's region and add "All except X" option
-    const otherRegions = allRegions.filter(region => 
-      region.toUpperCase() !== pinnedSchoolRegion.toUpperCase()
-    );
+    const otherRegions = allRegions
+      .filter(region => region.toUpperCase() !== pinnedSchoolRegion.toUpperCase())
+      .map(region => region.charAt(0).toUpperCase() + region.slice(1).toLowerCase());
     
-    return [`All except ${pinnedSchoolRegion.toUpperCase()}`, ...otherRegions];
+    const formattedPinnedRegion = pinnedSchoolRegion.charAt(0).toUpperCase() + pinnedSchoolRegion.slice(1).toLowerCase();
+    return [`All except ${formattedPinnedRegion}`, ...otherRegions];
   };
 
   const regions = getRegionsOptions();
@@ -57,7 +60,7 @@ export default function FilterBar({
     { label: 'Over 50', min: 51, max: 999 }
   ];
 
-  const grades = ['K', '1', '2', '3', '4', '5', '6', '7', '8'];
+  const grades = ['K', 'First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh', 'Eighth'];
   const startMonths = ['September', 'October', 'November', 'December', 'January', 'February'];
 
   // Check if any filters are active
@@ -153,7 +156,7 @@ export default function FilterBar({
       filterKey === 'regions' && 
       pinnedSchoolRegion && 
       selectedValues.length === allRegions.length - 1 &&
-      !selectedValues.includes(pinnedSchoolRegion.toUpperCase())
+      !selectedValues.some(val => val.toUpperCase() === pinnedSchoolRegion.toUpperCase())
     );
 
     return (
@@ -177,7 +180,7 @@ export default function FilterBar({
             borderRadius: '4px',
             backgroundColor: 'white',
             cursor: 'pointer',
-            fontSize: '0.7rem',
+            fontSize: '0.75rem',
             textAlign: 'left',
             display: 'flex',
             justifyContent: 'space-between',
@@ -194,7 +197,7 @@ export default function FilterBar({
             {selectedValues.length === 0 
               ? `All ${label}` 
               : isAllExceptSelected
-                ? `All except ${pinnedSchoolRegion?.toUpperCase()}`
+                ? `All except ${pinnedSchoolRegion?.charAt(0).toUpperCase() + pinnedSchoolRegion?.slice(1).toLowerCase()}`
                 : selectedValues.length === 1 
                   ? selectedValues[0]
                   : `${selectedValues.length} selected`
@@ -389,7 +392,7 @@ export default function FilterBar({
           marginBottom: '4px', 
           color: '#4a5568' 
         }}>
-          Search schools or teachers
+          Search Schools or Teachers
         </label>
         <input
           type="text"
@@ -429,7 +432,7 @@ export default function FilterBar({
 
       {/* Grades Filter */}
       <div onClick={(e) => e.stopPropagation()}>
-        {renderMultiSelectDropdown('Grades', 'grades', grades.map(g => `Grade ${g}`), filters.grades)}
+        {renderMultiSelectDropdown('Grades', 'grades', grades, filters.grades)}
       </div>
 
       {/* Side-by-side Buttons - FIXED: 45px width each, 2px gap, 36px height to match filters */}
