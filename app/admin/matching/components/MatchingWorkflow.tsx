@@ -181,15 +181,33 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
     setFilteredSchools(getAvailableSchools());
   };
 
+  // NEW: Auto-clear filters after pinning a school
+  const autoClearFiltersAfterPinning = () => {
+    const clearedFilters = {
+      schoolSearch: '',
+      teacherSearch: '',
+      regions: [],
+      classSizes: [],
+      startDate: '',
+      grades: []
+    };
+    setFilters(clearedFilters);
+    setFiltersApplied(false);
+    // Don't call setFilteredSchools here - let the useEffect handle it
+  };
+
   const handlePinSchool = (school: School) => {
     if (pinnedSchool && pinnedSchool.id === school.id) {
       // Unpin if clicking the same school
       setPinnedSchool(null);
     } else {
+      // Pin a new school
       setPinnedSchool(school);
+      // AUTO-CLEAR: Clear all filters after successfully pinning a new school
+      autoClearFiltersAfterPinning();
     }
     
-    // Reapply filters after pinning/unpinning
+    // Reapply filters after pinning/unpinning (this will respect the cleared filters)
     if (filtersApplied) {
       applyFilters();
     }
