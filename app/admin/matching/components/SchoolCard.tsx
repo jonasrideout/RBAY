@@ -104,7 +104,7 @@ export default function SchoolCard({
           : '0 2px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.1)',
         transition: 'all 0.2s ease',
         display: 'grid',
-        gridTemplateColumns: '50% 50%',
+        gridTemplateColumns: '60% 40%',
         gap: '1.25rem',
         alignItems: 'stretch',
         minHeight: '120px',
@@ -163,7 +163,7 @@ export default function SchoolCard({
         </div>
       )}
 
-      {/* School Information (50%) - Modernized Layout */}
+      {/* School Information (60%) - Modernized Layout */}
       <div style={{ 
         display: 'flex', 
         flexDirection: 'column', 
@@ -214,14 +214,6 @@ export default function SchoolCard({
           <span style={{ fontWeight: '500' }}>Region:</span> {school.region.toUpperCase()}
         </div>
 
-        {/* Region */}
-        <div style={{ 
-          color: '#6b7280', 
-          fontSize: '0.9rem'
-        }}>
-          <span style={{ fontWeight: '500' }}>Region:</span> {school.region.toUpperCase()}
-        </div>
-
         {/* Grades */}
         <div style={{ 
           color: '#6b7280', 
@@ -243,12 +235,74 @@ export default function SchoolCard({
             <span style={{ fontWeight: '500' }}>Special considerations:</span> {school.specialConsiderations}
           </div>
         )}
+      </div>
 
-        {/* Dashboard Links - Ghost buttons */}
+      {/* Data & Actions (40%) - Region + student counts + dashboard links */}
+      <div style={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        justifyContent: 'flex-start',
+        fontSize: '0.9rem',
+        gap: '0.5rem'
+      }}>
+        {/* Data rows - Region first, then student counts */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.15rem'
+        }}>
+          <div style={{ 
+            color: '#4b5563',
+            display: 'flex',
+            alignItems: 'center',
+            minHeight: '1.1rem'
+          }}>
+            <span style={{ fontWeight: '500' }}>Region:</span> 
+            <span style={{ marginLeft: 'auto', textAlign: 'center', flex: 1 }}>{school.region.toUpperCase()}</span>
+          </div>
+          <div style={{ 
+            color: '#4b5563',
+            display: 'flex',
+            alignItems: 'center',
+            minHeight: '1.1rem'
+          }}>
+            <span style={{ fontWeight: '500' }}>Start:</span> 
+            <span style={{ marginLeft: 'auto', textAlign: 'center', flex: 1 }}>{school.startMonth}</span>
+          </div>
+          <div style={{ 
+            color: '#4b5563',
+            display: 'flex',
+            alignItems: 'center',
+            minHeight: '1.1rem'
+          }}>
+            <span style={{ fontWeight: '500' }}>Expected:</span> 
+            <span style={{ marginLeft: 'auto', textAlign: 'center', flex: 1 }}>{school.studentCounts?.expected || 0}</span>
+          </div>
+          <div style={{ 
+            color: '#4b5563',
+            display: 'flex',
+            alignItems: 'center',
+            minHeight: '1.1rem'
+          }}>
+            <span style={{ fontWeight: '500' }}>Registered:</span> 
+            <span style={{ marginLeft: 'auto', textAlign: 'center', flex: 1 }}>{school.studentCounts?.registered || 0}</span>
+          </div>
+          <div style={{ 
+            color: '#4b5563',
+            display: 'flex',
+            alignItems: 'center',
+            minHeight: '1.1rem'
+          }}>
+            <span style={{ fontWeight: '500' }}>Ready:</span> 
+            <span style={{ marginLeft: 'auto', textAlign: 'center', flex: 1 }}>{school.studentCounts?.ready || 0}</span>
+          </div>
+        </div>
+
+        {/* Dashboard Links - At bottom of right column */}
         <div style={{
           display: 'flex',
           gap: '0.75rem',
-          marginTop: 'auto',
+          marginTop: '0.5rem',
           paddingTop: '0.5rem'
         }}>
           <button
@@ -294,79 +348,6 @@ export default function SchoolCard({
           >
             {copyButtonText}
           </button>
-        </div>
-      </div>
-
-      {/* Student Counts & Region (50%) - Region at top, then tight student counts */}
-      <div style={{ 
-        display: 'flex', 
-        flexDirection: 'column', 
-        justifyContent: 'flex-start',
-        fontSize: '0.9rem',
-        gap: '0.5rem',
-        paddingTop: '0.25rem'
-      }}>
-        {/* Region at top of right column */}
-        <div style={{ 
-          color: '#4b5563',
-          fontSize: '0.8rem',
-          fontWeight: '600',
-          letterSpacing: '0.5px',
-          textAlign: 'center',
-          padding: '0.5rem',
-          backgroundColor: '#f8fafc',
-          borderRadius: '6px',
-          border: '1px solid #e2e8f0'
-        }}>
-          {school.region.toUpperCase()}
-        </div>
-
-        {/* Student counts - much tighter */}
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '0.15rem'
-        }}>
-          <div style={{ 
-            color: '#4b5563',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            minHeight: '1.1rem'
-          }}>
-            <span style={{ fontWeight: '500' }}>Start:</span> 
-            <span>{school.startMonth}</span>
-          </div>
-          <div style={{ 
-            color: '#4b5563',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            minHeight: '1.1rem'
-          }}>
-            <span style={{ fontWeight: '500' }}>Expected:</span> 
-            <span>{school.studentCounts?.expected || 0}</span>
-          </div>
-          <div style={{ 
-            color: '#4b5563',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            minHeight: '1.1rem'
-          }}>
-            <span style={{ fontWeight: '500' }}>Registered:</span> 
-            <span>{school.studentCounts?.registered || 0}</span>
-          </div>
-          <div style={{ 
-            color: '#4b5563',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            minHeight: '1.1rem'
-          }}>
-            <span style={{ fontWeight: '500' }}>Ready:</span> 
-            <span>{school.studentCounts?.ready || 0}</span>
-          </div>
         </div>
       </div>
 
