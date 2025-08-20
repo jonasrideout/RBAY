@@ -26,13 +26,14 @@ export async function GET() {
         createdAt: 'asc'
       }
     });
-
+    
     // Transform schools with student counts
     const transformedSchools = schools.map(school => ({
       id: school.id,
       schoolName: school.schoolName,
       teacherName: school.teacherName,
       teacherEmail: school.teacherEmail,
+      teacherPhone: school.teacherPhone,
       region: school.region,
       gradeLevel: school.gradeLevel,
       expectedClassSize: school.expectedClassSize,
@@ -50,13 +51,13 @@ export async function GET() {
         ready: school.students.filter(s => s.profileCompleted).length
       }
     }));
-
+    
     // Calculate status counts
     const statusCounts = transformedSchools.reduce((acc, school) => {
       acc[school.status] = (acc[school.status] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
-
+    
     // Ensure all statuses are represented
     const completeStatusCounts = {
       COLLECTING: statusCounts.COLLECTING || 0,
@@ -65,13 +66,12 @@ export async function GET() {
       CORRESPONDING: statusCounts.CORRESPONDING || 0,
       DONE: statusCounts.DONE || 0
     };
-
+    
     return NextResponse.json({
       schools: transformedSchools,
       statusCounts: completeStatusCounts,
       totalSchools: transformedSchools.length
     });
-
   } catch (error) {
     console.error('Error fetching all schools:', error);
     return NextResponse.json(
