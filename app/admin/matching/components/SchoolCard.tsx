@@ -95,7 +95,7 @@ export default function SchoolCard({
           : '0 2px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.1)',
         transition: 'all 0.2s ease',
         display: 'grid',
-        gridTemplateColumns: '70% 30%',
+        gridTemplateColumns: '60% 20% 20%',
         gap: '1.25rem',
         alignItems: 'stretch',
         minHeight: '120px',
@@ -154,7 +154,7 @@ export default function SchoolCard({
         </div>
       )}
 
-      {/* School Information (70%) - NO REGION HERE */}
+      {/* School Information (60%) - NO REGION HERE */}
       <div style={{ 
         display: 'flex', 
         flexDirection: 'column', 
@@ -184,32 +184,21 @@ export default function SchoolCard({
           <button
             onClick={copyEmailAddress}
             style={{ 
-              background: 'rgba(37, 99, 235, 0.1)',
-              border: '2px solid #2563eb',
-              borderRadius: '50%',
+              background: 'none',
+              border: 'none',
               cursor: 'pointer',
               textDecoration: 'none', 
-              fontSize: '1.1rem',
-              color: '#2563eb',
-              opacity: 0.9,
+              fontSize: '1.3rem',
+              color: '#1f2937',
               transition: 'all 0.2s ease',
-              padding: '4px',
-              width: '24px',
-              height: '24px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
+              padding: '2px'
             }}
             title={`Copy email: ${school.teacherEmail}`}
             onMouseEnter={(e) => {
-              e.currentTarget.style.opacity = '1';
               e.currentTarget.style.transform = 'scale(1.1)';
-              e.currentTarget.style.background = 'rgba(37, 99, 235, 0.2)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.opacity = '0.9';
               e.currentTarget.style.transform = 'scale(1)';
-              e.currentTarget.style.background = 'rgba(37, 99, 235, 0.1)';
             }}
           >
             {emailCopyText}
@@ -239,7 +228,7 @@ export default function SchoolCard({
         )}
       </div>
 
-      {/* Data & Actions (30%) - FIXED ALIGNMENT */}
+      {/* Data & Actions (20%) - FIXED ALIGNMENT */}
       <div style={{ 
         display: 'flex', 
         flexDirection: 'column', 
@@ -357,6 +346,9 @@ export default function SchoolCard({
           </button>
         </div>
       </div>
+
+      {/* Empty Column (20%) - For spacing */}
+      <div></div>
 
       {/* Matched School Display */}
       {school.status === 'MATCHED' && school.matchedSchool && (
