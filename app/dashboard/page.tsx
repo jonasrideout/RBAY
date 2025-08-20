@@ -403,27 +403,7 @@ function TeacherDashboardContent() {
                 The Right Back at You Project
               </Link>
               <nav className="nav">
-              <Link href="/" className="nav-link">Home</Link>
-            </nav>
-          </div>
-        </div>
-      </header>
-      <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
-        <div style={{ textAlign: 'center', padding: '2rem' }}>
-          <div>Loading dashboard...</div>
-        </div>
-      </main>
-    </div>
-  );
-}
-
-export default function TeacherDashboard() {
-  return (
-    <Suspense fallback={<LoadingDashboard />}>
-      <TeacherDashboardContent />
-    </Suspense>
-  );
-}  <Link href={`/dashboard?teacher=${encodeURIComponent(teacherEmail || '')}`} className="nav-link">Dashboard</Link>
+                <Link href={`/dashboard?teacher=${encodeURIComponent(teacherEmail || '')}`} className="nav-link">Dashboard</Link>
                 <Link href="/register-school" className="nav-link">School Settings</Link>
                 <Link href="/logout" className="nav-link">Logout</Link>
               </nav>
@@ -721,3 +701,24 @@ function LoadingDashboard() {
               The Right Back at You Project
             </Link>
             <nav className="nav">
+              <Link href="/" className="nav-link">Home</Link>
+            </nav>
+          </div>
+        </div>
+      </header>
+      <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <div>Loading dashboard...</div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+export default function TeacherDashboard() {
+  return (
+    <Suspense fallback={<LoadingDashboard />}>
+      <TeacherDashboardContent />
+    </Suspense>
+  );
+}
