@@ -304,23 +304,22 @@ function TeacherDashboardContent() {
       );
     }
 
-    // Student without interests (not editing)
+    // Compact default state - single row like Ready Students cards
     return (
-      <div key={student.id} className="card" style={{ background: '#fff5f5', border: '2px solid #fed7d7' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+      <div 
+        key={student.id} 
+        className="card" 
+        style={{ 
+          background: '#fff5f5', 
+          border: '2px solid #fed7d7', 
+          padding: '0.75rem',
+          margin: '0'
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h4 style={{ color: '#c53030', marginBottom: '0.25rem' }}>{student.firstName} {student.lastName}</h4>
-            <span style={{ color: '#6c757d', fontSize: '0.9rem' }}>Grade {student.grade} • Missing interests</span>
+            <h4 style={{ color: '#c53030', marginBottom: '0', fontSize: '1rem' }}>{student.firstName} {student.lastName}</h4>
           </div>
-          <span className="status-needs-info">
-            📝 Needs Info
-          </span>
-        </div>
-        
-        <div style={{ background: 'white', padding: '1rem', borderRadius: '6px', border: '1px solid #fed7d7', textAlign: 'center' }}>
-          <p style={{ color: '#6c757d', marginBottom: '1rem', fontStyle: 'italic' }}>
-            No interests selected yet
-          </p>
           <button 
             className="btn btn-primary" 
             onClick={() => handleEditInterests(student.id)}
@@ -610,7 +609,11 @@ function TeacherDashboardContent() {
                 {studentsNeedingInfo.length} students need interests
               </span>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(3, 1fr)', 
+              gap: '0.75rem'
+            }}>
               {studentsNeedingInfo.map(student => renderMissingInfoCard(student))}
             </div>
           </div>
