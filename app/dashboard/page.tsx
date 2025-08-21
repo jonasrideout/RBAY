@@ -490,13 +490,12 @@ function TeacherDashboardContent() {
             </p>
           </div>
           
-          {/* Student Registration Link - moved to top right */}
-          <div style={{ maxWidth: '400px' }}>
+          {/* Student Registration Link - aligned with Add Interests buttons */}
+          <div>
             <h3 style={{ marginBottom: '0.5rem' }}>Share This Link With Your Students</h3>
             <button 
               onClick={() => navigator.clipboard.writeText(generateStudentLink())}
               className="btn btn-primary"
-              style={{ width: '100%' }}
             >
               📋 Copy Student Registration Link
             </button>
@@ -647,8 +646,8 @@ function TeacherDashboardContent() {
           </div>
         )}
 
-        {/* Action Buttons */}
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', flexWrap: 'wrap' }}>
+        {/* Action Buttons - aligned to right */}
+        <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
           <Link 
             href={`/register-student?teacher=${encodeURIComponent(teacherEmail || '')}`}
             className="btn btn-secondary"
