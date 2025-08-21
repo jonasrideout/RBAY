@@ -609,11 +609,7 @@ function TeacherDashboardContent() {
                 {studentsNeedingInfo.length} students need interests
               </span>
             </div>
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(3, 1fr)', 
-              gap: '0.75rem'
-            }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               {studentsNeedingInfo.map(student => renderMissingInfoCard(student))}
             </div>
           </div>
