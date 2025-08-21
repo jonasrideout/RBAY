@@ -20,7 +20,8 @@ interface SchoolData {
   schoolName: string;
   teacherName: string;
   teacherEmail: string;
-  classSize: number;
+  expectedClassSize: number;
+  startMonth: string;
   programStartMonth: string;
   readyForMatching: boolean;
   students: any[];
@@ -105,7 +106,7 @@ function TeacherDashboardContent() {
   const studentsWithInterests = students.filter(s => s.hasInterests);
   const studentsNeedingInfo = students.filter(s => !s.hasInterests);
   const totalStudents = students.length;
-  const estimatedClassSize = schoolData?.expectedClassSize || schoolData?.classSize || 0;
+  const estimatedClassSize = schoolData?.expectedClassSize || 0;
   
   // Simplified ready logic - teacher decides when ready
   const hasActiveStudents = totalStudents > 0;
@@ -537,7 +538,7 @@ function TeacherDashboardContent() {
 
           <div className="card text-center" style={{ background: '#f8f9fa' }}>
             <div style={{ fontSize: '1.8rem', fontWeight: 'bold', color: '#fd7e14', marginBottom: '0.5rem' }}>
-              {schoolData?.programStartMonth || 'Not Set'}
+              {schoolData?.startMonth || 'Not Set'}
             </div>
             <div style={{ color: '#6c757d', fontWeight: '600' }}>Start Date</div>
             <div style={{ fontSize: '0.9rem', color: '#6c757d', marginTop: '0.25rem' }}>
