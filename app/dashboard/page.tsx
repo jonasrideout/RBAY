@@ -670,6 +670,11 @@ function TeacherDashboardContent() {
               cursor: (!hasActiveStudents || readyForMatching) ? 'not-allowed' : 'pointer'
             }}
             disabled={!hasActiveStudents || readyForMatching}
+            onClick={() => {
+              if (hasActiveStudents && !readyForMatching && teacherEmail) {
+                window.open(`/dashboard/print?teacher=${encodeURIComponent(teacherEmail)}`, '_blank');
+              }
+            }}
             title={readyForMatching ? "Matching has been requested" : (!hasActiveStudents ? "Need students first" : "Download student information")}
           >
             📥 Download Student Info
