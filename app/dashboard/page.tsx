@@ -105,7 +105,7 @@ function TeacherDashboardContent() {
   const studentsWithInterests = students.filter(s => s.hasInterests);
   const studentsNeedingInfo = students.filter(s => !s.hasInterests);
   const totalStudents = students.length;
-  const estimatedClassSize = schoolData?.classSize || 0;
+  const estimatedClassSize = schoolData?.expectedClassSize || schoolData?.classSize || 0;
   
   // Simplified ready logic - teacher decides when ready
   const hasActiveStudents = totalStudents > 0;
@@ -372,7 +372,7 @@ function TeacherDashboardContent() {
       );
     }
 
-    // Collapsed view - name, grade, interest icons, and checkmark
+    // Collapsed view - just name and checkmark
     return (
       <div 
         key={student.id} 
@@ -386,49 +386,13 @@ function TeacherDashboardContent() {
         }}
         onClick={() => toggleReadyStudentExpansion(student.id)}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h4 style={{ color: '#0c5460', marginBottom: '0.25rem', fontSize: '1rem' }}>{student.firstName} {student.lastName}</h4>
-            <span style={{ color: '#6c757d', fontSize: '0.8rem' }}>Grade {student.grade}</span>
+            <h4 style={{ color: '#0c5460', marginBottom: '0', fontSize: '1rem' }}>{student.firstName} {student.lastName}</h4>
           </div>
           <span className="status-ready">
             ✅ Ready
           </span>
-        </div>
-        
-        {/* Interest Icons Row */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', justifyContent: 'flex-start' }}>
-          {student.interests.slice(0, 6).map(interest => (
-            <span 
-              key={interest} 
-              style={{ 
-                fontSize: '1.2rem',
-                filter: 'grayscale(0)',
-                opacity: 0.8
-              }}
-              title={getInterestLabel(interest)}
-            >
-              {getInterestIcon(interest)}
-            </span>
-          ))}
-          {student.interests.length > 6 && (
-            <span style={{ color: '#6c757d', fontSize: '0.8rem', alignSelf: 'center' }}>
-              +{student.interests.length - 6} more
-            </span>
-          )}
-          {student.otherInterests && (
-            <span 
-              style={{ 
-                fontSize: '0.9rem',
-                color: '#6c757d',
-                fontStyle: 'italic',
-                alignSelf: 'center'
-              }}
-              title={`Other interests: ${student.otherInterests}`}
-            >
-              ✨
-            </span>
-          )}
         </div>
       </div>
     );
