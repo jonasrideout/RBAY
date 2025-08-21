@@ -27,18 +27,18 @@ interface SchoolData {
 }
 
 const INTEREST_OPTIONS = [
-  { value: 'sports', label: '🏀 Sports & Athletics' },
-  { value: 'arts', label: '🎨 Arts & Creativity' },
-  { value: 'reading', label: '📚 Reading & Books' },
-  { value: 'technology', label: '💻 Technology & Gaming' },
-  { value: 'animals', label: '🐕 Animals & Nature' },
-  { value: 'entertainment', label: '🎬 Entertainment & Media' },
-  { value: 'social', label: '👥 Social & Family' },
-  { value: 'academic', label: '🧮 Academic Subjects' },
-  { value: 'hobbies', label: '🎯 Hobbies & Collections' },
-  { value: 'outdoors', label: '🏕️ Outdoor Activities' },
-  { value: 'music', label: '🎵 Music & Performance' },
-  { value: 'fashion', label: '👗 Fashion & Style' }
+  { value: 'sports', label: '🏀 Sports & Athletics', icon: '🏀' },
+  { value: 'arts', label: '🎨 Arts & Creativity', icon: '🎨' },
+  { value: 'reading', label: '📚 Reading & Books', icon: '📚' },
+  { value: 'technology', label: '💻 Technology & Gaming', icon: '💻' },
+  { value: 'animals', label: '🐕 Animals & Nature', icon: '🐕' },
+  { value: 'entertainment', label: '🎬 Entertainment & Media', icon: '🎬' },
+  { value: 'social', label: '👥 Social & Family', icon: '👥' },
+  { value: 'academic', label: '🧮 Academic Subjects', icon: '🧮' },
+  { value: 'hobbies', label: '🎯 Hobbies & Collections', icon: '🎯' },
+  { value: 'outdoors', label: '🏕️ Outdoor Activities', icon: '🏕️' },
+  { value: 'music', label: '🎵 Music & Performance', icon: '🎵' },
+  { value: 'fashion', label: '👗 Fashion & Style', icon: '👗' }
 ];
 
 function TeacherDashboardContent() {
@@ -105,7 +105,7 @@ function TeacherDashboardContent() {
   const studentsWithInterests = students.filter(s => s.hasInterests);
   const studentsNeedingInfo = students.filter(s => !s.hasInterests);
   const totalStudents = students.length;
-  const expectedStudents = schoolData?.classSize || 0;
+  const estimatedClassSize = schoolData?.classSize || 0;
   
   // Simplified ready logic - teacher decides when ready
   const hasActiveStudents = totalStudents > 0;
@@ -233,6 +233,11 @@ function TeacherDashboardContent() {
     return option ? option.label : value;
   };
 
+  const getInterestIcon = (value: string) => {
+    const option = INTEREST_OPTIONS.find(opt => opt.value === value);
+    return option ? option.icon : '🎯';
+  };
+
   const generateStudentLink = () => {
     if (typeof window !== 'undefined' && teacherEmail) {
       const encodedEmail = encodeURIComponent(teacherEmail);
@@ -337,7 +342,7 @@ function TeacherDashboardContent() {
         <div 
           key={student.id} 
           className="card" 
-          style={{ background: '#f0f8ff', border: '2px solid #bee5eb', cursor: 'pointer' }}
+          style={{ background: '#f0f8ff', border: '2px solid #bee5eb', cursor: 'pointer', margin: '0' }}
           onClick={() => toggleReadyStudentExpansion(student.id)}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
@@ -367,7 +372,7 @@ function TeacherDashboardContent() {
       );
     }
 
-    // Collapsed view - just name and checkmark
+    // Collapsed view - name, grade, interest icons, and checkmark
     return (
       <div 
         key={student.id} 
@@ -376,17 +381,54 @@ function TeacherDashboardContent() {
           background: '#f0f8ff', 
           border: '2px solid #bee5eb', 
           cursor: 'pointer',
-          padding: '1rem'
+          padding: '0.75rem',
+          margin: '0'
         }}
         onClick={() => toggleReadyStudentExpansion(student.id)}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
           <div>
-            <h4 style={{ color: '#0c5460', marginBottom: '0' }}>{student.firstName} {student.lastName}</h4>
+            <h4 style={{ color: '#0c5460', marginBottom: '0.25rem', fontSize: '1rem' }}>{student.firstName} {student.lastName}</h4>
+            <span style={{ color: '#6c757d', fontSize: '0.8rem' }}>Grade {student.grade}</span>
           </div>
           <span className="status-ready">
             ✅ Ready
           </span>
+        </div>
+        
+        {/* Interest Icons Row */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', justifyContent: 'flex-start' }}>
+          {student.interests.slice(0, 6).map(interest => (
+            <span 
+              key={interest} 
+              style={{ 
+                fontSize: '1.2rem',
+                filter: 'grayscale(0)',
+                opacity: 0.8
+              }}
+              title={getInterestLabel(interest)}
+            >
+              {getInterestIcon(interest)}
+            </span>
+          ))}
+          {student.interests.length > 6 && (
+            <span style={{ color: '#6c757d', fontSize: '0.8rem', alignSelf: 'center' }}>
+              +{student.interests.length - 6} more
+            </span>
+          )}
+          {student.otherInterests && (
+            <span 
+              style={{ 
+                fontSize: '0.9rem',
+                color: '#6c757d',
+                fontStyle: 'italic',
+                alignSelf: 'center'
+              }}
+              title={`Other interests: ${student.otherInterests}`}
+            >
+              ✨
+            </span>
+          )}
         </div>
       </div>
     );
@@ -476,36 +518,34 @@ function TeacherDashboardContent() {
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
         
         {/* Page Header */}
-        <div style={{ marginBottom: '2rem' }}>
-          <h1 style={{ marginBottom: '0.5rem' }}>Teacher Dashboard</h1>
-          <p style={{ color: '#6c757d', fontSize: '1.1rem' }}>
-            Welcome back, {schoolData?.teacherName}! Here's your {schoolData?.schoolName} overview.
-          </p>
-        </div>
-
-        {/* Student Registration Link */}
-        <div className="card" style={{ marginBottom: '2rem', background: '#f8f9fa' }}>
-          <h3>Share This Link With Your Students</h3>
-          <div style={{ background: 'white', padding: '1rem', borderRadius: '4px', marginBottom: '1rem', border: '1px solid #dee2e6' }}>
-            <code style={{ color: '#e83e8c', fontSize: '0.9rem', wordBreak: 'break-all' }}>
-              {generateStudentLink()}
-            </code>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
+          <div>
+            <h1 style={{ marginBottom: '0.5rem' }}>Teacher Dashboard</h1>
+            <p style={{ color: '#6c757d', fontSize: '1.1rem' }}>
+              Welcome back, {schoolData?.teacherName}! Here's your {schoolData?.schoolName} overview.
+            </p>
           </div>
-          <button 
-            onClick={() => navigator.clipboard.writeText(generateStudentLink())}
-            className="btn btn-primary"
-          >
-            📋 Copy Student Registration Link
-          </button>
+          
+          {/* Student Registration Link - moved to top right */}
+          <div style={{ maxWidth: '400px' }}>
+            <h3 style={{ marginBottom: '0.5rem' }}>Share This Link With Your Students</h3>
+            <button 
+              onClick={() => navigator.clipboard.writeText(generateStudentLink())}
+              className="btn btn-primary"
+              style={{ width: '100%' }}
+            >
+              📋 Copy Student Registration Link
+            </button>
+          </div>
         </div>
 
         {/* Metrics Cards */}
         <div className="grid grid-4" style={{ marginBottom: '3rem' }}>
           <div className="card text-center" style={{ background: '#f8f9fa' }}>
             <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#4a90e2', marginBottom: '0.5rem' }}>
-              {schoolData?.classSize || 0}
+              {estimatedClassSize}
             </div>
-            <div style={{ color: '#6c757d', fontWeight: '600' }}>Students Expected</div>
+            <div style={{ color: '#6c757d', fontWeight: '600' }}>Estimated Class Size</div>
             <div style={{ fontSize: '0.9rem', color: '#6c757d', marginTop: '0.25rem' }}>
               Expected in class
             </div>
@@ -542,112 +582,106 @@ function TeacherDashboardContent() {
           </div>
         </div>
 
-        {/* Class Status & Actions */}
-        <div className="card" style={{ marginBottom: '2rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-            <div>
-              {readyForMatching ? (
-                <>
-                  <h3 style={{ color: '#17a2b8', marginBottom: '0.5rem' }}>
-                    🎯 Matching Requested
-                  </h3>
-                  <p style={{ color: '#6c757d', marginBottom: '0' }}>
-                    Waiting for partner school. We will email you when matching is complete.
-                  </p>
-                </>
-              ) : (
-                <>
-                  <h3 style={{ color: allActiveStudentsComplete ? '#28a745' : '#ffc107', marginBottom: '0.5rem' }}>
-                    {allActiveStudentsComplete ? '✅ Ready for Matching!' : '📝 Collecting Student Information'}
-                  </h3>
-                  <p style={{ color: '#6c757d', marginBottom: '0' }}>
-                    {allActiveStudentsComplete 
-                      ? 'All active students have provided their interest information. You can request matching when ready!'
-                      : `${studentsNeedingInfo.length} students still need to complete their interests. You can request matching with any number of students.`
-                    }
-                  </p>
-                </>
-              )}
-            </div>
-            <div>
-              <button 
-                className="btn" 
-                style={{ 
-                  backgroundColor: readyForMatching ? '#17a2b8' : (hasActiveStudents ? '#28a745' : '#6c757d'), 
-                  color: 'white', 
-                  cursor: (!hasActiveStudents || isRequestingMatching) ? 'not-allowed' : 'pointer',
-                  padding: '1rem 2rem',
-                  fontSize: '1.1rem'
-                }}
-                disabled={!hasActiveStudents || isRequestingMatching}
-                onClick={handleRequestMatching}
-                title={readyForMatching ? "Matching has been requested" : (!hasActiveStudents ? "Need at least one student to request matching" : "Request matching with current students")}
-              >
-                {readyForMatching ? '✅ Matching Requested' : (isRequestingMatching ? (
+        {/* Class Status & Actions - Only show when all students have complete profiles */}
+        {allActiveStudentsComplete && (
+          <div className="card" style={{ marginBottom: '2rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                {readyForMatching ? (
                   <>
-                    <span className="loading"></span>
-                    <span style={{ marginLeft: '0.5rem' }}>Requesting...</span>
+                    <h3 style={{ color: '#17a2b8', marginBottom: '0.5rem' }}>
+                      🎯 Matching Requested
+                    </h3>
+                    <p style={{ color: '#6c757d', marginBottom: '0' }}>
+                      Waiting for partner school. We will email you when matching is complete.
+                    </p>
                   </>
-                ) : (hasActiveStudents ? '🎯 Request Matching' : '🔒 Need Students'))}
-              </button>
-              {!readyForMatching && (
+                ) : (
+                  <>
+                    <h3 style={{ color: '#28a745', marginBottom: '0.5rem' }}>
+                      ✅ Ready for Matching!
+                    </h3>
+                    <p style={{ color: '#6c757d', marginBottom: '0' }}>
+                      All active students have provided their interest information. You can request matching when ready!
+                    </p>
+                  </>
+                )}
+              </div>
+              <div>
+                <button 
+                  className="btn" 
+                  style={{ 
+                    backgroundColor: readyForMatching ? '#17a2b8' : '#28a745', 
+                    color: 'white', 
+                    cursor: isRequestingMatching ? 'not-allowed' : 'pointer',
+                    padding: '1rem 2rem',
+                    fontSize: '1.1rem'
+                  }}
+                  disabled={isRequestingMatching}
+                  onClick={handleRequestMatching}
+                  title={readyForMatching ? "Matching has been requested" : "Request matching with current students"}
+                >
+                  {readyForMatching ? '✅ Matching Requested' : (isRequestingMatching ? (
+                    <>
+                      <span className="loading"></span>
+                      <span style={{ marginLeft: '0.5rem' }}>Requesting...</span>
+                    </>
+                  ) : '🎯 Request Matching')}
+                </button>
                 <p style={{ color: '#6c757d', fontSize: '0.9rem', marginTop: '0.5rem', marginBottom: '0' }}>
-                  {!hasActiveStudents ? 'Register students first' : 
-                   studentsNeedingInfo.length > 0 ? `${studentsNeedingInfo.length} students still need interests (optional)` :
-                   'All students ready - you can request matching anytime!'
-                  }
+                  All students ready - you can request matching anytime!
                 </p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Split Layout: Students Section */}
-        <div style={{ display: 'grid', gridTemplateColumns: '70% 30%', gap: '2rem', alignItems: 'flex-start' }}>
-          
-          {/* Left Side: Students Needing Info */}
-          <div>
-            <div className="card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                <h3>Students Missing Information</h3>
-                <span style={{ color: '#6c757d', fontSize: '0.9rem' }}>
-                  {studentsNeedingInfo.length} students need interests
-                </span>
               </div>
-
-              {studentsNeedingInfo.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '3rem', color: '#6c757d' }}>
-                  <h4>🎉 All students have completed their information!</h4>
-                  <p>Every student has added their interests and is ready for matching.</p>
-                </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                  {studentsNeedingInfo.map(student => renderMissingInfoCard(student))}
-                </div>
-              )}
             </div>
           </div>
+        )}
 
-          {/* Right Side: Ready Students */}
-          <div>
-            <div className="card">
-              <div style={{ marginBottom: '1.5rem' }}>
-                <h3>Ready Students ({studentsWithInterests.length})</h3>
-              </div>
-
-              {studentsWithInterests.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '2rem', color: '#6c757d' }}>
-                  <p>No students ready yet</p>
-                </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  {studentsWithInterests.map(student => renderReadyStudentCard(student))}
-                </div>
-              )}
+        {/* Students Missing Information - Only show if there are students needing info */}
+        {studentsNeedingInfo.length > 0 && (
+          <div className="card" style={{ marginBottom: '2rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h3>Students Missing Information</h3>
+              <span style={{ color: '#6c757d', fontSize: '0.9rem' }}>
+                {studentsNeedingInfo.length} students need interests
+              </span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              {studentsNeedingInfo.map(student => renderMissingInfoCard(student))}
             </div>
           </div>
+        )}
 
-        </div>
+        {/* Ready Students in 3-column layout */}
+        {studentsWithInterests.length > 0 && (
+          <div className="card" style={{ marginBottom: '2rem' }}>
+            <div style={{ marginBottom: '1.5rem' }}>
+              <h3>Ready Students ({studentsWithInterests.length})</h3>
+            </div>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(3, 1fr)', 
+              gap: '0.75rem'
+            }}>
+              {studentsWithInterests.map(student => renderReadyStudentCard(student))}
+            </div>
+          </div>
+        )}
+
+        {/* No students message */}
+        {totalStudents === 0 && (
+          <div className="card" style={{ textAlign: 'center', padding: '3rem', marginBottom: '2rem' }}>
+            <h3 style={{ color: '#6c757d', marginBottom: '1rem' }}>No Students Registered Yet</h3>
+            <p style={{ color: '#6c757d', marginBottom: '2rem' }}>
+              Share the student registration link above to get started, or add students manually.
+            </p>
+            <Link 
+              href={`/register-student?teacher=${encodeURIComponent(teacherEmail || '')}`}
+              className="btn btn-primary"
+            >
+              ➕ Add First Student
+            </Link>
+          </div>
+        )}
 
         {/* Action Buttons */}
         <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', flexWrap: 'wrap' }}>
