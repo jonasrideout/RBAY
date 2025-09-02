@@ -8,20 +8,21 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('Starting seed data creation...');
+    console.log('Starting enhanced seed data creation...');
 
-    // Create Pacific School
+    // Create Pacific School - 20 students (READY status)
     const pacificSchool = await prisma.school.create({
       data: {
         schoolName: "Pacific Elementary",
         teacherName: "Sarah Johnson",
         teacherEmail: "sarah.johnson@pacific.edu",
+        teacherPhone: "(415) 555-0101",
         schoolAddress: "123 Ocean View Drive",
         schoolCity: "San Francisco",
         schoolState: "California",
         schoolZip: "94102",
         gradeLevel: "3,4,5",
-        expectedClassSize: 18,
+        expectedClassSize: 20,
         startMonth: "September",
         specialConsiderations: "We have several students learning English as a second language",
         status: "READY",
@@ -30,19 +31,20 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Create Northeast School
+    // Create Northeast School - 23 students (READY status)
     const northeastSchool = await prisma.school.create({
       data: {
         schoolName: "Northeast Academy",
         teacherName: "Michael Chen",
         teacherEmail: "michael.chen@northeast.edu",
+        teacherPhone: "(617) 555-0202",
         schoolAddress: "456 Maple Street",
         schoolCity: "Boston",
         schoolState: "Massachusetts",
         schoolZip: "02101",
         gradeLevel: "3,4,5",
-        expectedClassSize: 12,
-        startMonth: "September",
+        expectedClassSize: 23,
+        startMonth: "October",
         specialConsiderations: "Students are very excited about cross-country pen pal connections",
         status: "READY",
         region: "Northeast",
@@ -50,103 +52,153 @@ export async function POST(request: NextRequest) {
       }
     });
 
+    // Create Southwest School - 30 students (COLLECTING status for testing)
+    const southwestSchool = await prisma.school.create({
+      data: {
+        schoolName: "Desert View Elementary",
+        teacherName: "Maria Rodriguez",
+        teacherEmail: "maria.rodriguez@desertview.edu",
+        teacherPhone: "(602) 555-0303",
+        schoolAddress: "789 Cactus Trail",
+        schoolCity: "Phoenix",
+        schoolState: "Arizona",
+        schoolZip: "85001",
+        gradeLevel: "4,5",
+        expectedClassSize: 30,
+        startMonth: "September",
+        specialConsiderations: "Mixed bilingual classroom with advanced writing focus",
+        status: "COLLECTING",
+        region: "Southwest",
+        isActive: true
+      }
+    });
+
     console.log('Schools created, creating students...');
 
-    // Pacific students with realistic pen pal preferences (30% MULTIPLE, 70% ONE) - 18 total
-    const pacificStudents = [
-      { name: "Emma Wilson", grade: "3", interests: ["reading", "art"], preference: "ONE", parent: "Jennifer Wilson" },
-      { name: "Liam Rodriguez", grade: "4", interests: ["sports", "science"], preference: "MULTIPLE", parent: "Carlos Rodriguez" },
-      { name: "Sophia Kim", grade: "3", interests: ["music", "animals"], preference: "ONE", parent: "Lisa Kim" },
-      { name: "Noah Chen", grade: "5", interests: ["technology", "games"], preference: "ONE", parent: "David Chen" },
-      { name: "Ava Thompson", grade: "4", interests: ["nature", "hiking"], preference: "MULTIPLE", parent: "Sarah Thompson" },
-      { name: "Mason Davis", grade: "3", interests: ["cooking", "family"], preference: "ONE", parent: "Mark Davis" },
-      { name: "Isabella Garcia", grade: "5", interests: ["dance", "music"], preference: "ONE", parent: "Maria Garcia" },
-      { name: "Ethan Brown", grade: "4", interests: ["sports", "outdoor"], preference: "MULTIPLE", parent: "James Brown" },
-      { name: "Mia Johnson", grade: "3", interests: ["art", "crafts"], preference: "ONE", parent: "Amy Johnson" },
-      { name: "Alexander Lee", grade: "5", interests: ["reading", "history"], preference: "ONE", parent: "Kevin Lee" },
-      { name: "Charlotte Martinez", grade: "4", interests: ["science", "experiments"], preference: "MULTIPLE", parent: "Rosa Martinez" },
-      { name: "William Taylor", grade: "3", interests: ["animals", "pets"], preference: "ONE", parent: "Tom Taylor" },
-      // Additional 6 Pacific students
-      { name: "Grace Patterson", grade: "4", interests: ["reading", "writing"], preference: "MULTIPLE", parent: "Susan Patterson" },
-      { name: "James Mitchell", grade: "5", interests: ["sports", "soccer"], preference: "ONE", parent: "Brian Mitchell" },
-      { name: "Lily Cooper", grade: "3", interests: ["art", "drawing"], preference: "ONE", parent: "Rachel Cooper" },
-      { name: "Owen Turner", grade: "4", interests: ["technology", "robots"], preference: "MULTIPLE", parent: "Mark Turner" },
-      { name: "Zoe Adams", grade: "5", interests: ["music", "singing"], preference: "ONE", parent: "Kelly Adams" },
-      { name: "Caleb Morgan", grade: "3", interests: ["nature", "camping"], preference: "ONE", parent: "Jason Morgan" }
+    // Enhanced interest combinations and otherInterests examples
+    const interestOptions = ["reading", "art", "sports", "science", "music", "animals", "technology", "games", "nature", "hiking", "cooking", "family", "dance", "outdoor", "crafts", "history", "writing", "experiments", "pets"];
+    
+    const otherInterestsOptions = [
+      "Taylor Swift, Harry Potter",
+      "Minecraft, Roblox", 
+      "Percy Jackson books",
+      "Pokemon, anime",
+      "TikTok dances",
+      "Baking cookies",
+      "Soccer, football",
+      "Drawing comics",
+      "Playing guitar",
+      "Skateboarding",
+      null, null, null // 30% have otherInterests, 70% don't
     ];
 
-    // Northeast students with realistic pen pal preferences - 12 total
-    const northeastStudents = [
-      { name: "Olivia Anderson", grade: "3", interests: ["reading", "writing"], preference: "ONE", parent: "Linda Anderson" },
-      { name: "Lucas White", grade: "4", interests: ["sports", "basketball"], preference: "MULTIPLE", parent: "Robert White" },
-      { name: "Amelia Harris", grade: "5", interests: ["art", "painting"], preference: "ONE", parent: "Michelle Harris" },
-      { name: "Benjamin Clark", grade: "3", interests: ["science", "space"], preference: "ONE", parent: "Steven Clark" },
-      { name: "Harper Lewis", grade: "4", interests: ["music", "piano"], preference: "MULTIPLE", parent: "Rachel Lewis" },
-      { name: "Henry Walker", grade: "5", interests: ["technology", "coding"], preference: "ONE", parent: "Daniel Walker" },
-      { name: "Evelyn Hall", grade: "3", interests: ["nature", "gardening"], preference: "ONE", parent: "Patricia Hall" },
-      { name: "Sebastian Young", grade: "4", interests: ["games", "puzzles"], preference: "MULTIPLE", parent: "Christopher Young" },
-      { name: "Abigail King", grade: "5", interests: ["dance", "theater"], preference: "ONE", parent: "Elizabeth King" },
-      { name: "Jackson Wright", grade: "3", interests: ["outdoor", "camping"], preference: "ONE", parent: "Matthew Wright" },
-      { name: "Emily Lopez", grade: "4", interests: ["cooking", "baking"], preference: "MULTIPLE", parent: "Sandra Lopez" },
-      { name: "Owen Hill", grade: "5", interests: ["history", "museums"], preference: "ONE", parent: "Andrew Hill" }
-    ];
+    const gradeOptions = ["3", "4", "5"];
+    const firstNames = ["Emma", "Liam", "Sophia", "Noah", "Ava", "Mason", "Isabella", "Ethan", "Mia", "Alexander", "Charlotte", "William", "Grace", "James", "Lily", "Owen", "Zoe", "Caleb", "Olivia", "Lucas", "Amelia", "Benjamin", "Harper", "Henry", "Evelyn", "Sebastian", "Abigail", "Jackson", "Emily", "Logan", "Aria", "Carter", "Chloe", "Wyatt", "Layla", "Luke", "Riley", "Jack", "Zoey", "Daniel"];
+    
+    const lastNames = ["Wilson", "Rodriguez", "Kim", "Chen", "Thompson", "Davis", "Garcia", "Brown", "Johnson", "Lee", "Martinez", "Taylor", "Patterson", "Mitchell", "Cooper", "Turner", "Adams", "Morgan", "Anderson", "White", "Harris", "Clark", "Lewis", "Walker", "Hall", "Young", "King", "Wright", "Lopez", "Hill", "Green", "Baker", "Nelson", "Carter", "Roberts", "Phillips", "Evans", "Turner", "Parker", "Collins"];
 
-    // Create Pacific students
-    for (const studentData of pacificStudents) {
-      const [firstName, lastName] = studentData.name.split(' ');
-      await prisma.student.create({
-        data: {
-          firstName,
-          lastName,
-          grade: studentData.grade,
-          interests: studentData.interests,
-          parentName: studentData.parent,
-          parentEmail: `${firstName.toLowerCase()}.parent@email.com`,
-          parentPhone: `(415) ${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
-          parentConsent: true,
-          penpalPreference: studentData.preference as "ONE" | "MULTIPLE",
-          isActive: true,
-          profileCompleted: true,
-          schoolId: pacificSchool.id
-        }
-      });
+    // Helper function to generate realistic student data
+    const generateStudent = (schoolId: string, index: number, areaCode: string) => {
+      const firstName = firstNames[index % firstNames.length];
+      const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+      const grade = gradeOptions[Math.floor(Math.random() * gradeOptions.length)];
+      
+      // Generate 1-3 interests
+      const numInterests = Math.floor(Math.random() * 3) + 1;
+      const shuffledInterests = [...interestOptions].sort(() => 0.5 - Math.random());
+      const interests = shuffledInterests.slice(0, numInterests);
+      
+      // 25% MULTIPLE preference, 75% ONE preference (realistic distribution)
+      const penpalPreference = Math.random() < 0.25 ? "MULTIPLE" : "ONE";
+      
+      // 30% chance of having otherInterests
+      const otherInterests = otherInterestsOptions[Math.floor(Math.random() * otherInterestsOptions.length)];
+      
+      return {
+        firstName,
+        lastName,
+        grade,
+        interests,
+        otherInterests,
+        parentName: `${firstName} ${lastName} Parent`,
+        parentEmail: `${firstName.toLowerCase()}.parent${index}@email.com`,
+        parentPhone: `(${areaCode}) ${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
+        parentConsent: true,
+        penpalPreference: penpalPreference as "ONE" | "MULTIPLE",
+        isActive: true,
+        profileCompleted: true,
+        schoolId
+      };
+    };
+
+    // Create Pacific students (20 students)
+    console.log('Creating Pacific Elementary students...');
+    for (let i = 0; i < 20; i++) {
+      const studentData = generateStudent(pacificSchool.id, i, "415");
+      await prisma.student.create({ data: studentData });
     }
 
-    // Create Northeast students
-    for (const studentData of northeastStudents) {
-      const [firstName, lastName] = studentData.name.split(' ');
-      await prisma.student.create({
-        data: {
-          firstName,
-          lastName,
-          grade: studentData.grade,
-          interests: studentData.interests,
-          parentName: studentData.parent,
-          parentEmail: `${firstName.toLowerCase()}.parent@email.com`,
-          parentPhone: `(617) ${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
-          parentConsent: true,
-          penpalPreference: studentData.preference as "ONE" | "MULTIPLE",
-          isActive: true,
-          profileCompleted: true,
-          schoolId: northeastSchool.id
-        }
-      });
+    // Create Northeast students (23 students)
+    console.log('Creating Northeast Academy students...');
+    for (let i = 0; i < 23; i++) {
+      const studentData = generateStudent(northeastSchool.id, i + 20, "617");
+      await prisma.student.create({ data: studentData });
     }
 
-    console.log('Seed data creation completed successfully');
+    // Create Southwest students (30 students - mix of complete/incomplete for testing)
+    console.log('Creating Desert View Elementary students...');
+    for (let i = 0; i < 30; i++) {
+      const studentData = generateStudent(southwestSchool.id, i + 43, "602");
+      
+      // Create variety in completion status for testing:
+      // 20 students complete, 10 students incomplete (missing various fields)
+      if (i >= 20) {
+        // Make some students incomplete for testing purposes
+        if (i % 3 === 0) {
+          studentData.profileCompleted = false;
+          studentData.interests = []; // Missing interests
+        } else if (i % 3 === 1) {
+          studentData.profileCompleted = false;
+          studentData.penpalPreference = "ONE"; // Missing parent consent
+          studentData.parentConsent = false;
+        } else {
+          studentData.profileCompleted = false;
+          studentData.grade = ""; // Missing grade
+        }
+      }
+      
+      await prisma.student.create({ data: studentData });
+    }
+
+    const totalStudents = 20 + 23 + 30;
+    
+    console.log('Enhanced seed data creation completed successfully');
+    console.log(`Created ${totalStudents} students across 3 schools`);
 
     return NextResponse.json({
-      message: 'Test data created successfully',
-      schools: 2,
-      pacificStudents: pacificStudents.length,
-      northeastStudents: northeastStudents.length,
-      totalStudents: pacificStudents.length + northeastStudents.length
+      message: 'Enhanced test data created successfully',
+      schools: 3,
+      schoolDetails: {
+        pacificElementary: { students: 20, status: "READY" },
+        northeastAcademy: { students: 23, status: "READY" },
+        desertViewElementary: { students: 30, status: "COLLECTING", incomplete: 10 }
+      },
+      totalStudents,
+      testScenarios: [
+        "Even vs odd student counts for matching",
+        "Different school statuses (READY vs COLLECTING)",
+        "Variety of pen pal preferences",
+        "Mixed completion states for dashboard testing",
+        "Diverse interests and otherInterests examples",
+        "Different start months",
+        "Various special considerations"
+      ]
     });
 
   } catch (error) {
-    console.error('Seed data creation error:', error);
+    console.error('Enhanced seed data creation error:', error);
     return NextResponse.json(
-      { error: 'Failed to create test data', details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Failed to create enhanced test data', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
