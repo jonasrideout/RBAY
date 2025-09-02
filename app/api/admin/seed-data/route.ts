@@ -73,6 +73,48 @@ export async function POST(request: NextRequest) {
       }
     });
 
+    // Create Midwest School - 23 students (COLLECTING status for testing)
+    const midwestSchool = await prisma.school.create({
+      data: {
+        schoolName: "Prairie View Middle School",
+        teacherName: "Jennifer Williams",
+        teacherEmail: "jennifer.williams@prairieview.edu",
+        teacherPhone: "(312) 555-0404",
+        schoolAddress: "321 Cornfield Avenue",
+        schoolCity: "Chicago",
+        schoolState: "Illinois",
+        schoolZip: "60601",
+        gradeLevel: "3,4",
+        expectedClassSize: 23,
+        startMonth: "October",
+        specialConsiderations: "Urban classroom with focus on cultural exchange",
+        status: "COLLECTING",
+        region: "Midwest",
+        isActive: true
+      }
+    });
+
+    // Create Southeast School - 20 students (COLLECTING status for testing)
+    const southeastSchool = await prisma.school.create({
+      data: {
+        schoolName: "Magnolia Elementary",
+        teacherName: "Robert Davis",
+        teacherEmail: "robert.davis@magnolia.edu",
+        teacherPhone: "(404) 555-0505",
+        schoolAddress: "567 Peachtree Lane",
+        schoolCity: "Atlanta",
+        schoolState: "Georgia",
+        schoolZip: "30301",
+        gradeLevel: "3,4,5",
+        expectedClassSize: 20,
+        startMonth: "September",
+        specialConsiderations: "Strong emphasis on creative writing and storytelling",
+        status: "COLLECTING",
+        region: "Southeast",
+        isActive: true
+      }
+    });
+
     console.log('Schools created, creating students...');
 
     // Enhanced interest combinations and otherInterests examples
@@ -170,28 +212,69 @@ export async function POST(request: NextRequest) {
       await prisma.student.create({ data: studentData });
     }
 
-    const totalStudents = 20 + 23 + 30;
+    // Create Midwest students (23 students - mix of complete/incomplete for testing)
+    console.log('Creating Prairie View Middle School students...');
+    for (let i = 0; i < 23; i++) {
+      const studentData = generateStudent(midwestSchool.id, i + 73, "312");
+      
+      // Create variety in completion status for testing:
+      // 15 students complete, 8 students incomplete
+      if (i >= 15) {
+        studentData.profileCompleted = false;
+        if (i % 2 === 0) {
+          studentData.interests = []; // Missing interests
+        } else {
+          studentData.parentConsent = false; // Missing parent consent
+        }
+      }
+      
+      await prisma.student.create({ data: studentData });
+    }
+
+    // Create Southeast students (20 students - mix of complete/incomplete for testing)
+    console.log('Creating Magnolia Elementary students...');
+    for (let i = 0; i < 20; i++) {
+      const studentData = generateStudent(southeastSchool.id, i + 96, "404");
+      
+      // Create variety in completion status for testing:
+      // 12 students complete, 8 students incomplete
+      if (i >= 12) {
+        studentData.profileCompleted = false;
+        if (i % 2 === 0) {
+          studentData.grade = ""; // Missing grade
+        } else {
+          studentData.interests = []; // Missing interests
+          studentData.parentConsent = false; // Missing multiple fields
+        }
+      }
+      
+      await prisma.student.create({ data: studentData });
+    }
+
+    const totalStudents = 18 + 12 + 30 + 23 + 20;
     
     console.log('Enhanced seed data creation completed successfully');
-    console.log(`Created ${totalStudents} students across 3 schools`);
+    console.log(`Created ${totalStudents} students across 5 schools`);
 
     return NextResponse.json({
       message: 'Enhanced test data created successfully',
-      schools: 3,
+      schools: 5,
       schoolDetails: {
-        pacificElementary: { students: 20, status: "READY" },
-        northeastAcademy: { students: 23, status: "READY" },
-        desertViewElementary: { students: 30, status: "COLLECTING", incomplete: 10 }
+        pacificElementary: { students: 18, status: "READY" },
+        northeastAcademy: { students: 12, status: "READY" },
+        desertViewElementary: { students: 30, status: "COLLECTING", incomplete: 10 },
+        prairieViewMiddle: { students: 23, status: "COLLECTING", incomplete: 8 },
+        magnoliaElementary: { students: 20, status: "COLLECTING", incomplete: 8 }
       },
       totalStudents,
       testScenarios: [
-        "Even vs odd student counts for matching",
-        "Different school statuses (READY vs COLLECTING)",
-        "Variety of pen pal preferences",
-        "Mixed completion states for dashboard testing",
-        "Diverse interests and otherInterests examples",
-        "Different start months",
-        "Various special considerations"
+        "Two schools READY for matching (Pacific + Northeast)",
+        "Three schools COLLECTING information (Southwest, Midwest, Southeast)",
+        "Various student counts: 12, 18, 20, 23, 30",
+        "Different completion rates for dashboard testing",
+        "Multiple regions for FilterBar testing",
+        "Variety of pen pal preferences and interests",
+        "Mixed start months and special considerations"
       ]
     });
 
