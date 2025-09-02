@@ -504,7 +504,7 @@ function TeacherDashboardContent() {
         </div>
 
         {/* Metrics Cards */}
-        <div className="grid grid-4" style={{ marginBottom: '3rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem', marginBottom: '3rem' }}>
           <div className="card text-center" style={{ background: '#f8f9fa' }}>
             <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#4a90e2', marginBottom: '0.5rem' }}>
               {estimatedClassSize}
