@@ -491,7 +491,7 @@ function TeacherDashboardContent() {
           </div>
           
           {/* Student Registration Link - aligned with metrics grid */}
-          <div style={{ width: 'calc(25% - 0.75rem)' }}>
+          <div>
             <h3 style={{ marginBottom: '0.5rem', textAlign: 'right', fontSize: '1rem' }}>Share This Link With Your Students</h3>
             <button 
               onClick={() => navigator.clipboard.writeText(generateStudentLink())}
