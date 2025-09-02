@@ -484,19 +484,19 @@ function TeacherDashboardContent() {
         {/* Page Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
           <div>
-            <h1 style={{ marginBottom: '0.5rem' }}>Teacher Dashboard</h1>
+            <h1 style={{ marginBottom: '0.5rem' }}>{schoolData?.schoolName}</h1>
             <p style={{ color: '#6c757d', fontSize: '1.1rem' }}>
-              Welcome back, {schoolData?.teacherName}! Here's your {schoolData?.schoolName} overview.
+              {schoolData?.teacherName}
             </p>
           </div>
           
           {/* Student Registration Link - aligned with metrics grid */}
           <div style={{ width: 'calc(25% - 0.75rem)' }}>
-            <h3 style={{ marginBottom: '0.5rem', textAlign: 'right' }}>Share This Link With Your Students</h3>
+            <h3 style={{ marginBottom: '0.5rem', textAlign: 'right', fontSize: '1rem' }}>Share This Link With Your Students</h3>
             <button 
               onClick={() => navigator.clipboard.writeText(generateStudentLink())}
               className="btn btn-primary"
-              style={{ width: '100%' }}
+              style={{ width: '100%', fontSize: '0.85rem', padding: '0.75rem' }}
             >
               📋 Copy Student Registration Link
             </button>
