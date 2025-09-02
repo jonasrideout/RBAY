@@ -93,7 +93,7 @@ function RegisterStudentForm() {
 
       setSchoolInfo({
         name: data.school.schoolName,
-        teacher: `${data.school.teacherFirstName} ${data.school.teacherLastName}`,
+        teacher: data.school.teacherName,
         found: true
       });
       setFormData(prev => ({ ...prev, teacherEmail: emailToUse }));
