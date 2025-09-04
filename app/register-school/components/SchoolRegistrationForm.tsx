@@ -62,7 +62,7 @@ export default function SchoolRegistrationForm({
                 </h3>
                 
                 {/* Single row with Name, Phone, Email */}
-                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1.5fr 2.5fr', gap: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 3fr', gap: '1rem' }}>
                   <div className="form-group">
                     <label htmlFor="teacher-name" className="form-label">Name *</label>
                     <input 
@@ -138,6 +138,9 @@ export default function SchoolRegistrationForm({
                       onChange={(e) => onUpdateFormData('schoolCity', e.target.value)}
                       disabled={isLoading}
                     />
+                    <small style={{ color: '#6c757d', fontSize: '0.9rem' }}>
+                      Optional - helps with matching context
+                    </small>
                   </div>
 
                   <div className="form-group">
