@@ -179,13 +179,13 @@ export default function SchoolRegistrationForm({
                 )}
 
                 {/* Grade Levels, Class Size, and Program Start on same row */}
-                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1.2fr 1.2fr', gap: '1.5rem', marginTop: '1.2rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '2.5fr 1.5fr 1.5fr', gap: '1.5rem', marginTop: '1.2rem' }}>
                   <div className="form-group">
                     <label className="form-label">Grade Level(s) *</label>
                     <p style={{ color: '#6c757d', fontSize: '0.9rem', marginBottom: '0.8rem' }}>
                       Select the grade levels in this group:
                     </p>
-                    <div style={{ display: 'flex', gap: '1.2rem', flexWrap: 'nowrap' }}>
+                    <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'nowrap' }}>
                       {['3', '4', '5', '6', '7', '8'].map(grade => (
                         <label key={grade} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', whiteSpace: 'nowrap' }}>
                           <input 
