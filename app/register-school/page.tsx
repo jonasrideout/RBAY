@@ -14,8 +14,7 @@ export default function RegisterSchool() {
   const [error, setError] = useState('');
   const [registeredSchool, setRegisteredSchool] = useState<any>(null);
   const [formData, setFormData] = useState<SchoolFormData>({
-    teacherFirstName: '',
-    teacherLastName: '',
+    teacherName: '',
     teacherEmail: '',
     teacherPhone: '',
     schoolName: '',
@@ -54,9 +53,9 @@ export default function RegisterSchool() {
     setIsLoading(true);
     setError('');
 
-    // Updated validation - removed schoolAddress, made schoolCity optional
+    // Updated validation for single teacherName field
     const requiredFields = [
-      'teacherFirstName', 'teacherLastName', 'teacherEmail', 'schoolName', 
+      'teacherName', 'teacherEmail', 'schoolName', 
       'schoolState', 'classSize', 'programStartMonth', 'letterFrequency'
     ];
 
@@ -90,8 +89,7 @@ export default function RegisterSchool() {
       // Transform data to match API expectations
       const region = getRegionForState(formData.schoolState);
       const dataToSend = {
-        teacherFirstName: formData.teacherFirstName,
-        teacherLastName: formData.teacherLastName,
+        teacherName: formData.teacherName,
         teacherEmail: formData.teacherEmail,
         teacherPhone: formData.teacherPhone,
         schoolName: formData.schoolName,
