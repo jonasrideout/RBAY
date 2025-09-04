@@ -292,7 +292,7 @@ function RegisterStudentForm() {
               type="text" 
               id="last-initial" 
               className="form-input" 
-              placeholder="J"
+              placeholder="Enter the first 1 or 2 letters of your last name"
               value={formData.lastInitial}
               onChange={(e) => updateFormData('lastInitial', e.target.value.toUpperCase())}
               disabled={isLoading}
@@ -300,9 +300,6 @@ function RegisterStudentForm() {
               style={{ textTransform: 'uppercase' }}
               required
             />
-            <small style={{ color: '#6c757d', fontSize: '0.8rem' }}>
-              Just the first letter or two of your last name (like "J" for Johnson)
-            </small>
           </div>
         </div>
 
@@ -432,9 +429,6 @@ function RegisterStudentForm() {
         {/* Simplified Parent Consent Section */}
         <div className="card" style={{ background: '#f8f9fa', padding: '1.5rem', margin: '1.5rem 0' }}>
           <h3>Parent/Guardian Permission</h3>
-          <p style={{ color: '#6c757d', marginBottom: '1.5rem' }}>
-            We need permission from a parent or guardian for you to participate in this pen pal project.
-          </p>
           
           <div className="form-group">
             <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '1rem' }}>
