@@ -53,7 +53,7 @@ export default function SchoolRegistrationForm({
             <form onSubmit={onSubmit}>
               
               {/* Instructor Information */}
-              <div className="form-section" style={{ marginBottom: '1rem' }}>
+              <div className="form-section" style={{ marginBottom: '0.75rem' }}>
                 <h3 style={{ color: '#2c5aa0', borderBottom: '2px solid #e9ecef', paddingBottom: '0.5rem', marginBottom: '1.2rem' }}>
                   Instructor Information
                 </h3>
@@ -105,7 +105,7 @@ export default function SchoolRegistrationForm({
               </div>
 
               {/* School Information */}
-              <div className="form-section" style={{ marginBottom: '1rem' }}>
+              <div className="form-section" style={{ marginBottom: '0.75rem' }}>
                 <h3 style={{ color: '#2c5aa0', borderBottom: '2px solid #e9ecef', paddingBottom: '0.5rem', marginBottom: '1.2rem' }}>
                   School Information
                 </h3>
@@ -147,7 +147,7 @@ export default function SchoolRegistrationForm({
                       disabled={isLoading}
                       required
                     >
-                      <option value="">Select state</option>
+                      <option value="">Select</option>
                       {US_STATES.map(state => (
                         <option key={state.value} value={state.value}>{state.value}</option>
                       ))}
@@ -182,10 +182,7 @@ export default function SchoolRegistrationForm({
                 <div style={{ display: 'grid', gridTemplateColumns: '2.3fr 1.7fr 1.5fr', gap: '1.5rem', marginTop: '1.2rem' }}>
                   <div className="form-group">
                     <label className="form-label">Grade Level(s) *</label>
-                    <p style={{ color: '#6c757d', fontSize: '0.9rem', marginBottom: '0.8rem' }}>
-                      Select the grade levels in this group:
-                    </p>
-                    <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'nowrap' }}>
+                    <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'nowrap', marginTop: '0.5rem' }}>
                       {['3', '4', '5', '6', '7', '8'].map(grade => (
                         <label key={grade} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', whiteSpace: 'nowrap' }}>
                           <input 
@@ -240,7 +237,7 @@ export default function SchoolRegistrationForm({
               </div>
 
               {/* Additional Information */}
-              <div className="form-section" style={{ marginBottom: '1rem' }}>
+              <div className="form-section" style={{ marginBottom: '0.75rem' }}>
                 <h3 style={{ color: '#2c5aa0', borderBottom: '2px solid #e9ecef', paddingBottom: '0.5rem', marginBottom: '1.2rem' }}>
                   Additional Information
                 </h3>
