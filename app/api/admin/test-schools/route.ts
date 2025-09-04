@@ -28,7 +28,7 @@ export async function GET() {
           select: {
             id: true,
             firstName: true,
-            lastName: true,
+            lastInitial: true,  // Changed from lastName
             profileCompleted: true
           }
         }
@@ -42,6 +42,7 @@ export async function GET() {
       jenniferSchoolData: jenniferSchool,
       testEmails: schools.map(s => s.teacherEmail)
     });
+
   } catch (error) {
     console.error('Test schools error:', error);
     return NextResponse.json({
