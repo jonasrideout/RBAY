@@ -137,12 +137,13 @@ export async function POST(request: NextRequest) {
     const gradeOptions = ["3", "4", "5"];
     const firstNames = ["Emma", "Liam", "Sophia", "Noah", "Ava", "Mason", "Isabella", "Ethan", "Mia", "Alexander", "Charlotte", "William", "Grace", "James", "Lily", "Owen", "Zoe", "Caleb", "Olivia", "Lucas", "Amelia", "Benjamin", "Harper", "Henry", "Evelyn", "Sebastian", "Abigail", "Jackson", "Emily", "Logan", "Aria", "Carter", "Chloe", "Wyatt", "Layla", "Luke", "Riley", "Jack", "Zoey", "Daniel"];
     
-    const lastNames = ["Wilson", "Rodriguez", "Kim", "Chen", "Thompson", "Davis", "Garcia", "Brown", "Johnson", "Lee", "Martinez", "Taylor", "Patterson", "Mitchell", "Cooper", "Turner", "Adams", "Morgan", "Anderson", "White", "Harris", "Clark", "Lewis", "Walker", "Hall", "Young", "King", "Wright", "Lopez", "Hill", "Green", "Baker", "Nelson", "Carter", "Roberts", "Phillips", "Evans", "Turner", "Parker", "Collins"];
+    // Updated to generate last initials instead of full last names
+    const lastInitials = ["W", "R", "K", "C", "T", "D", "G", "B", "J", "L", "M", "Ta", "P", "Mi", "Co", "Tu", "A", "Mo", "An", "Wh", "H", "Cl", "Le", "Wa", "Ha", "Y", "Ki", "Wr", "Lo", "Hi", "Gr", "Ba", "N", "Ca", "Ro", "Ph", "E", "Tur", "Pa", "Col"];
 
-    // Helper function to generate realistic student data
-    const generateStudent = (schoolId: string, index: number, areaCode: string) => {
+    // Helper function to generate realistic student data with privacy schema
+    const generateStudent = (schoolId: string, index: number) => {
       const firstName = firstNames[index % firstNames.length];
-      const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+      const lastInitial = lastInitials[Math.floor(Math.random() * lastInitials.length)];
       const grade = gradeOptions[Math.floor(Math.random() * gradeOptions.length)];
       
       // Generate 1-3 interests
@@ -156,16 +157,15 @@ export async function POST(request: NextRequest) {
       // 30% chance of having otherInterests
       const otherInterests = otherInterestsOptions[Math.floor(Math.random() * otherInterestsOptions.length)];
       
+      // Updated to use new privacy schema - removed parent contact fields
       return {
         firstName,
-        lastName,
+        lastInitial,  // Changed from lastName
         grade,
         interests,
         otherInterests,
-        parentName: `${firstName} ${lastName} Parent`,
-        parentEmail: `${firstName.toLowerCase()}.parent${index}@email.com`,
-        parentPhone: `(${areaCode}) ${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
-        parentConsent: true,
+        // Removed parentName, parentEmail, parentPhone for privacy
+        parentConsent: true,  // Keep only consent field
         penpalPreference: penpalPreference as "ONE" | "MULTIPLE",
         isActive: true,
         profileCompleted: true,
@@ -176,21 +176,21 @@ export async function POST(request: NextRequest) {
     // Create Pacific students (20 students)
     console.log('Creating Pacific Elementary students...');
     for (let i = 0; i < 20; i++) {
-      const studentData = generateStudent(pacificSchool.id, i, "415");
+      const studentData = generateStudent(pacificSchool.id, i);
       await prisma.student.create({ data: studentData });
     }
 
     // Create Northeast students (23 students)
     console.log('Creating Northeast Academy students...');
     for (let i = 0; i < 23; i++) {
-      const studentData = generateStudent(northeastSchool.id, i + 20, "617");
+      const studentData = generateStudent(northeastSchool.id, i + 20);
       await prisma.student.create({ data: studentData });
     }
 
     // Create Southwest students (30 students - mix of complete/incomplete for testing)
     console.log('Creating Desert View Elementary students...');
     for (let i = 0; i < 30; i++) {
-      const studentData = generateStudent(southwestSchool.id, i + 43, "602");
+      const studentData = generateStudent(southwestSchool.id, i + 43);
       
       // Create variety in completion status for testing:
       // 20 students complete, 10 students incomplete (missing various fields)
@@ -215,7 +215,7 @@ export async function POST(request: NextRequest) {
     // Create Midwest students (23 students - mix of complete/incomplete for testing)
     console.log('Creating Prairie View Middle School students...');
     for (let i = 0; i < 23; i++) {
-      const studentData = generateStudent(midwestSchool.id, i + 73, "312");
+      const studentData = generateStudent(midwestSchool.id, i + 73);
       
       // Create variety in completion status for testing:
       // 15 students complete, 8 students incomplete
@@ -234,7 +234,7 @@ export async function POST(request: NextRequest) {
     // Create Southeast students (20 students - mix of complete/incomplete for testing)
     console.log('Creating Magnolia Elementary students...');
     for (let i = 0; i < 20; i++) {
-      const studentData = generateStudent(southeastSchool.id, i + 96, "404");
+      const studentData = generateStudent(southeastSchool.id, i + 96);
       
       // Create variety in completion status for testing:
       // 12 students complete, 8 students incomplete
@@ -251,26 +251,31 @@ export async function POST(request: NextRequest) {
       await prisma.student.create({ data: studentData });
     }
 
-    const totalStudents = 18 + 12 + 30 + 23 + 20;
+    const totalStudents = 20 + 23 + 30 + 23 + 20; // Updated count
     
     console.log('Enhanced seed data creation completed successfully');
     console.log(`Created ${totalStudents} students across 5 schools`);
 
     return NextResponse.json({
-      message: 'Enhanced test data created successfully',
+      message: 'Enhanced test data created successfully with privacy protection',
       schools: 5,
       schoolDetails: {
-        pacificElementary: { students: 18, status: "READY" },
-        northeastAcademy: { students: 12, status: "READY" },
+        pacificElementary: { students: 20, status: "READY" },
+        northeastAcademy: { students: 23, status: "READY" },
         desertViewElementary: { students: 30, status: "COLLECTING", incomplete: 10 },
         prairieViewMiddle: { students: 23, status: "COLLECTING", incomplete: 8 },
         magnoliaElementary: { students: 20, status: "COLLECTING", incomplete: 8 }
       },
       totalStudents,
+      privacyFeatures: [
+        "Student names use 'First Name + Last Initial' format (Sarah J.)",
+        "No parent contact information collected (privacy protection)",
+        "Only parent consent field maintained for legal compliance"
+      ],
       testScenarios: [
         "Two schools READY for matching (Pacific + Northeast)",
         "Three schools COLLECTING information (Southwest, Midwest, Southeast)",
-        "Various student counts: 12, 18, 20, 23, 30",
+        "Various student counts: 20, 23, 23, 30, 20",
         "Different completion rates for dashboard testing",
         "Multiple regions for FilterBar testing",
         "Variety of pen pal preferences and interests",
