@@ -70,11 +70,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get students ready for matching - including penpalPreference
+    // Get students ready for matching - Updated to use lastInitial
     const school1Students = school1.students.map(student => ({
       id: student.id,
       firstName: student.firstName,
-      lastName: student.lastName,
+      lastInitial: student.lastInitial,  // Changed from lastName
       grade: student.grade,
       interests: student.interests,
       schoolId: student.schoolId,
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
     const school2Students = school2.students.map(student => ({
       id: student.id,
       firstName: student.firstName,
-      lastName: student.lastName,
+      lastInitial: student.lastInitial,  // Changed from lastName
       grade: student.grade,
       interests: student.interests,
       schoolId: student.schoolId,
