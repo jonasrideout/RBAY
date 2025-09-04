@@ -61,7 +61,8 @@ export default function SchoolRegistrationForm({
                   Instructor Information
                 </h3>
                 
-                <div className="grid grid-2" style={{ gap: '1rem' }}>
+                {/* Single row with Name, Phone, Email */}
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 3fr', gap: '1rem' }}>
                   <div className="form-group">
                     <label htmlFor="teacher-name" className="form-label">Name *</label>
                     <input 
@@ -87,22 +88,22 @@ export default function SchoolRegistrationForm({
                       disabled={isLoading}
                     />
                   </div>
-                </div>
 
-                <div className="form-group">
-                  <label htmlFor="teacher-email" className="form-label">Email Address *</label>
-                  <input 
-                    type="email" 
-                    id="teacher-email" 
-                    className="form-input" 
-                    value={formData.teacherEmail}
-                    onChange={(e) => onUpdateFormData('teacherEmail', e.target.value)}
-                    disabled={isLoading}
-                    required
-                  />
-                  <small style={{ color: '#6c757d', fontSize: '0.9rem' }}>
-                    Students will use this email to join your class
-                  </small>
+                  <div className="form-group">
+                    <label htmlFor="teacher-email" className="form-label">Email Address *</label>
+                    <input 
+                      type="email" 
+                      id="teacher-email" 
+                      className="form-input" 
+                      value={formData.teacherEmail}
+                      onChange={(e) => onUpdateFormData('teacherEmail', e.target.value)}
+                      disabled={isLoading}
+                      required
+                    />
+                    <small style={{ color: '#6c757d', fontSize: '0.9rem' }}>
+                      Students will use this email to join your class
+                    </small>
+                  </div>
                 </div>
               </div>
 
@@ -112,20 +113,21 @@ export default function SchoolRegistrationForm({
                   School Information
                 </h3>
                 
-                <div className="form-group">
-                  <label htmlFor="school-name" className="form-label">School Name *</label>
-                  <input 
-                    type="text" 
-                    id="school-name" 
-                    className="form-input" 
-                    value={formData.schoolName}
-                    onChange={(e) => onUpdateFormData('schoolName', e.target.value)}
-                    disabled={isLoading}
-                    required
-                  />
-                </div>
+                {/* Single row with School Name, City, State */}
+                <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr 1fr', gap: '1rem' }}>
+                  <div className="form-group">
+                    <label htmlFor="school-name" className="form-label">School Name *</label>
+                    <input 
+                      type="text" 
+                      id="school-name" 
+                      className="form-input" 
+                      value={formData.schoolName}
+                      onChange={(e) => onUpdateFormData('schoolName', e.target.value)}
+                      disabled={isLoading}
+                      required
+                    />
+                  </div>
 
-                <div className="grid grid-2" style={{ gap: '1rem' }}>
                   <div className="form-group">
                     <label htmlFor="school-city" className="form-label">City</label>
                     <input 
@@ -153,7 +155,7 @@ export default function SchoolRegistrationForm({
                     >
                       <option value="">Select state</option>
                       {US_STATES.map(state => (
-                        <option key={state.value} value={state.value}>{state.label}</option>
+                        <option key={state.value} value={state.value}>{state.value}</option>
                       ))}
                     </select>
 
@@ -182,15 +184,16 @@ export default function SchoolRegistrationForm({
                   </div>
                 </div>
 
-                <div className="grid grid-2" style={{ gap: '1rem' }}>
+                {/* Grade Levels and Class Size on same row */}
+                <div style={{ display: 'grid', gridTemplateColumns: '4fr 1fr', gap: '2rem', marginTop: '1.5rem' }}>
                   <div className="form-group">
                     <label className="form-label">Grade Level(s) *</label>
                     <p style={{ color: '#6c757d', fontSize: '0.9rem', marginBottom: '1rem' }}>
-                      Select all grades you teach:
+                      Select the grade levels in this group:
                     </p>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                       {['3', '4', '5', '6', '7', '8'].map(grade => (
-                        <label key={grade} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <label key={grade} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: '100px' }}>
                           <input 
                             type="checkbox" 
                             checked={formData.gradeLevels.includes(grade)}
@@ -226,46 +229,27 @@ export default function SchoolRegistrationForm({
                   Program Details
                 </h3>
                 
-                <div className="grid grid-2" style={{ gap: '1rem' }}>
-                  <div className="form-group">
-                    <label htmlFor="program-start-month" className="form-label">When would you like to start? *</label>
-                    <select 
-                      id="program-start-month" 
-                      className="form-select" 
-                      value={formData.programStartMonth}
-                      onChange={(e) => onUpdateFormData('programStartMonth', e.target.value)}
-                      disabled={isLoading}
-                      required
-                    >
-                      <option value="">Select month</option>
-                      <option value="Not sure yet">Not sure yet</option>
-                      {[
-                        'January', 'February', 'March', 'April', 'May', 'June',
-                        'July', 'August', 'September', 'October', 'November', 'December'
-                      ].map(month => (
-                        <option key={month} value={month}>{month}</option>
-                      ))}
-                    </select>
-                  </div>
-                  
-                  <div className="form-group">
-                    <label htmlFor="letter-frequency" className="form-label">How Often Will Students Write Letters? *</label>
-                    <select 
-                      id="letter-frequency" 
-                      className="form-select" 
-                      value={formData.letterFrequency}
-                      onChange={(e) => onUpdateFormData('letterFrequency', e.target.value)}
-                      disabled={isLoading}
-                      required
-                    >
-                      <option value="">Select frequency</option>
-                      <option value="Not sure yet">Not sure yet</option>
-                      <option value="weekly">Weekly</option>
-                      <option value="bi-weekly">Every Two Weeks</option>
-                      <option value="monthly">Monthly</option>
-                      <option value="flexible">Flexible/As Needed</option>
-                    </select>
-                  </div>
+                <div className="form-group">
+                  <label htmlFor="program-start-month" className="form-label">When would you like to start? *</label>
+                  <select 
+                    id="program-start-month" 
+                    className="form-select" 
+                    value={formData.programStartMonth}
+                    onChange={(e) => onUpdateFormData('programStartMonth', e.target.value)}
+                    disabled={isLoading}
+                    required
+                    style={{ maxWidth: '300px' }}
+                  >
+                    <option value="">Select month</option>
+                    <option value="As soon as possible">As soon as possible</option>
+                    <option value="Not sure yet">Not sure yet</option>
+                    {[
+                      'January', 'February', 'March', 'April', 'May', 'June',
+                      'July', 'August', 'September', 'October', 'November', 'December'
+                    ].map(month => (
+                      <option key={month} value={month}>{month}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
@@ -304,9 +288,8 @@ export default function SchoolRegistrationForm({
                         required 
                       />
                       <span>
-                        I understand that this program involves students exchanging letters with students from another school, 
-                        and I agree to facilitate this correspondence as part of our reading curriculum. I will ensure appropriate 
-                        supervision and follow all school district policies regarding student communication. *
+                        I understand that this program involves students exchanging letters with students from another school. 
+                        I will ensure appropriate supervision and follow all school district policies regarding student communication. *
                       </span>
                     </label>
                   </div>
@@ -321,8 +304,7 @@ export default function SchoolRegistrationForm({
                         required 
                       />
                       <span>
-                        I will notify parents/guardians about this project and obtain any necessary permissions 
-                        according to my school's policies. *
+                        I will obtain any necessary permissions according to my school's policies. *
                       </span>
                     </label>
                   </div>
