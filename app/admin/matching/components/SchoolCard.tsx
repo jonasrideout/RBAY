@@ -228,7 +228,7 @@ export default function SchoolCard({
         )}
       </div>
 
-      {/* Data & Actions (20%) - FIXED ALIGNMENT */}
+      {/* Data & Actions (20%) - REMOVED START MONTH */}
       <div style={{ 
         display: 'flex', 
         flexDirection: 'column', 
@@ -236,7 +236,7 @@ export default function SchoolCard({
         fontSize: '0.9rem',
         gap: '0.5rem'
       }}>
-        {/* Data rows - FIXED: proper right alignment */}
+        {/* Data rows - Start month removed */}
         <div style={{
           display: 'flex',
           flexDirection: 'column',
@@ -251,16 +251,6 @@ export default function SchoolCard({
           }}>
             <span style={{ fontWeight: '500' }}>Region:</span> 
             <span>{school.region.toUpperCase()}</span>
-          </div>
-          <div style={{ 
-            color: '#4b5563',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            minHeight: '1.1rem'
-          }}>
-            <span style={{ fontWeight: '500' }}>Start:</span> 
-            <span>{school.startMonth}</span>
           </div>
           <div style={{ 
             color: '#4b5563',
