@@ -9,7 +9,6 @@ export interface SchoolFormData {
   gradeLevels: string[];
   classSize: string;
   programStartMonth: string;
-  letterFrequency: string;
   specialConsiderations: string;
   programAgreement: boolean;
   parentNotification: boolean;
