@@ -197,3 +197,61 @@ export async function PUT(request: NextRequest) {
     );
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { studentId } = body;
+
+    if (!studentId) {
+      return NextResponse.json(
+        { error: 'Student ID is required' },
+        { status: 400 }
+      );
+    }
+
+    // Check if student exists first
+    const student = await prisma.student.findUnique({
+      where: { id: studentId },
+      include: {
+        school: true
+      }
+    });
+
+    if (!student) {
+      return NextResponse.json(
+        { error: 'Student not found' },
+        { status: 404 }
+      );
+    }
+
+    // Check if school is still in collecting or ready status (before matching)
+    if (student.school.status !== 'COLLECTING' && student.school.status !== 'READY') {
+      return NextResponse.json(
+        { error: 'Cannot remove student after matching has been completed' },
+        { status: 400 }
+      );
+    }
+
+    // Delete the student (cascade delete will handle StudentPenpal records)
+    await prisma.student.delete({
+      where: { id: studentId }
+    });
+
+    return NextResponse.json({
+      message: 'Student removed successfully',
+      removedStudent: {
+        id: student.id,
+        firstName: student.firstName,
+        lastInitial: student.lastInitial
+      }
+    });
+
+  } catch (error) {
+    console.error('Delete student error:', error);
+    return NextResponse.json(
+      { error: 'Failed to remove student' },
+      { status: 500 }
+    );
+  }
+}
