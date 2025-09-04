@@ -20,14 +20,12 @@ export async function POST(request: NextRequest) {
       gradeLevel,
       expectedClassSize,
       startMonth,
-      letterFrequency,
       specialConsiderations
     } = body;
 
-    // Updated validation - using single teacherName field
+    // Updated validation - removed letterFrequency requirement
     if (!teacherName || !teacherEmail || !schoolName || 
-        !schoolState || !gradeLevel || !expectedClassSize || !startMonth || 
-        !letterFrequency) {
+        !schoolState || !gradeLevel || !expectedClassSize || !startMonth) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -71,7 +69,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create the school - using teacherName directly
+    // Create the school - removed letterFrequency field
     const school = await prisma.school.create({
       data: {
         teacherName,
@@ -86,7 +84,6 @@ export async function POST(request: NextRequest) {
         gradeLevel,
         expectedClassSize: parseInt(expectedClassSize),
         startMonth,
-        letterFrequency,
         status: 'COLLECTING', // New schools start in collecting status
         specialConsiderations: specialConsiderations || null
       }
