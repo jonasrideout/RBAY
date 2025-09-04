@@ -101,7 +101,6 @@ export default function RegisterSchool() {
         gradeLevel: formData.gradeLevels.join(', '), // Convert array to string
         expectedClassSize: formData.classSize,
         startMonth: formData.programStartMonth,
-        letterFrequency: formData.letterFrequency,
         specialConsiderations: formData.specialConsiderations,
         programAgreement: formData.programAgreement,
         parentNotification: formData.parentNotification
