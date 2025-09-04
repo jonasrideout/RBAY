@@ -294,10 +294,9 @@ function RegisterStudentForm() {
               className="form-input" 
               placeholder="Enter the first 1 or 2 letters of your last name"
               value={formData.lastInitial}
-              onChange={(e) => updateFormData('lastInitial', e.target.value.toUpperCase())}
+              onChange={(e) => updateFormData('lastInitial', e.target.value)}
               disabled={isLoading}
               maxLength={2}
-              style={{ textTransform: 'uppercase' }}
               required
             />
           </div>
