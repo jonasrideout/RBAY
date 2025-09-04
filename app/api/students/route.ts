@@ -6,22 +6,27 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const {
       firstName,
-      lastName,
+      lastInitial,  // Changed from lastName
       grade,
       interests,
-      parentName,
-      parentEmail,
-      parentPhone,
-      parentConsent,
+      parentConsent,  // Removed parentName, parentEmail, parentPhone
       teacherEmail,
       penpalPreference,
       otherInterests
     } = body;
 
-    // Validate required fields
-    if (!firstName || !lastName || !grade || !parentName || !parentEmail || !teacherEmail) {
+    // Updated validation - removed parent contact fields
+    if (!firstName || !lastInitial || !grade || !teacherEmail) {
       return NextResponse.json(
         { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
+    // Validate lastInitial length
+    if (lastInitial.length > 2) {
+      return NextResponse.json(
+        { error: 'Last initial must be 1-2 characters only' },
         { status: 400 }
       );
     }
@@ -41,17 +46,15 @@ export async function POST(request: NextRequest) {
     // Check if student interests are completed (has at least one interest)
     const profileCompleted = interests && interests.length > 0;
 
-    // Create the student
+    // Create the student with updated schema
     const student = await prisma.student.create({
       data: {
         firstName,
-        lastName,
+        lastInitial,  // Changed from lastName
         grade,
         interests: interests || [],
         otherInterests: otherInterests || null,
-        parentName,
-        parentEmail,
-        parentPhone,
+        // Removed parentName, parentEmail, parentPhone
         parentConsent: parentConsent || false,
         penpalPreference: penpalPreference || 'ONE',
         isActive: true,
@@ -65,12 +68,13 @@ export async function POST(request: NextRequest) {
       student: {
         id: student.id,
         firstName: student.firstName,
-        lastName: student.lastName,
+        lastInitial: student.lastInitial,  // Changed from lastName
         grade: student.grade,
         interests: student.interests,
         otherInterests: student.otherInterests,
         penpalPreference: student.penpalPreference,
-        profileCompleted: student.profileCompleted
+        profileCompleted: student.profileCompleted,
+        schoolName: school.schoolName
       }
     });
 
@@ -177,7 +181,7 @@ export async function PUT(request: NextRequest) {
       student: {
         id: updatedStudent.id,
         firstName: updatedStudent.firstName,
-        lastName: updatedStudent.lastName,
+        lastInitial: updatedStudent.lastInitial,  // Changed from lastName
         interests: updatedStudent.interests,
         otherInterests: updatedStudent.otherInterests,
         penpalPreference: updatedStudent.penpalPreference,
