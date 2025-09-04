@@ -201,7 +201,7 @@ export default function SchoolRegistrationForm({
                   </div>
                   
                   <div className="form-group">
-                    <label htmlFor="class-size" className="form-label">Estimated Number of Students *</label>
+                    <label htmlFor="class-size" className="form-label">Estimated # of Students *</label>
                     <input 
                       type="number" 
                       id="class-size" 
@@ -216,7 +216,7 @@ export default function SchoolRegistrationForm({
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="program-start-month" className="form-label">When would you like to start? *</label>
+                    <label htmlFor="program-start-month" className="form-label">Preferred start date? *</label>
                     <select 
                       id="program-start-month" 
                       className="form-select" 
