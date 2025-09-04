@@ -53,7 +53,7 @@ export default function SchoolRegistrationForm({
             <form onSubmit={onSubmit}>
               
               {/* Instructor Information */}
-              <div className="form-section" style={{ marginBottom: '1.5rem' }}>
+              <div className="form-section" style={{ marginBottom: '1rem' }}>
                 <h3 style={{ color: '#2c5aa0', borderBottom: '2px solid #e9ecef', paddingBottom: '0.5rem', marginBottom: '1.2rem' }}>
                   Instructor Information
                 </h3>
@@ -85,8 +85,8 @@ export default function SchoolRegistrationForm({
                       disabled={isLoading}
                       required
                     />
-                    <small style={{ color: '#6c757d', fontSize: '0.9rem' }}>
-                      Students will use this email to join your class
+                    <small style={{ color: '#6c757d', fontSize: '0.8rem' }}>
+                      Students join using this email
                     </small>
                   </div>
                   
@@ -105,7 +105,7 @@ export default function SchoolRegistrationForm({
               </div>
 
               {/* School Information */}
-              <div className="form-section" style={{ marginBottom: '1.5rem' }}>
+              <div className="form-section" style={{ marginBottom: '1rem' }}>
                 <h3 style={{ color: '#2c5aa0', borderBottom: '2px solid #e9ecef', paddingBottom: '0.5rem', marginBottom: '1.2rem' }}>
                   School Information
                 </h3>
@@ -158,7 +158,7 @@ export default function SchoolRegistrationForm({
                 {/* Region Display - Full width across all three fields */}
                 {formData.schoolState && (
                   <div style={{ 
-                    marginTop: '1rem', 
+                    marginTop: '0.5rem', 
                     padding: '0.75rem', 
                     background: '#e8f4f8', 
                     border: '1px solid #bee5eb', 
@@ -178,8 +178,8 @@ export default function SchoolRegistrationForm({
                   </div>
                 )}
 
-                {/* Grade Levels and Class Size on same row */}
-                <div style={{ display: 'grid', gridTemplateColumns: '4fr 1fr', gap: '1.5rem', marginTop: '1.2rem' }}>
+                {/* Grade Levels, Class Size, and Program Start on same row */}
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1.2fr 1.2fr', gap: '1.5rem', marginTop: '1.2rem' }}>
                   <div className="form-group">
                     <label className="form-label">Grade Level(s) *</label>
                     <p style={{ color: '#6c757d', fontSize: '0.9rem', marginBottom: '0.8rem' }}>
@@ -214,41 +214,33 @@ export default function SchoolRegistrationForm({
                       required
                     />
                   </div>
-                </div>
-              </div>
 
-              {/* Program Details */}
-              <div className="form-section" style={{ marginBottom: '1.5rem' }}>
-                <h3 style={{ color: '#2c5aa0', borderBottom: '2px solid #e9ecef', paddingBottom: '0.5rem', marginBottom: '1.2rem' }}>
-                  Program Details
-                </h3>
-                
-                <div className="form-group">
-                  <label htmlFor="program-start-month" className="form-label">When would you like to start? *</label>
-                  <select 
-                    id="program-start-month" 
-                    className="form-select" 
-                    value={formData.programStartMonth}
-                    onChange={(e) => onUpdateFormData('programStartMonth', e.target.value)}
-                    disabled={isLoading}
-                    required
-                    style={{ maxWidth: '300px' }}
-                  >
-                    <option value="">Select month</option>
-                    <option value="As soon as possible">As soon as possible</option>
-                    <option value="Not sure yet">Not sure yet</option>
-                    {[
-                      'January', 'February', 'March', 'April', 'May', 'June',
-                      'July', 'August', 'September', 'October', 'November', 'December'
-                    ].map(month => (
-                      <option key={month} value={month}>{month}</option>
-                    ))}
-                  </select>
+                  <div className="form-group">
+                    <label htmlFor="program-start-month" className="form-label">When would you like to start? *</label>
+                    <select 
+                      id="program-start-month" 
+                      className="form-select" 
+                      value={formData.programStartMonth}
+                      onChange={(e) => onUpdateFormData('programStartMonth', e.target.value)}
+                      disabled={isLoading}
+                      required
+                    >
+                      <option value="">Select month</option>
+                      <option value="As soon as possible">As soon as possible</option>
+                      <option value="Not sure yet">Not sure yet</option>
+                      {[
+                        'January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'
+                      ].map(month => (
+                        <option key={month} value={month}>{month}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
 
               {/* Additional Information */}
-              <div className="form-section" style={{ marginBottom: '1.5rem' }}>
+              <div className="form-section" style={{ marginBottom: '1rem' }}>
                 <h3 style={{ color: '#2c5aa0', borderBottom: '2px solid #e9ecef', paddingBottom: '0.5rem', marginBottom: '1.2rem' }}>
                   Additional Information
                 </h3>
