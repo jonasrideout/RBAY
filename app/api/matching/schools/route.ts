@@ -16,7 +16,7 @@ export async function GET() {
           select: {
             id: true,
             firstName: true,
-            lastName: true,
+            lastInitial: true,
             grade: true,
             interests: true,
             profileCompleted: true
@@ -38,7 +38,6 @@ export async function GET() {
       gradeLevel: school.gradeLevel,
       expectedClassSize: school.expectedClassSize,
       startMonth: school.startMonth,
-      letterFrequency: school.letterFrequency,
       students: school.students,
       studentCounts: {
         expected: school.expectedClassSize,
