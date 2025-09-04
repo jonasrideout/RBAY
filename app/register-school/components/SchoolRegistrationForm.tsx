@@ -53,7 +53,7 @@ export default function SchoolRegistrationForm({
             <form onSubmit={onSubmit}>
               
               {/* Instructor Information */}
-              <div className="form-section" style={{ marginBottom: '0.75rem' }}>
+              <div className="form-section" style={{ marginBottom: '0.5rem' }}>
                 <h3 style={{ color: '#2c5aa0', borderBottom: '2px solid #e9ecef', paddingBottom: '0.5rem', marginBottom: '1.2rem' }}>
                   Instructor Information
                 </h3>
@@ -105,7 +105,7 @@ export default function SchoolRegistrationForm({
               </div>
 
               {/* School Information */}
-              <div className="form-section" style={{ marginBottom: '0.75rem' }}>
+              <div className="form-section" style={{ marginBottom: '0.5rem' }}>
                 <h3 style={{ color: '#2c5aa0', borderBottom: '2px solid #e9ecef', paddingBottom: '0.5rem', marginBottom: '1.2rem' }}>
                   School Information
                 </h3>
@@ -237,7 +237,7 @@ export default function SchoolRegistrationForm({
               </div>
 
               {/* Additional Information */}
-              <div className="form-section" style={{ marginBottom: '0.75rem' }}>
+              <div className="form-section" style={{ marginBottom: '0.55rem' }}>
                 <h3 style={{ color: '#2c5aa0', borderBottom: '2px solid #e9ecef', paddingBottom: '0.5rem', marginBottom: '1.2rem' }}>
                   Additional Information
                 </h3>
@@ -258,7 +258,7 @@ export default function SchoolRegistrationForm({
               </div>
 
               {/* Agreement */}
-              <div className="form-section" style={{ marginBottom: '1.5rem' }}>
+              <div className="form-section" style={{ marginBottom: '.5rem' }}>
                 <div className="card" style={{ background: '#f8f9fa', padding: '1.5rem' }}>
                   <h4>Program Agreement</h4>
                   <div className="form-group">
@@ -314,7 +314,7 @@ export default function SchoolRegistrationForm({
           {/* Help Section */}
           <div className="card mt-3" style={{ background: '#f8f9fa' }}>
             <h3>Need Help?</h3>
-            <p style={{ marginBottom: '1rem' }}>
+            <p style={{ marginBottom: '.5rem' }}>
               If you have questions about registering your school or setting up the program, please contact us:
             </p>
             <p style={{ marginBottom: '0' }}>
