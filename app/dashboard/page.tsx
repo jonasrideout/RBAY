@@ -442,234 +442,7 @@ function TeacherDashboardContent() {
                     border: '1px solid #dc3545',
                     borderRadius: '4px',
                     padding: '0.25rem 0.5rem',
-                <button 
-                  className="btn" 
-                  style={{ 
-                    backgroundColor: readyForMatching ? '#17a2b8' : '#28a745', 
-                    color: 'white', 
-                    cursor: isRequestingMatching ? 'not-allowed' : 'pointer',
-                    padding: '1rem 2rem',
-                    fontSize: '1.1rem'
-                  }}
-                  disabled={isRequestingMatching}
-                  onClick={handleRequestMatching}
-                  title={readyForMatching ? "Matching has been requested" : "Request matching with current students"}
-                >
-                  {readyForMatching ? '✅ Matching Requested' : (isRequestingMatching ? (
-                    <>
-                      <span className="loading"></span>
-                      <span style={{ marginLeft: '0.5rem' }}>Requesting...</span>
-                    </>
-                  ) : '🎯 Request Matching')}
-                </button>
-                <p style={{ color: '#6c757d', fontSize: '0.9rem', marginTop: '0.5rem', marginBottom: '0' }}>
-                  All students ready - you can request matching anytime!
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Students Missing Information - Only show if there are students needing info */}
-        {studentsNeedingInfo.length > 0 && (
-          <div className="card" style={{ marginBottom: '2rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h3>Students Missing Information</h3>
-              <button
-                className="btn"
-                onClick={() => {
-                  setMissingInfoRemovalMode(!missingInfoRemovalMode);
-                  if (readyStudentsRemovalMode) {
-                    setReadyStudentsRemovalMode(false);
-                  }
-                }}
-                style={{ 
-                  fontSize: '0.9rem',
-                  backgroundColor: missingInfoRemovalMode ? 'transparent' : '#6c757d',
-                  color: missingInfoRemovalMode ? '#6c757d' : 'white',
-                  border: missingInfoRemovalMode ? '1px solid #6c757d' : 'none'
-                }}
-                disabled={readyForMatching}
-                title={readyForMatching ? "Cannot remove students after matching requested" : undefined}
-              >
-                {missingInfoRemovalMode ? 'Finished' : 'Remove Student'}
-              </button>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {studentsNeedingInfo.map(student => renderMissingInfoCard(student))}
-            </div>
-          </div>
-        )}
-
-        {/* Ready Students in 3-column layout */}
-        {studentsWithInterests.length > 0 && (
-          <div className="card" style={{ marginBottom: '2rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h3>Ready Students ({studentsWithInterests.length})</h3>
-              <button
-                className="btn"
-                onClick={() => {
-                  setReadyStudentsRemovalMode(!readyStudentsRemovalMode);
-                  if (missingInfoRemovalMode) {
-                    setMissingInfoRemovalMode(false);
-                  }
-                }}
-                style={{ 
-                  fontSize: '0.9rem',
-                  backgroundColor: readyStudentsRemovalMode ? 'transparent' : '#6c757d',
-                  color: readyStudentsRemovalMode ? '#6c757d' : 'white',
-                  border: readyStudentsRemovalMode ? '1px solid #6c757d' : 'none'
-                }}
-                disabled={readyForMatching}
-                title={readyForMatching ? "Cannot remove students after matching requested" : undefined}
-              >
-                {readyStudentsRemovalMode ? 'Finished' : 'Remove Student'}
-              </button>
-            </div>
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(3, 1fr)', 
-              gap: '0.75rem'
-            }}>
-              {studentsWithInterests.map(student => renderReadyStudentCard(student))}
-            </div>
-          </div>
-        )}
-
-        {/* Inline Confirmation Dialog */}
-        {confirmDialog.show && (
-          <div className="card" style={{ 
-            position: 'fixed', 
-            top: '50%', 
-            left: '50%', 
-            transform: 'translate(-50%, -50%)',
-            zIndex: 1000,
-            minWidth: '300px',
-            maxWidth: '400px',
-            border: '2px solid #dc3545',
-            backgroundColor: 'white'
-          }}>
-            <h4 style={{ marginBottom: '1rem', color: '#dc3545' }}>Remove Student</h4>
-            <p style={{ marginBottom: '1.5rem', color: '#495057' }}>
-              Are you sure you want to permanently remove {confirmDialog.studentName}?
-            </p>
-            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-              <button 
-                className="btn btn-secondary"
-                onClick={cancelRemoveStudent}
-                style={{ padding: '0.5rem 1rem' }}
-              >
-                Cancel
-              </button>
-              <button 
-                className="btn" 
-                onClick={confirmRemoveStudent}
-                style={{ 
-                  backgroundColor: '#dc3545', 
-                  color: 'white', 
-                  padding: '0.5rem 1rem' 
-                }}
-              >
-                OK
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* No students message */}
-        {totalStudents === 0 && (
-          <div className="card" style={{ textAlign: 'center', padding: '3rem', marginBottom: '2rem' }}>
-            <h3 style={{ color: '#6c757d', marginBottom: '1rem' }}>No Students Registered Yet</h3>
-            <p style={{ color: '#6c757d', marginBottom: '2rem' }}>
-              Share the student registration link above to get started, or add students manually.
-            </p>
-            <Link 
-              href={`/register-student?teacher=${encodeURIComponent(teacherEmail || '')}`}
-              className="btn btn-primary"
-            >
-              ➕ Add First Student
-            </Link>
-          </div>
-        )}
-
-        {/* Action Buttons - aligned to right */}
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-          <Link 
-            href={`/register-student?teacher=${encodeURIComponent(teacherEmail || '')}`}
-            className="btn btn-secondary"
-            style={readyForMatching ? { 
-              opacity: 0.6, 
-              cursor: 'not-allowed',
-              pointerEvents: 'none'
-            } : {}}
-            title={readyForMatching ? "Cannot add students after matching is requested" : "Add new student"}
-          >
-            ➕ Add New Student
-          </Link>
-          <button 
-            className="btn" 
-            style={{ 
-              backgroundColor: (!hasActiveStudents || readyForMatching) ? '#6c757d' : '#4a90e2', 
-              color: 'white', 
-              cursor: (!hasActiveStudents || readyForMatching) ? 'not-allowed' : 'pointer'
-            }}
-            disabled={!hasActiveStudents || readyForMatching}
-            onClick={() => {
-              if (hasActiveStudents && !readyForMatching && teacherEmail) {
-                window.open(`/dashboard/print?teacher=${encodeURIComponent(teacherEmail)}`, '_blank');
-              }
-            }}
-            title={readyForMatching ? "Matching has been requested" : (!hasActiveStudents ? "Need students first" : "Download student information")}
-          >
-            📥 Download Student Info
-          </button>
-        </div>
-
-      </main>
-
-      {/* Footer */}
-      <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
-        <div className="container text-center">
-          <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
-        </div>
-      </footer>
-    </div>
-  );
-}
-
-// Loading component for Suspense fallback
-function LoadingDashboard() {
-  return (
-    <div className="page">
-      <header className="header">
-        <div className="container">
-          <div className="header-content">
-            <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
-              The Right Back at You Project
-            </Link>
-            <nav className="nav">
-              <Link href="/" className="nav-link">Home</Link>
-            </nav>
-          </div>
-        </div>
-      </header>
-      <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
-        <div style={{ textAlign: 'center', padding: '2rem' }}>
-          <div>Loading dashboard...</div>
-        </div>
-      </main>
-    </div>
-  );
-}
-
-export default function TeacherDashboard() {
-  return (
-    <Suspense fallback={<LoadingDashboard />}>
-      <TeacherDashboardContent />
-    </Suspense>
-  );
-} 'pointer',
+                    cursor: 'pointer',
                     fontSize: '0.8rem'
                   }}
                   title={`Remove ${student.firstName} ${student.lastInitial}.`}
@@ -924,4 +697,226 @@ export default function TeacherDashboard() {
                   style={{ 
                     backgroundColor: readyForMatching ? '#17a2b8' : '#28a745', 
                     color: 'white', 
-                    cursor:
+                    cursor: isRequestingMatching ? 'not-allowed' : 'pointer',
+                    padding: '1rem 2rem',
+                    fontSize: '1.1rem'
+                  }}
+                  disabled={isRequestingMatching}
+                  onClick={handleRequestMatching}
+                  title={readyForMatching ? "Matching has been requested" : "Request matching with current students"}
+                >
+                  {readyForMatching ? '✅ Matching Requested' : (isRequestingMatching ? (
+                    <>
+                      <span className="loading"></span>
+                      <span style={{ marginLeft: '0.5rem' }}>Requesting...</span>
+                    </>
+                  ) : '🎯 Request Matching')}
+                </button>
+                <p style={{ color: '#6c757d', fontSize: '0.9rem', marginTop: '0.5rem', marginBottom: '0' }}>
+                  All students ready - you can request matching anytime!
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Students Missing Information - Only show if there are students needing info */}
+        {studentsNeedingInfo.length > 0 && (
+          <div className="card" style={{ marginBottom: '2rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h3>Students Missing Information</h3>
+              <button
+                className="btn"
+                onClick={() => {
+                  setMissingInfoRemovalMode(!missingInfoRemovalMode);
+                  if (readyStudentsRemovalMode) {
+                    setReadyStudentsRemovalMode(false);
+                  }
+                }}
+                style={{ 
+                  fontSize: '0.9rem',
+                  backgroundColor: missingInfoRemovalMode ? 'transparent' : '#6c757d',
+                  color: missingInfoRemovalMode ? '#6c757d' : 'white',
+                  border: missingInfoRemovalMode ? '1px solid #6c757d' : 'none'
+                }}
+                disabled={readyForMatching}
+                title={readyForMatching ? "Cannot remove students after matching requested" : undefined}
+              >
+                {missingInfoRemovalMode ? 'Finished' : 'Remove Student'}
+              </button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {studentsNeedingInfo.map(student => renderMissingInfoCard(student))}
+            </div>
+          </div>
+        )}
+
+        {/* Ready Students in 3-column layout */}
+        {studentsWithInterests.length > 0 && (
+          <div className="card" style={{ marginBottom: '2rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h3>Ready Students ({studentsWithInterests.length})</h3>
+              <button
+                className="btn"
+                onClick={() => {
+                  setReadyStudentsRemovalMode(!readyStudentsRemovalMode);
+                  if (missingInfoRemovalMode) {
+                    setMissingInfoRemovalMode(false);
+                  }
+                }}
+                style={{ 
+                  fontSize: '0.9rem',
+                  backgroundColor: readyStudentsRemovalMode ? 'transparent' : '#6c757d',
+                  color: readyStudentsRemovalMode ? '#6c757d' : 'white',
+                  border: readyStudentsRemovalMode ? '1px solid #6c757d' : 'none'
+                }}
+                disabled={readyForMatching}
+                title={readyForMatching ? "Cannot remove students after matching requested" : undefined}
+              >
+                {readyStudentsRemovalMode ? 'Finished' : 'Remove Student'}
+              </button>
+            </div>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(3, 1fr)', 
+              gap: '0.75rem'
+            }}>
+              {studentsWithInterests.map(student => renderReadyStudentCard(student))}
+            </div>
+          </div>
+        )}
+
+        {/* Inline Confirmation Dialog */}
+        {confirmDialog.show && (
+          <div className="card" style={{ 
+            position: 'fixed', 
+            top: '50%', 
+            left: '50%', 
+            transform: 'translate(-50%, -50%)',
+            zIndex: 1000,
+            minWidth: '300px',
+            maxWidth: '400px',
+            border: '2px solid #dc3545',
+            backgroundColor: 'white'
+          }}>
+            <h4 style={{ marginBottom: '1rem', color: '#dc3545' }}>Remove Student</h4>
+            <p style={{ marginBottom: '1.5rem', color: '#495057' }}>
+              Are you sure you want to permanently remove {confirmDialog.studentName}?
+            </p>
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+              <button 
+                className="btn btn-secondary"
+                onClick={cancelRemoveStudent}
+                style={{ padding: '0.5rem 1rem' }}
+              >
+                Cancel
+              </button>
+              <button 
+                className="btn" 
+                onClick={confirmRemoveStudent}
+                style={{ 
+                  backgroundColor: '#dc3545', 
+                  color: 'white', 
+                  padding: '0.5rem 1rem' 
+                }}
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* No students message */}
+        {totalStudents === 0 && (
+          <div className="card" style={{ textAlign: 'center', padding: '3rem', marginBottom: '2rem' }}>
+            <h3 style={{ color: '#6c757d', marginBottom: '1rem' }}>No Students Registered Yet</h3>
+            <p style={{ color: '#6c757d', marginBottom: '2rem' }}>
+              Share the student registration link above to get started, or add students manually.
+            </p>
+            <Link 
+              href={`/register-student?teacher=${encodeURIComponent(teacherEmail || '')}`}
+              className="btn btn-primary"
+            >
+              ➕ Add First Student
+            </Link>
+          </div>
+        )}
+
+        {/* Action Buttons - aligned to right */}
+        <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+          <Link 
+            href={`/register-student?teacher=${encodeURIComponent(teacherEmail || '')}`}
+            className="btn btn-secondary"
+            style={readyForMatching ? { 
+              opacity: 0.6, 
+              cursor: 'not-allowed',
+              pointerEvents: 'none'
+            } : {}}
+            title={readyForMatching ? "Cannot add students after matching is requested" : "Add new student"}
+          >
+            ➕ Add New Student
+          </Link>
+          <button 
+            className="btn" 
+            style={{ 
+              backgroundColor: (!hasActiveStudents || readyForMatching) ? '#6c757d' : '#4a90e2', 
+              color: 'white', 
+              cursor: (!hasActiveStudents || readyForMatching) ? 'not-allowed' : 'pointer'
+            }}
+            disabled={!hasActiveStudents || readyForMatching}
+            onClick={() => {
+              if (hasActiveStudents && !readyForMatching && teacherEmail) {
+                window.open(`/dashboard/print?teacher=${encodeURIComponent(teacherEmail)}`, '_blank');
+              }
+            }}
+            title={readyForMatching ? "Matching has been requested" : (!hasActiveStudents ? "Need students first" : "Download student information")}
+          >
+            📥 Download Student Info
+          </button>
+        </div>
+
+      </main>
+
+      {/* Footer */}
+      <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
+        <div className="container text-center">
+          <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+// Loading component for Suspense fallback
+function LoadingDashboard() {
+  return (
+    <div className="page">
+      <header className="header">
+        <div className="container">
+          <div className="header-content">
+            <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
+              The Right Back at You Project
+            </Link>
+            <nav className="nav">
+              <Link href="/" className="nav-link">Home</Link>
+            </nav>
+          </div>
+        </div>
+      </header>
+      <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <div>Loading dashboard...</div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+export default function TeacherDashboard() {
+  return (
+    <Suspense fallback={<LoadingDashboard />}>
+      <TeacherDashboardContent />
+    </Suspense>
+  );
+}
