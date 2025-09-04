@@ -7,14 +7,12 @@ import { useSearchParams } from 'next/navigation';
 interface StudentFormData {
   teacherEmail: string;
   firstName: string;
-  lastName: string;
+  lastInitial: string;  // Changed from lastName
   grade: string;
   interests: string[];
   otherInterests: string;
   penpalPreference: 'ONE' | 'MULTIPLE';
-  parentName: string;
-  parentEmail: string;
-  parentConsent: boolean;
+  parentConsent: boolean;  // Removed parentName, parentEmail, parentPhone
 }
 
 interface SchoolInfo {
@@ -47,14 +45,12 @@ function RegisterStudentForm() {
   const [formData, setFormData] = useState<StudentFormData>({
     teacherEmail: '',
     firstName: '',
-    lastName: '',
+    lastInitial: '',  // Changed from lastName
     grade: '',
     interests: [],
     otherInterests: '',
     penpalPreference: 'ONE',
-    parentName: '',
-    parentEmail: '',
-    parentConsent: false
+    parentConsent: false  // Removed parent contact fields
   });
   const [schoolInfo, setSchoolInfo] = useState<SchoolInfo | null>(null);
   const [error, setError] = useState('');
@@ -119,15 +115,16 @@ function RegisterStudentForm() {
     setIsLoading(true);
     setError('');
     
-    if (!formData.firstName || !formData.lastName || !formData.grade || 
-        !formData.parentName || !formData.parentEmail || !formData.parentConsent) {
+    // Updated validation - removed parent contact requirements
+    if (!formData.firstName || !formData.lastInitial || !formData.grade || !formData.parentConsent) {
       setError('Please fill in all required fields and check the parent consent box');
       setIsLoading(false);
       return;
     }
-    
-    if (!formData.parentEmail.includes('@')) {
-      setError('Please enter a valid parent/guardian email address');
+
+    // Validate last initial is single character
+    if (formData.lastInitial.length > 2) {
+      setError('Please enter only the first 1-2 letters of your last name');
       setIsLoading(false);
       return;
     }
@@ -290,17 +287,22 @@ function RegisterStudentForm() {
           </div>
           
           <div className="form-group">
-            <label htmlFor="last-name" className="form-label">Last Name *</label>
+            <label htmlFor="last-initial" className="form-label">Last Initial *</label>
             <input 
               type="text" 
-              id="last-name" 
+              id="last-initial" 
               className="form-input" 
-              placeholder="Your last name"
-              value={formData.lastName}
-              onChange={(e) => updateFormData('lastName', e.target.value)}
+              placeholder="J"
+              value={formData.lastInitial}
+              onChange={(e) => updateFormData('lastInitial', e.target.value.toUpperCase())}
               disabled={isLoading}
+              maxLength={2}
+              style={{ textTransform: 'uppercase' }}
               required
             />
+            <small style={{ color: '#6c757d', fontSize: '0.8rem' }}>
+              Just the first letter or two of your last name (like "J" for Johnson)
+            </small>
           </div>
         </div>
 
@@ -358,7 +360,6 @@ function RegisterStudentForm() {
           />
         </div>
 
-        {/* NEW: Pen Pal Preference Section */}
         <div className="form-group">
           <label className="form-label">Pen Pal Preference</label>
           <p style={{ color: '#6c757d', fontSize: '0.9rem', marginBottom: '1rem' }}>
@@ -428,56 +429,35 @@ function RegisterStudentForm() {
           </div>
         </div>
 
+        {/* Simplified Parent Consent Section */}
         <div className="card" style={{ background: '#f8f9fa', padding: '1.5rem', margin: '1.5rem 0' }}>
-          <h3>Parent/Guardian Information</h3>
-          <p style={{ color: '#6c757d', marginBottom: '1rem' }}>
-            We need a parent or guardian's permission for you to participate in this project.
+          <h3>Parent/Guardian Permission</h3>
+          <p style={{ color: '#6c757d', marginBottom: '1.5rem' }}>
+            We need permission from a parent or guardian for you to participate in this pen pal project.
           </p>
           
-          <div className="grid grid-2">
-            <div className="form-group">
-              <label htmlFor="parent-name" className="form-label">Parent/Guardian Name *</label>
-              <input 
-                type="text" 
-                id="parent-name" 
-                className="form-input" 
-                placeholder="Parent or guardian's name"
-                value={formData.parentName}
-                onChange={(e) => updateFormData('parentName', e.target.value)}
-                disabled={isLoading}
-                required
-              />
-            </div>
-            
-            <div className="form-group">
-              <label htmlFor="parent-email" className="form-label">Parent/Guardian Email *</label>
-              <input 
-                type="email" 
-                id="parent-email" 
-                className="form-input" 
-                placeholder="parent@example.com"
-                value={formData.parentEmail}
-                onChange={(e) => updateFormData('parentEmail', e.target.value)}
-                disabled={isLoading}
-                required
-              />
-            </div>
-          </div>
-
           <div className="form-group">
-            <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+            <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '1rem' }}>
               <input 
                 type="checkbox" 
                 checked={formData.parentConsent}
                 onChange={(e) => updateFormData('parentConsent', e.target.checked)}
                 disabled={isLoading}
                 required 
+                style={{ marginTop: '0.25rem' }}
               />
               <span>
-                I have permission from my parent/guardian to participate in The Right Back at You Project, 
-                including reading the book and exchanging letters with students from other schools. *
+                I have permission from my parent or guardian to participate in The Right Back at You Project. 
+                This includes reading the book and exchanging letters with students from other schools. *
               </span>
             </label>
+          </div>
+
+          <div style={{ background: '#e9ecef', padding: '1rem', borderRadius: '6px', marginTop: '1rem' }}>
+            <p style={{ margin: '0', fontSize: '0.9rem', color: '#495057' }}>
+              <strong>Privacy Protection:</strong> We only collect your first name and last initial to protect your privacy. 
+              Your teacher will help coordinate any additional communication needed.
+            </p>
           </div>
         </div>
 
