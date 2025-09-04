@@ -147,7 +147,7 @@ export async function GET(request: NextRequest) {
           select: {
             id: true,
             firstName: true,
-            lastName: true,
+            lastInitial: true,
             grade: true,
             interests: true,
             otherInterests: true,
