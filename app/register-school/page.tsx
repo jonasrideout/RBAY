@@ -23,7 +23,6 @@ export default function RegisterSchool() {
     gradeLevels: [],
     classSize: '',
     programStartMonth: '',
-    letterFrequency: '',
     specialConsiderations: '',
     programAgreement: false,
     parentNotification: false
@@ -53,10 +52,10 @@ export default function RegisterSchool() {
     setIsLoading(true);
     setError('');
 
-    // Updated validation for single teacherName field
+    // Updated validation for removed letterFrequency field
     const requiredFields = [
       'teacherName', 'teacherEmail', 'schoolName', 
-      'schoolState', 'classSize', 'programStartMonth', 'letterFrequency'
+      'schoolState', 'classSize', 'programStartMonth'
     ];
 
     for (const field of requiredFields) {
