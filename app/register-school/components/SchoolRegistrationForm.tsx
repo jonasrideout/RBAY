@@ -59,7 +59,7 @@ export default function SchoolRegistrationForm({
                 </h3>
                 
                 {/* Single row with Name, Email, Phone */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 2fr 1.5fr', gap: '1rem' }}>
+                <div style={{ display: 'grid', : '1.5fr 2fr 1.5fr', gap: '1rem' }}>
                   <div className="form-group">
                     <label htmlFor="teacher-name" className="form-label">Name *</label>
                     <input 
@@ -111,7 +111,7 @@ export default function SchoolRegistrationForm({
                 </h3>
                 
                 {/* Single row with School Name, City, State */}
-                <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr 1fr', gap: '1rem' }}>
+                <div style={{ display: 'grid', : '3fr 2fr 1fr', gap: '1rem' }}>
                   <div className="form-group">
                     <label htmlFor="school-name" className="form-label">School Name *</label>
                     <input 
@@ -179,7 +179,7 @@ export default function SchoolRegistrationForm({
                 )}
 
                 {/* Grade Levels, Class Size, and Program Start on same row */}
-                <div style={{ display: 'grid', gridTemplateColumns: '2.4fr 1.6fr 1.5fr', gap: '1.5rem', marginTop: '1.2rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '2.3fr 1.7fr 1.5fr', gap: '1.5rem', marginTop: '1.2rem' }}>
                   <div className="form-group">
                     <label className="form-label">Grade Level(s) *</label>
                     <p style={{ color: '#6c757d', fontSize: '0.9rem', marginBottom: '0.8rem' }}>
