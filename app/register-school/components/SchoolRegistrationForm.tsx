@@ -59,7 +59,7 @@ export default function SchoolRegistrationForm({
                 </h3>
                 
                 {/* Single row with Name, Email, Phone */}
-                <div style={{ display: 'grid', : '1.5fr 2fr 1.5fr', gap: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 2fr 1.5fr', gap: '1rem' }}>
                   <div className="form-group">
                     <label htmlFor="teacher-name" className="form-label">Name *</label>
                     <input 
@@ -111,7 +111,7 @@ export default function SchoolRegistrationForm({
                 </h3>
                 
                 {/* Single row with School Name, City, State */}
-                <div style={{ display: 'grid', : '3fr 2fr 1fr', gap: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr 1fr', gap: '1rem' }}>
                   <div className="form-group">
                     <label htmlFor="school-name" className="form-label">School Name *</label>
                     <input 
@@ -275,21 +275,7 @@ export default function SchoolRegistrationForm({
                       />
                       <span>
                         I understand that this program involves students exchanging letters with students from another school. 
-                        I will ensure appropriate supervision and follow all school district policies regarding student communication. *
-                      </span>
-                    </label>
-                  </div>
-                  
-                  <div className="form-group">
-                    <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
-                      <input 
-                        type="checkbox" 
-                        checked={formData.parentNotification}
-                        onChange={(e) => onUpdateFormData('parentNotification', e.target.checked)}
-                        disabled={isLoading}
-                        required 
-                      />
-                      <span>
+                        I will ensure appropriate supervision and follow all school district policies regarding student communication. 
                         I will obtain any necessary permissions according to my school's policies. *
                       </span>
                     </label>
