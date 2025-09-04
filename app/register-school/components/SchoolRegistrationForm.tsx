@@ -63,47 +63,17 @@ export default function SchoolRegistrationForm({
                 
                 <div className="grid grid-2" style={{ gap: '1rem' }}>
                   <div className="form-group">
-                    <label htmlFor="teacher-first-name" className="form-label">First Name *</label>
+                    <label htmlFor="teacher-name" className="form-label">Name *</label>
                     <input 
                       type="text" 
-                      id="teacher-first-name" 
+                      id="teacher-name" 
                       className="form-input" 
-                      value={formData.teacherFirstName}
-                      onChange={(e) => onUpdateFormData('teacherFirstName', e.target.value)}
+                      value={formData.teacherName}
+                      onChange={(e) => onUpdateFormData('teacherName', e.target.value)}
                       disabled={isLoading}
                       required
+                      placeholder="e.g., Sarah Johnson"
                     />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label htmlFor="teacher-last-name" className="form-label">Last Name *</label>
-                    <input 
-                      type="text" 
-                      id="teacher-last-name" 
-                      className="form-input" 
-                      value={formData.teacherLastName}
-                      onChange={(e) => onUpdateFormData('teacherLastName', e.target.value)}
-                      disabled={isLoading}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-2" style={{ gap: '1rem' }}>
-                  <div className="form-group">
-                    <label htmlFor="teacher-email" className="form-label">Email Address *</label>
-                    <input 
-                      type="email" 
-                      id="teacher-email" 
-                      className="form-input" 
-                      value={formData.teacherEmail}
-                      onChange={(e) => onUpdateFormData('teacherEmail', e.target.value)}
-                      disabled={isLoading}
-                      required
-                    />
-                    <small style={{ color: '#6c757d', fontSize: '0.9rem' }}>
-                      Students will use this email to join your class
-                    </small>
                   </div>
                   
                   <div className="form-group">
@@ -117,6 +87,22 @@ export default function SchoolRegistrationForm({
                       disabled={isLoading}
                     />
                   </div>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="teacher-email" className="form-label">Email Address *</label>
+                  <input 
+                    type="email" 
+                    id="teacher-email" 
+                    className="form-input" 
+                    value={formData.teacherEmail}
+                    onChange={(e) => onUpdateFormData('teacherEmail', e.target.value)}
+                    disabled={isLoading}
+                    required
+                  />
+                  <small style={{ color: '#6c757d', fontSize: '0.9rem' }}>
+                    Students will use this email to join your class
+                  </small>
                 </div>
               </div>
 
