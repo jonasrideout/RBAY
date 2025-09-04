@@ -7,7 +7,7 @@ import { useSearchParams } from 'next/navigation';
 interface Student {
   id: string;
   firstName: string;
-  lastName: string;
+  lastInitial: string;  // Changed from lastName
   grade: string;
   interests: string[];
   otherInterests: string;
@@ -53,6 +53,10 @@ function TeacherDashboardContent() {
   const [tempOtherInterests, setTempOtherInterests] = useState('');
   const [isRequestingMatching, setIsRequestingMatching] = useState(false);
   const [expandedReadyStudents, setExpandedReadyStudents] = useState<Set<string>>(new Set());
+  
+  // Removal mode states
+  const [missingInfoRemovalMode, setMissingInfoRemovalMode] = useState(false);
+  const [readyStudentsRemovalMode, setReadyStudentsRemovalMode] = useState(false);
 
   // Get teacher email from URL parameter
   const teacherEmail = searchParams.get('teacher');
@@ -82,11 +86,11 @@ function TeacherDashboardContent() {
 
       setSchoolData(data.school);
       
-      // Transform students data to match our Student interface
+      // Transform students data to match our Student interface with privacy schema
       const transformedStudents: Student[] = data.school.students.map((student: any) => ({
         id: student.id,
         firstName: student.firstName,
-        lastName: student.lastName,
+        lastInitial: student.lastInitial,  // Changed from lastName
         grade: student.grade,
         interests: student.interests || [],
         otherInterests: student.otherInterests || '',
@@ -140,6 +144,40 @@ function TeacherDashboardContent() {
       alert('Error requesting matching: ' + err.message);
     } finally {
       setIsRequestingMatching(false);
+    }
+  };
+
+  const handleRemoveStudent = async (studentId: string) => {
+    const student = students.find(s => s.id === studentId);
+    if (!student) return;
+
+    // Privacy-friendly confirmation message
+    const confirmed = confirm(`Are you sure you want to permanently remove ${student.firstName} ${student.lastInitial}.?`);
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch('/api/students', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ studentId })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to remove student');
+      }
+
+      // Update local state - remove the student from the list
+      setStudents(prev => prev.filter(s => s.id !== studentId));
+      
+      // Stay in removal mode after deletion
+      alert(`${student.firstName} ${student.lastInitial}. has been removed successfully.`);
+      
+    } catch (err: any) {
+      alert('Error removing student: ' + err.message);
     }
   };
 
@@ -254,7 +292,7 @@ function TeacherDashboardContent() {
       return (
         <div key={student.id} className="card" style={{ background: '#fff5f5', border: '2px solid #fed7d7' }}>
           <div style={{ marginBottom: '1rem' }}>
-            <h4 style={{ color: '#c53030', marginBottom: '0.25rem' }}>{student.firstName} {student.lastName}</h4>
+            <h4 style={{ color: '#c53030', marginBottom: '0.25rem' }}>{student.firstName} {student.lastInitial}.</h4>
             <span style={{ color: '#6c757d', fontSize: '0.9rem' }}>Grade {student.grade} • Adding interests</span>
           </div>
           
@@ -304,7 +342,7 @@ function TeacherDashboardContent() {
       );
     }
 
-    // Compact default state - single row like Ready Students cards
+    // Compact default state - single row with optional trashcan
     return (
       <div 
         key={student.id} 
@@ -318,16 +356,35 @@ function TeacherDashboardContent() {
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h4 style={{ color: '#c53030', marginBottom: '0', fontSize: '1rem' }}>{student.firstName} {student.lastName}</h4>
+            <h4 style={{ color: '#c53030', marginBottom: '0', fontSize: '1rem' }}>{student.firstName} {student.lastInitial}.</h4>
           </div>
-          <button 
-            className="btn btn-primary" 
-            onClick={() => handleEditInterests(student.id)}
-            style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
-            disabled={readyForMatching}
-          >
-            {readyForMatching ? 'Locked' : 'Add Interests'}
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <button 
+              className="btn btn-primary" 
+              onClick={() => handleEditInterests(student.id)}
+              style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
+              disabled={readyForMatching}
+            >
+              {readyForMatching ? 'Locked' : 'Add Interests'}
+            </button>
+            {missingInfoRemovalMode && (
+              <button
+                onClick={() => handleRemoveStudent(student.id)}
+                style={{
+                  background: '#dc3545',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  padding: '0.5rem',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem'
+                }}
+                title={`Remove ${student.firstName} ${student.lastInitial}.`}
+              >
+                🗑️
+              </button>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -347,12 +404,34 @@ function TeacherDashboardContent() {
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
             <div>
-              <h4 style={{ color: '#0c5460', marginBottom: '0.25rem' }}>{student.firstName} {student.lastName}</h4>
+              <h4 style={{ color: '#0c5460', marginBottom: '0.25rem' }}>{student.firstName} {student.lastInitial}.</h4>
               <span style={{ color: '#6c757d', fontSize: '0.9rem' }}>Grade {student.grade} • Has interests</span>
             </div>
-            <span className="status-ready">
-              ✅ Ready
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span className="status-ready">
+                ✅ Ready
+              </span>
+              {readyStudentsRemovalMode && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRemoveStudent(student.id);
+                  }}
+                  style={{
+                    background: '#dc3545',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    padding: '0.25rem 0.5rem',
+                    cursor: 'pointer',
+                    fontSize: '0.8rem'
+                  }}
+                  title={`Remove ${student.firstName} ${student.lastInitial}.`}
+                >
+                  🗑️
+                </button>
+              )}
+            </div>
           </div>
           
           <div style={{ marginBottom: '0' }}>
@@ -372,7 +451,7 @@ function TeacherDashboardContent() {
       );
     }
 
-    // Collapsed view - just name and checkmark
+    // Collapsed view - just name and checkmark with optional trashcan
     return (
       <div 
         key={student.id} 
@@ -388,11 +467,33 @@ function TeacherDashboardContent() {
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h4 style={{ color: '#0c5460', marginBottom: '0', fontSize: '1rem' }}>{student.firstName} {student.lastName}</h4>
+            <h4 style={{ color: '#0c5460', marginBottom: '0', fontSize: '1rem' }}>{student.firstName} {student.lastInitial}.</h4>
           </div>
-          <span className="status-ready">
-            ✅ Ready
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span className="status-ready">
+              ✅ Ready
+            </span>
+            {readyStudentsRemovalMode && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRemoveStudent(student.id);
+                }}
+                style={{
+                  background: '#dc3545',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  padding: '0.25rem 0.5rem',
+                  cursor: 'pointer',
+                  fontSize: '0.8rem'
+                }}
+                title={`Remove ${student.firstName} ${student.lastInitial}.`}
+              >
+                🗑️
+              </button>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -605,9 +706,20 @@ function TeacherDashboardContent() {
           <div className="card" style={{ marginBottom: '2rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
               <h3>Students Missing Information</h3>
-              <span style={{ color: '#6c757d', fontSize: '0.9rem' }}>
-                {studentsNeedingInfo.length} students need interests
-              </span>
+              <button
+                className="btn btn-secondary"
+                onClick={() => {
+                  setMissingInfoRemovalMode(!missingInfoRemovalMode);
+                  if (readyStudentsRemovalMode) {
+                    setReadyStudentsRemovalMode(false);
+                  }
+                }}
+                style={{ fontSize: '0.9rem' }}
+                disabled={readyForMatching}
+                title={readyForMatching ? "Cannot remove students after matching requested" : undefined}
+              >
+                {missingInfoRemovalMode ? 'Cancel Removal' : 'Remove Student'}
+              </button>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               {studentsNeedingInfo.map(student => renderMissingInfoCard(student))}
@@ -618,8 +730,22 @@ function TeacherDashboardContent() {
         {/* Ready Students in 3-column layout */}
         {studentsWithInterests.length > 0 && (
           <div className="card" style={{ marginBottom: '2rem' }}>
-            <div style={{ marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
               <h3>Ready Students ({studentsWithInterests.length})</h3>
+              <button
+                className="btn btn-secondary"
+                onClick={() => {
+                  setReadyStudentsRemovalMode(!readyStudentsRemovalMode);
+                  if (missingInfoRemovalMode) {
+                    setMissingInfoRemovalMode(false);
+                  }
+                }}
+                style={{ fontSize: '0.9rem' }}
+                disabled={readyForMatching}
+                title={readyForMatching ? "Cannot remove students after matching requested" : undefined}
+              >
+                {readyStudentsRemovalMode ? 'Cancel Removal' : 'Remove Student'}
+              </button>
             </div>
             <div style={{ 
               display: 'grid', 
