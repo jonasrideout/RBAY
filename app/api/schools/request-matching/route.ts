@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
           select: {
             id: true,
             firstName: true,
-            lastName: true,
+            lastInitial: true,
             grade: true,
             interests: true,
             parentConsent: true,
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: `Cannot request matching. ${studentsWithoutConsent.length} students do not have parent consent.`,
-          studentsNeedingConsent: studentsWithoutConsent.map(s => `${s.firstName} ${s.lastName}`)
+          studentsNeedingConsent: studentsWithoutConsent.map(s => `${s.firstName} ${s.lastInitial}.`)
         },
         { status: 400 }
       );
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
           select: {
             id: true,
             firstName: true,
-            lastName: true,
+            lastInitial: true,
             grade: true,
             interests: true,
             profileCompleted: true
@@ -126,7 +126,6 @@ export async function POST(request: NextRequest) {
         studentCount: updatedSchool.students.length,
         gradeLevel: updatedSchool.gradeLevel,
         startMonth: updatedSchool.startMonth,
-        letterFrequency: updatedSchool.letterFrequency,
         studentCounts: {
           expected: updatedSchool.expectedClassSize,
           registered: updatedSchool.students.length,
