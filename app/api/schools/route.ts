@@ -8,8 +8,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     
     const {
-      teacherFirstName,
-      teacherLastName,
+      teacherName,
       teacherEmail,
       teacherPhone,
       schoolName,
@@ -25,8 +24,8 @@ export async function POST(request: NextRequest) {
       specialConsiderations
     } = body;
 
-    // Updated validation - only these fields are required now
-    if (!teacherFirstName || !teacherLastName || !teacherEmail || !schoolName || 
+    // Updated validation - using single teacherName field
+    if (!teacherName || !teacherEmail || !schoolName || 
         !schoolState || !gradeLevel || !expectedClassSize || !startMonth || 
         !letterFrequency) {
       return NextResponse.json(
@@ -72,10 +71,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Combine teacher first and last name into single field
-    const teacherName = `${teacherFirstName} ${teacherLastName}`.trim();
-
-    // Create the school - address fields are now optional
+    // Create the school - using teacherName directly
     const school = await prisma.school.create({
       data: {
         teacherName,
