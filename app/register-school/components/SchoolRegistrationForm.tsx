@@ -185,29 +185,29 @@ export default function SchoolRegistrationForm({
                 </div>
 
                 {/* Grade Levels and Class Size on same row */}
-                <div style={{ display: 'grid', gridTemplateColumns: '4fr 1fr', gap: '2rem', marginTop: '1.5rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '5fr 1fr', gap: '2rem', marginTop: '1.5rem' }}>
                   <div className="form-group">
                     <label className="form-label">Grade Level(s) *</label>
                     <p style={{ color: '#6c757d', fontSize: '0.9rem', marginBottom: '1rem' }}>
                       Select the grade levels in this group:
                     </p>
-                    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'nowrap' }}>
                       {['3', '4', '5', '6', '7', '8'].map(grade => (
-                        <label key={grade} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: '100px' }}>
+                        <label key={grade} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', whiteSpace: 'nowrap' }}>
                           <input 
                             type="checkbox" 
                             checked={formData.gradeLevels.includes(grade)}
                             onChange={(e) => onGradeLevelChange(grade, e.target.checked)}
                             disabled={isLoading}
                           />
-                          {grade}{grade === '3' ? 'rd' : 'th'} Grade
+                          {grade}{grade === '3' ? 'rd' : 'th'}
                         </label>
                       ))}
                     </div>
                   </div>
                   
                   <div className="form-group">
-                    <label htmlFor="class-size" className="form-label">Estimated Number of Students *</label>
+                    <label htmlFor="class-size" className="form-label">Students *</label>
                     <input 
                       type="number" 
                       id="class-size" 
