@@ -138,9 +138,6 @@ export default function SchoolRegistrationForm({
                       onChange={(e) => onUpdateFormData('schoolCity', e.target.value)}
                       disabled={isLoading}
                     />
-                    <small style={{ color: '#6c757d', fontSize: '0.9rem' }}>
-                      Optional - helps with matching context
-                    </small>
                   </div>
 
                   <div className="form-group">
