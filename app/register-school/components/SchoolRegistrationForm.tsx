@@ -49,20 +49,17 @@ export default function SchoolRegistrationForm({
           
           <div className="card">
             <h1 className="text-center mb-3">Register Your School</h1>
-            <p className="text-center mb-4" style={{ color: '#6c757d' }}>
-              Set up your school's information for The Right Back at You Project
-            </p>
 
             <form onSubmit={onSubmit}>
               
               {/* Instructor Information */}
-              <div className="form-section" style={{ marginBottom: '2rem' }}>
-                <h3 style={{ color: '#2c5aa0', borderBottom: '2px solid #e9ecef', paddingBottom: '0.5rem', marginBottom: '1.5rem' }}>
+              <div className="form-section" style={{ marginBottom: '1.5rem' }}>
+                <h3 style={{ color: '#2c5aa0', borderBottom: '2px solid #e9ecef', paddingBottom: '0.5rem', marginBottom: '1.2rem' }}>
                   Instructor Information
                 </h3>
                 
-                {/* Single row with Name, Phone, Email */}
-                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 3fr', gap: '1rem' }}>
+                {/* Single row with Name, Email, Phone */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 2fr 1.5fr', gap: '1rem' }}>
                   <div className="form-group">
                     <label htmlFor="teacher-name" className="form-label">Name *</label>
                     <input 
@@ -74,18 +71,6 @@ export default function SchoolRegistrationForm({
                       disabled={isLoading}
                       required
                       placeholder="e.g., Sarah Johnson"
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label htmlFor="teacher-phone" className="form-label">Phone Number</label>
-                    <input 
-                      type="tel" 
-                      id="teacher-phone" 
-                      className="form-input" 
-                      value={formData.teacherPhone}
-                      onChange={(e) => onUpdateFormData('teacherPhone', e.target.value)}
-                      disabled={isLoading}
                     />
                   </div>
 
@@ -104,12 +89,24 @@ export default function SchoolRegistrationForm({
                       Students will use this email to join your class
                     </small>
                   </div>
+                  
+                  <div className="form-group">
+                    <label htmlFor="teacher-phone" className="form-label">Phone Number</label>
+                    <input 
+                      type="tel" 
+                      id="teacher-phone" 
+                      className="form-input" 
+                      value={formData.teacherPhone}
+                      onChange={(e) => onUpdateFormData('teacherPhone', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
                 </div>
               </div>
 
               {/* School Information */}
-              <div className="form-section" style={{ marginBottom: '2rem' }}>
-                <h3 style={{ color: '#2c5aa0', borderBottom: '2px solid #e9ecef', paddingBottom: '0.5rem', marginBottom: '1.5rem' }}>
+              <div className="form-section" style={{ marginBottom: '1.5rem' }}>
+                <h3 style={{ color: '#2c5aa0', borderBottom: '2px solid #e9ecef', paddingBottom: '0.5rem', marginBottom: '1.2rem' }}>
                   School Information
                 </h3>
                 
@@ -138,9 +135,6 @@ export default function SchoolRegistrationForm({
                       onChange={(e) => onUpdateFormData('schoolCity', e.target.value)}
                       disabled={isLoading}
                     />
-                    <small style={{ color: '#6c757d', fontSize: '0.9rem' }}>
-                      Optional - helps with matching context
-                    </small>
                   </div>
 
                   <div className="form-group">
@@ -158,40 +152,40 @@ export default function SchoolRegistrationForm({
                         <option key={state.value} value={state.value}>{state.value}</option>
                       ))}
                     </select>
-
-                    {/* Region Display */}
-                    {formData.schoolState && (
-                      <div style={{ 
-                        marginTop: '0.5rem', 
-                        padding: '0.75rem', 
-                        background: '#e8f4f8', 
-                        border: '1px solid #bee5eb', 
-                        borderRadius: '4px' 
-                      }}>
-                        <strong style={{ color: '#0c5460' }}>
-                          📍 Your Region: {getRegionForState(formData.schoolState)}
-                        </strong>
-                        <p style={{ 
-                          fontSize: '0.9rem', 
-                          color: '#6c757d', 
-                          marginTop: '0.25rem', 
-                          marginBottom: '0' 
-                        }}>
-                          You'll be matched with schools from other regions to promote cross-regional connections.
-                        </p>
-                      </div>
-                    )}
                   </div>
                 </div>
 
+                {/* Region Display - Full width across all three fields */}
+                {formData.schoolState && (
+                  <div style={{ 
+                    marginTop: '1rem', 
+                    padding: '0.75rem', 
+                    background: '#e8f4f8', 
+                    border: '1px solid #bee5eb', 
+                    borderRadius: '4px' 
+                  }}>
+                    <strong style={{ color: '#0c5460' }}>
+                      📍 Your Region: {getRegionForState(formData.schoolState)}
+                    </strong>
+                    <p style={{ 
+                      fontSize: '0.9rem', 
+                      color: '#6c757d', 
+                      marginTop: '0.25rem', 
+                      marginBottom: '0' 
+                    }}>
+                      You'll be matched with schools from other regions to promote cross-regional connections.
+                    </p>
+                  </div>
+                )}
+
                 {/* Grade Levels and Class Size on same row */}
-                <div style={{ display: 'grid', gridTemplateColumns: '5fr 1fr', gap: '2rem', marginTop: '1.5rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '4fr 1fr', gap: '1.5rem', marginTop: '1.2rem' }}>
                   <div className="form-group">
                     <label className="form-label">Grade Level(s) *</label>
-                    <p style={{ color: '#6c757d', fontSize: '0.9rem', marginBottom: '1rem' }}>
+                    <p style={{ color: '#6c757d', fontSize: '0.9rem', marginBottom: '0.8rem' }}>
                       Select the grade levels in this group:
                     </p>
-                    <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'nowrap' }}>
+                    <div style={{ display: 'flex', gap: '1.2rem', flexWrap: 'nowrap' }}>
                       {['3', '4', '5', '6', '7', '8'].map(grade => (
                         <label key={grade} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', whiteSpace: 'nowrap' }}>
                           <input 
@@ -207,7 +201,7 @@ export default function SchoolRegistrationForm({
                   </div>
                   
                   <div className="form-group">
-                    <label htmlFor="class-size" className="form-label">Students *</label>
+                    <label htmlFor="class-size" className="form-label">Estimated Number of Students *</label>
                     <input 
                       type="number" 
                       id="class-size" 
@@ -224,8 +218,8 @@ export default function SchoolRegistrationForm({
               </div>
 
               {/* Program Details */}
-              <div className="form-section" style={{ marginBottom: '2rem' }}>
-                <h3 style={{ color: '#2c5aa0', borderBottom: '2px solid #e9ecef', paddingBottom: '0.5rem', marginBottom: '1.5rem' }}>
+              <div className="form-section" style={{ marginBottom: '1.5rem' }}>
+                <h3 style={{ color: '#2c5aa0', borderBottom: '2px solid #e9ecef', paddingBottom: '0.5rem', marginBottom: '1.2rem' }}>
                   Program Details
                 </h3>
                 
@@ -254,8 +248,8 @@ export default function SchoolRegistrationForm({
               </div>
 
               {/* Additional Information */}
-              <div className="form-section" style={{ marginBottom: '2rem' }}>
-                <h3 style={{ color: '#2c5aa0', borderBottom: '2px solid #e9ecef', paddingBottom: '0.5rem', marginBottom: '1.5rem' }}>
+              <div className="form-section" style={{ marginBottom: '1.5rem' }}>
+                <h3 style={{ color: '#2c5aa0', borderBottom: '2px solid #e9ecef', paddingBottom: '0.5rem', marginBottom: '1.2rem' }}>
                   Additional Information
                 </h3>
                 
@@ -275,7 +269,7 @@ export default function SchoolRegistrationForm({
               </div>
 
               {/* Agreement */}
-              <div className="form-section" style={{ marginBottom: '2rem' }}>
+              <div className="form-section" style={{ marginBottom: '1.5rem' }}>
                 <div className="card" style={{ background: '#f8f9fa', padding: '1.5rem' }}>
                   <h4>Program Agreement</h4>
                   <div className="form-group">
