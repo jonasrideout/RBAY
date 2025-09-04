@@ -59,14 +59,12 @@ model School {
 model Student {
   id                String           @id @default(cuid())
   firstName         String
-  lastName          String
+  lastInitial       String           // Changed from lastName for privacy
   grade             String
   interests         String[]
   otherInterests    String?
-  parentName        String
-  parentEmail       String
-  parentPhone       String?
-  parentConsent     Boolean          @default(false)
+  // Removed parentName, parentEmail, parentPhone for privacy
+  parentConsent     Boolean          @default(false)  // Keep for legal compliance
   penpalPreference  PenpalPreference @default(ONE)
   isActive          Boolean          @default(true)
   profileCompleted  Boolean          @default(false)
