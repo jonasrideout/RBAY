@@ -179,7 +179,7 @@ export default function SchoolRegistrationForm({
                 )}
 
                 {/* Grade Levels, Class Size, and Program Start on same row */}
-                <div style={{ display: 'grid', gridTemplateColumns: '2.5fr 1.5fr 1.5fr', gap: '1.5rem', marginTop: '1.2rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '2.4fr 1.6fr 1.5fr', gap: '1.5rem', marginTop: '1.2rem' }}>
                   <div className="form-group">
                     <label className="form-label">Grade Level(s) *</label>
                     <p style={{ color: '#6c757d', fontSize: '0.9rem', marginBottom: '0.8rem' }}>
