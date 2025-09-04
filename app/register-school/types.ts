@@ -1,8 +1,6 @@
 // /app/register-school/types.ts
-
 export interface SchoolFormData {
-  teacherFirstName: string;
-  teacherLastName: string;
+  teacherName: string;
   teacherEmail: string;
   teacherPhone: string;
   schoolName: string;
