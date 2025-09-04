@@ -62,7 +62,7 @@ export default function SchoolRegistrationForm({
                 </h3>
                 
                 {/* Single row with Name, Phone, Email */}
-                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 3fr', gap: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 2.5fr 2fr', gap: '1rem' }}>
                   <div className="form-group">
                     <label htmlFor="teacher-name" className="form-label">Name *</label>
                     <input 
