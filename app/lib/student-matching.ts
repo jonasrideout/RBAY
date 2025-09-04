@@ -3,7 +3,7 @@
 interface Student {
   id: string;
   firstName: string;
-  lastName: string;
+  lastInitial: string;  // Changed from lastName
   grade: string;
   interests: string[];
   schoolId: string;
@@ -268,17 +268,17 @@ export function generateMatchingSummary(
     .slice(0, 5)
     .map(([interest]) => interest);
   
-  // FIXED: Use getEffectivePreference for consistent preference handling
+  // Updated to use lastInitial for privacy-friendly display format
   const distributionSummary = {
     school1: school1Students.map(student => ({
       studentId: student.id,
-      name: `${student.firstName} ${student.lastName}`,
+      name: `${student.firstName} ${student.lastInitial}.`,  // "Sarah J." format
       penpalCount: school1PenpalCounts.get(student.id) || 0,
       preference: getEffectivePreference(student)
     })),
     school2: school2Students.map(student => ({
       studentId: student.id,
-      name: `${student.firstName} ${student.lastName}`,
+      name: `${student.firstName} ${student.lastInitial}.`,  // "Sarah J." format  
       penpalCount: school2PenpalCounts.get(student.id) || 0,
       preference: getEffectivePreference(student)
     }))
