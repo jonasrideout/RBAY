@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
       student.penpalConnections.forEach(connection => {
         if (connection.penpal) {
           allPenpals.push({
-            name: `${connection.penpal.firstName} ${connection.penpal.lastName}`,
+            name: `${connection.penpal.firstName} ${connection.penpal.lastInitial}.`,  // Changed to "Sarah J." format
             grade: connection.penpal.grade,
             school: connection.penpal.school?.schoolName,
             interests: connection.penpal.interests,
@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
       student.penpalOf.forEach(connection => {
         if (connection.student) {
           allPenpals.push({
-            name: `${connection.student.firstName} ${connection.student.lastName}`,
+            name: `${connection.student.firstName} ${connection.student.lastInitial}.`,  // Changed to "Sarah J." format
             grade: connection.student.grade,
             school: connection.student.school?.schoolName,
             interests: connection.student.interests,
@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
 
       return {
         student: {
-          name: `${student.firstName} ${student.lastName}`,
+          name: `${student.firstName} ${student.lastInitial}.`,  // Changed to "Sarah J." format
           grade: student.grade,
           interests: student.interests,
           otherInterests: student.otherInterests,
