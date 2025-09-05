@@ -221,12 +221,12 @@ function RegisterStudentForm() {
       
       <form onSubmit={handleSchoolVerification}>
         <div className="form-group">
-          <label htmlFor="school-name" className="form-label">School Name</label>
+          <label htmlFor="school-name" className="form-label">School Name, Teacher Name, or Teacher Email</label>
           <input 
             type="text" 
             id="school-name" 
             className="form-input" 
-            placeholder="Enter your school name"
+            placeholder="Enter your school name, teacher's name, or teacher's email"
             value={schoolNameInput}
             onChange={(e) => {
               setSchoolNameInput(e.target.value);
@@ -235,6 +235,9 @@ function RegisterStudentForm() {
             disabled={isLoading}
             required
           />
+          <p style={{ fontSize: '0.85rem', color: '#6c757d', marginTop: '0.5rem', marginBottom: '0' }}>
+            Examples: "Lincoln Elementary", "Ms. Johnson", or "teacher@school.edu"
+          </p>
         </div>
 
         {error && (
