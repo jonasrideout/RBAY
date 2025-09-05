@@ -22,13 +22,13 @@ export default function SchoolCard({
   const teacherName = school.teacherName;
   const isReady = school.status === 'READY';
 
-  // Get the current domain dynamically
+  // Get the current domain dynamically - UPDATED FOR TOKEN-BASED ACCESS
   const getDashboardUrl = () => {
     if (typeof window !== 'undefined') {
       const currentOrigin = window.location.origin;
-      return `${currentOrigin}/dashboard?teacher=${encodeURIComponent(school.teacherEmail)}`;
+      return `${currentOrigin}/dashboard?token=${encodeURIComponent(school.dashboardToken)}`;
     }
-    return `/dashboard?teacher=${encodeURIComponent(school.teacherEmail)}`;
+    return `/dashboard?token=${encodeURIComponent(school.dashboardToken)}`;
   };
 
   const [copyButtonText, setCopyButtonText] = useState('COPY URL');
