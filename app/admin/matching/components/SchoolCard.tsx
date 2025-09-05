@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import { School } from '../types';
+import { generateAdminDashboardUrl } from '@/lib/adminTokens';
 
 interface SchoolCardProps {
   school: School;
