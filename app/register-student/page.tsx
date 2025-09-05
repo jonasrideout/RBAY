@@ -5,23 +5,24 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
 interface StudentFormData {
-  teacherEmail: string;
+  schoolToken: string; // Changed from teacherEmail to schoolToken
   firstName: string;
-  lastInitial: string;  // Changed from lastName
+  lastInitial: string;
   grade: string;
   interests: string[];
   otherInterests: string;
   penpalPreference: 'ONE' | 'MULTIPLE';
-  parentConsent: boolean;  // Removed parentName, parentEmail, parentPhone
+  parentConsent: boolean;
 }
 
 interface SchoolInfo {
   name: string;
   teacher: string;
   found: boolean;
+  schoolId: string;
 }
 
-type Step = 'school' | 'confirm' | 'info' | 'success';
+type Step = 'verify' | 'info' | 'success';
 
 const INTEREST_OPTIONS = [
   { value: 'sports', label: '🏀 Sports & Athletics' },
@@ -40,62 +41,55 @@ const INTEREST_OPTIONS = [
 
 function RegisterStudentForm() {
   const searchParams = useSearchParams();
-  const [currentStep, setCurrentStep] = useState<Step>('school');
+  const [currentStep, setCurrentStep] = useState<Step>('verify');
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<StudentFormData>({
-    teacherEmail: '',
+    schoolToken: '',
     firstName: '',
-    lastInitial: '',  // Changed from lastName
+    lastInitial: '',
     grade: '',
     interests: [],
     otherInterests: '',
     penpalPreference: 'ONE',
-    parentConsent: false  // Removed parent contact fields
+    parentConsent: false
   });
   const [schoolInfo, setSchoolInfo] = useState<SchoolInfo | null>(null);
   const [error, setError] = useState('');
   const [registeredStudent, setRegisteredStudent] = useState<any>(null);
 
-  // Check if teacher email was provided in URL
+  // Check if token was provided in URL and auto-verify
   useEffect(() => {
-    const teacherEmail = searchParams.get('teacher');
-    if (teacherEmail) {
-      setFormData(prev => ({ ...prev, teacherEmail }));
-      // Auto-verify the school if email is in URL
-      handleFindSchool(null, teacherEmail);
+    const token = searchParams.get('token');
+    if (token) {
+      setFormData(prev => ({ ...prev, schoolToken: token }));
+      handleVerifySchool(token);
+    } else {
+      setError('Invalid registration link. Please use the link provided by your teacher.');
+      setIsLoading(false);
     }
   }, [searchParams]);
 
-  const handleFindSchool = async (e: React.FormEvent | null, email?: string) => {
-    if (e) e.preventDefault();
-    
-    const emailToUse = email || formData.teacherEmail;
+  const handleVerifySchool = async (token: string) => {
     setIsLoading(true);
     setError('');
     
-    if (!emailToUse.includes('@')) {
-      setError('Please enter a valid email address');
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      const response = await fetch(`/api/schools?teacherEmail=${encodeURIComponent(emailToUse)}`);
+      const response = await fetch(`/api/schools?token=${encodeURIComponent(token)}`);
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'School not found');
+        throw new Error(data.error || 'Invalid registration link');
       }
 
       setSchoolInfo({
         name: data.school.schoolName,
         teacher: data.school.teacherName,
-        found: true
+        found: true,
+        schoolId: data.school.id
       });
-      setFormData(prev => ({ ...prev, teacherEmail: emailToUse }));
-      setCurrentStep('confirm');
+      setCurrentStep('info');
     } catch (err: any) {
-      setError(err.message || 'Unable to find a school with that email address. Please check the email and try again.');
+      setError(err.message || 'Invalid registration link. Please check with your teacher for the correct link.');
     } finally {
       setIsLoading(false);
     }
@@ -115,14 +109,12 @@ function RegisterStudentForm() {
     setIsLoading(true);
     setError('');
     
-    // Updated validation - removed parent contact requirements
     if (!formData.firstName || !formData.lastInitial || !formData.grade || !formData.parentConsent) {
       setError('Please fill in all required fields and check the parent consent box');
       setIsLoading(false);
       return;
     }
 
-    // Validate last initial is single character
     if (formData.lastInitial.length > 2) {
       setError('Please enter only the first 1-2 letters of your last name');
       setIsLoading(false);
@@ -130,12 +122,24 @@ function RegisterStudentForm() {
     }
 
     try {
+      // Prepare data for API - convert token to teacherEmail for backend compatibility
+      const submissionData = {
+        schoolId: schoolInfo?.schoolId, // Use schoolId instead of email lookup
+        firstName: formData.firstName,
+        lastInitial: formData.lastInitial,
+        grade: formData.grade,
+        interests: formData.interests,
+        otherInterests: formData.otherInterests,
+        penpalPreference: formData.penpalPreference,
+        parentConsent: formData.parentConsent
+      };
+
       const response = await fetch('/api/students', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(submissionData)
       });
 
       const data = await response.json();
@@ -144,7 +148,10 @@ function RegisterStudentForm() {
         throw new Error(data.error || 'Failed to register student');
       }
 
-      setRegisteredStudent(data.student);
+      setRegisteredStudent({
+        ...data.student,
+        schoolName: schoolInfo?.name
+      });
       setCurrentStep('success');
     } catch (err: any) {
       setError(err.message || 'There was an error submitting your information. Please try again.');
@@ -158,98 +165,27 @@ function RegisterStudentForm() {
     if (error) setError('');
   };
 
-  const renderSchoolStep = () => (
+  const renderVerifyStep = () => (
     <div className="card">
       <h1 className="text-center mb-3">Join The Right Back at You Project</h1>
-      <p className="text-center mb-4" style={{ color: '#6c757d' }}>
-        First, let's make sure your teacher has registered your school for this project.
-      </p>
-
-      <form onSubmit={(e) => handleFindSchool(e)}>
-        <div className="form-group">
-          <label htmlFor="teacher-email" className="form-label">
-            What is your teacher's email address?
-          </label>
-          <input 
-            type="email" 
-            id="teacher-email" 
-            className="form-input" 
-            placeholder="ms.johnson@school.edu"
-            value={formData.teacherEmail}
-            onChange={(e) => updateFormData('teacherEmail', e.target.value)}
-            disabled={isLoading}
-            required
-          />
-          <small style={{ color: '#6c757d', fontSize: '0.9rem' }}>
-            This helps us find your school and connect you to your class
-          </small>
+      
+      {isLoading ? (
+        <div className="text-center" style={{ padding: '2rem' }}>
+          <div className="loading" style={{ margin: '0 auto 1rem' }}></div>
+          <p>Verifying your registration link...</p>
         </div>
-
-        {error && (
+      ) : error ? (
+        <div>
           <div className="alert alert-error">
             <strong>Error:</strong> {error}
           </div>
-        )}
-
-        <div className="form-group text-center">
-          <button type="submit" className="btn btn-primary" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <span className="loading"></span>
-                <span style={{ marginLeft: '0.5rem' }}>Finding School...</span>
-              </>
-            ) : (
-              'Find My School'
-            )}
-          </button>
+          <div className="text-center" style={{ marginTop: '2rem' }}>
+            <p style={{ color: '#6c757d' }}>
+              Please ask your teacher for the correct registration link, or contact support for help.
+            </p>
+          </div>
         </div>
-      </form>
-    </div>
-  );
-
-  const renderConfirmStep = () => (
-    <div className="card">
-      <h1 className="text-center mb-3">Is This Your School?</h1>
-      
-      <div className="alert alert-success text-center" style={{ marginBottom: '2rem' }}>
-        <h3 style={{ color: '#155724', marginBottom: '0.5rem' }}>✅ We found your school:</h3>
-        <p style={{ color: '#155724', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>
-          {schoolInfo?.name}
-        </p>
-        <p style={{ color: '#155724', fontSize: '1rem', marginBottom: '0' }}>
-          Teacher: {schoolInfo?.teacher}
-        </p>
-      </div>
-
-      <div className="text-center">
-        <p style={{ fontSize: '1.1rem', marginBottom: '2rem', color: '#6c757d' }}>
-          Please confirm this is the correct school before continuing.
-        </p>
-        
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <button 
-            type="button" 
-            className="btn btn-primary" 
-            onClick={() => setCurrentStep('info')}
-            style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}
-          >
-            ✅ Yes, that's my school
-          </button>
-          
-          <button 
-            type="button" 
-            className="btn btn-secondary" 
-            onClick={() => {
-              setCurrentStep('school');
-              setSchoolInfo(null);
-              setError('');
-            }}
-            style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}
-          >
-            ❌ No, try different email
-          </button>
-        </div>
-      </div>
+      ) : null}
     </div>
   );
 
@@ -425,7 +361,6 @@ function RegisterStudentForm() {
           </div>
         </div>
 
-        {/* Simplified Parent Consent Section */}
         <div className="card" style={{ background: '#f8f9fa', padding: '1.5rem', margin: '1.5rem 0' }}>
           <h3>Parent/Guardian Permission</h3>
           
@@ -461,15 +396,6 @@ function RegisterStudentForm() {
         )}
 
         <div className="form-group text-center">
-          <button 
-            type="button" 
-            className="btn btn-secondary" 
-            onClick={() => setCurrentStep('confirm')}
-            disabled={isLoading}
-            style={{ marginRight: '1rem' }}
-          >
-            ← Go Back
-          </button>
           <button 
             type="submit" 
             className="btn btn-primary" 
@@ -512,7 +438,6 @@ function RegisterStudentForm() {
 
   return (
     <div className="page">
-      {/* Header */}
       <header className="header">
         <div className="container">
           <div className="header-content">
@@ -530,12 +455,10 @@ function RegisterStudentForm() {
 
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-          {currentStep === 'school' && renderSchoolStep()}
-          {currentStep === 'confirm' && renderConfirmStep()}
+          {currentStep === 'verify' && renderVerifyStep()}
           {currentStep === 'info' && renderInfoStep()}
           {currentStep === 'success' && renderSuccessStep()}
 
-          {/* Help Section */}
           <div className="card mt-3" style={{ background: '#f8f9fa' }}>
             <h3>Questions?</h3>
             <p style={{ marginBottom: '1rem' }}>
@@ -548,7 +471,6 @@ function RegisterStudentForm() {
         </div>
       </main>
 
-      {/* Footer */}
       <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
         <div className="container text-center">
           <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
@@ -558,7 +480,6 @@ function RegisterStudentForm() {
   );
 }
 
-// Loading component for Suspense fallback
 function LoadingPage() {
   return (
     <div className="page">
