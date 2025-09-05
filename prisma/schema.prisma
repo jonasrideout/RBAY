@@ -26,6 +26,7 @@ model School {
   teacherName          String
   teacherEmail         String        @unique
   teacherPhone         String?
+  dashboardToken       String        @unique @default(cuid())
   schoolAddress        String?
   schoolCity           String?
   schoolState          String
@@ -53,6 +54,7 @@ model School {
   pairedWithSchools    SchoolPairing[] @relation("School2Pairings")
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
+
   @@map("schools")
 }
 
@@ -74,6 +76,7 @@ model Student {
   penpalOf          StudentPenpal[]  @relation("PenpalOf")
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
+
   @@map("students")
 }
 
@@ -84,6 +87,7 @@ model SchoolPairing {
   school1   School   @relation("School1Pairings", fields: [school1Id], references: [id], onDelete: Cascade)
   school2   School   @relation("School2Pairings", fields: [school2Id], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+
   @@unique([school1Id, school2Id])
   @@map("school_pairings")
 }
@@ -95,6 +99,7 @@ model StudentPenpal {
   student   Student  @relation("StudentConnections", fields: [studentId], references: [id], onDelete: Cascade)
   penpal    Student  @relation("PenpalOf", fields: [penpalId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+
   @@unique([studentId, penpalId])
   @@map("student_penpals")
 }
