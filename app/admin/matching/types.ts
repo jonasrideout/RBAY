@@ -1,10 +1,10 @@
 // /app/admin/matching/types.ts
-
 export interface School {
   id: string;
   schoolName: string;
   teacherName: string; // UPDATED: Single field instead of separate first/last
   teacherEmail: string;
+  dashboardToken: string; // ADDED: For token-based dashboard access
   schoolAddress?: string;
   schoolCity?: string;
   schoolState: string;
