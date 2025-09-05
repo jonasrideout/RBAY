@@ -394,7 +394,7 @@ function TeacherDashboardContent() {
               Share the student registration link above to get started, or add students manually.
             </p>
             <Link 
-              href={`/register-student?token=${token}`}
+              href={`/register-student?token=${schoolData?.dashboardToken}`}
               className="btn btn-primary"
             >
               Add First Student
@@ -405,7 +405,7 @@ function TeacherDashboardContent() {
         {/* Action Buttons */}
         <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
           <Link 
-            href={`/register-student?token=${token}`}
+            href={`/register-student?token=${schoolData?.dashboardToken}`}
             className="btn btn-secondary"
             style={readyForMatching ? { 
               opacity: 0.6, 
@@ -425,8 +425,8 @@ function TeacherDashboardContent() {
             }}
             disabled={!hasActiveStudents || readyForMatching}
             onClick={() => {
-              if (hasActiveStudents && !readyForMatching && token) {
-                window.open(`/dashboard/print?token=${token}`, '_blank');
+              if (hasActiveStudents && !readyForMatching && schoolData?.dashboardToken) {
+                window.open(`/dashboard/print?token=${schoolData.dashboardToken}`, '_blank');
               }
             }}
             title={readyForMatching ? "Matching has been requested" : (!hasActiveStudents ? "Need students first" : "Download student information")}
