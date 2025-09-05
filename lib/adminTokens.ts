@@ -26,15 +26,25 @@ export function generateAdminToken(schoolId: string, schoolToken: string): strin
     .update(payloadString)
     .digest('hex');
 
-  // Combine payload and signature, then base64 encode
-  const token = Buffer.from(`${payloadString}.${signature}`).toString('base64url');
+  // Combine payload and signature, then encode with URL-safe base64
+  const token = Buffer.from(`${payloadString}.${signature}`)
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+  
   return token;
 }
 
 export function verifyAdminToken(adminToken: string): AdminTokenPayload | null {
   try {
-    // Decode the token
-    const decoded = Buffer.from(adminToken, 'base64url').toString('utf-8');
+    // Decode the URL-safe base64 token
+    const paddedToken = adminToken + '='.repeat((4 - adminToken.length % 4) % 4);
+    const decoded = Buffer.from(
+      paddedToken.replace(/-/g, '+').replace(/_/g, '/'), 
+      'base64'
+    ).toString('utf-8');
+    
     const [payloadString, signature] = decoded.split('.');
     
     if (!payloadString || !signature) {
