@@ -69,18 +69,46 @@ function RegisterStudentForm() {
     }
   }, [searchParams]);
 
-  // Helper function for loose school name matching
-  const doesSchoolNameMatch = (inputName: string, actualName: string): boolean => {
-    const input = inputName.toLowerCase().trim();
-    const actual = actualName.toLowerCase();
+  // Helper function for flexible matching (school name, teacher name, or teacher email)
+  const doesInputMatch = (input: string, schoolName: string, teacherName: string, teacherEmail: string): boolean => {
+    const inputLower = input.toLowerCase().trim();
     
-    // Split input into words and check if any word matches part of the school name
-    const inputWords = input.split(/\s+/);
+    if (inputLower.length === 0) return false;
     
-    return inputWords.some(word => {
-      if (word.length < 2) return false; // Ignore very short words
-      return actual.includes(word);
+    // Match against school name (existing logic)
+    const schoolLower = schoolName.toLowerCase();
+    const schoolWords = inputLower.split(/\s+/);
+    const schoolMatch = schoolWords.some(word => {
+      if (word.length < 2) return false;
+      return schoolLower.includes(word);
     });
+    
+    // Match against teacher name - more flexible approach
+    const teacherLower = teacherName.toLowerCase();
+    
+    // Check if input is contained in teacher name or vice versa
+    const teacherDirectMatch = teacherLower.includes(inputLower) || inputLower.includes(teacherLower);
+    
+    // Also check word-by-word matching for multi-word names
+    const teacherWords = inputLower.split(/\s+/);
+    const teacherWordMatch = teacherWords.every(word => {
+      if (word.length < 2) return true; // Skip very short words
+      return teacherLower.includes(word);
+    });
+    
+    const teacherMatch = teacherDirectMatch || teacherWordMatch;
+    
+    // Match against teacher email (exact or partial)
+    const emailLower = teacherEmail.toLowerCase();
+    const emailMatch = emailLower.includes(inputLower) || inputLower.includes(emailLower.split('@')[0]);
+    
+    // Debug logging to see what's happening
+    console.log('Input:', inputLower);
+    console.log('School name:', schoolName, '- Match:', schoolMatch);
+    console.log('Teacher name:', teacherName, '- Match:', teacherMatch);
+    console.log('Teacher email:', teacherEmail, '- Match:', emailMatch);
+    
+    return schoolMatch || teacherMatch || emailMatch;
   };
 
   const handleSchoolVerification = async (e: React.FormEvent) => {
@@ -89,7 +117,7 @@ function RegisterStudentForm() {
     setError('');
     
     if (!schoolNameInput.trim()) {
-      setError('Please enter your school name');
+      setError('Please enter your school name, teacher name, or teacher email');
       setIsLoading(false);
       return;
     }
@@ -110,18 +138,20 @@ function RegisterStudentForm() {
       }
 
       const actualSchoolName = data.school.schoolName;
+      const teacherName = data.school.teacherName;
+      const teacherEmail = data.school.teacherEmail;
       
-      // Check if the entered name matches the actual school name
-      if (doesSchoolNameMatch(schoolNameInput, actualSchoolName)) {
+      // Check if the entered input matches school name, teacher name, or teacher email
+      if (doesInputMatch(schoolNameInput, actualSchoolName, teacherName, teacherEmail)) {
         setFoundSchoolInfo({
           name: actualSchoolName,
-          teacher: data.school.teacherName,
+          teacher: teacherName,
           found: true,
           schoolId: data.school.id
         });
         setCurrentStep('schoolConfirm');
       } else {
-        setError('No school found with that name');
+        setError('No school found with that name, teacher name, or email');
       }
     } catch (err: any) {
       setError(err.message || 'Invalid registration link. Please check with your teacher for the correct link.');
@@ -216,7 +246,7 @@ function RegisterStudentForm() {
     <div className="card">
       <h1 className="text-center mb-3">Join The Right Back at You Project</h1>
       <p className="text-center mb-4" style={{ color: '#6c757d' }}>
-        Please enter your school name to get started
+        Please enter your school name, teacher name, or teacher email to get started
       </p>
       
       <form onSubmit={handleSchoolVerification}>
