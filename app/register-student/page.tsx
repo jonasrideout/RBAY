@@ -75,7 +75,7 @@ function RegisterStudentForm() {
     
     if (inputLower.length === 0) return false;
     
-    // Match against school name (existing logic)
+    // Match against school name
     const schoolLower = schoolName.toLowerCase();
     const schoolWords = inputLower.split(/\s+/);
     const schoolMatch = schoolWords.some(word => {
@@ -83,30 +83,30 @@ function RegisterStudentForm() {
       return schoolLower.includes(word);
     });
     
-    // Match against teacher name - more flexible approach
+    // Match against teacher name
     const teacherLower = teacherName.toLowerCase();
     
-    // Check if input is contained in teacher name or vice versa
-    const teacherDirectMatch = teacherLower.includes(inputLower) || inputLower.includes(teacherLower);
+    // Direct containment check
+    const teacherDirectMatch = teacherLower.includes(inputLower);
     
-    // Also check word-by-word matching for multi-word names
-    const teacherWords = inputLower.split(/\s+/);
-    const teacherWordMatch = teacherWords.every(word => {
-      if (word.length < 2) return true; // Skip very short words
+    // Word-by-word matching - but only if we have valid words
+    const teacherWords = inputLower.split(/\s+/).filter(word => word.length >= 2);
+    const teacherWordMatch = teacherWords.length > 0 && teacherWords.every(word => {
       return teacherLower.includes(word);
     });
     
     const teacherMatch = teacherDirectMatch || teacherWordMatch;
     
-    // Match against teacher email (exact or partial)
+    // Match against teacher email
     const emailLower = teacherEmail.toLowerCase();
     const emailMatch = emailLower.includes(inputLower) || inputLower.includes(emailLower.split('@')[0]);
     
     // Debug logging to see what's happening
     console.log('Input:', inputLower);
     console.log('School name:', schoolName, '- Match:', schoolMatch);
-    console.log('Teacher name:', teacherName, '- Match:', teacherMatch);
+    console.log('Teacher name:', teacherName, '- Match:', teacherMatch, '(direct:', teacherDirectMatch, ', word:', teacherWordMatch, ')');
     console.log('Teacher email:', teacherEmail, '- Match:', emailMatch);
+    console.log('Final result:', schoolMatch || teacherMatch || emailMatch);
     
     return schoolMatch || teacherMatch || emailMatch;
   };
