@@ -22,7 +22,7 @@ interface SchoolInfo {
   schoolId: string;
 }
 
-type Step = 'schoolVerify' | 'info' | 'success';
+type Step = 'schoolVerify' | 'schoolConfirm' | 'info' | 'success';
 
 const INTEREST_OPTIONS = [
   { value: 'sports', label: '🏀 Sports & Athletics' },
@@ -44,6 +44,7 @@ function RegisterStudentForm() {
   const [currentStep, setCurrentStep] = useState<Step>('schoolVerify');
   const [isLoading, setIsLoading] = useState(false);
   const [schoolNameInput, setSchoolNameInput] = useState('');
+  const [foundSchoolInfo, setFoundSchoolInfo] = useState<SchoolInfo | null>(null);
   const [formData, setFormData] = useState<StudentFormData>({
     schoolToken: '',
     firstName: '',
@@ -112,13 +113,13 @@ function RegisterStudentForm() {
       
       // Check if the entered name matches the actual school name
       if (doesSchoolNameMatch(schoolNameInput, actualSchoolName)) {
-        setSchoolInfo({
+        setFoundSchoolInfo({
           name: actualSchoolName,
           teacher: data.school.teacherName,
           found: true,
           schoolId: data.school.id
         });
-        setCurrentStep('info');
+        setCurrentStep('schoolConfirm');
       } else {
         setError('No school found with that name');
       }
@@ -126,6 +127,19 @@ function RegisterStudentForm() {
       setError(err.message || 'Invalid registration link. Please check with your teacher for the correct link.');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleSchoolConfirmation = (confirmed: boolean) => {
+    if (confirmed && foundSchoolInfo) {
+      setSchoolInfo(foundSchoolInfo);
+      setCurrentStep('info');
+    } else {
+      // Go back to school verification
+      setFoundSchoolInfo(null);
+      setSchoolNameInput('');
+      setCurrentStep('schoolVerify');
+      setError('');
     }
   };
 
@@ -247,6 +261,53 @@ function RegisterStudentForm() {
           </button>
         </div>
       </form>
+    </div>
+  );
+
+  const renderSchoolConfirmStep = () => (
+    <div className="card">
+      <h1 className="text-center mb-3">Is this your school?</h1>
+      
+      <div style={{ 
+        background: '#f0f8ff', 
+        padding: '2rem', 
+        borderRadius: '8px', 
+        marginBottom: '2rem', 
+        border: '2px solid #2196f3',
+        textAlign: 'center'
+      }}>
+        <h2 style={{ color: '#2c5aa0', marginBottom: '0.5rem', fontSize: '1.5rem' }}>
+          {foundSchoolInfo?.name}
+        </h2>
+        <p style={{ color: '#6c757d', marginBottom: '0', fontSize: '1rem' }}>
+          Teacher: {foundSchoolInfo?.teacher}
+        </p>
+      </div>
+
+      <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+        <button 
+          onClick={() => handleSchoolConfirmation(true)}
+          className="btn btn-primary"
+          style={{ padding: '1rem 2rem', fontSize: '1.1rem', minWidth: '120px' }}
+        >
+          ✓ Yes, that's my school
+        </button>
+        
+        <button 
+          onClick={() => handleSchoolConfirmation(false)}
+          className="btn"
+          style={{ 
+            padding: '1rem 2rem', 
+            fontSize: '1.1rem', 
+            minWidth: '120px',
+            background: '#f8f9fa',
+            border: '1px solid #dee2e6',
+            color: '#6c757d'
+          }}
+        >
+          ← No, try again
+        </button>
+      </div>
     </div>
   );
 
