@@ -517,6 +517,7 @@ function RegisterStudentForm() {
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
           {currentStep === 'schoolVerify' && renderSchoolVerifyStep()}
+          {currentStep === 'schoolConfirm' && renderSchoolConfirmStep()}
           {currentStep === 'info' && renderInfoStep()}
           {currentStep === 'success' && renderSuccessStep()}
 
