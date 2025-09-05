@@ -25,10 +25,12 @@ export default function SchoolCard({
 
   // Get the current domain dynamically - UPDATED FOR ADMIN TOKEN-BASED ACCESS
   const getDashboardUrl = () => {
-    const adminUrl = generateAdminDashboardUrl(school.id, school.dashboardToken);
-    if (typeof window !== 'undefined') {
-      const currentOrigin = window.location.origin;
-      return `${currentOrigin}${adminUrl}`;
+  console.log('School ID:', school.id);
+  console.log('School dashboardToken:', school.dashboardToken);
+  const adminUrl = generateAdminDashboardUrl(school.id, school.dashboardToken);
+  if (typeof window !== 'undefined') {
+    const currentOrigin = window.location.origin;
+    return `${currentOrigin}${adminUrl}`;
     }
     return adminUrl;
   };
