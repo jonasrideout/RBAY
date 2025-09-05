@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
 interface StudentFormData {
-  schoolToken: string; // Changed from teacherEmail to schoolToken
+  schoolToken: string;
   firstName: string;
   lastInitial: string;
   grade: string;
@@ -22,7 +22,7 @@ interface SchoolInfo {
   schoolId: string;
 }
 
-type Step = 'verify' | 'info' | 'success';
+type Step = 'schoolVerify' | 'info' | 'success';
 
 const INTEREST_OPTIONS = [
   { value: 'sports', label: '🏀 Sports & Athletics' },
@@ -41,8 +41,9 @@ const INTEREST_OPTIONS = [
 
 function RegisterStudentForm() {
   const searchParams = useSearchParams();
-  const [currentStep, setCurrentStep] = useState<Step>('verify');
+  const [currentStep, setCurrentStep] = useState<Step>('schoolVerify');
   const [isLoading, setIsLoading] = useState(false);
+  const [schoolNameInput, setSchoolNameInput] = useState('');
   const [formData, setFormData] = useState<StudentFormData>({
     schoolToken: '',
     firstName: '',
@@ -57,37 +58,70 @@ function RegisterStudentForm() {
   const [error, setError] = useState('');
   const [registeredStudent, setRegisteredStudent] = useState<any>(null);
 
-  // Check if token was provided in URL and auto-verify
+  // Get token from URL on page load
   useEffect(() => {
     const token = searchParams.get('token');
     if (token) {
       setFormData(prev => ({ ...prev, schoolToken: token }));
-      handleVerifySchool(token);
     } else {
       setError('Invalid registration link. Please use the link provided by your teacher.');
-      setIsLoading(false);
     }
   }, [searchParams]);
 
-  const handleVerifySchool = async (token: string) => {
+  // Helper function for loose school name matching
+  const doesSchoolNameMatch = (inputName: string, actualName: string): boolean => {
+    const input = inputName.toLowerCase().trim();
+    const actual = actualName.toLowerCase();
+    
+    // Split input into words and check if any word matches part of the school name
+    const inputWords = input.split(/\s+/);
+    
+    return inputWords.some(word => {
+      if (word.length < 2) return false; // Ignore very short words
+      return actual.includes(word);
+    });
+  };
+
+  const handleSchoolVerification = async (e: React.FormEvent) => {
+    e.preventDefault();
     setIsLoading(true);
     setError('');
     
+    if (!schoolNameInput.trim()) {
+      setError('Please enter your school name');
+      setIsLoading(false);
+      return;
+    }
+
+    if (!formData.schoolToken) {
+      setError('Invalid registration link. Please use the link provided by your teacher.');
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const response = await fetch(`/api/schools?token=${encodeURIComponent(token)}`);
+      // Get school info using the token
+      const response = await fetch(`/api/schools?token=${encodeURIComponent(formData.schoolToken)}`);
       const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data.error || 'Invalid registration link');
       }
 
-      setSchoolInfo({
-        name: data.school.schoolName,
-        teacher: data.school.teacherName,
-        found: true,
-        schoolId: data.school.id
-      });
-      setCurrentStep('info');
+      const actualSchoolName = data.school.schoolName;
+      
+      // Check if the entered name matches the actual school name
+      if (doesSchoolNameMatch(schoolNameInput, actualSchoolName)) {
+        setSchoolInfo({
+          name: actualSchoolName,
+          teacher: data.school.teacherName,
+          found: true,
+          schoolId: data.school.id
+        });
+        setCurrentStep('info');
+      } else {
+        setError('No school found with that name');
+      }
     } catch (err: any) {
       setError(err.message || 'Invalid registration link. Please check with your teacher for the correct link.');
     } finally {
@@ -122,9 +156,8 @@ function RegisterStudentForm() {
     }
 
     try {
-      // Prepare data for API - convert token to teacherEmail for backend compatibility
       const submissionData = {
-        schoolId: schoolInfo?.schoolId, // Use schoolId instead of email lookup
+        schoolId: schoolInfo?.schoolId,
         firstName: formData.firstName,
         lastInitial: formData.lastInitial,
         grade: formData.grade,
@@ -165,27 +198,55 @@ function RegisterStudentForm() {
     if (error) setError('');
   };
 
-  const renderVerifyStep = () => (
+  const renderSchoolVerifyStep = () => (
     <div className="card">
       <h1 className="text-center mb-3">Join The Right Back at You Project</h1>
+      <p className="text-center mb-4" style={{ color: '#6c757d' }}>
+        Please enter your school name to get started
+      </p>
       
-      {isLoading ? (
-        <div className="text-center" style={{ padding: '2rem' }}>
-          <div className="loading" style={{ margin: '0 auto 1rem' }}></div>
-          <p>Verifying your registration link...</p>
+      <form onSubmit={handleSchoolVerification}>
+        <div className="form-group">
+          <label htmlFor="school-name" className="form-label">School Name</label>
+          <input 
+            type="text" 
+            id="school-name" 
+            className="form-input" 
+            placeholder="Enter your school name"
+            value={schoolNameInput}
+            onChange={(e) => {
+              setSchoolNameInput(e.target.value);
+              if (error) setError('');
+            }}
+            disabled={isLoading}
+            required
+          />
         </div>
-      ) : error ? (
-        <div>
+
+        {error && (
           <div className="alert alert-error">
             <strong>Error:</strong> {error}
           </div>
-          <div className="text-center" style={{ marginTop: '2rem' }}>
-            <p style={{ color: '#6c757d' }}>
-              Please ask your teacher for the correct registration link, or contact support for help.
-            </p>
-          </div>
+        )}
+
+        <div className="form-group text-center">
+          <button 
+            type="submit" 
+            className="btn btn-primary" 
+            disabled={isLoading || !formData.schoolToken}
+            style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}
+          >
+            {isLoading ? (
+              <>
+                <span className="loading"></span>
+                <span style={{ marginLeft: '0.5rem' }}>Verifying...</span>
+              </>
+            ) : (
+              'Continue'
+            )}
+          </button>
         </div>
-      ) : null}
+      </form>
     </div>
   );
 
@@ -455,7 +516,7 @@ function RegisterStudentForm() {
 
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-          {currentStep === 'verify' && renderVerifyStep()}
+          {currentStep === 'schoolVerify' && renderSchoolVerifyStep()}
           {currentStep === 'info' && renderInfoStep()}
           {currentStep === 'success' && renderSuccessStep()}
 
