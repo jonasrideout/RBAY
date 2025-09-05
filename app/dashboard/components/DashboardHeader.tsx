@@ -20,8 +20,8 @@ interface DashboardHeaderProps {
 
 export default function DashboardHeader({ schoolData, dashboardToken }: DashboardHeaderProps) {
   const generateStudentLink = () => {
-    if (typeof window !== 'undefined' && dashboardToken) {
-      return `${window.location.origin}/register-student?token=${dashboardToken}`;
+    if (typeof window !== 'undefined' && schoolData.dashboardToken) {
+      return `${window.location.origin}/register-student?token=${schoolData.dashboardToken}`;
     }
     return '';
   };
