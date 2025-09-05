@@ -101,7 +101,8 @@ function TeacherDashboardContent() {
       if (skipVerification) {
         // Admin token - skip verification and show dashboard
         setIsVerified(true);
-        fetchStudentData(data.school.id);
+        // Pass the school data directly to avoid React state timing issues
+        fetchStudentData(data.school.id, data.school);
       }
       // For regular tokens, verification happens in SchoolVerification component
       
@@ -114,13 +115,16 @@ function TeacherDashboardContent() {
   const handleSchoolVerified = (verifiedSchoolData: SchoolData) => {
     setSchoolData(verifiedSchoolData);
     setIsVerified(true);
-    fetchStudentData(verifiedSchoolData.id);
+    fetchStudentData(verifiedSchoolData.id, verifiedSchoolData);
   };
 
-  const fetchStudentData = async (schoolId: string) => {
+  const fetchStudentData = async (schoolId: string, schoolDataParam?: SchoolData) => {
     try {
+      // Use passed school data or fall back to state
+      const sourceSchoolData = schoolDataParam || schoolData;
+      
       // Transform students data to match our Student interface
-      const transformedStudents: Student[] = schoolData?.students?.map((student: any) => ({
+      const transformedStudents: Student[] = sourceSchoolData?.students?.map((student: any) => ({
         id: student.id,
         firstName: student.firstName,
         lastInitial: student.lastInitial,
@@ -132,8 +136,10 @@ function TeacherDashboardContent() {
       })) || [];
 
       setStudents(transformedStudents);
+      setIsLoading(false); // Stop loading once students are processed
     } catch (err: any) {
       console.error('Error processing student data:', err);
+      setIsLoading(false);
     }
   };
 
