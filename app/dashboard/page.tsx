@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { verifyAdminToken } from '@/lib/adminTokens';
 
 // Import components
 import SchoolVerification from './components/SchoolVerification';
@@ -62,17 +63,53 @@ function TeacherDashboardContent() {
   // Token-based verification state
   const [isVerified, setIsVerified] = useState(false);
 
-  // Get token from URL parameter
+  // Get token or adminToken from URL parameters
   const token = searchParams.get('token');
+  const adminToken = searchParams.get('adminToken');
 
   useEffect(() => {
-    if (!token) {
-      setError('Dashboard token is required. Please use the correct dashboard link.');
+    if (adminToken) {
+      // Handle admin token flow
+      const adminPayload = verifyAdminToken(adminToken);
+      if (adminPayload) {
+        // Valid admin token - fetch school data and bypass verification
+        fetchSchoolDataByToken(adminPayload.schoolToken, true);
+      } else {
+        setError('Invalid or expired admin token.');
+        setIsLoading(false);
+      }
+    } else if (token) {
+      // Handle regular token flow - requires verification
       setIsLoading(false);
     } else {
+      setError('Dashboard token is required. Please use the correct dashboard link.');
       setIsLoading(false);
     }
-  }, [token]);
+  }, [token, adminToken]);
+
+  const fetchSchoolDataByToken = async (schoolToken: string, skipVerification: boolean = false) => {
+    try {
+      const response = await fetch(`/api/schools?token=${encodeURIComponent(schoolToken)}`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to load school data');
+      }
+
+      setSchoolData(data.school);
+      
+      if (skipVerification) {
+        // Admin token - skip verification and show dashboard
+        setIsVerified(true);
+        fetchStudentData(data.school.id);
+      }
+      // For regular tokens, verification happens in SchoolVerification component
+      
+    } catch (err: any) {
+      setError(err.message || 'Failed to load school data');
+      setIsLoading(false);
+    }
+  };
 
   const handleSchoolVerified = (verifiedSchoolData: SchoolData) => {
     setSchoolData(verifiedSchoolData);
@@ -306,8 +343,8 @@ function TeacherDashboardContent() {
     );
   }
 
-  // Show verification screen if not verified yet
-  if (!isVerified && token) {
+  // Show verification screen if not verified yet and using regular token
+  if (!isVerified && token && !adminToken) {
     return <SchoolVerification onVerified={handleSchoolVerified} token={token} />;
   }
 
@@ -325,7 +362,7 @@ function TeacherDashboardContent() {
               The Right Back at You Project
             </Link>
             <nav className="nav">
-              <Link href={`/dashboard?token=${token}`} className="nav-link">Dashboard</Link>
+              <Link href={`/dashboard?${adminToken ? `adminToken=${adminToken}` : `token=${token}`}`} className="nav-link">Dashboard</Link>
               <Link href="/register-school" className="nav-link">School Settings</Link>
               <Link href="/logout" className="nav-link">Logout</Link>
             </nav>
@@ -337,7 +374,7 @@ function TeacherDashboardContent() {
         
         <DashboardHeader 
           schoolData={schoolData} 
-          dashboardToken={token!} 
+          dashboardToken={adminToken || token || ''} 
         />
 
         <StudentMetricsGrid 
