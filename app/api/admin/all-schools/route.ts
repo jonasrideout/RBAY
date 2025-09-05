@@ -34,6 +34,7 @@ export async function GET() {
       teacherName: school.teacherName,
       teacherEmail: school.teacherEmail,
       teacherPhone: school.teacherPhone,
+      dashboardToken: school.dashboardToken,
       region: school.region,
       gradeLevel: school.gradeLevel,
       expectedClassSize: school.expectedClassSize,
