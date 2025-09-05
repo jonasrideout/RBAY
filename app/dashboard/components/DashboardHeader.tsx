@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from 'react';
+
 interface SchoolData {
   id: string;
   schoolName: string;
@@ -19,11 +21,28 @@ interface DashboardHeaderProps {
 }
 
 export default function DashboardHeader({ schoolData, dashboardToken }: DashboardHeaderProps) {
+  const [copyStatus, setCopyStatus] = useState<'idle' | 'copied'>('idle');
+
   const generateStudentLink = () => {
     if (typeof window !== 'undefined' && schoolData.dashboardToken) {
       return `${window.location.origin}/register-student?token=${schoolData.dashboardToken}`;
     }
     return '';
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(generateStudentLink());
+      setCopyStatus('copied');
+      
+      // Reset back to normal after 2 seconds
+      setTimeout(() => {
+        setCopyStatus('idle');
+      }, 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+      // Fallback - could show an error state if needed
+    }
   };
 
   return (
@@ -40,11 +59,25 @@ export default function DashboardHeader({ schoolData, dashboardToken }: Dashboar
           Share This Link With Your Students
         </h3>
         <button 
-          onClick={() => navigator.clipboard.writeText(generateStudentLink())}
+          onClick={handleCopyLink}
           className="btn btn-primary"
-          style={{ width: '100%', fontSize: '0.85rem', padding: '0.75rem' }}
+          style={{ 
+            width: '100%', 
+            fontSize: '0.85rem', 
+            padding: '0.75rem',
+            backgroundColor: copyStatus === 'copied' ? '#28a745' : '#4a90e2',
+            transition: 'all 0.3s ease',
+            position: 'relative'
+          }}
         >
-          Copy Student Registration Link
+          {copyStatus === 'copied' ? (
+            <>
+              <span style={{ marginRight: '0.5rem' }}>✓</span>
+              Copied!
+            </>
+          ) : (
+            'Copy Student Registration Link'
+          )}
         </button>
       </div>
     </div>
