@@ -404,9 +404,9 @@ function RegisterStudentForm() {
         </div>
 
         <div className="form-group">
-          <label className="form-label">Your Interests & Hobbies</label>
+          <label className="form-label">Your Interests & Hobbies *</label>
           <p style={{ color: '#6c757d', fontSize: '0.9rem', marginBottom: '1rem' }}>
-            Select all that apply - this helps us find you a great penpal!
+            Select at least one that applies - this helps us find you a great penpal!
           </p>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.5rem' }}>
