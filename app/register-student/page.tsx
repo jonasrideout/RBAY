@@ -20,6 +20,7 @@ interface SchoolInfo {
   teacher: string;
   found: boolean;
   schoolId: string;
+  teacherEmail?: string;
 }
 
 type Step = 'schoolVerify' | 'schoolConfirm' | 'info' | 'success';
@@ -137,7 +138,8 @@ function RegisterStudentForm() {
           name: actualSchoolName,
           teacher: teacherName,
           found: true,
-          schoolId: data.school.id
+          schoolId: data.school.id,
+          teacherEmail: teacherEmail
         });
         setCurrentStep('schoolConfirm');
       } else {
@@ -177,8 +179,8 @@ function RegisterStudentForm() {
     setIsLoading(true);
     setError('');
     
-    if (!formData.firstName || !formData.lastInitial || !formData.grade || !formData.parentConsent) {
-      setError('Please fill in all required fields and check the parent consent box');
+    if (!formData.firstName || !formData.lastInitial || !formData.grade || !formData.parentConsent || formData.interests.length === 0) {
+      setError('Please fill in all required fields, select at least one interest, and check the parent consent box');
       setIsLoading(false);
       return;
     }
@@ -191,7 +193,7 @@ function RegisterStudentForm() {
 
     try {
       const submissionData = {
-        schoolId: schoolInfo?.schoolId,
+        teacherEmail: schoolInfo?.teacherEmail,
         firstName: formData.firstName,
         lastInitial: formData.lastInitial,
         grade: formData.grade,
