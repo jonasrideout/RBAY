@@ -6,22 +6,21 @@ interface SuccessPageProps {
   registeredSchool: {
     teacherEmail: string;
     schoolName: string;
+    dashboardToken: string;  // Added token for URL generation
   };
 }
 
 export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
   const generateStudentLink = () => {
-    if (typeof window !== 'undefined' && registeredSchool) {
-      const encodedEmail = encodeURIComponent(registeredSchool.teacherEmail);
-      return `${window.location.origin}/register-student?teacher=${encodedEmail}`;
+    if (typeof window !== 'undefined' && registeredSchool?.dashboardToken) {
+      return `${window.location.origin}/register-student?token=${registeredSchool.dashboardToken}`;
     }
     return '';
   };
 
   const generateDashboardLink = () => {
-    if (typeof window !== 'undefined' && registeredSchool) {
-      const encodedEmail = encodeURIComponent(registeredSchool.teacherEmail);
-      return `${window.location.origin}/dashboard?teacher=${encodedEmail}`;
+    if (typeof window !== 'undefined' && registeredSchool?.dashboardToken) {
+      return `${window.location.origin}/dashboard?token=${registeredSchool.dashboardToken}`;
     }
     return '';
   };
