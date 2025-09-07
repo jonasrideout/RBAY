@@ -22,7 +22,7 @@ export async function sendWelcomeEmail({
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nextjs-boilerplate-beta-three-49.vercel.app';
     
     const { data, error } = await resend.emails.send({
-      from: 'Right Back at You Project <hello@nextjs-boilerplate-beta-three-49.vercel.app>',
+      from: 'Right Back at You Project <onboarding@resend.dev>',
       to: [teacherEmail],
       subject: `Welcome to Right Back at You - ${schoolName}`,
       react: WelcomeEmail({
