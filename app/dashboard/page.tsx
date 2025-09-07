@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect, Suspense } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { verifyAdminToken } from '@/lib/adminTokens';
 
 // Import components
 import SchoolVerification from './components/SchoolVerification';
@@ -39,7 +39,8 @@ interface SchoolData {
 }
 
 function TeacherDashboardContent() {
-  const searchParams = useSearchParams();
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [students, setStudents] = useState<Student[]>([]);
   const [schoolData, setSchoolData] = useState<SchoolData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -60,62 +61,44 @@ function TeacherDashboardContent() {
     studentId: string;
   }>({ show: false, studentName: '', studentId: '' });
 
-  // Token-based verification state
-  const [isVerified, setIsVerified] = useState(false);
-
-  // Get token or adminToken from URL parameters
-  const token = searchParams.get('token');
-  const adminToken = searchParams.get('adminToken');
-
+  // Session-based authentication and school lookup
   useEffect(() => {
-    if (adminToken) {
-      // Handle admin token flow
-      const adminPayload = verifyAdminToken(adminToken);
-      if (adminPayload) {
-        // Valid admin token - fetch school data and bypass verification
-        fetchSchoolDataByToken(adminPayload.schoolToken, true);
-      } else {
-        setError('Invalid or expired admin token.');
-        setIsLoading(false);
-      }
-    } else if (token) {
-      // Handle regular token flow - requires verification
-      setIsLoading(false);
+    if (status === 'loading') return; // Still loading session
+
+    if (status === 'unauthenticated') {
+      router.push('/login');
+      return;
+    }
+
+    if (session?.user?.email) {
+      fetchSchoolByEmail(session.user.email);
     } else {
-      setError('Dashboard token is required. Please use the correct dashboard link.');
+      setError('User email not found in session');
       setIsLoading(false);
     }
-  }, [token, adminToken]);
+  }, [session, status, router]);
 
-  const fetchSchoolDataByToken = async (schoolToken: string, skipVerification: boolean = false) => {
+  const fetchSchoolByEmail = async (email: string) => {
     try {
-      const response = await fetch(`/api/schools?token=${encodeURIComponent(schoolToken)}`);
+      const response = await fetch(`/api/schools?teacherEmail=${encodeURIComponent(email)}`);
       const data = await response.json();
 
       if (!response.ok) {
+        if (response.status === 404) {
+          // No school found - redirect to registration
+          router.push('/register-school');
+          return;
+        }
         throw new Error(data.error || 'Failed to load school data');
       }
 
       setSchoolData(data.school);
-      
-      if (skipVerification) {
-        // Admin token - skip verification and show dashboard
-        setIsVerified(true);
-        // Pass the school data directly to avoid React state timing issues
-        fetchStudentData(data.school.id, data.school);
-      }
-      // For regular tokens, verification happens in SchoolVerification component
+      fetchStudentData(data.school.id, data.school);
       
     } catch (err: any) {
       setError(err.message || 'Failed to load school data');
       setIsLoading(false);
     }
-  };
-
-  const handleSchoolVerified = (verifiedSchoolData: SchoolData) => {
-    setSchoolData(verifiedSchoolData);
-    setIsVerified(true);
-    fetchStudentData(verifiedSchoolData.id, verifiedSchoolData);
   };
 
   const fetchStudentData = async (schoolId: string, schoolDataParam?: SchoolData) => {
@@ -297,6 +280,10 @@ function TeacherDashboardContent() {
     }
   };
 
+  const handleLogout = () => {
+    router.push('/api/auth/signout');
+  };
+
   if (isLoading) {
     return (
       <div className="page">
@@ -349,11 +336,6 @@ function TeacherDashboardContent() {
     );
   }
 
-  // Show verification screen if not verified yet and using regular token
-  if (!isVerified && token && !adminToken) {
-    return <SchoolVerification onVerified={handleSchoolVerified} token={token} />;
-  }
-
   if (!schoolData) {
     return null;
   }
@@ -368,9 +350,11 @@ function TeacherDashboardContent() {
               The Right Back at You Project
             </Link>
             <nav className="nav">
-              <Link href={`/dashboard?${adminToken ? `adminToken=${adminToken}` : `token=${token}`}`} className="nav-link">Dashboard</Link>
+              <Link href="/dashboard" className="nav-link">Dashboard</Link>
               <Link href="/register-school" className="nav-link">School Settings</Link>
-              <Link href="/logout" className="nav-link">Logout</Link>
+              <button onClick={handleLogout} className="nav-link" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                Logout
+              </button>
             </nav>
           </div>
         </div>
@@ -380,7 +364,7 @@ function TeacherDashboardContent() {
         
         <DashboardHeader 
           schoolData={schoolData} 
-          dashboardToken={adminToken || token || ''} 
+          dashboardToken={schoolData.dashboardToken} 
         />
 
         <StudentMetricsGrid 
