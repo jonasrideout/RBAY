@@ -1,5 +1,3 @@
-// /middleware.ts
-
 import { auth } from '@/lib/auth';
 import { NextResponse } from 'next/server';
 
@@ -11,7 +9,6 @@ export default auth((req) => {
   const publicRoutes = [
     '/',
     '/login',
-    '/register-school',
     '/register-student',
     '/api/schools',
     '/api/students',
@@ -32,8 +29,17 @@ export default auth((req) => {
   // Dashboard route
   const isDashboardRoute = pathname.startsWith('/dashboard');
 
+  // Register school route (now protected)
+  const isRegisterSchoolRoute = pathname.startsWith('/register-school');
+
   // If accessing dashboard without login, redirect to login
   if (isDashboardRoute && !isLoggedIn) {
+    const loginUrl = new URL('/login', req.url);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // If accessing register-school without login, redirect to login
+  if (isRegisterSchoolRoute && !isLoggedIn) {
     const loginUrl = new URL('/login', req.url);
     return NextResponse.redirect(loginUrl);
   }
