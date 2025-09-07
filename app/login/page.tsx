@@ -2,7 +2,8 @@
 
 'use client';
 
-import { signIn, getSession } from 'next-auth/react';
+import { signIn } from 'next-auth/webapi-adapter';
+import { useSession } from 'next-auth/react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, useEffect, Suspense } from 'react';
 
@@ -12,14 +13,13 @@ function LoginContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const errorParam = searchParams.get('error');
+  const { data: session } = useSession();
 
   useEffect(() => {
     // Check if user is already logged in
-    getSession().then((session) => {
-      if (session) {
-        router.push('/dashboard');
-      }
-    });
+    if (session) {
+      router.push('/dashboard');
+    }
 
     // Handle URL error parameters
     if (errorParam === 'AccessDenied') {
@@ -27,17 +27,15 @@ function LoginContent() {
     } else if (errorParam) {
       setError('An error occurred during sign-in. Please try again.');
     }
-  }, [errorParam, router]);
+  }, [errorParam, router, session]);
 
   const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true);
       setError('');
       
-      await signIn('google', {
-        callbackUrl: '/dashboard',
-        redirect: true,
-      });
+      // NextAuth v5 syntax for client-side sign in
+      window.location.href = '/api/auth/signin/google?callbackUrl=/dashboard';
     } catch (error) {
       console.error('Sign-in error:', error);
       setError('Failed to sign in. Please try again.');
