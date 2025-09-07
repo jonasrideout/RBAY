@@ -2,6 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { sendWelcomeEmail } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   try {
@@ -89,6 +90,28 @@ export async function POST(request: NextRequest) {
       }
     });
 
+    // Send welcome email (non-blocking - registration succeeds even if email fails)
+    let emailSent = false;
+    let emailError = '';
+    
+    try {
+      const emailResult = await sendWelcomeEmail({
+        teacherName,
+        teacherEmail,
+        schoolName,
+        dashboardToken: school.dashboardToken
+      });
+      
+      emailSent = emailResult.success;
+      if (!emailResult.success) {
+        emailError = emailResult.error || 'Unknown email error';
+        console.warn('Welcome email failed to send:', emailError);
+      }
+    } catch (error: any) {
+      console.warn('Welcome email sending failed:', error);
+      emailError = error.message || 'Email service unavailable';
+    }
+
     return NextResponse.json({
       success: true,
       school: {
@@ -99,7 +122,9 @@ export async function POST(request: NextRequest) {
         schoolState: school.schoolState,
         region: school.region,
         status: school.status
-      }
+      },
+      emailSent,
+      emailError: emailSent ? undefined : emailError
     }, { status: 201 });
 
   } catch (error: any) {
