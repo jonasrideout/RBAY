@@ -29,8 +29,11 @@ export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
     return '';
   };
 
-  const handleLogout = () => {
-    window.location.href = '/api/auth/signout?callbackUrl=' + encodeURIComponent(window.location.origin);
+  const handleLogout = async () => {
+    await signOut({ 
+      callbackUrl: window.location.origin,
+      redirect: true 
+    });
   };
 
   return (
