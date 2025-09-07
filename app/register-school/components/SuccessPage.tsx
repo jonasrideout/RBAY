@@ -1,12 +1,15 @@
 // /app/register-school/components/SuccessPage.tsx
 
+"use client";
+
 import Link from 'next/link';
+import { signOut } from 'next-auth/react';
 
 interface SuccessPageProps {
   registeredSchool: {
     teacherEmail: string;
     schoolName: string;
-    dashboardToken: string;  // Added token for URL generation
+    dashboardToken: string;  // Still needed for student registration
   };
 }
 
@@ -19,10 +22,15 @@ export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
   };
 
   const generateDashboardLink = () => {
-    if (typeof window !== 'undefined' && registeredSchool?.dashboardToken) {
-      return `${window.location.origin}/dashboard?token=${registeredSchool.dashboardToken}`;
+    if (typeof window !== 'undefined') {
+      // Session-based dashboard - no token needed
+      return `${window.location.origin}/dashboard`;
     }
     return '';
+  };
+
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: '/' });
   };
 
   return (
@@ -36,8 +44,14 @@ export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
               The Right Back at You Project
             </Link>
             <nav className="nav">
-              <Link href={generateDashboardLink()} className="nav-link">Dashboard</Link>
-              <Link href="/logout" className="nav-link">Logout</Link>
+              <Link href="/dashboard" className="nav-link">Dashboard</Link>
+              <button 
+                onClick={handleLogout} 
+                className="nav-link" 
+                style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+              >
+                Logout
+              </button>
             </nav>
           </div>
         </div>
@@ -55,8 +69,11 @@ export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
             <div style={{ background: 'white', padding: '1.5rem', borderRadius: '6px', marginBottom: '2rem', border: '1px solid #c3e6cb' }}>
               <h3 style={{ color: '#155724', marginBottom: '1rem' }}>Next Steps:</h3>
               <div style={{ textAlign: 'left', color: '#155724' }}>
-                <p><strong>1. Save Your Dashboard Link:</strong></p>
+                <p><strong>1. Access Your Dashboard:</strong></p>
                 <div style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '4px', marginBottom: '1rem', border: '1px solid #dee2e6' }}>
+                  <p style={{ margin: 0, fontSize: '0.9rem' }}>
+                    You can access your dashboard anytime by logging in and going to:
+                  </p>
                   <code style={{ color: '#e83e8c', fontSize: '0.9rem', wordBreak: 'break-all' }}>
                     {generateDashboardLink()}
                   </code>
@@ -78,7 +95,7 @@ export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
 
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
               <Link 
-                href={generateDashboardLink()}
+                href="/dashboard"
                 className="btn btn-primary"
               >
                 Go to Dashboard
