@@ -11,6 +11,7 @@ interface SchoolRegistrationFormProps {
   onSubmit: (e: React.FormEvent) => void;
   onUpdateFormData: (field: keyof SchoolFormData, value: any) => void;
   onGradeLevelChange: (grade: string, checked: boolean) => void;
+  isEmailReadOnly?: boolean;
 }
 
 export default function SchoolRegistrationForm({
@@ -19,7 +20,8 @@ export default function SchoolRegistrationForm({
   error,
   onSubmit,
   onUpdateFormData,
-  onGradeLevelChange
+  onGradeLevelChange,
+  isEmailReadOnly = false
 }: SchoolRegistrationFormProps) {
   const getRegionForState = (state: string) => {
     return STATE_TO_REGION[state] || '';
@@ -82,11 +84,20 @@ export default function SchoolRegistrationForm({
                       className="form-input" 
                       value={formData.teacherEmail}
                       onChange={(e) => onUpdateFormData('teacherEmail', e.target.value)}
-                      disabled={isLoading}
+                      disabled={isLoading || isEmailReadOnly}
+                      readOnly={isEmailReadOnly}
                       required
+                      style={isEmailReadOnly ? { 
+                        backgroundColor: '#f8f9fa', 
+                        color: '#6c757d',
+                        cursor: 'not-allowed'
+                      } : {}}
                     />
                     <small style={{ color: '#6c757d', fontSize: '0.8rem' }}>
-                      Students join using this email
+                      {isEmailReadOnly 
+                        ? 'Email from your Google account' 
+                        : 'Students join using this email'
+                      }
                     </small>
                   </div>
                   
