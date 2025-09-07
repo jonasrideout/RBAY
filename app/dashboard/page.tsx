@@ -281,7 +281,7 @@ function TeacherDashboardContent() {
   };
 
   const handleLogout = () => {
-    router.push('/api/auth/signout');
+  router.push('/api/auth/signout?callbackUrl=' + encodeURIComponent(window.location.origin));  
   };
 
   if (isLoading) {
