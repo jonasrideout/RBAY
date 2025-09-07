@@ -57,22 +57,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session;
     },
     async redirect({ url, baseUrl }) {
-      // If user is logging in, check if they have a school and redirect accordingly
-      if (url === `${baseUrl}/api/auth/callback/google` || url === `${baseUrl}/login`) {
-        try {
-          // We need to get the user's email from the token/session
-          // For now, redirect to dashboard and let the client-side handle the logic
-          return `${baseUrl}/dashboard`;
-        } catch (error) {
-          console.error('Redirect callback error:', error);
-          return `${baseUrl}/dashboard`;
-        }
+      // Only redirect to dashboard after successful Google OAuth callback
+      if (url === `${baseUrl}/api/auth/callback/google`) {
+        return `${baseUrl}/dashboard`;
       }
       
-      // Handle other redirects
+      // For all other cases, respect the intended URL
       if (url.startsWith('/')) return `${baseUrl}${url}`;
       if (new URL(url).origin === baseUrl) return url;
-      return `${baseUrl}/dashboard`;
+      return baseUrl; // Default to home page, not dashboard
     },
   },
   session: {
