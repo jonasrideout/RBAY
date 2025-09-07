@@ -143,6 +143,6 @@ export default function LoginPage() {
       </div>
     }>
       <LoginContent />
-    </React.Suspense>
+    </Suspense>
   );
 }
