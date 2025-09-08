@@ -57,6 +57,8 @@ function LoginContent() {
               <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
               The Right Back at You Project
             </Link>
+            <nav className="nav">
+            </nav>
           </div>
         </div>
       </header>
