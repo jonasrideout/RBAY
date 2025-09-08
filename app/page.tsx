@@ -12,8 +12,10 @@ export default function Home() {
               The Right Back at You Project
             </Link>
             <nav className="nav">
-              <Link href="/login" className="nav-link">Login</Link>
-              <Link href="/register-school" className="btn btn-primary">Register School</Link>
+              <Link href="/login" className="btn btn-primary">Login / Register with Google</Link>
+              <span style={{ fontSize: '0.85rem', color: '#6c757d' }}>
+                Sign in to register or access your school
+              </span>
             </nav>
           </div>
         </div>
@@ -29,7 +31,7 @@ export default function Home() {
             Connect students across geographic regions to combat bullying and discover their shared humanity through the power of penpal correspondence
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/register-school" className="btn btn-primary">Join the Project</Link>
+            <Link href="/login" className="btn btn-primary">Get Started</Link>
             <Link href="/about" className="btn btn-outline">Learn More</Link>
           </div>
         </section>
@@ -82,8 +84,8 @@ export default function Home() {
             <p style={{ fontSize: '1.1rem', marginBottom: '2rem' }}>
               Join schools across different regions in encouraging students to become part of the solution to bullying through literature, discussion, and meaningful connections.
             </p>
-            <Link href="/register-school" className="btn btn-outline" style={{ borderColor: 'white', color: 'white' }}>
-              Register Your School Today
+            <Link href="/login" className="btn btn-outline" style={{ borderColor: 'white', color: 'white' }}>
+              Join the Project Today
             </Link>
           </div>
         </section>
