@@ -58,7 +58,7 @@ export default function Home() {
         </section>
 
         {/* About the Book */}
-        <section className="mt-4">
+        <section className="mt-2">
           <div className="card">
             <h2 className="text-center mb-3">About "Right Back at You"</h2>
             <p style={{ fontSize: '1.1rem', textAlign: 'center', marginBottom: '1.5rem' }}>
