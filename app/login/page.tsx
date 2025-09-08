@@ -48,13 +48,7 @@ function LoginContent() {
   };
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      backgroundColor: '#f8f9fa',
-      display: 'flex',
-      flexDirection: 'column',
-      fontFamily: 'system-ui, -apple-system, sans-serif'
-    }}>
+    <div className="page">
       {/* Header */}
       <header className="header">
         <div className="container">
