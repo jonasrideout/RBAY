@@ -56,18 +56,10 @@ function LoginContent() {
       fontFamily: 'system-ui, -apple-system, sans-serif'
     }}>
       {/* Header */}
-      <header style={{ borderBottom: '1px solid #e9ecef', padding: '1rem 0', backgroundColor: 'white' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Link href="/" style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '0.5rem', 
-              textDecoration: 'none', 
-              color: '#333', 
-              fontSize: '1.25rem', 
-              fontWeight: 'bold' 
-            }}>
+      <header className="header">
+        <div className="container">
+          <div className="header-content">
+            <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
               The Right Back at You Project
             </Link>
