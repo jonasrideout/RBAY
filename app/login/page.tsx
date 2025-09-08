@@ -174,14 +174,16 @@ function LoginContent() {
             }}
             onMouseOver={(e) => {
               if (!isLoading) {
-                e.target.style.backgroundColor = '#f9fafb';
-                e.target.style.borderColor = '#d1d5db';
+                const target = e.target as HTMLButtonElement;
+                target.style.backgroundColor = '#f9fafb';
+                target.style.borderColor = '#d1d5db';
               }
             }}
             onMouseOut={(e) => {
               if (!isLoading) {
-                e.target.style.backgroundColor = 'white';
-                e.target.style.borderColor = '#e5e7eb';
+                const target = e.target as HTMLButtonElement;
+                target.style.backgroundColor = 'white';
+                target.style.borderColor = '#e5e7eb';
               }
             }}
           >
