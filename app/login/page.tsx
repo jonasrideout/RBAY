@@ -58,18 +58,20 @@ function LoginContent() {
       {/* Header */}
       <header style={{ borderBottom: '1px solid #e9ecef', padding: '1rem 0', backgroundColor: 'white' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1rem' }}>
-          <Link href="/" style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '0.5rem', 
-            textDecoration: 'none', 
-            color: '#2D5AA0', 
-            fontSize: '1.25rem', 
-            fontWeight: 'bold' 
-          }}>
-            <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
-            The Right Back at You Project
-          </Link>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Link href="/" style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.5rem', 
+              textDecoration: 'none', 
+              color: '#333', 
+              fontSize: '1.25rem', 
+              fontWeight: 'bold' 
+            }}>
+              <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
+              The Right Back at You Project
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -92,7 +94,7 @@ function LoginContent() {
           {/* Title */}
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <h1 style={{ 
-              fontSize: '2rem', 
+              fontSize: '3rem', 
               fontWeight: 'bold', 
               color: '#2D5AA0', 
               marginBottom: '0.5rem' 
