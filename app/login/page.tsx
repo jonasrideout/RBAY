@@ -92,7 +92,7 @@ function LoginContent() {
           {/* Title */}
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <h1 style={{ 
-              fontSize: '3rem', 
+              fontSize: '2rem', 
               fontWeight: 'bold', 
               color: '#333', 
               marginBottom: '0.5rem' 
