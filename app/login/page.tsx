@@ -63,7 +63,7 @@ function LoginContent() {
             alignItems: 'center', 
             gap: '0.5rem', 
             textDecoration: 'none', 
-            color: '#4a90e2', 
+            color: '#2D5AA0', 
             fontSize: '1.25rem', 
             fontWeight: 'bold' 
           }}>
@@ -94,7 +94,7 @@ function LoginContent() {
             <h1 style={{ 
               fontSize: '2rem', 
               fontWeight: 'bold', 
-              color: '#4a90e2', 
+              color: '#2D5AA0', 
               marginBottom: '0.5rem' 
             }}>
               Welcome
