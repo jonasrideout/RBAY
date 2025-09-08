@@ -12,9 +12,9 @@ export default function Home() {
               The Right Back at You Project
             </Link>
             <nav className="nav">
-              <Link href="/login" className="btn btn-primary">Login / Register with Google</Link>
-              <span style={{ fontSize: '0.85rem', color: '#6c757d' }}>
-                Sign in to register or access your school
+            <Link href="/login" className="btn btn-primary">Login or Sign Up</Link>
+            <span style={{ fontSize: '0.85rem', color: '#6c757d' }}>
+            Sign in to register or access your school
               </span>
             </nav>
           </div>
