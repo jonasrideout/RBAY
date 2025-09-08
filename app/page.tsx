@@ -30,10 +30,6 @@ export default function Home() {
           <p style={{ fontSize: '1.2rem', color: '#6c757d', marginBottom: '2rem' }}>
             Connect students across geographic regions to combat bullying and discover their shared humanity through the power of penpal correspondence
           </p>
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/login" className="btn btn-primary">Get Started</Link>
-            <Link href="/about" className="btn btn-outline">Learn More</Link>
-          </div>
         </section>
 
         {/* Features */}
