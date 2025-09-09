@@ -51,8 +51,8 @@ export async function verifyAdminToken(token: string): Promise<{ email: string; 
 }
 
 // Set admin session cookie
-export function setAdminSession(token: string) {
-  const cookieStore = cookies();
+export async function setAdminSession(token: string) {
+  const cookieStore = await cookies();
   cookieStore.set('admin-session', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -62,14 +62,14 @@ export function setAdminSession(token: string) {
 }
 
 // Clear admin session cookie
-export function clearAdminSession() {
-  const cookieStore = cookies();
+export async function clearAdminSession() {
+  const cookieStore = await cookies();
   cookieStore.delete('admin-session');
 }
 
 // Get current admin session from cookies
 export async function getAdminSession(): Promise<{ email: string; role: string } | null> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const token = cookieStore.get('admin-session')?.value;
   
   if (!token) return null;
