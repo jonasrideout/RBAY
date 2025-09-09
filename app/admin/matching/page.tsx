@@ -608,11 +608,6 @@ export default function AdminDashboard() {
           <p style={{ color: '#6c757d', fontSize: '1.1rem' }}>
             Overview of all schools and their progress through the program.
           </p>
-          {adminUser && (
-            <p style={{ color: '#6c757d', fontSize: '0.9rem', marginTop: '0.5rem' }}>
-              Logged in as: <strong>{adminUser}</strong>
-            </p>
-          )}
         </div>
 
         {error && (
