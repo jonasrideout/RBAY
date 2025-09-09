@@ -6,23 +6,31 @@ import { NextRequest } from 'next/server';
 // Get admin users from environment variable
 function getAdminUsers(): Record<string, string> {
   const adminUsersEnv = process.env.ADMIN_USERS || '';
+  console.log('Raw ADMIN_USERS env:', adminUsersEnv); // DEBUG
+  
   const adminUsers: Record<string, string> = {};
   
   if (adminUsersEnv) {
     adminUsersEnv.split(',').forEach(userPair => {
       const [email, password] = userPair.split(':');
+      console.log('Parsing pair:', { userPair, email, password }); // DEBUG
       if (email && password) {
         adminUsers[email.trim()] = password.trim();
       }
     });
   }
   
+  console.log('Final admin users object:', adminUsers); // DEBUG
   return adminUsers;
 }
 
 // Verify admin credentials
 export function verifyAdminCredentials(email: string, password: string): boolean {
   const adminUsers = getAdminUsers();
+  console.log('All admin users:', adminUsers); // DEBUG
+  console.log('Looking for:', { email, password }); // DEBUG
+  console.log('Found match:', adminUsers[email] === password); // DEBUG
+  
   return adminUsers[email] === password;
 }
 
