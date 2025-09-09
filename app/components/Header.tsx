@@ -19,17 +19,22 @@ export default function Header({ showLogin = false, session, onLogout }: HeaderP
           </Link>
           <nav className={showLogin || session ? "nav-login" : "nav-invisible"}>
             {session ? (
-              // Authenticated user - show logout button
-              <button 
-                onClick={onLogout}
-                className="btn btn-primary"
-                style={{ 
-                  background: '#dc3545',
-                  borderColor: '#dc3545'
-                }}
-              >
-                Logout
-              </button>
+              // Authenticated user - show logout button with invisible helper text for consistent height
+              <>
+                <button 
+                  onClick={onLogout}
+                  className="btn btn-primary"
+                  style={{ 
+                    background: '#dc3545',
+                    borderColor: '#dc3545'
+                  }}
+                >
+                  Logout
+                </button>
+                <span style={{ fontSize: '0.85rem', color: '#6c757d', opacity: 0, height: '17px' }}>
+                  Invisible placeholder text for height
+                </span>
+              </>
             ) : showLogin ? (
               // Unauthenticated user - show login button and helper text
               <>
