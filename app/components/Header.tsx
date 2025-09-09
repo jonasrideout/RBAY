@@ -19,22 +19,17 @@ export default function Header({ showLogin = false, session, onLogout }: HeaderP
           </Link>
           <nav className={showLogin || session ? "nav-login" : "nav-invisible"}>
             {session ? (
-              // Authenticated user - show logout button with invisible helper text for consistent height
-              <>
-                <button 
-                  onClick={onLogout}
-                  className="btn btn-primary"
-                  style={{ 
-                    background: '#dc3545',
-                    borderColor: '#dc3545'
-                  }}
-                >
-                  Logout
-                </button>
-                <span style={{ fontSize: '0.85rem', color: '#6c757d', opacity: 0, height: '17px' }}>
-                  Invisible placeholder text for height
-                </span>
-              </>
+              // Authenticated user - show logout button
+              <button 
+                onClick={onLogout}
+                className="btn btn-primary"
+                style={{ 
+                  background: '#dc3545',
+                  borderColor: '#dc3545'
+                }}
+              >
+                Logout
+              </button>
             ) : showLogin ? (
               // Unauthenticated user - show login button and helper text
               <>
@@ -43,13 +38,7 @@ export default function Header({ showLogin = false, session, onLogout }: HeaderP
                   Sign in to register or access your school
                 </span>
               </>
-            ) : (
-              // Invisible placeholder to maintain consistent spacing
-              <>
-                <div style={{ height: '40px', opacity: 0 }}></div>
-                <div style={{ height: '17px', opacity: 0 }}></div>
-              </>
-            )}
+            ) : null}
           </nav>
         </div>
       </div>
