@@ -592,20 +592,52 @@ function RegisterStudentForm() {
 
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-          {currentStep === 'schoolVerify' && renderSchoolVerifyStep()}
-          {currentStep === 'schoolConfirm' && renderSchoolConfirmStep()}
-          {currentStep === 'info' && renderInfoStep()}
-          {currentStep === 'success' && renderSuccessStep()}
+          {/* Show loading while checking session or fetching teacher school */}
+          {(status === 'loading' || (status === 'authenticated' && isLoading)) && (
+            <div className="card">
+              <div style={{ textAlign: 'center', padding: '2rem' }}>
+                <div className="loading" style={{ margin: '0 auto 1rem' }}></div>
+                <p>Loading registration form...</p>
+              </div>
+            </div>
+          )}
 
-          <div className="card mt-3" style={{ background: '#f8f9fa' }}>
-            <h3>Questions?</h3>
-            <p style={{ marginBottom: '1rem' }}>
-              If you need help or have questions about the project, ask your teacher or contact us:
-            </p>
-            <p style={{ marginBottom: '0' }}>
-              <strong>Email:</strong> <a href="mailto:carolyn.mackler@gmail.com" style={{ color: '#4a90e2' }}>carolyn.mackler@gmail.com</a>
-            </p>
-          </div>
+          {/* Show error state */}
+          {error && (
+            <div className="card">
+              <div className="alert alert-error">
+                <strong>Error:</strong> {error}
+              </div>
+              <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                <Link href="/login" className="btn btn-primary">
+                  Login as Teacher
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* Show form steps when ready */}
+          {!isLoading && !error && status !== 'loading' && (
+            <>
+              {currentStep === 'schoolVerify' && renderSchoolVerifyStep()}
+              {currentStep === 'schoolConfirm' && renderSchoolConfirmStep()}
+              {currentStep === 'info' && renderInfoStep()}
+              {currentStep === 'success' && renderSuccessStep()}
+            </>
+          )}
+
+          {/* Help section - always show when not in error state */}
+          {!error && (
+            <div className="card mt-3" style={{ background: '#f8f9fa' }}>
+              <h3>Questions?</h3>
+              <p style={{ marginBottom: '1rem' }}>
+                If you need help or have questions about the project, ask your teacher or contact us:
+              </p>
+              <p style={{ marginBottom: '0' }}>
+                <strong>Email:</strong> <a href="mailto:carolyn.mackler@gmail.com" style={{ color: '#4a90e2' }}>carolyn.mackler@gmail.com</a>
+              </p>
+            </div>
+          )}
         </div>
       </main>
 
