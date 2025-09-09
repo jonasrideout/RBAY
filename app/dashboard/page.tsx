@@ -284,13 +284,13 @@ function TeacherDashboardContent() {
   };
 
   const handleLogout = () => {
-  router.push('/api/auth/signout?callbackUrl=' + encodeURIComponent(window.location.origin));  
+    router.push('/api/auth/signout?callbackUrl=' + encodeURIComponent(window.location.origin));  
   };
 
   if (isLoading) {
     return (
       <div className="page">
-        <Header showLogin={false} />
+        <Header session={session} onLogout={handleLogout} />
         <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
           <div style={{ textAlign: 'center', padding: '2rem' }}>
             <div className="loading" style={{ margin: '0 auto 1rem' }}></div>
@@ -304,7 +304,7 @@ function TeacherDashboardContent() {
   if (error) {
     return (
       <div className="page">
-        <Header showLogin={false} />
+        <Header session={session} onLogout={handleLogout} />
         <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
           <div className="alert alert-error">
             <strong>Error:</strong> {error}
@@ -328,44 +328,7 @@ function TeacherDashboardContent() {
 
   return (
     <div className="page">
-      <Header showLogin={false} />
-
-      {/* Dashboard Navigation */}
-      <nav style={{ 
-        background: '#f8f9fa', 
-        borderBottom: '1px solid #e9ecef',
-        padding: '0.75rem 0'
-      }}>
-        <div className="container">
-          <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
-            <Link href="/dashboard" style={{ 
-              color: '#2c5aa0', 
-              textDecoration: 'none',
-              fontWeight: '500'
-            }}>
-              Dashboard
-            </Link>
-            <Link href="/register-school" style={{ 
-              color: '#6c757d', 
-              textDecoration: 'none' 
-            }}>
-              School Settings
-            </Link>
-            <button 
-              onClick={handleLogout} 
-              style={{ 
-                background: 'none', 
-                border: 'none', 
-                color: '#6c757d',
-                cursor: 'pointer',
-                fontSize: '1rem'
-              }}
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </nav>
+      <Header session={session} onLogout={handleLogout} />
 
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
         
@@ -483,7 +446,7 @@ function TeacherDashboardContent() {
 function LoadingDashboard() {
   return (
     <div className="page">
-      <Header showLogin={false} />
+      <Header />
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
         <div style={{ textAlign: 'center', padding: '2rem' }}>
           <div>Loading dashboard...</div>
