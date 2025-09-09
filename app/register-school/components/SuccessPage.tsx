@@ -22,7 +22,7 @@ export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
   const [copyFeedback, setCopyFeedback] = useState<string>('');
 
   const handleLogout = () => {
-    router.push('/api/auth/signout?callbackUrl=' + encodeURIComponent(process.env.NEXT_PUBLIC_APP_URL || 'https://nextjs-boilerplate-beta-three-49.vercel.app'));
+    router.push('/api/auth/signout?callbackUrl=' + encodeURIComponent(getBaseUrl()));
   };
 
   // Use environment variable for consistent URL generation
