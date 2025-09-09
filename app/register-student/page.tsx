@@ -1,8 +1,11 @@
+// /app/register-student/page.tsx
+
 "use client";
 
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import Header from '../components/Header';
 
 interface StudentFormData {
   schoolToken: string;
@@ -585,20 +588,7 @@ function RegisterStudentForm() {
 
   return (
     <div className="page">
-      <header className="header">
-        <div className="container">
-          <div className="header-content">
-            <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
-              The Right Back at You Project
-            </Link>
-            <nav className="nav">
-              <Link href="/" className="nav-link">Home</Link>
-              <Link href="/login" className="nav-link">Login</Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
@@ -621,7 +611,7 @@ function RegisterStudentForm() {
 
       <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
         <div className="container text-center">
-          <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
+          <p>&copy; 2025 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
         </div>
       </footer>
     </div>
@@ -631,20 +621,7 @@ function RegisterStudentForm() {
 function LoadingPage() {
   return (
     <div className="page">
-      <header className="header">
-        <div className="container">
-          <div className="header-content">
-            <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
-              The Right Back at You Project
-            </Link>
-            <nav className="nav">
-              <Link href="/" className="nav-link">Home</Link>
-              <Link href="/login" className="nav-link">Login</Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <Header />
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
         <div style={{ textAlign: 'center', padding: '2rem' }}>
           <div>Loading...</div>
