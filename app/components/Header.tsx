@@ -1,5 +1,4 @@
 // /app/components/Header.tsx
-
 import Link from 'next/link';
 
 interface HeaderProps {
@@ -19,17 +18,22 @@ export default function Header({ showLogin = false, session, onLogout }: HeaderP
           </Link>
           <nav className={showLogin || session ? "nav-login" : "nav-invisible"}>
             {session ? (
-              // Authenticated user - show logout button
-              <button 
-                onClick={onLogout}
-                className="btn btn-primary"
-                style={{ 
-                  background: '#dc3545',
-                  borderColor: '#dc3545'
-                }}
-              >
-                Logout
-              </button>
+              // Authenticated user - show logout button and admin user display
+              <>
+                <button 
+                  onClick={onLogout}
+                  className="btn btn-primary"
+                  style={{ 
+                    background: '#dc3545',
+                    borderColor: '#dc3545'
+                  }}
+                >
+                  Logout
+                </button>
+                <span style={{ fontSize: '0.85rem', color: '#6c757d' }}>
+                  Logged in as: {session.user?.email}
+                </span>
+              </>
             ) : showLogin ? (
               // Unauthenticated user - show login button and helper text
               <>
