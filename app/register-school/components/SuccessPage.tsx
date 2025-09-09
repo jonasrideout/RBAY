@@ -19,7 +19,10 @@ interface SuccessPageProps {
 export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
   const { data: session } = useSession();
   const router = useRouter();
-  const [copyFeedback, setCopyFeedback] = useState<string>('');
+  
+  // Copy button states (matching dashboard pattern)
+  const [dashboardCopyStatus, setDashboardCopyStatus] = useState<'idle' | 'copied'>('idle');
+  const [studentCopyStatus, setStudentCopyStatus] = useState<'idle' | 'copied'>('idle');
 
   const handleLogout = () => {
     router.push('/api/auth/signout?callbackUrl=' + encodeURIComponent(getBaseUrl()));
@@ -42,14 +45,24 @@ export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
     return `${getBaseUrl()}/dashboard`;
   };
 
-  const handleCopyToClipboard = async (text: string, type: string) => {
+  // Copy handlers matching dashboard pattern exactly
+  const handleCopyDashboardLink = async () => {
     try {
-      await navigator.clipboard.writeText(text);
-      setCopyFeedback(`${type} copied to clipboard!`);
-      setTimeout(() => setCopyFeedback(''), 3000);
+      await navigator.clipboard.writeText(generateDashboardLink());
+      setDashboardCopyStatus('copied');
+      setTimeout(() => setDashboardCopyStatus('idle'), 2000);
     } catch (err) {
-      setCopyFeedback('Failed to copy. Please copy manually.');
-      setTimeout(() => setCopyFeedback(''), 3000);
+      console.error('Failed to copy dashboard link:', err);
+    }
+  };
+
+  const handleCopyStudentLink = async () => {
+    try {
+      await navigator.clipboard.writeText(generateStudentLink());
+      setStudentCopyStatus('copied');
+      setTimeout(() => setStudentCopyStatus('idle'), 2000);
+    } catch (err) {
+      console.error('Failed to copy student link:', err);
     }
   };
 
@@ -59,28 +72,6 @@ export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
 
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          {/* Copy Feedback Toast */}
-          {copyFeedback && (
-            <div 
-              style={{
-                position: 'fixed',
-                top: '100px',
-                right: '20px',
-                background: '#28a745',
-                color: 'white',
-                padding: '0.75rem 1.5rem',
-                borderRadius: '6px',
-                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                zIndex: 1000,
-                animation: 'slideIn 0.3s ease-out'
-              }}
-              role="alert"
-              aria-live="polite"
-            >
-              {copyFeedback}
-            </div>
-          )}
-
           {/* Success Message */}
           <div className="card text-center" style={{ background: '#d4edda' }}>
             <h2 style={{ color: '#155724' }}>🎉 School Registration Complete!</h2>
@@ -124,21 +115,44 @@ export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
               </Link>
               
               <button 
-                onClick={() => handleCopyToClipboard(generateDashboardLink(), 'Dashboard link')}
+                onClick={handleCopyDashboardLink}
                 className="btn btn-secondary"
                 aria-label="Copy dashboard link to clipboard"
                 type="button"
+                style={{ 
+                  backgroundColor: dashboardCopyStatus === 'copied' ? '#28a745' : '#6c757d',
+                  transition: 'all 0.3s ease'
+                }}
               >
-                📋 Copy Dashboard Link
+                {dashboardCopyStatus === 'copied' ? (
+                  <>
+                    <span style={{ marginRight: '0.5rem' }}>✓</span>
+                    Copied!
+                  </>
+                ) : (
+                  '📋 Copy Dashboard Link'
+                )}
               </button>
               
               <button 
-                onClick={() => handleCopyToClipboard(generateStudentLink(), 'Student registration link')}
+                onClick={handleCopyStudentLink}
                 className="btn btn-outline"
                 aria-label="Copy student registration link to clipboard"
                 type="button"
+                style={{ 
+                  backgroundColor: studentCopyStatus === 'copied' ? '#28a745' : '',
+                  color: studentCopyStatus === 'copied' ? 'white' : '',
+                  transition: 'all 0.3s ease'
+                }}
               >
-                📋 Copy Student Link
+                {studentCopyStatus === 'copied' ? (
+                  <>
+                    <span style={{ marginRight: '0.5rem' }}>✓</span>
+                    Copied!
+                  </>
+                ) : (
+                  '📋 Copy Student Link'
+                )}
               </button>
             </div>
           </div>
