@@ -15,14 +15,22 @@ export default function Header({ showLogin = false }: HeaderProps) {
             <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
             The Right Back at You Project
           </Link>
-          {showLogin && (
-            <nav className="nav" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
-              <Link href="/login" className="btn btn-primary">Login or Sign Up</Link>
-              <span style={{ fontSize: '0.85rem', color: '#6c757d' }}>
-                Sign in to register or access your school
-              </span>
-            </nav>
-          )}
+          <nav className="nav" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
+            {showLogin ? (
+              <>
+                <Link href="/login" className="btn btn-primary">Login or Sign Up</Link>
+                <span style={{ fontSize: '0.85rem', color: '#6c757d' }}>
+                  Sign in to register or access your school
+                </span>
+              </>
+            ) : (
+              // Invisible placeholder to maintain consistent spacing
+              <>
+                <div style={{ height: '40px', opacity: 0 }}></div>
+                <div style={{ height: '17px', opacity: 0 }}></div>
+              </>
+            )}
+          </nav>
         </div>
       </div>
     </header>
