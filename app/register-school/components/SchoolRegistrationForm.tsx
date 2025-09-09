@@ -1,6 +1,9 @@
 // /app/register-school/components/SchoolRegistrationForm.tsx
 
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import Header from '../../components/Header';
 import { SchoolFormData } from '../types';
 import { US_STATES, STATE_TO_REGION } from '../constants';
 
@@ -23,27 +26,20 @@ export default function SchoolRegistrationForm({
   onGradeLevelChange,
   isEmailReadOnly = false
 }: SchoolRegistrationFormProps) {
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    router.push('/api/auth/signout?callbackUrl=' + encodeURIComponent(window.location.origin));
+  };
+
   const getRegionForState = (state: string) => {
     return STATE_TO_REGION[state] || '';
   };
 
   return (
     <div className="page">
-      {/* Header */}
-      <header className="header">
-        <div className="container">
-          <div className="header-content">
-            <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
-              The Right Back at You Project
-            </Link>
-            <nav className="nav">
-              <Link href="/dashboard" className="nav-link">Dashboard</Link>
-              <Link href="/logout" className="nav-link">Logout</Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <Header session={session} onLogout={handleLogout} />
 
       {/* Main Content */}
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
