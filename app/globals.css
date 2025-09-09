@@ -72,12 +72,14 @@ p {
   text-decoration: none;
 }
 
-/* New nav classes for consistent layout */
+/* Fixed height nav classes for consistent header sizing */
 .nav-login {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 0.5rem;
+  height: 65px;
+  justify-content: center;
 }
 
 .nav-invisible {
@@ -85,7 +87,8 @@ p {
   flex-direction: column;
   align-items: flex-end;
   gap: 0.5rem;
-  visibility: hidden;
+  height: 65px;
+  justify-content: center;
 }
 
 /* Keep the original .nav for backwards compatibility */
