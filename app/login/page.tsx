@@ -6,6 +6,7 @@ import { signIn, getSession } from 'next-auth/react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
+import Header from '../components/Header';
 
 function LoginContent() {
   const [isLoading, setIsLoading] = useState(false);
@@ -50,16 +51,7 @@ function LoginContent() {
   return (
     <div className="page">
       {/* Header */}
-      <header className="header">
-        <div className="container">
-          <div className="header-content">
-            <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
-              The Right Back at You Project
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Header showLogin={false} />
 
       {/* Main Content */}
       <main style={{ 
