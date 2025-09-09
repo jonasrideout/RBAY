@@ -3,6 +3,7 @@
 "use client";
 
 import Link from 'next/link';
+import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Header from '../../components/Header';
@@ -18,24 +19,38 @@ interface SuccessPageProps {
 export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
   const { data: session } = useSession();
   const router = useRouter();
+  const [copyFeedback, setCopyFeedback] = useState<string>('');
 
   const handleLogout = () => {
-    router.push('/api/auth/signout?callbackUrl=' + encodeURIComponent(window.location.origin));
+    router.push('/api/auth/signout?callbackUrl=' + encodeURIComponent(process.env.NEXT_PUBLIC_APP_URL || 'https://nextjs-boilerplate-beta-three-49.vercel.app'));
+  };
+
+  // Use environment variable for consistent URL generation
+  const getBaseUrl = () => {
+    return process.env.NEXT_PUBLIC_APP_URL || 'https://nextjs-boilerplate-beta-three-49.vercel.app';
   };
 
   const generateStudentLink = () => {
-    if (typeof window !== 'undefined' && registeredSchool?.dashboardToken) {
-      return `${window.location.origin}/register-student?token=${registeredSchool.dashboardToken}`;
+    if (registeredSchool?.dashboardToken) {
+      return `${getBaseUrl()}/register-student?token=${registeredSchool.dashboardToken}`;
     }
     return '';
   };
 
   const generateDashboardLink = () => {
-    if (typeof window !== 'undefined') {
-      // Session-based dashboard - no token needed
-      return `${window.location.origin}/dashboard`;
+    // Session-based dashboard - no token needed
+    return `${getBaseUrl()}/dashboard`;
+  };
+
+  const handleCopyToClipboard = async (text: string, type: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopyFeedback(`${type} copied to clipboard!`);
+      setTimeout(() => setCopyFeedback(''), 3000);
+    } catch (err) {
+      setCopyFeedback('Failed to copy. Please copy manually.');
+      setTimeout(() => setCopyFeedback(''), 3000);
     }
-    return '';
   };
 
   return (
@@ -44,6 +59,28 @@ export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
 
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          {/* Copy Feedback Toast */}
+          {copyFeedback && (
+            <div 
+              style={{
+                position: 'fixed',
+                top: '100px',
+                right: '20px',
+                background: '#28a745',
+                color: 'white',
+                padding: '0.75rem 1.5rem',
+                borderRadius: '6px',
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                zIndex: 1000,
+                animation: 'slideIn 0.3s ease-out'
+              }}
+              role="alert"
+              aria-live="polite"
+            >
+              {copyFeedback}
+            </div>
+          )}
+
           {/* Success Message */}
           <div className="card text-center" style={{ background: '#d4edda' }}>
             <h2 style={{ color: '#155724' }}>🎉 School Registration Complete!</h2>
@@ -85,18 +122,21 @@ export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
               >
                 Go to Dashboard
               </Link>
+              
               <button 
-                onClick={() => {
-                  const dashboardLink = generateDashboardLink();
-                  navigator.clipboard.writeText(dashboardLink);
-                }}
+                onClick={() => handleCopyToClipboard(generateDashboardLink(), 'Dashboard link')}
                 className="btn btn-secondary"
+                aria-label="Copy dashboard link to clipboard"
+                type="button"
               >
                 📋 Copy Dashboard Link
               </button>
+              
               <button 
-                onClick={() => navigator.clipboard.writeText(generateStudentLink())}
+                onClick={() => handleCopyToClipboard(generateStudentLink(), 'Student registration link')}
                 className="btn btn-outline"
+                aria-label="Copy student registration link to clipboard"
+                type="button"
               >
                 📋 Copy Student Link
               </button>
@@ -108,9 +148,23 @@ export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
       {/* Footer */}
       <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
         <div className="container text-center">
-          <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
+          <p>&copy; 2025 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
         </div>
       </footer>
+
+      {/* CSS for toast animation */}
+      <style jsx>{`
+        @keyframes slideIn {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+      `}</style>
     </div>
   );
 }
