@@ -4,9 +4,11 @@ import Link from 'next/link';
 
 interface HeaderProps {
   showLogin?: boolean;
+  session?: any;
+  onLogout?: () => void;
 }
 
-export default function Header({ showLogin = false }: HeaderProps) {
+export default function Header({ showLogin = false, session, onLogout }: HeaderProps) {
   return (
     <header className="header">
       <div className="container">
@@ -15,8 +17,21 @@ export default function Header({ showLogin = false }: HeaderProps) {
             <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
             The Right Back at You Project
           </Link>
-          <nav className="nav" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
-            {showLogin ? (
+          <nav className={showLogin || session ? "nav-login" : "nav-invisible"}>
+            {session ? (
+              // Authenticated user - show logout button
+              <button 
+                onClick={onLogout}
+                className="btn btn-primary"
+                style={{ 
+                  background: '#dc3545',
+                  borderColor: '#dc3545'
+                }}
+              >
+                Logout
+              </button>
+            ) : showLogin ? (
+              // Unauthenticated user - show login button and helper text
               <>
                 <Link href="/login" className="btn btn-primary">Login or Sign Up</Link>
                 <span style={{ fontSize: '0.85rem', color: '#6c757d' }}>
