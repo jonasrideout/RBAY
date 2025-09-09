@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Header from '../../components/Header';
 import MatchingWorkflow from './components/MatchingWorkflow';
 import SchoolCard from './components/SchoolCard';
 import { School, StatusCounts, SelectedStatus } from './types';
@@ -553,6 +554,7 @@ export default function AdminDashboard() {
   if (isLoading) {
     return (
       <div className="page">
+        <Header showLogin={false} />
         <div className="container" style={{ textAlign: 'center', padding: '3rem' }}>
           <h2>Loading Dashboard...</h2>
         </div>
@@ -562,20 +564,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="page">
-      <header className="header">
-        <div className="container">
-          <div className="header-content">
-            <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
-              The Right Back at You Project
-            </Link>
-            <nav className="nav">
-              <Link href="/" className="nav-link">Home</Link>
-              <Link href="/admin/matching" className="nav-link">Admin</Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <Header showLogin={false} />
 
       <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
         
