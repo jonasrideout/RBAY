@@ -121,7 +121,8 @@ export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
                 type="button"
                 style={{ 
                   backgroundColor: dashboardCopyStatus === 'copied' ? '#28a745' : '#6c757d',
-                  transition: 'all 0.3s ease'
+                  transition: 'all 0.3s ease',
+                  minWidth: '200px'
                 }}
               >
                 {dashboardCopyStatus === 'copied' ? (
@@ -142,7 +143,8 @@ export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
                 style={{ 
                   backgroundColor: studentCopyStatus === 'copied' ? '#28a745' : '',
                   color: studentCopyStatus === 'copied' ? 'white' : '',
-                  transition: 'all 0.3s ease'
+                  transition: 'all 0.3s ease',
+                  minWidth: '180px'
                 }}
               >
                 {studentCopyStatus === 'copied' ? (
