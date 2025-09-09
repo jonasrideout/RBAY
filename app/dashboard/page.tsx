@@ -1,9 +1,12 @@
+// /app/dashboard/page.tsx
+
 "use client";
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Header from '../components/Header';
 
 // Import components
 import SchoolVerification from './components/SchoolVerification';
@@ -287,19 +290,7 @@ function TeacherDashboardContent() {
   if (isLoading) {
     return (
       <div className="page">
-        <header className="header">
-          <div className="container">
-            <div className="header-content">
-              <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
-                The Right Back at You Project
-              </Link>
-              <nav className="nav">
-                <Link href="/" className="nav-link">Home</Link>
-              </nav>
-            </div>
-          </div>
-        </header>
+        <Header showLogin={false} />
         <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
           <div style={{ textAlign: 'center', padding: '2rem' }}>
             <div className="loading" style={{ margin: '0 auto 1rem' }}></div>
@@ -313,23 +304,18 @@ function TeacherDashboardContent() {
   if (error) {
     return (
       <div className="page">
-        <header className="header">
-          <div className="container">
-            <div className="header-content">
-              <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
-                The Right Back at You Project
-              </Link>
-              <nav className="nav">
-                <Link href="/" className="nav-link">Home</Link>
-                <Link href="/register-school" className="nav-link">Register School</Link>
-              </nav>
-            </div>
-          </div>
-        </header>
+        <Header showLogin={false} />
         <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
           <div className="alert alert-error">
             <strong>Error:</strong> {error}
+          </div>
+          <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+            <Link href="/" className="btn btn-primary" style={{ marginRight: '1rem' }}>
+              Go Home
+            </Link>
+            <Link href="/register-school" className="btn btn-secondary">
+              Register School
+            </Link>
           </div>
         </main>
       </div>
@@ -342,23 +328,44 @@ function TeacherDashboardContent() {
 
   return (
     <div className="page">
-      <header className="header">
+      <Header showLogin={false} />
+
+      {/* Dashboard Navigation */}
+      <nav style={{ 
+        background: '#f8f9fa', 
+        borderBottom: '1px solid #e9ecef',
+        padding: '0.75rem 0'
+      }}>
         <div className="container">
-          <div className="header-content">
-            <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
-              The Right Back at You Project
+          <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+            <Link href="/dashboard" style={{ 
+              color: '#2c5aa0', 
+              textDecoration: 'none',
+              fontWeight: '500'
+            }}>
+              Dashboard
             </Link>
-            <nav className="nav">
-              <Link href="/dashboard" className="nav-link">Dashboard</Link>
-              <Link href="/register-school" className="nav-link">School Settings</Link>
-              <button onClick={handleLogout} className="nav-link" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
-                Logout
-              </button>
-            </nav>
+            <Link href="/register-school" style={{ 
+              color: '#6c757d', 
+              textDecoration: 'none' 
+            }}>
+              School Settings
+            </Link>
+            <button 
+              onClick={handleLogout} 
+              style={{ 
+                background: 'none', 
+                border: 'none', 
+                color: '#6c757d',
+                cursor: 'pointer',
+                fontSize: '1rem'
+              }}
+            >
+              Logout
+            </button>
           </div>
         </div>
-      </header>
+      </nav>
 
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
         
@@ -476,19 +483,7 @@ function TeacherDashboardContent() {
 function LoadingDashboard() {
   return (
     <div className="page">
-      <header className="header">
-        <div className="container">
-          <div className="header-content">
-            <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
-              The Right Back at You Project
-            </Link>
-            <nav className="nav">
-              <Link href="/" className="nav-link">Home</Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <Header showLogin={false} />
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
         <div style={{ textAlign: 'center', padding: '2rem' }}>
           <div>Loading dashboard...</div>
