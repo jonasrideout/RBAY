@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Header from '../../components/Header';
 import MatchingWorkflow from './components/MatchingWorkflow';
@@ -20,12 +21,43 @@ export default function AdminDashboard() {
   const [selectedStatus, setSelectedStatus] = useState<SelectedStatus>('COLLECTING');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  // NEW: Track which school pairs have pen pal assignments
+  const [adminUser, setAdminUser] = useState<string>('');
+  // Track which school pairs have pen pal assignments
   const [pairAssignments, setPairAssignments] = useState<{[key: string]: boolean}>({});
+  
+  const router = useRouter();
 
   useEffect(() => {
+    checkAdminAuth();
     fetchAllSchools();
   }, []);
+
+  const checkAdminAuth = async () => {
+    try {
+      const response = await fetch('/api/admin/me');
+      if (response.ok) {
+        const data = await response.json();
+        setAdminUser(data.email);
+      } else {
+        // Will be redirected by middleware, but this is a backup
+        router.push('/admin/login');
+      }
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      router.push('/admin/login');
+    }
+  };
+
+  const handleAdminLogout = async () => {
+    try {
+      await fetch('/api/admin/logout', { method: 'POST' });
+      router.push('/');
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Force redirect even if API call fails
+      router.push('/');
+    }
+  };
 
   const fetchAllSchools = async () => {
     setIsLoading(true);
@@ -48,7 +80,7 @@ export default function AdminDashboard() {
         DONE: 0
       });
 
-      // NEW: Check pen pal assignments for matched schools
+      // Check pen pal assignments for matched schools
       await checkPenPalAssignments(data.schools || []);
 
     } catch (err: any) {
@@ -58,7 +90,7 @@ export default function AdminDashboard() {
     }
   };
 
-  // FIXED: Function to check if pen pal assignments exist for school pairs
+  // Function to check if pen pal assignments exist for school pairs
   const checkPenPalAssignments = async (schoolsList: School[]) => {
     const matchedSchools = schoolsList.filter(school => school.status === 'MATCHED');
     const assignments: {[key: string]: boolean} = {};
@@ -77,7 +109,7 @@ export default function AdminDashboard() {
         if (response.ok) {
           const data = await response.json();
           
-          // FIXED: Check for multiple pen pals structure (penpals array and penpalCount)
+          // Check for multiple pen pals structure (penpals array and penpalCount)
           const hasAssignments = data.pairings && data.pairings.some((pairing: any) => 
             pairing.penpalCount > 0 || (pairing.penpals && pairing.penpals.length > 0)
           );
@@ -106,7 +138,7 @@ export default function AdminDashboard() {
   };
 
   const handleSchoolsUpdate = async (updatedSchools: School[]) => {
-    // UPDATED: If empty array is passed, just refresh from API
+    // If empty array is passed, just refresh from API
     if (updatedSchools.length === 0) {
       await fetchAllSchools();
       return Promise.resolve();
@@ -181,7 +213,7 @@ export default function AdminDashboard() {
     }
   };
 
-  // NEW: Function to handle download
+  // Function to handle download
   const handleDownloadPairings = (schoolId: string, schoolName: string) => {
     const downloadUrl = `/api/admin/download-pairings?schoolId=${schoolId}`;
     
@@ -194,7 +226,7 @@ export default function AdminDashboard() {
     document.body.removeChild(link);
   };
 
-  // FIXED: Added handlers for seed and clear operations
+  // Handlers for seed and clear operations
   const handleSeedData = async () => {
     if (confirm('This will create test schools. Continue?')) {
       try {
@@ -239,7 +271,7 @@ export default function AdminDashboard() {
     matchedSchools.forEach(school => {
       if (processed.has(school.id) || !school.matchedWithSchoolId) return;
       
-      // FIXED: Find the complete school object instead of using limited matchedSchool data
+      // Find the complete school object instead of using limited matchedSchool data
       const matchedSchoolFull = schools.find(s => s.id === school.matchedWithSchoolId);
       if (!matchedSchoolFull) return;
       
@@ -271,7 +303,7 @@ export default function AdminDashboard() {
             gap: '1.5rem' 
           }}>
             {pairs.map(([school1, school2], index) => {
-              // FIXED: Check if this pair has pen pal assignments using updated structure
+              // Check if this pair has pen pal assignments using updated structure
               const pairKey = [school1.id, school2.id].sort().join('-');
               const hasAssignments = pairAssignments[pairKey] || false;
 
@@ -293,7 +325,7 @@ export default function AdminDashboard() {
                     gap: '1.5rem',
                     alignItems: 'center'
                   }}>
-                    {/* School 1 - FIXED: Use single teacherName field */}
+                    {/* School 1 */}
                     <div style={{
                       padding: '1rem',
                       background: '#f8f9fa',
@@ -318,7 +350,7 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
-                    {/* School 2 - FIXED: Now using complete school data */}
+                    {/* School 2 */}
                     <div style={{
                       padding: '1rem',
                       background: '#f8f9fa',
@@ -343,7 +375,7 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
-                    {/* Actions Column - FIXED: Conditional logic based on actual pen pal assignments */}
+                    {/* Actions Column */}
                     <div style={{
                       display: 'flex',
                       flexDirection: 'column',
@@ -353,7 +385,7 @@ export default function AdminDashboard() {
                       justifyContent: 'center',
                       alignItems: 'center'
                     }}>
-                      {/* CONDITIONAL: Show Assign button if no assignments, hide if assignments exist */}
+                      {/* Show Assign button if no assignments, hide if assignments exist */}
                       {!hasAssignments ? (
                         <button
                           onClick={() => handleAssignPenPals(school1.id, school2.id)}
@@ -376,7 +408,7 @@ export default function AdminDashboard() {
                           Assign Pen Pals
                         </button>
                       ) : (
-                        // CONDITIONAL: Show pen pal list links if assignments exist
+                        // Show pen pal list links if assignments exist
                         <div style={{ 
                           display: 'flex', 
                           flexDirection: 'column', 
@@ -554,7 +586,7 @@ export default function AdminDashboard() {
   if (isLoading) {
     return (
       <div className="page">
-        <Header showLogin={false} />
+        <Header />
         <div className="container" style={{ textAlign: 'center', padding: '3rem' }}>
           <h2>Loading Dashboard...</h2>
         </div>
@@ -564,7 +596,10 @@ export default function AdminDashboard() {
 
   return (
     <div className="page">
-      <Header showLogin={false} />
+      <Header 
+        session={{ user: { email: adminUser } }} 
+        onLogout={handleAdminLogout} 
+      />
 
       <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
         
@@ -573,6 +608,11 @@ export default function AdminDashboard() {
           <p style={{ color: '#6c757d', fontSize: '1.1rem' }}>
             Overview of all schools and their progress through the program.
           </p>
+          {adminUser && (
+            <p style={{ color: '#6c757d', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+              Logged in as: <strong>{adminUser}</strong>
+            </p>
+          )}
         </div>
 
         {error && (
@@ -635,7 +675,6 @@ export default function AdminDashboard() {
             {isLoading ? '🔄 Loading...' : '🔄 Refresh Data'}
           </button>
           
-          {/* FIXED: Changed from Link to button to prevent auto-navigation */}
           <button 
             onClick={handleSeedData}
             className="btn btn-primary"
@@ -643,7 +682,6 @@ export default function AdminDashboard() {
             🌱 Seed Test Data
           </button>
 
-          {/* FIXED: Changed from Link to button to prevent auto-navigation */}
           <button 
             onClick={handleClearData}
             className="btn"
