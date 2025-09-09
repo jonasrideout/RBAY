@@ -1,3 +1,5 @@
+// /app/register-school/page.tsx
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -16,6 +18,7 @@ export default function RegisterSchool() {
   const [error, setError] = useState('');
   const [registeredSchool, setRegisteredSchool] = useState<any>(null);
   const [showExistingSchoolError, setShowExistingSchoolError] = useState(false);
+  const [hasCheckedExistingSchool, setHasCheckedExistingSchool] = useState(false);
 
   const [formData, setFormData] = useState<SchoolFormData>({
     teacherName: '',
@@ -49,12 +52,22 @@ export default function RegisterSchool() {
         teacherEmail: session.user.email || ''
       }));
 
-      // Check if user already has a school
-      if (session.user.schoolId) {
-        setShowExistingSchoolError(true);
+      // Only check for existing school if we haven't checked yet AND we're not in success state
+      if (!hasCheckedExistingSchool && !isSubmitted) {
+        if (session.user.schoolId) {
+          setShowExistingSchoolError(true);
+        }
+        setHasCheckedExistingSchool(true);
       }
     }
-  }, [session, status, router]);
+  }, [session, status, router, hasCheckedExistingSchool, isSubmitted]);
+
+  // Scroll to top when success page shows
+  useEffect(() => {
+    if (isSubmitted) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [isSubmitted]);
 
   const updateFormData = (field: keyof SchoolFormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -157,6 +170,9 @@ export default function RegisterSchool() {
 
       setRegisteredSchool(data.school);
       setIsSubmitted(true);
+      // Prevent future existing school checks since we just registered successfully
+      setHasCheckedExistingSchool(true);
+      setShowExistingSchoolError(false);
     } catch (err: any) {
       setError(err.message || 'There was an error submitting your registration. Please try again.');
     } finally {
@@ -176,8 +192,13 @@ export default function RegisterSchool() {
     );
   }
 
-  // Show existing school error with choices
-  if (showExistingSchoolError) {
+  // Success state takes priority over existing school error
+  if (isSubmitted && registeredSchool) {
+    return <SuccessPage registeredSchool={registeredSchool} />;
+  }
+
+  // Show existing school error with choices (only if not in success state)
+  if (showExistingSchoolError && !isSubmitted) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
@@ -211,10 +232,6 @@ export default function RegisterSchool() {
         </div>
       </div>
     );
-  }
-
-  if (isSubmitted) {
-    return <SuccessPage registeredSchool={registeredSchool} />;
   }
 
   return (
