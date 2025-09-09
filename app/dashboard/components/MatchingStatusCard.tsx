@@ -1,5 +1,6 @@
-"use client";
+// /app/dashboard/components/MatchingStatusCard.tsx
 
+"use client";
 import { useState } from 'react';
 
 interface SchoolData {
@@ -60,29 +61,28 @@ export default function MatchingStatusCard({ schoolData, allActiveStudentsComple
 
   return (
     <div className="card" style={{ marginBottom: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          {readyForMatching ? (
-            <>
-              <h3 style={{ color: '#17a2b8', marginBottom: '0.5rem' }}>
-                🎯 Matching Requested
-              </h3>
-              <p style={{ color: '#6c757d', marginBottom: '0' }}>
-                Waiting for partner school. We will email you when matching is complete.
-              </p>
-            </>
-          ) : (
-            <>
-              <h3 style={{ color: '#28a745', marginBottom: '0.5rem' }}>
-                ✅ Ready for Matching!
-              </h3>
-              <p style={{ color: '#6c757d', marginBottom: '0' }}>
-                All active students have provided their interest information. You can request matching when ready!
-              </p>
-            </>
-          )}
-        </div>
-        <div>
+      <div>
+        {readyForMatching ? (
+          <>
+            <h3 style={{ color: '#17a2b8', marginBottom: '0.5rem' }}>
+              🎯 Matching Requested
+            </h3>
+            <p style={{ color: '#6c757d', marginBottom: '1.5rem' }}>
+              Waiting for partner school. We will email you when matching is complete.
+            </p>
+          </>
+        ) : (
+          <>
+            <h3 style={{ color: '#28a745', marginBottom: '0.5rem' }}>
+              ✅ Ready for Matching!
+            </h3>
+            <p style={{ color: '#6c757d', marginBottom: '1.5rem' }}>
+              All active students have provided their interest information. You can request matching when ready!
+            </p>
+          </>
+        )}
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
           <button 
             className="btn" 
             style={{ 
@@ -103,7 +103,8 @@ export default function MatchingStatusCard({ schoolData, allActiveStudentsComple
               </>
             ) : '🎯 Request Matching')}
           </button>
-          <p style={{ color: '#6c757d', fontSize: '0.9rem', marginTop: '0.5rem', marginBottom: '0' }}>
+          
+          <p style={{ color: '#6c757d', fontSize: '0.9rem', margin: '0' }}>
             All students ready - you can request matching anytime!
           </p>
         </div>
