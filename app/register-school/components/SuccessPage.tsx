@@ -3,7 +3,9 @@
 "use client";
 
 import Link from 'next/link';
-import { signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import Header from '../../components/Header';
 
 interface SuccessPageProps {
   registeredSchool: {
@@ -14,6 +16,13 @@ interface SuccessPageProps {
 }
 
 export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    router.push('/api/auth/signout?callbackUrl=' + encodeURIComponent(window.location.origin));
+  };
+
   const generateStudentLink = () => {
     if (typeof window !== 'undefined' && registeredSchool?.dashboardToken) {
       return `${window.location.origin}/register-student?token=${registeredSchool.dashboardToken}`;
@@ -29,36 +38,9 @@ export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
     return '';
   };
 
-  const handleLogout = async () => {
-    await signOut({ 
-      callbackUrl: window.location.origin,
-      redirect: true 
-    });
-  };
-
   return (
     <div className="page">
-      {/* Header */}
-      <header className="header">
-        <div className="container">
-          <div className="header-content">
-            <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
-              The Right Back at You Project
-            </Link>
-            <nav className="nav">
-              <Link href="/dashboard" className="nav-link">Dashboard</Link>
-              <button 
-                onClick={handleLogout} 
-                className="nav-link" 
-                style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-              >
-                Logout
-              </button>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <Header session={session} onLogout={handleLogout} />
 
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
