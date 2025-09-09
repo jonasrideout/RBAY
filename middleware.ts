@@ -1,7 +1,9 @@
+// middleware.ts
 import { auth } from '@/lib/auth';
 import { NextResponse } from 'next/server';
+import { getAdminSessionFromRequest } from '@/lib/adminAuth';
 
-export default auth((req) => {
+export default auth(async (req) => {
   const { pathname } = req.nextUrl;
   const isLoggedIn = !!req.auth;
 
@@ -13,6 +15,7 @@ export default auth((req) => {
     '/api/schools',
     '/api/students',
     '/api/auth',
+    '/admin/login', // Add admin login as public route
   ];
 
   // Check if current path is public or an API route
@@ -23,12 +26,36 @@ export default auth((req) => {
     pathname.includes('.')
   );
 
-  // Admin routes (if you have them)
+  // Admin routes protection
   const isAdminRoute = pathname.startsWith('/admin');
+  const isAdminLoginRoute = pathname === '/admin/login';
+
+  // Handle admin routes
+  if (isAdminRoute && !isAdminLoginRoute) {
+    const adminSession = await getAdminSessionFromRequest(req);
+    
+    if (!adminSession) {
+      // Not authenticated as admin, redirect to admin login
+      const adminLoginUrl = new URL('/admin/login', req.url);
+      return NextResponse.redirect(adminLoginUrl);
+    }
+    
+    // Admin is authenticated, allow access
+    return NextResponse.next();
+  }
+
+  // If admin is logged in and trying to access admin login page, redirect to dashboard
+  if (isAdminLoginRoute) {
+    const adminSession = await getAdminSessionFromRequest(req);
+    if (adminSession) {
+      const adminDashboardUrl = new URL('/admin/matching', req.url);
+      return NextResponse.redirect(adminDashboardUrl);
+    }
+  }
 
   // Dashboard route
   const isDashboardRoute = pathname.startsWith('/dashboard');
-
+  
   // Register school route (now protected)
   const isRegisterSchoolRoute = pathname.startsWith('/register-school');
 
