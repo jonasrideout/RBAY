@@ -122,7 +122,7 @@ export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
                 style={{ 
                   backgroundColor: dashboardCopyStatus === 'copied' ? '#28a745' : '#6c757d',
                   transition: 'all 0.3s ease',
-                  width: '210px'
+                  width: '300px'
                 }}
               >
                 {dashboardCopyStatus === 'copied' ? (
