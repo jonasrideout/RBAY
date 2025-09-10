@@ -693,8 +693,8 @@ function RegisterStudentForm() {
             </>
           )}
 
-          {/* Help section - always show when not in error state */}
-          {!error && (
+          {/* Help section - only show when not in success or error state */}
+          {!error && currentStep !== 'success' && (
             <div className="card mt-3" style={{ background: '#f8f9fa' }}>
               <h3>Questions?</h3>
               <p style={{ marginBottom: '1rem' }}>
