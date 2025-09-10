@@ -5,6 +5,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import Header from '../components/Header';
 
 interface StudentFormData {
@@ -45,6 +46,7 @@ const INTEREST_OPTIONS = [
 
 function RegisterStudentForm() {
   const searchParams = useSearchParams();
+  const { data: session, status } = useSession();
   const [currentStep, setCurrentStep] = useState<Step>('schoolVerify');
   const [isLoading, setIsLoading] = useState(false);
   const [schoolNameInput, setSchoolNameInput] = useState('');
@@ -63,15 +65,85 @@ function RegisterStudentForm() {
   const [error, setError] = useState('');
   const [registeredStudent, setRegisteredStudent] = useState<any>(null);
 
-  // Get token from URL on page load
+  // Handle session-based or token-based flow
   useEffect(() => {
-    const token = searchParams.get('token');
-    if (token) {
-      setFormData(prev => ({ ...prev, schoolToken: token }));
-    } else {
-      setError('Invalid registration link. Please use the link provided by your teacher.');
+    const checkAuthAndInitialize = async () => {
+      console.log('=== STUDENT REGISTRATION DEBUG ===');
+      console.log('useSession status:', status);
+      console.log('useSession session:', session);
+      
+      if (status === 'loading') {
+        console.log('Session still loading, returning early');
+        return;
+      }
+      
+      const token = searchParams.get('token');
+      console.log('Token from URL:', token);
+      
+      // Try direct session API call first
+      try {
+        console.log('Making direct session API call...');
+        const sessionResponse = await fetch('/api/auth/session');
+        const sessionData = await sessionResponse.json();
+        console.log('Direct session API response:', sessionData);
+        
+        if (sessionData?.user?.email) {
+          console.log('Found user email in session, using teacher flow for:', sessionData.user.email);
+          fetchTeacherSchool(sessionData.user.email);
+          return;
+        } else {
+          console.log('No user email found in session data');
+        }
+      } catch (error) {
+        console.error('Session check failed:', error);
+      }
+      
+      // Fallback to token-based flow
+      if (token) {
+        console.log('Using token-based flow with token:', token);
+        setFormData(prev => ({ ...prev, schoolToken: token }));
+      } else {
+        console.log('No token found, showing error');
+        setError('Invalid registration link. Please use the link provided by your teacher or log in first.');
+      }
+    };
+    
+    checkAuthAndInitialize();
+  }, [searchParams, status]);
+
+  const fetchTeacherSchool = async (teacherEmail: string) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/schools?teacherEmail=${encodeURIComponent(teacherEmail)}`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to load school data');
+      }
+
+      // Set school info and skip directly to student info form
+      setSchoolInfo({
+        name: data.school.schoolName,
+        teacher: data.school.teacherName,
+        found: true,
+        schoolId: data.school.id,
+        teacherEmail: data.school.teacherEmail
+      });
+
+      // Set the dashboard token for form submission
+      setFormData(prev => ({ 
+        ...prev, 
+        schoolToken: data.school.dashboardToken 
+      }));
+
+      setCurrentStep('info'); // Skip verification steps
+      
+    } catch (err: any) {
+      setError('Unable to load your school information. Please try using the student registration link instead.');
+    } finally {
+      setIsLoading(false);
     }
-  }, [searchParams]);
+  };
 
   // Helper function for flexible matching (school name, teacher name, or teacher email)
   const doesInputMatch = (input: string, schoolName: string, teacherName: string, teacherEmail: string): boolean => {
@@ -94,13 +166,6 @@ function RegisterStudentForm() {
     // Match against teacher email - require 4+ characters
     const emailLower = teacherEmail.toLowerCase();
     const emailMatch = inputLower.length >= 4 && (emailLower.includes(inputLower) || inputLower.includes(emailLower.split('@')[0]));
-    
-    // Debug logging to see what's happening
-    console.log('Input:', inputLower, '(length:', inputLower.length + ')');
-    console.log('School name:', schoolName, '- Match:', schoolMatch);
-    console.log('Teacher name:', teacherName, '- Match:', teacherMatch);
-    console.log('Teacher email:', teacherEmail, '- Match:', emailMatch);
-    console.log('Final result:', schoolMatch || teacherMatch || emailMatch);
     
     return schoolMatch || teacherMatch || emailMatch;
   };
@@ -342,7 +407,9 @@ function RegisterStudentForm() {
   const renderInfoStep = () => (
     <div className="card">
       <div style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '6px', marginBottom: '1.5rem', border: '1px solid #dee2e6' }}>
-        <h4 style={{ color: '#495057', marginBottom: '0.5rem' }}>Your School:</h4>
+        <h4 style={{ color: '#495057', marginBottom: '0.5rem' }}>
+          {status === 'authenticated' ? 'Adding Student to:' : 'Your School:'}
+        </h4>
         <p style={{ fontSize: '1.1rem', fontWeight: '600', color: '#2c5aa0', marginBottom: '0.25rem' }}>
           {schoolInfo?.name}
         </p>
@@ -603,7 +670,7 @@ function RegisterStudentForm() {
           )}
 
           {/* Show error state */}
-          {error && (
+          {error && !isLoading && (
             <div className="card">
               <div className="alert alert-error">
                 <strong>Error:</strong> {error}
