@@ -1,7 +1,6 @@
 // middleware.ts
 import { auth } from '@/lib/auth';
 import { NextResponse } from 'next/server';
-import { getAdminSessionFromRequest } from '@/lib/adminAuth';
 
 export default auth(async (req) => {
   const { pathname } = req.nextUrl;
@@ -26,28 +25,28 @@ export default auth(async (req) => {
     pathname.includes('.')
   );
 
-  // Admin routes protection
+  // Admin routes protection - SIMPLIFIED FOR EDGE RUNTIME
   const isAdminRoute = pathname.startsWith('/admin');
   const isAdminLoginRoute = pathname === '/admin/login';
 
-  // Handle admin routes
+  // Handle admin routes - Use cookie check instead of Prisma
   if (isAdminRoute && !isAdminLoginRoute) {
-    const adminSession = await getAdminSessionFromRequest(req);
+    const adminToken = req.cookies.get('admin-token');
     
-    if (!adminSession) {
+    if (!adminToken) {
       // Not authenticated as admin, redirect to admin login
       const adminLoginUrl = new URL('/admin/login', req.url);
       return NextResponse.redirect(adminLoginUrl);
     }
     
-    // Admin is authenticated, allow access
+    // Admin token exists, allow access (full validation happens in the page)
     return NextResponse.next();
   }
 
-  // If admin is logged in and trying to access admin login page, redirect to dashboard
+  // If admin login page, check if already has admin token
   if (isAdminLoginRoute) {
-    const adminSession = await getAdminSessionFromRequest(req);
-    if (adminSession) {
+    const adminToken = req.cookies.get('admin-token');
+    if (adminToken) {
       const adminDashboardUrl = new URL('/admin/matching', req.url);
       return NextResponse.redirect(adminDashboardUrl);
     }
