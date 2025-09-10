@@ -1,6 +1,6 @@
+// /lib/auth.ts
 import NextAuth from 'next-auth';
 import Google from 'next-auth/providers/google';
-import { prisma } from '@/lib/prisma';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -29,31 +29,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return true;
     },
     async session({ session, token }) {
-      if (session.user?.email) {
-        try {
-          // Get school information for the logged-in teacher
-          const school = await prisma.school.findUnique({
-            where: { teacherEmail: session.user.email },
-            select: {
-              id: true,
-              schoolName: true,
-              teacherName: true,
-              dashboardToken: true,
-              status: true,
-            }
-          });
-          if (school) {
-            // Add school info to session
-            session.user.schoolId = school.id;
-            session.user.schoolName = school.schoolName;
-            session.user.teacherName = school.teacherName;
-            session.user.dashboardToken = school.dashboardToken;
-            session.user.schoolStatus = school.status;
-          }
-        } catch (error) {
-          console.error('Session callback error:', error);
-        }
-      }
+      // REMOVED PRISMA CALL - Edge Runtime compatible
+      // School data will be fetched separately in dashboard and student registration
+      // This ensures sessions work properly
       return session;
     },
     async redirect({ url, baseUrl }) {
