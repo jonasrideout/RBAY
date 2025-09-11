@@ -430,7 +430,7 @@ function RegisterStudentForm() {
       <h2 className="text-center mb-3">{isTeacherFlow ? 'Student Info' : 'Tell Us About Yourself'}</h2>
       <p className="text-center mb-4" style={{ color: '#6c757d' }}>
         {isTeacherFlow 
-          ? 'This information helps us find your student a great penpal who shares your interests!'
+          ? 'This information helps us find your student a great penpal who shares their interests!'
           : 'This information helps us find you a great penpal who shares your interests!'
         }
       </p>
