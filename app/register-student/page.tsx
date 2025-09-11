@@ -112,10 +112,12 @@ function RegisterStudentForm() {
   }, [searchParams, status]);
 
   const fetchTeacherSchool = async (teacherEmail: string) => {
+    console.log('fetchTeacherSchool called with:', teacherEmail);
     setIsLoading(true);
     try {
       const response = await fetch(`/api/schools?teacherEmail=${encodeURIComponent(teacherEmail)}`);
       const data = await response.json();
+      console.log('fetchTeacherSchool API response:', response.ok, data);
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to load school data');
@@ -136,9 +138,11 @@ function RegisterStudentForm() {
         schoolToken: data.school.dashboardToken 
       }));
 
+      console.log('Setting currentStep to info');
       setCurrentStep('info'); // Skip verification steps
       
     } catch (err: any) {
+      console.error('Error in fetchTeacherSchool:', err);
       setError('Unable to load your school information. Please try using the student registration link instead.');
     } finally {
       setIsLoading(false);
