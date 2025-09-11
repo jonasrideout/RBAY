@@ -29,8 +29,8 @@ export default function AdminLogin() {
       const data = await response.json();
 
       if (response.ok) {
-        // Successful login - redirect to admin dashboard
-        router.push('/admin/matching');
+        // Successful login - use window.location for more reliable redirect
+        window.location.href = '/admin/matching';
       } else {
         setError(data.error || 'Login failed');
       }
