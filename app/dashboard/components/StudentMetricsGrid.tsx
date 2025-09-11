@@ -1,3 +1,4 @@
+// /app/dashboard/components/StudentMetricsGrid.tsx
 "use client";
 
 interface SchoolData {
@@ -9,7 +10,7 @@ interface SchoolData {
   expectedClassSize: number;
   startMonth: string;
   programStartMonth: string;
-  readyForMatching: boolean;
+  status: 'COLLECTING' | 'READY' | 'MATCHED' | 'CORRESPONDING' | 'DONE';
   students: any[];
 }
 
