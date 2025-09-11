@@ -1,5 +1,5 @@
+// /app/dashboard/components/DashboardHeader.tsx
 "use client";
-
 import { useState } from 'react';
 
 interface SchoolData {
@@ -11,7 +11,7 @@ interface SchoolData {
   expectedClassSize: number;
   startMonth: string;
   programStartMonth: string;
-  readyForMatching: boolean;
+  status: 'COLLECTING' | 'READY' | 'MATCHED' | 'CORRESPONDING' | 'DONE';
   students: any[];
 }
 
