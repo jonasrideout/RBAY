@@ -11,7 +11,7 @@ interface SchoolData {
   expectedClassSize: number;
   startMonth: string;
   programStartMonth: string;
-  readyForMatching: boolean;
+  status: 'COLLECTING' | 'READY' | 'MATCHED' | 'CORRESPONDING' | 'DONE';
   students: any[];
 }
 
@@ -25,7 +25,8 @@ export default function MatchingStatusCard({ schoolData, allActiveStudentsComple
   const [isRequestingMatching, setIsRequestingMatching] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   
-  const readyForMatching = schoolData?.readyForMatching || false;
+  // Use status field instead of readyForMatching
+  const readyForMatching = schoolData?.status === 'READY';
 
   const handleRequestMatchingClick = () => {
     setShowConfirmation(true);
