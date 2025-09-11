@@ -37,7 +37,7 @@ interface SchoolData {
   expectedClassSize: number;
   startMonth: string;
   programStartMonth: string;
-  readyForMatching: boolean;
+  status: 'COLLECTING' | 'READY' | 'MATCHED' | 'CORRESPONDING' | 'DONE';
   students: any[];
 }
 
@@ -136,10 +136,11 @@ function TeacherDashboardContent() {
   // Simplified ready logic - teacher decides when ready
   const hasActiveStudents = totalStudents > 0;
   const allActiveStudentsComplete = totalStudents > 0 && studentsNeedingInfo.length === 0;
-  const readyForMatching = schoolData?.readyForMatching || false;
+  const readyForMatching = schoolData?.status === 'READY';
 
   const handleMatchingRequested = () => {
-    setSchoolData(prev => prev ? { ...prev, readyForMatching: true } : null);
+    // Update local state to reflect matching request
+    setSchoolData(prev => prev ? { ...prev, status: 'READY' } : null);
   };
 
   const handleRemoveStudent = async (studentId: string) => {
