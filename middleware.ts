@@ -31,7 +31,7 @@ export default auth(async (req) => {
 
   // Handle admin routes - Use cookie check instead of Prisma
   if (isAdminRoute && !isAdminLoginRoute) {
-    const adminToken = req.cookies.get('admin-token');
+    const adminToken = req.cookies.get('admin-session'); // Fixed: changed from 'admin-token' to 'admin-session'
     
     if (!adminToken) {
       // Not authenticated as admin, redirect to admin login
@@ -45,7 +45,7 @@ export default auth(async (req) => {
 
   // If admin login page, check if already has admin token
   if (isAdminLoginRoute) {
-    const adminToken = req.cookies.get('admin-token');
+    const adminToken = req.cookies.get('admin-session'); // Fixed: changed from 'admin-token' to 'admin-session'
     if (adminToken) {
       const adminDashboardUrl = new URL('/admin/matching', req.url);
       return NextResponse.redirect(adminDashboardUrl);
