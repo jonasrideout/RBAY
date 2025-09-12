@@ -103,6 +103,28 @@ export async function POST(request: NextRequest) {
     const dashboardLink = `${baseUrl}/dashboard?token=${school.dashboardToken}`;
     const registrationLink = `${baseUrl}/register-student`;
 
+    // Send welcome email using existing system (non-blocking)
+    let emailSent = false;
+    let emailError = '';
+    
+    try {
+      const emailResult = await sendWelcomeEmail({
+        teacherName: teacherName || 'Teacher',
+        teacherEmail,
+        schoolName,
+        dashboardToken: school.dashboardToken
+      });
+      
+      emailSent = emailResult.success;
+      if (!emailResult.success) {
+        emailError = emailResult.error || 'Unknown email error';
+        console.warn('Welcome email failed to send:', emailError);
+      }
+    } catch (error: any) {
+      console.warn('Welcome email sending failed:', error);
+      emailError = error.message || 'Email service unavailable';
+    }
+
     return NextResponse.json({
       success: true,
       id: school.id,
@@ -111,7 +133,9 @@ export async function POST(request: NextRequest) {
       teacherEmail: school.teacherEmail,
       dashboardToken: school.dashboardToken,
       dashboardLink,
-      registrationLink
+      registrationLink,
+      emailSent,
+      emailError: emailSent ? undefined : emailError
     }, { status: 201 });
 
   } catch (error: any) {
