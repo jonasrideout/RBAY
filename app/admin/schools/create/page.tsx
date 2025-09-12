@@ -454,28 +454,13 @@ export default function CreateSchoolPage() {
         }}>
           <button 
             onClick={handleCopyLinks}
-            className="btn btn-secondary"
-            style={{ 
-              backgroundColor: copyStatus === 'copied' ? '#28a745' : '#6c757d',
-              width: '210px'
-            }}
-          >
-            {copyStatus === 'copied' ? 'Links Copied!' : 'Copy Links'}
-          </button>
-
-          <button 
-            onClick={handleSendEmail}
             className="btn btn-primary"
-            disabled={emailStatus === 'sending'}
             style={{ 
-              backgroundColor: emailStatus === 'sent' ? '#28a745' : 
-                             emailStatus === 'error' ? '#dc3545' : '#007bff',
+              backgroundColor: copyStatus === 'copied' ? '#28a745' : '#007bff',
               width: '210px'
             }}
           >
-            {emailStatus === 'sending' ? 'Sending...' : 
-             emailStatus === 'sent' ? 'Email Sent!' :
-             emailStatus === 'error' ? 'Send Failed' : 'Send Welcome Email'}
+            {copyStatus === 'copied' ? '✓ Links Copied!' : 'Copy Links'}
           </button>
         </div>
 
