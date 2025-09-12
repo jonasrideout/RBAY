@@ -15,6 +15,7 @@ interface SchoolRegistrationFormProps {
   onUpdateFormData: (field: keyof SchoolFormData, value: any) => void;
   onGradeLevelChange: (grade: string, checked: boolean) => void;
   isEmailReadOnly?: boolean;
+  isAdminMode?: boolean;
 }
 
 export default function SchoolRegistrationForm({
@@ -24,13 +25,18 @@ export default function SchoolRegistrationForm({
   onSubmit,
   onUpdateFormData,
   onGradeLevelChange,
-  isEmailReadOnly = false
+  isEmailReadOnly = false,
+  isAdminMode = false
 }: SchoolRegistrationFormProps) {
   const { data: session } = useSession();
   const router = useRouter();
 
   const handleLogout = () => {
-    router.push('/api/auth/signout?callbackUrl=' + encodeURIComponent(window.location.origin));
+    if (isAdminMode) {
+      router.push('/admin/login');
+    } else {
+      router.push('/api/auth/signout?callbackUrl=' + encodeURIComponent(window.location.origin));
+    }
   };
 
   const getRegionForState = (state: string) => {
@@ -39,14 +45,28 @@ export default function SchoolRegistrationForm({
 
   return (
     <div className="page">
-      <Header session={session} onLogout={handleLogout} />
+      <Header 
+        session={isAdminMode ? { user: { email: 'Admin User' } } : session} 
+        onLogout={handleLogout} 
+      />
 
       {/* Main Content */}
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           
+          {/* Admin navigation */}
+          {isAdminMode && (
+            <div style={{ marginBottom: '2rem' }}>
+              <Link href="/admin/matching" className="btn btn-secondary">
+                Back to Admin Dashboard
+              </Link>
+            </div>
+          )}
+          
           <div className="card">
-            <h1 className="text-center mb-3">Register Your School</h1>
+            <h1 className="text-center mb-3">
+              {isAdminMode ? 'Register a New School' : 'Register Your School'}
+            </h1>
 
             <form onSubmit={onSubmit}>
               
@@ -92,7 +112,9 @@ export default function SchoolRegistrationForm({
                     <small style={{ color: '#6c757d', fontSize: '0.8rem' }}>
                       {isEmailReadOnly 
                         ? 'Email from your Google account' 
-                        : 'Students join using this email'
+                        : isAdminMode 
+                          ? 'Teacher will receive welcome email at this address'
+                          : 'Students join using this email'
                       }
                     </small>
                   </div>
@@ -278,9 +300,10 @@ export default function SchoolRegistrationForm({
                         required 
                       />
                       <span>
-                        I understand that this program involves students exchanging letters with students from another school. 
-                        I will ensure appropriate supervision and follow all school district policies regarding student communication. 
-                        I will obtain any necessary permissions according to my school's policies. *
+                        {isAdminMode 
+                          ? 'I confirm that this school will follow all program guidelines and obtain necessary permissions according to their school district policies. The teacher will ensure appropriate supervision and follow all policies regarding student communication.' 
+                          : 'I understand that this program involves students exchanging letters with students from another school. I will ensure appropriate supervision and follow all school district policies regarding student communication. I will obtain any necessary permissions according to my school\'s policies.'
+                        } *
                       </span>
                     </label>
                   </div>
@@ -304,14 +327,19 @@ export default function SchoolRegistrationForm({
                   {isLoading ? (
                     <>
                       <span className="loading"></span>
-                      <span style={{ marginLeft: '0.5rem' }}>Registering...</span>
+                      <span style={{ marginLeft: '0.5rem' }}>
+                        {isAdminMode ? 'Creating School...' : 'Registering...'}
+                      </span>
                     </>
                   ) : (
-                    'Register My School'
+                    isAdminMode ? 'Create School' : 'Register My School'
                   )}
                 </button>
                 <p style={{ color: '#6c757d', marginTop: '1rem', fontSize: '0.9rem' }}>
-                  After registration, you'll receive links for your dashboard and student registration.
+                  {isAdminMode 
+                    ? 'The teacher will receive dashboard and student registration links via email.'
+                    : 'After registration, you\'ll receive links for your dashboard and student registration.'
+                  }
                 </p>
               </div>
             </form>
@@ -322,7 +350,7 @@ export default function SchoolRegistrationForm({
           <div className="card mt-3" style={{ background: '#f8f9fa' }}>
             <h3>Need Help?</h3>
             <p style={{ marginBottom: '.5rem' }}>
-              If you have questions about registering your school or setting up the program, please contact us:
+              If you have questions about {isAdminMode ? 'creating schools or' : ''} registering {isAdminMode ? '' : 'your school or'} setting up the program, please contact us:
             </p>
             <p style={{ marginBottom: '0' }}>
               <strong>Email:</strong> <a href="mailto:carolyn.mackler@gmail.com" style={{ color: '#4a90e2' }}>carolyn.mackler@gmail.com</a>
