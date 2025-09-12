@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Header from '../../components/Header';
+import Header from '../../../components/Header';
 
 interface SchoolFormData {
   schoolName: string;
