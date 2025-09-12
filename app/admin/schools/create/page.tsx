@@ -96,7 +96,7 @@ export default function CreateSchoolPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/admin/schools/create', {
+      const response = await fetch('/api/admin/create-school', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
