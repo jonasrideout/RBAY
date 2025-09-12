@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { SchoolFormData } from './types';
 import { STATE_TO_REGION } from './constants';
 import SchoolRegistrationForm from './components/SchoolRegistrationForm';
@@ -13,12 +13,16 @@ import SuccessPage from './components/SuccessPage';
 export default function RegisterSchool() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [registeredSchool, setRegisteredSchool] = useState<any>(null);
   const [showExistingSchoolError, setShowExistingSchoolError] = useState(false);
   const [hasCheckedExistingSchool, setHasCheckedExistingSchool] = useState(false);
+
+  // Check if this is admin mode
+  const isAdminMode = searchParams.get('admin') === 'true';
 
   const [formData, setFormData] = useState<SchoolFormData>({
     teacherName: '',
@@ -37,6 +41,12 @@ export default function RegisterSchool() {
 
   // Handle authentication and existing school check
   useEffect(() => {
+    // Skip authentication checks in admin mode
+    if (isAdminMode) {
+      setHasCheckedExistingSchool(true);
+      return;
+    }
+
     if (status === 'loading') return; // Still loading session
 
     if (status === 'unauthenticated') {
@@ -46,7 +56,7 @@ export default function RegisterSchool() {
     }
 
     if (session?.user) {
-      // Auto-populate email from session
+      // Auto-populate email from session (only in non-admin mode)
       setFormData(prev => ({
         ...prev,
         teacherEmail: session.user.email || ''
@@ -60,7 +70,7 @@ export default function RegisterSchool() {
         setHasCheckedExistingSchool(true);
       }
     }
-  }, [session, status, router, hasCheckedExistingSchool, isSubmitted]);
+  }, [session, status, router, hasCheckedExistingSchool, isSubmitted, isAdminMode]);
 
   // Scroll to top when success page shows
   useEffect(() => {
@@ -89,7 +99,11 @@ export default function RegisterSchool() {
   };
 
   const handleGoToDashboard = () => {
-    router.push('/dashboard');
+    if (isAdminMode) {
+      router.push('/admin/matching');
+    } else {
+      router.push('/dashboard');
+    }
   };
 
   const handleRegisterNewSchool = () => {
@@ -151,7 +165,8 @@ export default function RegisterSchool() {
         expectedClassSize: formData.classSize,
         startMonth: formData.programStartMonth,
         specialConsiderations: formData.specialConsiderations,
-        programAgreement: formData.programAgreement
+        programAgreement: formData.programAgreement,
+        isAdminFlow: isAdminMode // Add admin flag
       };
 
       const response = await fetch('/api/schools', {
@@ -169,6 +184,16 @@ export default function RegisterSchool() {
       }
 
       setRegisteredSchool(data.school);
+      // Store additional data for admin mode
+      if (isAdminMode) {
+        setRegisteredSchool({
+          ...data.school,
+          dashboardLink: data.dashboardLink,
+          registrationLink: data.registrationLink,
+          emailSent: data.emailSent
+        });
+      }
+      
       setIsSubmitted(true);
       // Prevent future existing school checks since we just registered successfully
       setHasCheckedExistingSchool(true);
@@ -180,8 +205,8 @@ export default function RegisterSchool() {
     }
   };
 
-  // Show loading while checking authentication
-  if (status === 'loading') {
+  // Show loading while checking authentication (skip in admin mode)
+  if (!isAdminMode && status === 'loading') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="text-center">
@@ -194,11 +219,11 @@ export default function RegisterSchool() {
 
   // Success state takes priority over existing school error
   if (isSubmitted && registeredSchool) {
-    return <SuccessPage registeredSchool={registeredSchool} />;
+    return <SuccessPage registeredSchool={registeredSchool} isAdminMode={isAdminMode} />;
   }
 
-  // Show existing school error with choices (only if not in success state)
-  if (showExistingSchoolError && !isSubmitted) {
+  // Show existing school error with choices (only if not in success state and not admin mode)
+  if (showExistingSchoolError && !isSubmitted && !isAdminMode) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
@@ -242,7 +267,8 @@ export default function RegisterSchool() {
       onSubmit={handleSubmit}
       onUpdateFormData={updateFormData}
       onGradeLevelChange={handleGradeLevelChange}
-      isEmailReadOnly={true} // Make email read-only since it comes from session
+      isEmailReadOnly={!isAdminMode} // Make email editable in admin mode
+      isAdminMode={isAdminMode}
     />
   );
 }
