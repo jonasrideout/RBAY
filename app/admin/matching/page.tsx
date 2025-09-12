@@ -662,19 +662,23 @@ export default function AdminDashboard() {
         </div>
 
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
+          <Link href="/admin/schools/create" className="btn btn-primary">
+            Add School
+          </Link>
+          
           <button 
             onClick={fetchAllSchools}
             className="btn btn-secondary"
             disabled={isLoading}
           >
-            {isLoading ? '🔄 Loading...' : '🔄 Refresh Data'}
+            {isLoading ? 'Loading...' : 'Refresh Data'}
           </button>
           
           <button 
             onClick={handleSeedData}
             className="btn btn-primary"
           >
-            🌱 Seed Test Data
+            Seed Test Data
           </button>
 
           <button 
@@ -682,7 +686,7 @@ export default function AdminDashboard() {
             className="btn"
             style={{ backgroundColor: '#dc3545', color: 'white' }}
           >
-            🗑️ Clear All Data
+            Clear All Data
           </button>
         </div>
 
