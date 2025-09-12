@@ -94,7 +94,6 @@ export async function POST(request: NextRequest) {
         startMonth: 'TBD', // Teacher can update later
         status: 'COLLECTING',
         specialConsiderations: notes || null,
-        createdBy: 'admin' // Mark as admin-created
       }
     });
 
