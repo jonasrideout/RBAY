@@ -7,25 +7,35 @@ import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Header from '../../components/Header';
+import { sendWelcomeEmail } from '@/lib/email';
 
 interface SuccessPageProps {
   registeredSchool: {
     teacherEmail: string;
+    teacherName?: string;
     schoolName: string;
-    dashboardToken: string;  // Still needed for student registration
+    dashboardToken: string;
+    dashboardLink?: string;
+    registrationLink?: string;
+    emailSent?: boolean;
   };
+  isAdminMode?: boolean;
 }
 
-export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
+export default function SuccessPage({ registeredSchool, isAdminMode = false }: SuccessPageProps) {
   const { data: session } = useSession();
   const router = useRouter();
   
-  // Copy button states (matching dashboard pattern)
-  const [dashboardCopyStatus, setDashboardCopyStatus] = useState<'idle' | 'copied'>('idle');
-  const [studentCopyStatus, setStudentCopyStatus] = useState<'idle' | 'copied'>('idle');
+  // Copy button states
+  const [linksCopyStatus, setLinksCopyStatus] = useState<'idle' | 'copied'>('idle');
+  const [emailStatus, setEmailStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
 
   const handleLogout = () => {
-    router.push('/api/auth/signout?callbackUrl=' + encodeURIComponent(getBaseUrl()));
+    if (isAdminMode) {
+      router.push('/admin/login');
+    } else {
+      router.push('/api/auth/signout?callbackUrl=' + encodeURIComponent(getBaseUrl()));
+    }
   };
 
   // Use environment variable for consistent URL generation
@@ -34,6 +44,9 @@ export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
   };
 
   const generateStudentLink = () => {
+    if (isAdminMode && registeredSchool?.registrationLink) {
+      return registeredSchool.registrationLink;
+    }
     if (registeredSchool?.dashboardToken) {
       return `${getBaseUrl()}/register-student?token=${registeredSchool.dashboardToken}`;
     }
@@ -41,31 +54,181 @@ export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
   };
 
   const generateDashboardLink = () => {
+    if (isAdminMode && registeredSchool?.dashboardLink) {
+      return registeredSchool.dashboardLink;
+    }
     // Session-based dashboard - no token needed
     return `${getBaseUrl()}/dashboard`;
   };
 
-  // Copy handlers matching dashboard pattern exactly
-  const handleCopyDashboardLink = async () => {
+  // Copy both links for admin
+  const handleCopyLinks = async () => {
     try {
-      await navigator.clipboard.writeText(generateDashboardLink());
-      setDashboardCopyStatus('copied');
-      setTimeout(() => setDashboardCopyStatus('idle'), 2000);
+      const dashboardLink = generateDashboardLink();
+      const studentLink = generateStudentLink();
+      const text = `Teacher Dashboard: ${dashboardLink}\nStudent Registration: ${studentLink}`;
+      
+      await navigator.clipboard.writeText(text);
+      setLinksCopyStatus('copied');
+      setTimeout(() => setLinksCopyStatus('idle'), 2000);
     } catch (err) {
-      console.error('Failed to copy dashboard link:', err);
+      console.error('Failed to copy links:', err);
     }
   };
 
-  const handleCopyStudentLink = async () => {
+  // Send welcome email for admin
+  const handleSendEmail = async () => {
+    setEmailStatus('sending');
+
     try {
-      await navigator.clipboard.writeText(generateStudentLink());
-      setStudentCopyStatus('copied');
-      setTimeout(() => setStudentCopyStatus('idle'), 2000);
-    } catch (err) {
-      console.error('Failed to copy student link:', err);
+      const response = await fetch('/api/admin/send-welcome-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          teacherEmail: registeredSchool.teacherEmail,
+          teacherName: registeredSchool.teacherName || 'Teacher',
+          schoolName: registeredSchool.schoolName,
+          dashboardToken: registeredSchool.dashboardToken
+        }),
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send email');
+      }
+
+      setEmailStatus('sent');
+      setTimeout(() => setEmailStatus('idle'), 3000);
+    } catch (error) {
+      console.error('Error sending email:', error);
+      setEmailStatus('error');
+      setTimeout(() => setEmailStatus('idle'), 3000);
     }
   };
 
+  // Admin mode success page
+  if (isAdminMode) {
+    return (
+      <div className="page">
+        <Header 
+          session={{ user: { email: 'Admin User' } }} 
+          onLogout={handleLogout} 
+        />
+
+        <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
+          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+            <div className="card text-center" style={{ background: '#d4edda' }}>
+              <h2 style={{ color: '#155724' }}>School Created Successfully!</h2>
+              <p style={{ color: '#155724', fontSize: '1.2rem', marginBottom: '1.5rem' }}>
+                {registeredSchool?.schoolName} has been added to the system.
+              </p>
+              
+              <div style={{ background: 'white', padding: '1.5rem', borderRadius: '6px', marginBottom: '2rem', border: '1px solid #c3e6cb' }}>
+                <h3 style={{ color: '#155724', marginBottom: '1rem' }}>School Information</h3>
+                <div style={{ textAlign: 'left', color: '#155724' }}>
+                  <p><strong>School:</strong> {registeredSchool?.schoolName}</p>
+                  <p><strong>Teacher:</strong> {registeredSchool?.teacherName || 'Not provided'}</p>
+                  <p><strong>Email:</strong> {registeredSchool?.teacherEmail}</p>
+                </div>
+              </div>
+
+              <div style={{ background: 'white', padding: '1.5rem', borderRadius: '6px', marginBottom: '2rem', border: '1px solid #c3e6cb' }}>
+                <h3 style={{ color: '#155724', marginBottom: '1rem' }}>Generated Links</h3>
+                <div style={{ textAlign: 'left', color: '#155724', fontSize: '0.9rem' }}>
+                  <div style={{ marginBottom: '1rem' }}>
+                    <strong>Teacher Dashboard:</strong>
+                    <div style={{ 
+                      background: '#f8f9fa', 
+                      padding: '0.5rem', 
+                      borderRadius: '4px', 
+                      marginTop: '0.25rem',
+                      wordBreak: 'break-all',
+                      border: '1px solid #dee2e6'
+                    }}>
+                      {generateDashboardLink()}
+                    </div>
+                  </div>
+                  <div>
+                    <strong>Student Registration:</strong>
+                    <div style={{ 
+                      background: '#f8f9fa', 
+                      padding: '0.5rem', 
+                      borderRadius: '4px', 
+                      marginTop: '0.25rem',
+                      wordBreak: 'break-all',
+                      border: '1px solid #dee2e6'
+                    }}>
+                      {generateStudentLink()}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ 
+                display: 'flex', 
+                gap: '1rem', 
+                justifyContent: 'center',
+                flexWrap: 'wrap',
+                marginBottom: '2rem'
+              }}>
+                <button 
+                  onClick={handleCopyLinks}
+                  className="btn btn-primary"
+                  style={{ 
+                    backgroundColor: linksCopyStatus === 'copied' ? '#28a745' : '#007bff',
+                    width: '210px'
+                  }}
+                >
+                  {linksCopyStatus === 'copied' ? 'Links Copied!' : 'Copy Links'}
+                </button>
+
+                <button 
+                  onClick={handleSendEmail}
+                  className="btn btn-secondary"
+                  disabled={emailStatus === 'sending'}
+                  style={{ 
+                    backgroundColor: emailStatus === 'sent' ? '#28a745' : 
+                                   emailStatus === 'error' ? '#dc3545' : '#6c757d',
+                    width: '210px'
+                  }}
+                >
+                  {emailStatus === 'sending' ? 'Sending...' : 
+                   emailStatus === 'sent' ? 'Email Sent!' :
+                   emailStatus === 'error' ? 'Send Failed' : 'Send Welcome Email'}
+                </button>
+              </div>
+
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <Link 
+                  href="/register-school?admin=true"
+                  className="btn btn-outline"
+                >
+                  Add Another School
+                </Link>
+                
+                <Link 
+                  href="/admin/matching"
+                  className="btn btn-primary"
+                >
+                  View All Schools
+                </Link>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
+          <div className="container text-center">
+            <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
+          </div>
+        </footer>
+      </div>
+    );
+  }
+
+  // Regular teacher success page (existing functionality)
   return (
     <div className="page">
       <Header session={session} onLogout={handleLogout} />
@@ -74,7 +237,7 @@ export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           {/* Success Message */}
           <div className="card text-center" style={{ background: '#d4edda' }}>
-            <h2 style={{ color: '#155724' }}>🎉 School Registration Complete!</h2>
+            <h2 style={{ color: '#155724' }}>School Registration Complete!</h2>
             <p style={{ color: '#155724', fontSize: '1.2rem', marginBottom: '1.5rem' }}>
               {registeredSchool?.schoolName} has been successfully registered for The Right Back at You Project.
             </p>
@@ -113,49 +276,6 @@ export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
               >
                 Go to Dashboard
               </Link>
-              
-              <button 
-                onClick={handleCopyDashboardLink}
-                className="btn btn-secondary"
-                aria-label="Copy dashboard link to clipboard"
-                type="button"
-                style={{ 
-                  backgroundColor: dashboardCopyStatus === 'copied' ? '#28a745' : '#6c757d',
-                  transition: 'all 0.3s ease',
-                  width: '300px'
-                }}
-              >
-                {dashboardCopyStatus === 'copied' ? (
-                  <>
-                    <span style={{ marginRight: '0.5rem' }}>✓</span>
-                    Copied!
-                  </>
-                ) : (
-                  '📋 Copy Dashboard Link'
-                )}
-              </button>
-              
-              <button 
-                onClick={handleCopyStudentLink}
-                className="btn btn-outline"
-                aria-label="Copy student registration link to clipboard"
-                type="button"
-                style={{ 
-                  backgroundColor: studentCopyStatus === 'copied' ? '#28a745' : '',
-                  color: studentCopyStatus === 'copied' ? 'white' : '',
-                  transition: 'all 0.3s ease',
-                  width: '210px'
-                }}
-              >
-                {studentCopyStatus === 'copied' ? (
-                  <>
-                    <span style={{ marginRight: '0.5rem' }}>✓</span>
-                    Copied!
-                  </>
-                ) : (
-                  '📋 Copy Student Link'
-                )}
-              </button>
             </div>
           </div>
         </div>
@@ -164,7 +284,7 @@ export default function SuccessPage({ registeredSchool }: SuccessPageProps) {
       {/* Footer */}
       <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
         <div className="container text-center">
-          <p>&copy; 2025 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
+          <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
         </div>
       </footer>
     </div>
