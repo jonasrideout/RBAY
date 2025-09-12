@@ -21,7 +21,8 @@ export async function POST(request: NextRequest) {
       gradeLevel,
       expectedClassSize,
       startMonth,
-      specialConsiderations
+      specialConsiderations,
+      isAdminFlow // New flag to detect admin registration
     } = body;
 
     // Updated validation - removed letterFrequency requirement
@@ -91,26 +92,34 @@ export async function POST(request: NextRequest) {
     });
 
     // Send welcome email (non-blocking - registration succeeds even if email fails)
+    // Skip auto-email if this is an admin registration
     let emailSent = false;
     let emailError = '';
     
-    try {
-      const emailResult = await sendWelcomeEmail({
-        teacherName,
-        teacherEmail,
-        schoolName,
-        dashboardToken: school.dashboardToken
-      });
-      
-      emailSent = emailResult.success;
-      if (!emailResult.success) {
-        emailError = emailResult.error || 'Unknown email error';
-        console.warn('Welcome email failed to send:', emailError);
+    if (!isAdminFlow) {
+      try {
+        const emailResult = await sendWelcomeEmail({
+          teacherName,
+          teacherEmail,
+          schoolName,
+          dashboardToken: school.dashboardToken
+        });
+        
+        emailSent = emailResult.success;
+        if (!emailResult.success) {
+          emailError = emailResult.error || 'Unknown email error';
+          console.warn('Welcome email failed to send:', emailError);
+        }
+      } catch (error: any) {
+        console.warn('Welcome email sending failed:', error);
+        emailError = error.message || 'Email service unavailable';
       }
-    } catch (error: any) {
-      console.warn('Welcome email sending failed:', error);
-      emailError = error.message || 'Email service unavailable';
     }
+
+    // Generate links for admin response
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nextjs-boilerplate-beta-three-49.vercel.app';
+    const dashboardLink = `${baseUrl}/dashboard?token=${school.dashboardToken}`;
+    const registrationLink = `${baseUrl}/register-student`;
 
     return NextResponse.json({
       success: true,
@@ -119,12 +128,16 @@ export async function POST(request: NextRequest) {
         teacherEmail: school.teacherEmail,
         dashboardToken: school.dashboardToken, // Include token in response
         schoolName: school.schoolName,
+        teacherName: school.teacherName,
         schoolState: school.schoolState,
         region: school.region,
         status: school.status
       },
       emailSent,
-      emailError: emailSent ? undefined : emailError
+      emailError: emailSent ? undefined : emailError,
+      // Include links in response for admin use
+      dashboardLink,
+      registrationLink
     }, { status: 201 });
 
   } catch (error: any) {
