@@ -3,7 +3,7 @@ import { auth } from '@/lib/auth';
 import { NextResponse } from 'next/server';
 
 export default auth(async (req) => {
-  const { pathname } = req.nextUrl;
+  const { pathname, searchParams } = req.nextUrl;
   const isLoggedIn = !!req.auth;
 
   // Public routes that don't require authentication
@@ -31,7 +31,7 @@ export default auth(async (req) => {
 
   // Handle admin routes - Use cookie check instead of Prisma
   if (isAdminRoute && !isAdminLoginRoute) {
-    const adminToken = req.cookies.get('admin-session'); // Fixed: changed from 'admin-token' to 'admin-session'
+    const adminToken = req.cookies.get('admin-session');
     
     if (!adminToken) {
       // Not authenticated as admin, redirect to admin login
@@ -45,7 +45,7 @@ export default auth(async (req) => {
 
   // If admin login page, check if already has admin token
   if (isAdminLoginRoute) {
-    const adminToken = req.cookies.get('admin-session'); // Fixed: changed from 'admin-token' to 'admin-session'
+    const adminToken = req.cookies.get('admin-session');
     if (adminToken) {
       const adminDashboardUrl = new URL('/admin/matching', req.url);
       return NextResponse.redirect(adminDashboardUrl);
@@ -55,7 +55,7 @@ export default auth(async (req) => {
   // Dashboard route
   const isDashboardRoute = pathname.startsWith('/dashboard');
   
-  // Register school route (now protected)
+  // Register school route with special admin mode handling
   const isRegisterSchoolRoute = pathname.startsWith('/register-school');
 
   // If accessing dashboard without login, redirect to login
@@ -64,10 +64,28 @@ export default auth(async (req) => {
     return NextResponse.redirect(loginUrl);
   }
 
-  // If accessing register-school without login, redirect to login
-  if (isRegisterSchoolRoute && !isLoggedIn) {
-    const loginUrl = new URL('/login', req.url);
-    return NextResponse.redirect(loginUrl);
+  // Special handling for register-school route
+  if (isRegisterSchoolRoute) {
+    // Check if this is admin mode
+    const isAdminMode = searchParams.get('admin') === 'true';
+    
+    if (isAdminMode) {
+      // Admin mode - check for admin session
+      const adminToken = req.cookies.get('admin-session');
+      if (!adminToken) {
+        // No admin session, redirect to admin login
+        const adminLoginUrl = new URL('/admin/login', req.url);
+        return NextResponse.redirect(adminLoginUrl);
+      }
+      // Admin authenticated, allow access
+    } else {
+      // Regular teacher mode - check for OAuth session
+      if (!isLoggedIn) {
+        const loginUrl = new URL('/login', req.url);
+        return NextResponse.redirect(loginUrl);
+      }
+      // Teacher authenticated, allow access
+    }
   }
 
   // If logged in and trying to access login page, redirect to dashboard
