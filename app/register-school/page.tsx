@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { SchoolFormData } from './types';
@@ -10,7 +10,7 @@ import { STATE_TO_REGION } from './constants';
 import SchoolRegistrationForm from './components/SchoolRegistrationForm';
 import SuccessPage from './components/SuccessPage';
 
-export default function RegisterSchool() {
+function RegisterSchoolContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
