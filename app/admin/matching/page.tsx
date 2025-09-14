@@ -662,7 +662,7 @@ export default function AdminDashboard() {
         </div>
 
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
-          <Link href="/admin/schools/create" className="btn btn-primary">
+          <Link href="/register-school?admin=true" className="btn btn-primary">
             Add School
           </Link>
           
