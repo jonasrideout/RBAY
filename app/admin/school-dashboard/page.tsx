@@ -25,10 +25,13 @@ interface Student {
 
 interface SchoolData {
   id: string;
-  name: string; // Changed from schoolName to name to match API response
+  schoolName: string;
   teacherName: string;
   teacherEmail: string;
-  location: string; // Added location field from API response
+  dashboardToken: string;
+  expectedClassSize: number;
+  startMonth: string;
+  programStartMonth: string;
   status: 'COLLECTING' | 'READY' | 'MATCHED' | 'CORRESPONDING' | 'DONE';
   students: any[];
 }
