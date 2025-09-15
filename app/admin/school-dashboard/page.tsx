@@ -226,23 +226,8 @@ function AdminSchoolDashboardContent() {
 
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
         
-        {/* Read-only notice with back button inside - same row layout */}
-        <div style={{ 
-          background: '#e3f2fd', 
-          border: '1px solid #90caf9', 
-          borderRadius: '6px', 
-          padding: '1rem', 
-          marginBottom: '2rem',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
-          <div>
-            <strong style={{ color: '#1565c0' }}>Admin View:</strong>
-            <span style={{ color: '#1976d2', marginLeft: '0.5rem' }}>
-              This is a read-only view of {schoolData.schoolName}'s dashboard
-            </span>
-          </div>
+        {/* Admin Navigation */}
+        <div style={{ marginBottom: '2rem' }}>
           <Link href="/admin/matching" className="btn btn-secondary">
             ← Back to Admin Dashboard
           </Link>
