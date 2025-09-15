@@ -31,26 +31,27 @@ function DashboardPrintContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Get teacher email from URL parameter
-  const teacherEmail = searchParams.get('teacher');
+  // Get token from URL parameter (not teacher email)
+  const token = searchParams.get('token');
 
   useEffect(() => {
-    if (teacherEmail) {
+    if (token) {
       fetchSchoolData();
     } else {
-      setError('Teacher email is required.');
+      setError('Dashboard token is required.');
       setIsLoading(false);
     }
-  }, [teacherEmail]);
+  }, [token]);
 
   const fetchSchoolData = async () => {
-    if (!teacherEmail) return;
+    if (!token) return;
     
     setIsLoading(true);
     setError('');
 
     try {
-      const response = await fetch(`/api/schools?teacherEmail=${encodeURIComponent(teacherEmail)}`);
+      // Use token-based API call instead of teacher email
+      const response = await fetch(`/api/schools?token=${encodeURIComponent(token)}`);
       const data = await response.json();
 
       if (!response.ok) {
@@ -136,7 +137,7 @@ function DashboardPrintContent() {
           alignItems: 'center'
         }}>
           <Link 
-            href={`/dashboard?teacher=${encodeURIComponent(teacherEmail || '')}`} 
+            href="/dashboard" 
             className="btn btn-secondary"
           >
             ← Back to Teacher Dashboard
