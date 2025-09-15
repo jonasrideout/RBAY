@@ -29,9 +29,10 @@ interface StudentMetricsGridProps {
   schoolData: SchoolData;
   totalStudents: number;
   studentsWithInterests: Student[];
+  readOnly?: boolean;
 }
 
-export default function StudentMetricsGrid({ schoolData, totalStudents, studentsWithInterests }: StudentMetricsGridProps) {
+export default function StudentMetricsGrid({ schoolData, totalStudents, studentsWithInterests, readOnly = false }: StudentMetricsGridProps) {
   const estimatedClassSize = schoolData?.expectedClassSize || 0;
 
   return (
