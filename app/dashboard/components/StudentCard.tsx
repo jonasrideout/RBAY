@@ -198,7 +198,7 @@ export default function StudentCard({
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
           <div>
             <h4 style={{ color: '#0c5460', marginBottom: '0.25rem' }}>{student.firstName} {student.lastInitial}.</h4>
-            <span style={{ color: '#6c757d', fontSize: '0.9rem' }}>Grade {student.grade} • Has interests</span>
+            <span style={{ color: '#6c757d', fontSize: '0.9rem' }}>Grade {student.grade}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <span className="status-ready">
