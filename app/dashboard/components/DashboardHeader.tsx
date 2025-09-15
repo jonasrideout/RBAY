@@ -1,7 +1,7 @@
 // /app/dashboard/components/DashboardHeader.tsx
 "use client";
-
 import { useState } from 'react';
+import Link from 'next/link';
 
 interface SchoolData {
   id: string;
@@ -20,18 +20,19 @@ interface DashboardHeaderProps {
   schoolData: SchoolData;
   dashboardToken: string;
   readOnly?: boolean;
+  adminBackButton?: boolean;
 }
 
-export default function DashboardHeader({ schoolData, dashboardToken, readOnly = false }: DashboardHeaderProps) {
+export default function DashboardHeader({ schoolData, dashboardToken, readOnly = false, adminBackButton = false }: DashboardHeaderProps) {
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied'>('idle');
-
+  
   const generateStudentLink = () => {
     if (typeof window !== 'undefined' && schoolData.dashboardToken) {
       return `${window.location.origin}/register-student?token=${schoolData.dashboardToken}`;
     }
     return '';
   };
-
+  
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(generateStudentLink());
@@ -46,7 +47,7 @@ export default function DashboardHeader({ schoolData, dashboardToken, readOnly =
       // Fallback - could show an error state if needed
     }
   };
-
+  
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
       <div>
@@ -56,8 +57,24 @@ export default function DashboardHeader({ schoolData, dashboardToken, readOnly =
         </p>
       </div>
       
-      {/* Hide copy button in read-only mode */}
-      {!readOnly && (
+      {/* Show admin back button in admin view */}
+      {adminBackButton && (
+        <div>
+          <Link 
+            href="/admin/matching" 
+            className="btn btn-secondary"
+            style={{ 
+              fontSize: '0.85rem', 
+              padding: '0.75rem'
+            }}
+          >
+            ← Back to Admin Dashboard
+          </Link>
+        </div>
+      )}
+      
+      {/* Show copy button in teacher view */}
+      {!readOnly && !adminBackButton && (
         <div>
           <h3 style={{ marginBottom: '0.5rem', textAlign: 'right', fontSize: '1rem', marginTop: '0' }}>
             Share This Link With Your Students
