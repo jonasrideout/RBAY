@@ -1,5 +1,6 @@
 // /app/dashboard/components/DashboardHeader.tsx
 "use client";
+
 import { useState } from 'react';
 
 interface SchoolData {
@@ -18,9 +19,10 @@ interface SchoolData {
 interface DashboardHeaderProps {
   schoolData: SchoolData;
   dashboardToken: string;
+  readOnly?: boolean;
 }
 
-export default function DashboardHeader({ schoolData, dashboardToken }: DashboardHeaderProps) {
+export default function DashboardHeader({ schoolData, dashboardToken, readOnly = false }: DashboardHeaderProps) {
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied'>('idle');
 
   const generateStudentLink = () => {
@@ -54,32 +56,35 @@ export default function DashboardHeader({ schoolData, dashboardToken }: Dashboar
         </p>
       </div>
       
-      <div>
-        <h3 style={{ marginBottom: '0.5rem', textAlign: 'right', fontSize: '1rem', marginTop: '0' }}>
-          Share This Link With Your Students
-        </h3>
-        <button 
-          onClick={handleCopyLink}
-          className="btn btn-primary"
-          style={{ 
-            width: '100%', 
-            fontSize: '0.85rem', 
-            padding: '0.75rem',
-            backgroundColor: copyStatus === 'copied' ? '#28a745' : '#4a90e2',
-            transition: 'all 0.3s ease',
-            position: 'relative'
-          }}
-        >
-          {copyStatus === 'copied' ? (
-            <>
-              <span style={{ marginRight: '0.5rem' }}>✓</span>
-              Copied!
-            </>
-          ) : (
-            'Copy Student Registration Link'
-          )}
-        </button>
-      </div>
+      {/* Hide copy button in read-only mode */}
+      {!readOnly && (
+        <div>
+          <h3 style={{ marginBottom: '0.5rem', textAlign: 'right', fontSize: '1rem', marginTop: '0' }}>
+            Share This Link With Your Students
+          </h3>
+          <button 
+            onClick={handleCopyLink}
+            className="btn btn-primary"
+            style={{ 
+              width: '100%', 
+              fontSize: '0.85rem', 
+              padding: '0.75rem',
+              backgroundColor: copyStatus === 'copied' ? '#28a745' : '#4a90e2',
+              transition: 'all 0.3s ease',
+              position: 'relative'
+            }}
+          >
+            {copyStatus === 'copied' ? (
+              <>
+                <span style={{ marginRight: '0.5rem' }}>✓</span>
+                Copied!
+              </>
+            ) : (
+              'Copy Student Registration Link'
+            )}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
