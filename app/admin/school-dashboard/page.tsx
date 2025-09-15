@@ -44,6 +44,7 @@ function AdminSchoolDashboardContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [adminUser, setAdminUser] = useState<string>('');
+  const [expandedReadyStudents, setExpandedReadyStudents] = useState<Set<string>>(new Set());
 
   // Get schoolId from URL parameters
   const schoolId = searchParams.get('schoolId');
@@ -94,10 +95,10 @@ function AdminSchoolDashboardContent() {
           schoolName: data.name, // API returns 'name', components expect 'schoolName'
           teacherName: data.teacherName,
           teacherEmail: data.teacherEmail,
-          dashboardToken: '', // Admin view doesn't need real token
-          expectedClassSize: 0, // Default value for admin view
-          startMonth: 'Not Set', // Default value for admin view
-          programStartMonth: 'Not Set', // Default value for admin view
+          dashboardToken: data.dashboardToken || '', // Use actual token for admin operations
+          expectedClassSize: data.expectedClassSize || 0, // Get real expected class size
+          startMonth: data.startMonth || 'Not Set', 
+          programStartMonth: data.programStartMonth || 'Not Set', 
           status: data.status,
           students: data.students
         };
@@ -146,9 +147,27 @@ function AdminSchoolDashboardContent() {
     }
   };
 
+  const handleAdminMatchingRequested = () => {
+    // Update local state to reflect admin matching request
+    setSchoolData(prev => prev ? { ...prev, status: 'READY' } : null);
+  };
+
+  const toggleReadyStudentExpansion = (studentId: string) => {
+    setExpandedReadyStudents(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(studentId)) {
+        newSet.delete(studentId);
+      } else {
+        newSet.add(studentId);
+      }
+      return newSet;
+    });
+  };
+
   const studentsWithInterests = students.filter(s => s.hasInterests);
   const studentsNeedingInfo = students.filter(s => !s.hasInterests);
   const totalStudents = students.length;
+  const allActiveStudentsComplete = totalStudents > 0 && studentsNeedingInfo.length === 0;
 
   // Read-only placeholder functions (not used in read-only mode)
   const noOpFunction = () => {};
@@ -207,26 +226,26 @@ function AdminSchoolDashboardContent() {
 
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
         
-        {/* Admin Navigation */}
-        <div style={{ marginBottom: '2rem' }}>
-          <Link href="/admin/matching" className="btn btn-secondary">
-            ← Back to Admin Dashboard
-          </Link>
-        </div>
-
-        {/* Read-only notice */}
+        {/* Read-only notice with back button inside - same row layout */}
         <div style={{ 
           background: '#e3f2fd', 
           border: '1px solid #90caf9', 
           borderRadius: '6px', 
           padding: '1rem', 
           marginBottom: '2rem',
-          textAlign: 'center'
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
         }}>
-          <strong style={{ color: '#1565c0' }}>Admin View:</strong>
-          <span style={{ color: '#1976d2', marginLeft: '0.5rem' }}>
-            This is a read-only view of {schoolData.schoolName}'s dashboard
-          </span>
+          <div>
+            <strong style={{ color: '#1565c0' }}>Admin View:</strong>
+            <span style={{ color: '#1976d2', marginLeft: '0.5rem' }}>
+              This is a read-only view of {schoolData.schoolName}'s dashboard
+            </span>
+          </div>
+          <Link href="/admin/matching" className="btn btn-secondary">
+            ← Back to Admin Dashboard
+          </Link>
         </div>
 
         <DashboardHeader 
@@ -242,12 +261,16 @@ function AdminSchoolDashboardContent() {
           readOnly={true}
         />
 
-        <MatchingStatusCard 
-          schoolData={schoolData}
-          allActiveStudentsComplete={totalStudents > 0 && studentsNeedingInfo.length === 0}
-          onMatchingRequested={noOpFunction}
-          readOnly={true}
-        />
+        {/* Admin Matching Status Card with Request Matching button */}
+        {allActiveStudentsComplete && (
+          <MatchingStatusCard 
+            schoolData={schoolData}
+            allActiveStudentsComplete={allActiveStudentsComplete}
+            onMatchingRequested={handleAdminMatchingRequested}
+            readOnly={false} // Allow admin to trigger matching
+            isAdminView={true} // Add admin view flag
+          />
+        )}
 
         <MissingInfoStudents 
           studentsNeedingInfo={studentsNeedingInfo}
@@ -269,11 +292,11 @@ function AdminSchoolDashboardContent() {
         <ReadyStudents 
           studentsWithInterests={studentsWithInterests}
           readyStudentsRemovalMode={false}
-          expandedReadyStudents={new Set()}
+          expandedReadyStudents={expandedReadyStudents}
           readyForMatching={true}
           onToggleRemovalMode={noOpFunction}
           onRemoveStudent={noOpStringFunction}
-          onToggleExpansion={noOpStringFunction}
+          onToggleExpansion={toggleReadyStudentExpansion} // Enable clicking for admin
           readOnly={true}
         />
 
