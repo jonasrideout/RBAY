@@ -201,6 +201,16 @@ export async function GET(request: NextRequest) {
             parentConsent: true,
             createdAt: true
           }
+        },
+        // Include matched school information
+        matchedWithSchool: {
+          select: {
+            id: true,
+            schoolName: true,
+            teacherName: true,
+            schoolState: true,
+            region: true
+          }
         }
       }
     });
