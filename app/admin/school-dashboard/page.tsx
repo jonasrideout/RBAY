@@ -25,13 +25,10 @@ interface Student {
 
 interface SchoolData {
   id: string;
-  schoolName: string;
+  name: string; // Changed from schoolName to name to match API response
   teacherName: string;
   teacherEmail: string;
-  dashboardToken: string;
-  expectedClassSize: number;
-  startMonth: string;
-  programStartMonth: string;
+  location: string; // Added location field from API response
   status: 'COLLECTING' | 'READY' | 'MATCHED' | 'CORRESPONDING' | 'DONE';
   students: any[];
 }
@@ -88,8 +85,9 @@ function AdminSchoolDashboardContent() {
           throw new Error(data.error || 'Failed to load school data');
         }
 
-        setSchoolData(data.school);
-        processStudentData(data.school);
+        // API returns school data directly, not nested under 'school' property
+        setSchoolData(data);
+        processStudentData(data);
         
       } catch (err: any) {
         setError(err.message || 'Failed to load school data');
@@ -211,13 +209,13 @@ function AdminSchoolDashboardContent() {
         }}>
           <strong style={{ color: '#1565c0' }}>Admin View:</strong>
           <span style={{ color: '#1976d2', marginLeft: '0.5rem' }}>
-            This is a read-only view of {schoolData.schoolName}'s dashboard
+            This is a read-only view of {schoolData.name}'s dashboard
           </span>
         </div>
 
         <DashboardHeader 
           schoolData={schoolData} 
-          dashboardToken={schoolData.dashboardToken}
+          dashboardToken=""
           readOnly={true}
         />
 
