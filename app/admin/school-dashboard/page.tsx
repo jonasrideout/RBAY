@@ -85,9 +85,22 @@ function AdminSchoolDashboardContent() {
           throw new Error(data.error || 'Failed to load school data');
         }
 
-        // API returns school data directly, not nested under 'school' property
-        setSchoolData(data);
-        processStudentData(data);
+        // Transform API response to match expected SchoolData interface
+        const transformedSchoolData = {
+          id: data.id,
+          schoolName: data.name, // API returns 'name', components expect 'schoolName'
+          teacherName: data.teacherName,
+          teacherEmail: data.teacherEmail,
+          dashboardToken: '', // Admin view doesn't need real token
+          expectedClassSize: 0, // Default value for admin view
+          startMonth: 'Not Set', // Default value for admin view
+          programStartMonth: 'Not Set', // Default value for admin view
+          status: data.status,
+          students: data.students
+        };
+        
+        setSchoolData(transformedSchoolData);
+        processStudentData(transformedSchoolData);
         
       } catch (err: any) {
         setError(err.message || 'Failed to load school data');
