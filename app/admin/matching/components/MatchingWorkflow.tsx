@@ -70,9 +70,13 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
     }
   }, [schools]);
 
-  // Get all ready schools, excluding the pinned one
+  // UPDATED: Get schools available for matching - exclude already matched schools and the pinned school
   const getAvailableSchools = () => {
-    let availableSchools = schools.filter(school => school.status === 'READY');
+    // Allow schools in COLLECTING or READY status (not already matched)
+    let availableSchools = schools.filter(school => 
+      (school.status === 'COLLECTING' || school.status === 'READY') && 
+      !school.matchedWithSchoolId // Exclude schools that are already matched
+    );
     
     // Remove pinned school from the list
     if (pinnedSchool) {
@@ -365,7 +369,7 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
 
       {/* School Cards */}
       <h3 style={{ marginBottom: '1.5rem' }}>
-        {pinnedSchool ? 'Select a School to Match' : 'Ready for Matching'} ({displaySchools.length})
+        {pinnedSchool ? 'Select a School to Match' : 'Available for Matching'} ({displaySchools.length})
         {hasActiveFilters && !pinnedSchool && (
           <span style={{ fontSize: '0.9rem', color: '#666', fontWeight: 'normal' }}>
             {' '}- filtered results
@@ -384,13 +388,13 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
           <h4>
             {hasActiveFilters || pinnedSchool
               ? 'No schools match the current filters' 
-              : 'No schools ready for matching'
+              : 'No schools available for matching'
             }
           </h4>
           <p style={{ color: '#6c757d' }}>
             {hasActiveFilters || pinnedSchool
               ? 'Try adjusting your filters or clear them to see all available schools.'
-              : 'Schools will appear here when they\'re ready to be matched.'
+              : 'Schools will appear here when they\'re available to be matched.'
             }
           </p>
         </div>
