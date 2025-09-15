@@ -39,6 +39,8 @@ interface SchoolData {
   programStartMonth: string;
   status: 'COLLECTING' | 'READY' | 'MATCHED' | 'CORRESPONDING' | 'DONE';
   students: any[];
+  matchedWithSchoolId?: string;
+  matchedSchoolName?: string;
 }
 
 function TeacherDashboardContent() {
@@ -95,8 +97,24 @@ function TeacherDashboardContent() {
         throw new Error(data.error || 'Failed to load school data');
       }
 
-      setSchoolData(data.school);
-      fetchStudentData(data.school.id, data.school);
+      // Transform the response to include matched school information
+      const transformedSchoolData: SchoolData = {
+        id: data.school.id,
+        schoolName: data.school.schoolName,
+        teacherName: data.school.teacherName,
+        teacherEmail: data.school.teacherEmail,
+        dashboardToken: data.school.dashboardToken,
+        expectedClassSize: data.school.expectedClassSize,
+        startMonth: data.school.startMonth,
+        programStartMonth: data.school.programStartMonth,
+        status: data.school.status,
+        students: data.school.students,
+        matchedWithSchoolId: data.school.matchedWithSchoolId,
+        matchedSchoolName: data.school.matchedWithSchool?.schoolName || undefined
+      };
+
+      setSchoolData(transformedSchoolData);
+      fetchStudentData(data.school.id, transformedSchoolData);
       
     } catch (err: any) {
       setError(err.message || 'Failed to load school data');
