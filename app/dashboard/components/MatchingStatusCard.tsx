@@ -1,5 +1,6 @@
 // /app/dashboard/components/MatchingStatusCard.tsx
 "use client";
+
 import { useState } from 'react';
 
 interface SchoolData {
@@ -19,9 +20,10 @@ interface MatchingStatusCardProps {
   schoolData: SchoolData;
   allActiveStudentsComplete: boolean;
   onMatchingRequested: () => void;
+  readOnly?: boolean;
 }
 
-export default function MatchingStatusCard({ schoolData, allActiveStudentsComplete, onMatchingRequested }: MatchingStatusCardProps) {
+export default function MatchingStatusCard({ schoolData, allActiveStudentsComplete, onMatchingRequested, readOnly = false }: MatchingStatusCardProps) {
   const [isRequestingMatching, setIsRequestingMatching] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   
@@ -83,7 +85,10 @@ export default function MatchingStatusCard({ schoolData, allActiveStudentsComple
                   🎯 Matching Requested
                 </h3>
                 <p style={{ color: '#6c757d', marginBottom: '0' }}>
-                  Waiting for partner school. We will email you when matching is complete.
+                  {readOnly 
+                    ? 'This school has requested matching and is waiting for a partner school.'
+                    : 'Waiting for partner school. We will email you when matching is complete.'
+                  }
                 </p>
               </>
             ) : (
@@ -92,43 +97,49 @@ export default function MatchingStatusCard({ schoolData, allActiveStudentsComple
                   ✅ Ready for Matching!
                 </h3>
                 <p style={{ color: '#6c757d', marginBottom: '0' }}>
-                  All active students have provided their interest information. You can request matching when ready!
+                  {readOnly
+                    ? 'All active students have provided their interest information. This school can request matching.'
+                    : 'All active students have provided their interest information. You can request matching when ready!'
+                  }
                 </p>
               </>
             )}
           </div>
           
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
-            <button 
-              className="btn" 
-              style={{ 
-                backgroundColor: readyForMatching ? '#17a2b8' : '#28a745', 
-                color: 'white', 
-                cursor: (isRequestingMatching || readyForMatching) ? 'not-allowed' : 'pointer',
-                padding: '1rem 2rem',
-                fontSize: '1.1rem'
-              }}
-              disabled={isRequestingMatching || readyForMatching}
-              onClick={handleRequestMatchingClick}
-              title={readyForMatching ? "Matching has been requested" : "Request matching with current students"}
-            >
-              {readyForMatching ? '✅ Matching Requested' : (isRequestingMatching ? (
-                <>
-                  <span className="loading"></span>
-                  <span style={{ marginLeft: '0.5rem' }}>Requesting...</span>
-                </>
-              ) : '🎯 Request Matching')}
-            </button>
-            
-            <p style={{ color: '#6c757d', fontSize: '0.9rem', margin: '0', textAlign: 'right' }}>
-              All students ready - you can request matching anytime!
-            </p>
-          </div>
+          {/* Hide action buttons in read-only mode */}
+          {!readOnly && (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
+              <button 
+                className="btn" 
+                style={{ 
+                  backgroundColor: readyForMatching ? '#17a2b8' : '#28a745', 
+                  color: 'white', 
+                  cursor: (isRequestingMatching || readyForMatching) ? 'not-allowed' : 'pointer',
+                  padding: '1rem 2rem',
+                  fontSize: '1.1rem'
+                }}
+                disabled={isRequestingMatching || readyForMatching}
+                onClick={handleRequestMatchingClick}
+                title={readyForMatching ? "Matching has been requested" : "Request matching with current students"}
+              >
+                {readyForMatching ? '✅ Matching Requested' : (isRequestingMatching ? (
+                  <>
+                    <span className="loading"></span>
+                    <span style={{ marginLeft: '0.5rem' }}>Requesting...</span>
+                  </>
+                ) : '🎯 Request Matching')}
+              </button>
+              
+              <p style={{ color: '#6c757d', fontSize: '0.9rem', margin: '0', textAlign: 'right' }}>
+                All students ready - you can request matching anytime!
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Confirmation Dialog */}
-      {showConfirmation && (
+      {/* Confirmation Dialog - don't show in read-only mode */}
+      {!readOnly && showConfirmation && (
         <div style={{
           position: 'fixed',
           top: 0,
