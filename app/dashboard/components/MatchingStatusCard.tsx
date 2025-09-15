@@ -14,6 +14,8 @@ interface SchoolData {
   programStartMonth: string;
   status: 'COLLECTING' | 'READY' | 'MATCHED' | 'CORRESPONDING' | 'DONE';
   students: any[];
+  matchedWithSchoolId?: string;
+  matchedSchoolName?: string;
 }
 
 interface MatchingStatusCardProps {
@@ -34,7 +36,10 @@ export default function MatchingStatusCard({
   const [isRequestingMatching, setIsRequestingMatching] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   
-  // Use status field instead of readyForMatching
+  // Check if school is already matched (this takes priority over status)
+  const isMatched = schoolData?.matchedWithSchoolId != null;
+  
+  // Use status field for ready state (only relevant if not already matched)
   const readyForMatching = schoolData?.status === 'READY';
 
   const handleRequestMatchingClick = () => {
@@ -86,7 +91,24 @@ export default function MatchingStatusCard({
       <div className="card" style={{ marginBottom: '2rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div style={{ flex: '1', minWidth: '300px' }}>
-            {readyForMatching ? (
+            {isMatched ? (
+              <>
+                <h3 style={{ color: '#007bff', marginBottom: '0.5rem' }}>
+                  🤝 Matched with Partner School
+                </h3>
+                <p style={{ color: '#6c757d', marginBottom: '0' }}>
+                  <strong>Partner School:</strong> {schoolData.matchedSchoolName || 'Loading...'}
+                </p>
+                <p style={{ color: '#6c757d', marginBottom: '0', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+                  {readOnly && !isAdminView
+                    ? 'This school has been matched with a partner school and can begin the correspondence phase.'
+                    : isAdminView
+                    ? 'This school has been matched with a partner school.'
+                    : 'Your students have been matched with a partner school! Student pairings will be completed soon.'
+                  }
+                </p>
+              </>
+            ) : readyForMatching ? (
               <>
                 <h3 style={{ color: '#17a2b8', marginBottom: '0.5rem' }}>
                   🎯 Matching Requested
@@ -117,8 +139,8 @@ export default function MatchingStatusCard({
             )}
           </div>
           
-          {/* Show action buttons in admin view or when not read-only */}
-          {(!readOnly || isAdminView) && (
+          {/* Show action buttons only if not already matched and (in admin view or when not read-only) */}
+          {!isMatched && (!readOnly || isAdminView) && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
               <button 
                 className="btn" 
@@ -152,8 +174,8 @@ export default function MatchingStatusCard({
         </div>
       </div>
 
-      {/* Confirmation Dialog - show for both admin and teacher views when not read-only */}
-      {(!readOnly || isAdminView) && showConfirmation && (
+      {/* Confirmation Dialog - show for both admin and teacher views when not read-only and not already matched */}
+      {!isMatched && (!readOnly || isAdminView) && showConfirmation && (
         <div style={{
           position: 'fixed',
           top: 0,
