@@ -44,6 +44,7 @@ interface StudentCardProps {
   onCancelEdit?: () => void;
   onInterestChange?: (interest: string, checked: boolean) => void;
   onOtherInterestsChange?: (value: string) => void;
+  readOnly?: boolean; // Added readOnly prop
 }
 
 export default function StudentCard({
@@ -61,7 +62,8 @@ export default function StudentCard({
   onSaveInterests,
   onCancelEdit,
   onInterestChange,
-  onOtherInterestsChange
+  onOtherInterestsChange,
+  readOnly = false // Added readOnly with default false
 }: StudentCardProps) {
 
   const getInterestLabel = (value: string) => {
@@ -69,17 +71,21 @@ export default function StudentCard({
     return option ? option.label : value;
   };
 
-  // Missing info card in editing mode
+  // Missing info card in editing mode - show read-only form in admin mode
   if (type === 'missing-info' && isEditing) {
     return (
       <div className="card" style={{ background: '#fff5f5', border: '2px solid #fed7d7' }}>
         <div style={{ marginBottom: '1rem' }}>
           <h4 style={{ color: '#c53030', marginBottom: '0.25rem' }}>{student.firstName} {student.lastInitial}.</h4>
-          <span style={{ color: '#6c757d', fontSize: '0.9rem' }}>Grade {student.grade} • Adding interests</span>
+          <span style={{ color: '#6c757d', fontSize: '0.9rem' }}>
+            Grade {student.grade} • {readOnly ? 'Viewing interests' : 'Adding interests'}
+          </span>
         </div>
         
         <div style={{ background: 'white', padding: '1.5rem', borderRadius: '6px', border: '1px solid #fed7d7' }}>
-          <h5 style={{ marginBottom: '1rem', color: '#495057' }}>Select {student.firstName}'s Interests:</h5>
+          <h5 style={{ marginBottom: '1rem', color: '#495057' }}>
+            {readOnly ? `${student.firstName}'s Interests:` : `Select ${student.firstName}'s Interests:`}
+          </h5>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.5rem', marginBottom: '1rem' }}>
             {INTEREST_OPTIONS.map(interest => (
               <label key={interest.value} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -87,6 +93,7 @@ export default function StudentCard({
                   type="checkbox" 
                   checked={tempInterests.includes(interest.value)}
                   onChange={(e) => onInterestChange?.(interest.value, e.target.checked)}
+                  disabled={readOnly} // Disable checkboxes in read-only mode
                 />
                 {interest.label}
               </label>
@@ -96,29 +103,33 @@ export default function StudentCard({
             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Other Interests:</label>
             <textarea 
               className="form-textarea" 
-              placeholder="Any other hobbies or interests..."
+              placeholder={readOnly ? "No other interests listed" : "Any other hobbies or interests..."}
               rows={2}
               value={tempOtherInterests}
               onChange={(e) => onOtherInterestsChange?.(e.target.value)}
               style={{ width: '100%' }}
+              disabled={readOnly} // Disable textarea in read-only mode
             />
           </div>
-          <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-            <button 
-              className="btn btn-secondary"
-              onClick={onCancelEdit}
-              style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
-            >
-              Cancel
-            </button>
-            <button 
-              className="btn btn-primary" 
-              onClick={onSaveInterests}
-              style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
-            >
-              Save Interests
-            </button>
-          </div>
+          {/* Hide save/cancel buttons in read-only mode */}
+          {!readOnly && (
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+              <button 
+                className="btn btn-secondary"
+                onClick={onCancelEdit}
+                style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
+              >
+                Cancel
+              </button>
+              <button 
+                className="btn btn-primary" 
+                onClick={onSaveInterests}
+                style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
+              >
+                Save Interests
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -141,15 +152,19 @@ export default function StudentCard({
             <h4 style={{ color: '#c53030', marginBottom: '0', fontSize: '1rem' }}>{student.firstName} {student.lastInitial}.</h4>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <button 
-              className="btn btn-primary" 
-              onClick={onEditClick}
-              style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
-              disabled={readyForMatching}
-            >
-              {readyForMatching ? 'Locked' : 'Add Interests'}
-            </button>
-            {showRemoveButton && (
+            {/* Hide Add Interests button in read-only mode */}
+            {!readOnly && (
+              <button 
+                className="btn btn-primary" 
+                onClick={onEditClick}
+                style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
+                disabled={readyForMatching}
+              >
+                {readyForMatching ? 'Locked' : 'Add Interests'}
+              </button>
+            )}
+            {/* Hide remove button in read-only mode */}
+            {!readOnly && showRemoveButton && (
               <button
                 onClick={onRemoveClick}
                 style={{
@@ -189,7 +204,8 @@ export default function StudentCard({
             <span className="status-ready">
               ✅ Ready
             </span>
-            {showRemoveButton && (
+            {/* Hide remove button in read-only mode */}
+            {!readOnly && showRemoveButton && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -251,7 +267,8 @@ export default function StudentCard({
             <span className="status-ready">
               ✅ Ready
             </span>
-            {showRemoveButton && (
+            {/* Hide remove button in read-only mode */}
+            {!readOnly && showRemoveButton && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
