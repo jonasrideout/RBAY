@@ -429,21 +429,20 @@ function RegisterStudentForm() {
 
       <h2 className="text-center mb-3">{isTeacherFlow ? 'Student Info' : 'Tell Us About Yourself'}</h2>
       <p className="text-center mb-4" style={{ color: '#6c757d' }}>
-        {isTeacherFlow 
-          ? 'This information helps us find your student a great penpal who shares their interests!'
-          : 'This information helps us find you a great penpal who shares your interests!'
-        }
+        Helps us find your student a great penpal who shares their interests!
       </p>
 
       <form onSubmit={handleSubmit}>
         <div className="grid grid-2" style={{ gap: '1rem' }}>
           <div className="form-group">
-            <label htmlFor="first-name" className="form-label">First Name *</label>
+            <label htmlFor="first-name" className="form-label">
+              {isTeacherFlow ? "Student's first name *" : "First Name *"}
+            </label>
             <input 
               type="text" 
               id="first-name" 
               className="form-input" 
-              placeholder="Your first name"
+              placeholder={isTeacherFlow ? "Student's first name" : "Your first name"}
               value={formData.firstName}
               onChange={(e) => updateFormData('firstName', e.target.value)}
               disabled={isLoading}
@@ -457,7 +456,7 @@ function RegisterStudentForm() {
               type="text" 
               id="last-initial" 
               className="form-input" 
-              placeholder="Enter the first 1 or 2 letters of your last name"
+              placeholder={isTeacherFlow ? "Enter the first 1 or 2 letters of their last name" : "Enter the first 1 or 2 letters of your last name"}
               value={formData.lastInitial}
               onChange={(e) => updateFormData('lastInitial', e.target.value)}
               disabled={isLoading}
@@ -477,7 +476,7 @@ function RegisterStudentForm() {
             disabled={isLoading}
             required
           >
-            <option value="">Select your grade</option>
+            <option value="">{isTeacherFlow ? "Select their grade" : "Select your grade"}</option>
             <option value="3">3rd Grade</option>
             <option value="4">4th Grade</option>
             <option value="5">5th Grade</option>
@@ -488,9 +487,12 @@ function RegisterStudentForm() {
         </div>
 
         <div className="form-group">
-          <label className="form-label">Your Interests & Hobbies *</label>
+          <label className="form-label">{isTeacherFlow ? "Interests & Hobbies *" : "Your Interests & Hobbies *"}</label>
           <p style={{ color: '#6c757d', fontSize: '0.9rem', marginBottom: '1rem' }}>
-            Select at least one that applies - this helps us find you a great penpal!
+            {isTeacherFlow 
+              ? "Select at least one that applies"
+              : "Select at least one that applies - this helps us find you a great penpal!"
+            }
           </p>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.5rem' }}>
@@ -513,7 +515,7 @@ function RegisterStudentForm() {
           <textarea 
             id="other-interests" 
             className="form-textarea" 
-            placeholder="Tell us about any other hobbies, interests, or activities you enjoy..."
+            placeholder={isTeacherFlow ? "Tell us about any other hobbies, interests, or activities..." : "Tell us about any other hobbies, interests, or activities you enjoy..."}
             rows={3}
             value={formData.otherInterests}
             onChange={(e) => updateFormData('otherInterests', e.target.value)}
@@ -522,9 +524,12 @@ function RegisterStudentForm() {
         </div>
 
         <div className="form-group">
-          <label className="form-label">Pen Pal Preference</label>
+          <label className="form-label">{isTeacherFlow ? "How many pen pals would this student like?" : "Pen Pal Preference"}</label>
           <p style={{ color: '#6c757d', fontSize: '0.9rem', marginBottom: '1rem' }}>
-            Would you like to have one pen pal or would you be excited to write to multiple pen pals?
+            {isTeacherFlow 
+              ? "" 
+              : "Would you like to have one pen pal or would you be excited to write to multiple pen pals?"
+            }
           </p>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -550,7 +555,7 @@ function RegisterStudentForm() {
               />
               <div>
                 <div style={{ fontWeight: '500', marginBottom: '0.25rem' }}>
-                  📝 I'd prefer just one pen pal
+                  {isTeacherFlow ? "📝 Just one pen pal" : "📝 I'd prefer just one pen pal"}
                 </div>
                 <div style={{ fontSize: '0.85rem', color: '#6c757d' }}>
                   Focus on building one great friendship
@@ -580,10 +585,10 @@ function RegisterStudentForm() {
               />
               <div>
                 <div style={{ fontWeight: '500', marginBottom: '0.25rem' }}>
-                  ✉️ I'd love multiple pen pals if possible!
+                  {isTeacherFlow ? "✉️ Multiple pen pals if possible!" : "✉️ I'd love multiple pen pals if possible!"}
                 </div>
                 <div style={{ fontSize: '0.85rem', color: '#6c757d' }}>
-                  I'm excited to write to 2-3 different students
+                  {isTeacherFlow ? "Excited to write to 2-3 different students" : "I'm excited to write to 2-3 different students"}
                 </div>
               </div>
             </label>
@@ -604,16 +609,20 @@ function RegisterStudentForm() {
                 style={{ marginTop: '0.25rem' }}
               />
               <span>
-                I have permission from my parent or guardian to participate in The Right Back at You Project. 
-                This includes reading the book and exchanging letters with students from other schools. *
+                {isTeacherFlow 
+                  ? "My student has permission from their parent or guardian to participate in The Right Back at You Project. This includes reading the book and exchanging letters with students from other schools. *"
+                  : "I have permission from my parent or guardian to participate in The Right Back at You Project. This includes reading the book and exchanging letters with students from other schools. *"
+                }
               </span>
             </label>
           </div>
 
           <div style={{ background: '#e9ecef', padding: '1rem', borderRadius: '6px', marginTop: '1rem' }}>
             <p style={{ margin: '0', fontSize: '0.9rem', color: '#495057' }}>
-              <strong>Privacy Protection:</strong> We only collect your first name and last initial to protect your privacy. 
-              Your teacher will help coordinate any additional communication needed.
+              <strong>Privacy Protection:</strong> {isTeacherFlow 
+                ? "We only collect your student's first name and last 1 or 2 initials to protect their privacy."
+                : "We only collect your first name and last initial to protect your privacy. Your teacher will help coordinate any additional communication needed."
+              }
             </p>
           </div>
         </div>
@@ -637,7 +646,7 @@ function RegisterStudentForm() {
                 <span style={{ marginLeft: '0.5rem' }}>Submitting...</span>
               </>
             ) : (
-              'Submit My Information'
+              isTeacherFlow ? 'Submit Student' : 'Submit My Information'
             )}
           </button>
         </div>
