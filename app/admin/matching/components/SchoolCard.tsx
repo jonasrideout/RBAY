@@ -3,7 +3,6 @@
 
 import { useState } from 'react';
 import { School } from '../types';
-import { generateAdminDashboardUrl } from '@/lib/adminTokens';
 
 interface SchoolCardProps {
   school: School;
@@ -23,16 +22,14 @@ export default function SchoolCard({
   const teacherName = school.teacherName;
   const isReady = school.status === 'READY';
 
-  // Get the current domain dynamically - UPDATED FOR ADMIN TOKEN-BASED ACCESS
+  // Generate admin dashboard URL
   const getDashboardUrl = () => {
-  console.log('School ID:', school.id);
-  console.log('School dashboardToken:', school.dashboardToken);
-  const adminUrl = generateAdminDashboardUrl(school.id, school.dashboardToken);
-  if (typeof window !== 'undefined') {
-    const currentOrigin = window.location.origin;
-    return `${currentOrigin}${adminUrl}`;
+    const adminDashboardPath = `/admin/school-dashboard?schoolId=${school.id}`;
+    if (typeof window !== 'undefined') {
+      const currentOrigin = window.location.origin;
+      return `${currentOrigin}${adminDashboardPath}`;
     }
-    return adminUrl;
+    return adminDashboardPath;
   };
 
   const [copyButtonText, setCopyButtonText] = useState('COPY URL');
@@ -322,7 +319,7 @@ export default function SchoolCard({
             }}
             onMouseEnter={(e) => e.currentTarget.style.color = '#374151'}
             onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
-            title="Open teacher dashboard in new tab"
+            title="Open school dashboard in new tab"
           >
             OPEN DASHBOARD
           </button>
@@ -344,7 +341,7 @@ export default function SchoolCard({
             }}
             onMouseEnter={(e) => e.currentTarget.style.color = '#374151'}
             onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
-            title="Copy teacher dashboard URL to clipboard"
+            title="Copy school dashboard URL to clipboard"
           >
             {copyButtonText}
           </button>
