@@ -32,12 +32,13 @@ export async function GET(request: NextRequest) {
     }
 
     // Transform the data to match the dashboard expected format
+    // Using exact schema field names from prisma/schema.prisma
     const dashboardData = {
       id: school.id,
-      name: school.name,
+      name: school.schoolName, // Schema uses schoolName
       teacherName: school.teacherName,
       teacherEmail: school.teacherEmail,
-      location: school.location,
+      location: `${school.schoolCity || ''}, ${school.schoolState}`.trim().replace(/^,\s*/, ''), // Combine city and state
       status: school.status,
       students: school.students.map(student => ({
         id: student.id,
