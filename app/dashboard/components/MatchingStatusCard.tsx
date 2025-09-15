@@ -21,9 +21,16 @@ interface MatchingStatusCardProps {
   allActiveStudentsComplete: boolean;
   onMatchingRequested: () => void;
   readOnly?: boolean;
+  isAdminView?: boolean; // New prop to identify admin view
 }
 
-export default function MatchingStatusCard({ schoolData, allActiveStudentsComplete, onMatchingRequested, readOnly = false }: MatchingStatusCardProps) {
+export default function MatchingStatusCard({ 
+  schoolData, 
+  allActiveStudentsComplete, 
+  onMatchingRequested, 
+  readOnly = false,
+  isAdminView = false 
+}: MatchingStatusCardProps) {
   const [isRequestingMatching, setIsRequestingMatching] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   
@@ -85,7 +92,9 @@ export default function MatchingStatusCard({ schoolData, allActiveStudentsComple
                   🎯 Matching Requested
                 </h3>
                 <p style={{ color: '#6c757d', marginBottom: '0' }}>
-                  {readOnly 
+                  {readOnly && !isAdminView
+                    ? 'This school has requested matching and is waiting for a partner school.'
+                    : isAdminView
                     ? 'This school has requested matching and is waiting for a partner school.'
                     : 'Waiting for partner school. We will email you when matching is complete.'
                   }
@@ -97,8 +106,10 @@ export default function MatchingStatusCard({ schoolData, allActiveStudentsComple
                   ✅ Ready for Matching!
                 </h3>
                 <p style={{ color: '#6c757d', marginBottom: '0' }}>
-                  {readOnly
+                  {readOnly && !isAdminView
                     ? 'All active students have provided their interest information. This school can request matching.'
+                    : isAdminView
+                    ? 'All students ready - you can request matching anytime!'
                     : 'All active students have provided their interest information. You can request matching when ready!'
                   }
                 </p>
@@ -106,8 +117,8 @@ export default function MatchingStatusCard({ schoolData, allActiveStudentsComple
             )}
           </div>
           
-          {/* Hide action buttons in read-only mode */}
-          {!readOnly && (
+          {/* Show action buttons in admin view or when not read-only */}
+          {(!readOnly || isAdminView) && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
               <button 
                 className="btn" 
@@ -120,26 +131,29 @@ export default function MatchingStatusCard({ schoolData, allActiveStudentsComple
                 }}
                 disabled={isRequestingMatching || readyForMatching}
                 onClick={handleRequestMatchingClick}
-                title={readyForMatching ? "Matching has been requested" : "Request matching with current students"}
+                title={readyForMatching ? "Matching has been requested" : `Request matching for ${schoolData.schoolName}`}
               >
                 {readyForMatching ? '✅ Matching Requested' : (isRequestingMatching ? (
                   <>
                     <span className="loading"></span>
                     <span style={{ marginLeft: '0.5rem' }}>Requesting...</span>
                   </>
-                ) : '🎯 Request Matching')}
+                ) : isAdminView ? `✅ Request Matching for ${schoolData.schoolName}` : '🎯 Request Matching')}
               </button>
               
               <p style={{ color: '#6c757d', fontSize: '0.9rem', margin: '0', textAlign: 'right' }}>
-                All students ready - you can request matching anytime!
+                {isAdminView 
+                  ? 'All students ready - you can request matching anytime!'
+                  : 'All students ready - you can request matching anytime!'
+                }
               </p>
             </div>
           )}
         </div>
       </div>
 
-      {/* Confirmation Dialog - don't show in read-only mode */}
-      {!readOnly && showConfirmation && (
+      {/* Confirmation Dialog - show for both admin and teacher views when not read-only */}
+      {(!readOnly || isAdminView) && showConfirmation && (
         <div style={{
           position: 'fixed',
           top: 0,
@@ -162,10 +176,13 @@ export default function MatchingStatusCard({ schoolData, allActiveStudentsComple
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
           }}>
             <h3 style={{ color: '#495057', marginBottom: '1rem' }}>
-              Confirm Matching Request
+              {isAdminView ? `Request Matching for ${schoolData.schoolName}` : 'Confirm Matching Request'}
             </h3>
             <p style={{ color: '#6c757d', marginBottom: '2rem', lineHeight: '1.5' }}>
-              Are you ready to request matching for your students? This will submit your class roster for the matching process.
+              {isAdminView 
+                ? `Are you ready to request matching for ${schoolData.schoolName}? This will submit their class roster for the matching process.`
+                : 'Are you ready to request matching for your students? This will submit your class roster for the matching process.'
+              }
             </p>
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
               <button 
