@@ -226,17 +226,11 @@ function AdminSchoolDashboardContent() {
 
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
         
-        {/* Admin Navigation */}
-        <div style={{ marginBottom: '2rem' }}>
-          <Link href="/admin/matching" className="btn btn-secondary">
-            ← Back to Admin Dashboard
-          </Link>
-        </div>
-
         <DashboardHeader 
           schoolData={schoolData} 
           dashboardToken=""
           readOnly={true}
+          adminBackButton={true}
         />
 
         <StudentMetricsGrid 
