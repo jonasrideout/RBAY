@@ -52,16 +52,22 @@ export default auth(async (req) => {
     }
   }
 
-  // Dashboard route
+  // Dashboard route with admin access support
   const isDashboardRoute = pathname.startsWith('/dashboard');
   
   // Register school route with special admin mode handling
   const isRegisterSchoolRoute = pathname.startsWith('/register-school');
 
-  // If accessing dashboard without login, redirect to login
+  // Dashboard route protection - allow teacher OR admin access
   if (isDashboardRoute && !isLoggedIn) {
-    const loginUrl = new URL('/login', req.url);
-    return NextResponse.redirect(loginUrl);
+    // Check if admin is trying to access dashboard
+    const adminToken = req.cookies.get('admin-session');
+    if (!adminToken) {
+      // Neither teacher nor admin authenticated, redirect to teacher login
+      const loginUrl = new URL('/login', req.url);
+      return NextResponse.redirect(loginUrl);
+    }
+    // Admin authenticated, allow access to dashboard
   }
 
   // Special handling for register-school route
