@@ -591,11 +591,58 @@ export default function AdminDashboard() {
 
       <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
         
-        <div style={{ marginBottom: '1.5rem' }}>
-          <h1 style={{ marginBottom: '0.5rem', fontSize: '1.8rem' }}>Administrator Dashboard</h1>
-          <p style={{ color: '#6c757d', fontSize: '1.1rem' }}>
-            Overview of all schools and their progress through the program.
-          </p>
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          marginBottom: '1.5rem' 
+        }}>
+          <div>
+            <h1 style={{ marginBottom: '0.5rem', fontSize: '1.8rem' }}>Administrator Dashboard</h1>
+            <p style={{ color: '#6c757d', fontSize: '1.1rem', margin: 0 }}>
+              Overview of all schools and their progress through the program.
+            </p>
+          </div>
+          
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <Link href="/register-school?admin=true" className="btn btn-primary">
+              Add School
+            </Link>
+            
+            {/* Match Schools button - disabled on Tab 2 & 3 */}
+            <button 
+              onClick={() => {
+                if (activeTab === 'collecting') {
+                  setShowMatchingWorkflow(!showMatchingWorkflow);
+                }
+              }}
+              className="btn"
+              disabled={activeTab !== 'collecting'}
+              style={{ 
+                backgroundColor: activeTab === 'collecting' ? '#2563eb' : '#9ca3af',
+                color: 'white',
+                cursor: activeTab === 'collecting' ? 'pointer' : 'not-allowed',
+                opacity: activeTab === 'collecting' ? 1 : 0.6
+              }}
+            >
+              {activeTab === 'collecting' && showMatchingWorkflow ? 'Done Matching' : 'Match Schools'}
+            </button>
+            
+            <button 
+              onClick={handleSeedData}
+              className="btn btn-primary"
+            >
+              Seed Data
+            </button>
+
+            <button 
+              onClick={handleClearData}
+              className="btn"
+              style={{ backgroundColor: '#dc3545', color: 'white' }}
+            >
+              Clear Data
+            </button>
+          </div>
         </div>
 
         {error && (
@@ -646,54 +693,6 @@ export default function AdminDashboard() {
               {tab.label} ({tab.count})
             </button>
           ))}
-        </div>
-
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
-          <Link href="/register-school?admin=true" className="btn btn-primary">
-            Add School
-          </Link>
-          
-          {/* Match Schools button - 2nd position, disabled on Tab 2 & 3 */}
-          <button 
-            onClick={() => {
-              if (activeTab === 'collecting') {
-                setShowMatchingWorkflow(!showMatchingWorkflow);
-              }
-            }}
-            className="btn"
-            disabled={activeTab !== 'collecting'}
-            style={{ 
-              backgroundColor: activeTab === 'collecting' ? '#2563eb' : '#9ca3af',
-              color: 'white',
-              cursor: activeTab === 'collecting' ? 'pointer' : 'not-allowed',
-              opacity: activeTab === 'collecting' ? 1 : 0.6
-            }}
-          >
-            {activeTab === 'collecting' && showMatchingWorkflow ? 'Done Matching' : 'Match Schools'}
-          </button>
-          
-          <button 
-            onClick={fetchAllSchools}
-            className="btn btn-secondary"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Loading...' : 'Refresh Data'}
-          </button>
-          
-          <button 
-            onClick={handleSeedData}
-            className="btn btn-primary"
-          >
-            Seed Test Data
-          </button>
-
-          <button 
-            onClick={handleClearData}
-            className="btn"
-            style={{ backgroundColor: '#dc3545', color: 'white' }}
-          >
-            Clear All Data
-          </button>
         </div>
 
         {renderTabContent()}
