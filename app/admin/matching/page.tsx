@@ -7,7 +7,9 @@ import Link from 'next/link';
 import Header from '../../components/Header';
 import MatchingWorkflow from './components/MatchingWorkflow';
 import SchoolCard from './components/SchoolCard';
-import { School, StatusCounts, SelectedStatus } from './types';
+import { School, StatusCounts } from './types';
+
+type ActiveTab = 'collecting' | 'ready' | 'matched';
 
 export default function AdminDashboard() {
   const [schools, setSchools] = useState<School[]>([]);
@@ -18,7 +20,8 @@ export default function AdminDashboard() {
     CORRESPONDING: 0,
     DONE: 0
   });
-  const [selectedStatus, setSelectedStatus] = useState<SelectedStatus>('COLLECTING');
+  const [activeTab, setActiveTab] = useState<ActiveTab>('collecting');
+  const [showMatchingWorkflow, setShowMatchingWorkflow] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [adminUser, setAdminUser] = useState<string>('');
@@ -138,51 +141,14 @@ export default function AdminDashboard() {
   };
 
   const handleSchoolsUpdate = async (updatedSchools: School[]) => {
-    // If empty array is passed, just refresh from API
-    if (updatedSchools.length === 0) {
-      await fetchAllSchools();
-      return Promise.resolve();
-    }
-    
-    // Otherwise, update local state (for other use cases)
-    setSchools(updatedSchools);
-    
-    // Calculate and update status counts locally
-    const newStatusCounts = updatedSchools.reduce((counts, school) => {
-      counts[school.status] = (counts[school.status] || 0) + 1;
-      return counts;
-    }, {
-      COLLECTING: 0,
-      READY: 0,
-      MATCHED: 0,
-      CORRESPONDING: 0,
-      DONE: 0
-    });
-    setStatusCounts(newStatusCounts);
-    
-    // Sync with API in background
+    // Always refresh from API to maintain single source of truth
     try {
       await fetchAllSchools();
       return Promise.resolve();
     } catch (error) {
-      console.error('Failed to sync with API:', error);
+      console.error('Failed to refresh school data:', error);
       return Promise.resolve();
     }
-  };
-
-  const getStatusLabel = (status: SelectedStatus) => {
-    const labels = {
-      COLLECTING: 'Collecting Information',
-      READY: 'Ready for Matching',
-      MATCHED: 'Matched',
-      CORRESPONDING: 'Corresponding',
-      DONE: 'Done'
-    };
-    return labels[status];
-  };
-
-  const getSchoolsByStatus = (status: SelectedStatus): School[] => {
-    return schools.filter(school => school.status === status);
   };
 
   const handleAssignPenPals = async (school1Id: string, school2Id: string) => {
@@ -211,19 +177,6 @@ export default function AdminDashboard() {
       console.error('Error assigning pen pals:', err);
       alert('Error assigning pen pals: ' + err.message);
     }
-  };
-
-  // Function to handle download
-  const handleDownloadPairings = (schoolId: string, schoolName: string) => {
-    const downloadUrl = `/api/admin/download-pairings?schoolId=${schoolId}`;
-    
-    // Create a temporary link and click it to trigger download
-    const link = document.createElement('a');
-    link.href = downloadUrl;
-    link.download = `${schoolName}_pen_pal_assignments.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   // Handlers for seed and clear operations
@@ -263,7 +216,125 @@ export default function AdminDashboard() {
     }
   };
 
-  const renderMatchedPairs = () => {
+  const getSchoolsByStatus = (status: 'COLLECTING' | 'READY' | 'MATCHED'): School[] => {
+    return schools.filter(school => school.status === status);
+  };
+
+  // Check if both schools in a matched pair are READY status
+  const areBothSchoolsReady = (school1: School, school2: School): boolean => {
+    return school1.status === 'READY' && school2.status === 'READY';
+  };
+
+  const renderCollectingTab = () => {
+    const collectingSchools = getSchoolsByStatus('COLLECTING');
+
+    if (showMatchingWorkflow) {
+      return (
+        <div>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            marginBottom: '1.5rem'
+          }}>
+            <h3>Match Schools - All Available Schools</h3>
+            <button
+              onClick={() => setShowMatchingWorkflow(false)}
+              style={{
+                background: '#6b7280',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                padding: '0.5rem 1rem',
+                cursor: 'pointer'
+              }}
+            >
+              ← Back to Collecting Schools
+            </button>
+          </div>
+          <MatchingWorkflow 
+            schools={schools} 
+            onSchoolsUpdate={handleSchoolsUpdate}
+            onTabChange={() => {}} // Not needed in this context
+          />
+        </div>
+      );
+    }
+
+    return (
+      <div>
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          marginBottom: '1.5rem'
+        }}>
+          <h3>Schools Collecting Information ({collectingSchools.length})</h3>
+          <button
+            onClick={() => setShowMatchingWorkflow(true)}
+            style={{
+              background: '#2563eb',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              padding: '0.75rem 1.5rem',
+              fontSize: '0.9rem',
+              fontWeight: '500',
+              cursor: 'pointer'
+            }}
+            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#1d4ed8'}
+            onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
+          >
+            Match Schools
+          </button>
+        </div>
+        
+        {collectingSchools.length === 0 ? (
+          <div style={{ 
+            background: '#fff',
+            border: '1px solid #e0e6ed',
+            borderRadius: '12px',
+            textAlign: 'center', 
+            padding: '3rem' 
+          }}>
+            <h4>No schools collecting information</h4>
+            <p style={{ color: '#6c757d' }}>
+              Schools will appear here when they begin the data collection process.
+            </p>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {collectingSchools.map(school => (
+              <SchoolCard 
+                key={school.id} 
+                school={school} 
+                showActions={false} // No pin/match icons in basic view
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderReadyTab = () => {
+    return (
+      <div>
+        <h3 style={{ marginBottom: '1.5rem' }}>Schools Ready to be Matched / Paired</h3>
+        <MatchingWorkflow 
+          schools={schools} 
+          onSchoolsUpdate={handleSchoolsUpdate}
+          onTabChange={(status) => {
+            if (status === 'MATCHED') {
+              setActiveTab('matched');
+            }
+          }}
+        />
+      </div>
+    );
+  };
+
+  const renderMatchedTab = () => {
     const matchedSchools = getSchoolsByStatus('MATCHED');
     const pairs: [School, School][] = [];
     const processed = new Set<string>();
@@ -282,7 +353,7 @@ export default function AdminDashboard() {
 
     return (
       <div>
-        <h3 style={{ marginBottom: '1.5rem' }}>Matched School Pairs</h3>
+        <h3 style={{ marginBottom: '1.5rem' }}>Matched Schools + Paired Students</h3>
         {pairs.length === 0 ? (
           <div style={{ 
             background: '#fff',
@@ -306,6 +377,10 @@ export default function AdminDashboard() {
               // Check if this pair has pen pal assignments using updated structure
               const pairKey = [school1.id, school2.id].sort().join('-');
               const hasAssignments = pairAssignments[pairKey] || false;
+              
+              // NEW: Check if both schools are READY before showing "Assign Pen Pals" button
+              const bothSchoolsReady = areBothSchoolsReady(school1, school2);
+              const showAssignButton = bothSchoolsReady && !hasAssignments;
 
               return (
                 <div 
@@ -348,6 +423,9 @@ export default function AdminDashboard() {
                       <div style={{ fontSize: '0.85rem', color: '#718096' }}>
                         <strong>{school1.region}</strong> | {school1.studentCounts?.ready || 0} students | Starts {school1.startMonth}
                       </div>
+                      <div style={{ fontSize: '0.8rem', color: '#a0aec0', marginTop: '0.25rem' }}>
+                        Status: <strong>{school1.status}</strong>
+                      </div>
                     </div>
 
                     {/* School 2 */}
@@ -373,6 +451,9 @@ export default function AdminDashboard() {
                       <div style={{ fontSize: '0.85rem', color: '#718096' }}>
                         <strong>{school2.region}</strong> | {school2.studentCounts?.ready || 0} students | Starts {school2.startMonth}
                       </div>
+                      <div style={{ fontSize: '0.8rem', color: '#a0aec0', marginTop: '0.25rem' }}>
+                        Status: <strong>{school2.status}</strong>
+                      </div>
                     </div>
 
                     {/* Actions Column */}
@@ -385,8 +466,8 @@ export default function AdminDashboard() {
                       justifyContent: 'center',
                       alignItems: 'center'
                     }}>
-                      {/* Show Assign button if no assignments, hide if assignments exist */}
-                      {!hasAssignments ? (
+                      {/* Show Assign button only if both schools are READY and no assignments exist */}
+                      {showAssignButton ? (
                         <button
                           onClick={() => handleAssignPenPals(school1.id, school2.id)}
                           style={{
@@ -407,7 +488,21 @@ export default function AdminDashboard() {
                         >
                           Assign Pen Pals
                         </button>
-                      ) : (
+                      ) : !bothSchoolsReady ? (
+                        // Show waiting message if schools aren't both ready
+                        <div style={{ 
+                          textAlign: 'center',
+                          color: '#6b7280',
+                          fontSize: '0.85rem',
+                          fontStyle: 'italic',
+                          padding: '0.75rem',
+                          background: '#f9fafb',
+                          borderRadius: '6px',
+                          width: '100%'
+                        }}>
+                          Waiting for both schools to complete data collection
+                        </div>
+                      ) : hasAssignments ? (
                         // Show pen pal list links if assignments exist
                         <div style={{ 
                           display: 'flex', 
@@ -473,7 +568,7 @@ export default function AdminDashboard() {
                             </div>
                           </button>
                         </div>
-                      )}
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -485,102 +580,17 @@ export default function AdminDashboard() {
     );
   };
 
-  const renderCorrespondingPairs = () => {
-    const correspondingSchools = getSchoolsByStatus('CORRESPONDING');
-    const pairs: [School, School][] = [];
-    const processed = new Set<string>();
-
-    correspondingSchools.forEach(school => {
-      if (processed.has(school.id) || !school.matchedSchool) return;
-      
-      pairs.push([school, school.matchedSchool]);
-      processed.add(school.id);
-      processed.add(school.matchedSchool.id);
-    });
-
-    return (
-      <div>
-        <h3 style={{ marginBottom: '1.5rem' }}>Corresponding School Pairs</h3>
-        {pairs.length === 0 ? (
-          <div style={{ 
-            background: '#fff',
-            border: '1px solid #e0e6ed',
-            borderRadius: '12px',
-            textAlign: 'center', 
-            padding: '3rem' 
-          }}>
-            <h4>No corresponding schools yet</h4>
-            <p style={{ color: '#6c757d' }}>
-              Schools will appear here when they begin exchanging letters.
-            </p>
-          </div>
-        ) : (
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(2, 1fr)', 
-            gap: '1.5rem' 
-          }}>
-            {pairs.map(([school1, school2]) => [school1, school2]).flat().map(school => (
-              <SchoolCard
-                key={school.id}
-                school={school}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const renderStatusContent = () => {
-    if (selectedStatus === 'READY') {
-      return (
-        <MatchingWorkflow 
-          schools={schools} 
-          onSchoolsUpdate={handleSchoolsUpdate}
-          onTabChange={setSelectedStatus}
-        />
-      );
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'collecting':
+        return renderCollectingTab();
+      case 'ready':
+        return renderReadyTab();
+      case 'matched':
+        return renderMatchedTab();
+      default:
+        return renderCollectingTab();
     }
-
-    if (selectedStatus === 'MATCHED') {
-      return renderMatchedPairs();
-    }
-
-    if (selectedStatus === 'CORRESPONDING') {
-      return renderCorrespondingPairs();
-    }
-
-    // COLLECTING and DONE statuses
-    const statusSchools = getSchoolsByStatus(selectedStatus);
-
-    return (
-      <div>
-        <h3 style={{ marginBottom: '1.5rem' }}>
-          {getStatusLabel(selectedStatus)} ({statusSchools.length})
-        </h3>
-        {statusSchools.length === 0 ? (
-          <div style={{ 
-            background: '#fff',
-            border: '1px solid #e0e6ed',
-            borderRadius: '12px',
-            textAlign: 'center', 
-            padding: '3rem' 
-          }}>
-            <h4>No schools in {getStatusLabel(selectedStatus).toLowerCase()} status</h4>
-            <p style={{ color: '#6c757d' }}>
-              Schools will appear here as they progress through the program.
-            </p>
-          </div>
-        ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(500px, 1fr))', gap: '1rem' }}>
-            {statusSchools.map(school => (
-              <SchoolCard key={school.id} school={school} />
-            ))}
-          </div>
-        )}
-      </div>
-    );
   };
 
   if (isLoading) {
@@ -622,42 +632,41 @@ export default function AdminDashboard() {
           </div>
         )}
 
+        {/* 3-Tab Navigation */}
         <div style={{ 
           display: 'flex', 
-          gap: '1rem', 
-          marginBottom: '3rem',
-          justifyContent: 'center',
-          flexWrap: 'wrap'
+          gap: '0',
+          marginBottom: '2rem',
+          borderBottom: '2px solid #e5e7eb'
         }}>
-          {(Object.keys(statusCounts) as SelectedStatus[]).map((status) => (
-            <div
-              key={status}
-              onClick={() => setSelectedStatus(status)}
+          {[
+            { key: 'collecting', label: 'Schools Collecting Information', count: statusCounts.COLLECTING },
+            { key: 'ready', label: 'Schools Ready to be Matched / Paired', count: statusCounts.READY },
+            { key: 'matched', label: 'Matched Schools + Paired Students', count: statusCounts.MATCHED }
+          ].map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => {
+                setActiveTab(tab.key as ActiveTab);
+                if (tab.key === 'collecting') {
+                  setShowMatchingWorkflow(false); // Reset workflow state when switching to collecting tab
+                }
+              }}
               style={{
-                background: '#fff',
-                color: '#333',
-                border: `2px solid ${selectedStatus === status ? '#ffd700' : '#e0e6ed'}`,
-                borderRadius: '8px',
+                background: 'none',
+                border: 'none',
+                borderBottom: activeTab === tab.key ? '3px solid #2563eb' : '3px solid transparent',
                 padding: '1rem 1.5rem',
-                textAlign: 'center',
                 cursor: 'pointer',
+                fontSize: '0.9rem',
+                fontWeight: '600',
+                color: activeTab === tab.key ? '#2563eb' : '#6b7280',
                 transition: 'all 0.2s ease',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                width: '160px',
-                height: '80px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center'
+                whiteSpace: 'nowrap'
               }}
             >
-              <div style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>
-                {statusCounts[status]}
-              </div>
-              <div style={{ fontSize: '0.75rem', fontWeight: '600', letterSpacing: '0.5px', lineHeight: '1.2', paddingBottom: '0.5rem' }}>
-                {getStatusLabel(status).toUpperCase()}
-              </div>
-            </div>
+              {tab.label} ({tab.count})
+            </button>
           ))}
         </div>
 
@@ -690,7 +699,7 @@ export default function AdminDashboard() {
           </button>
         </div>
 
-        {renderStatusContent()}
+        {renderTabContent()}
 
       </main>
 
