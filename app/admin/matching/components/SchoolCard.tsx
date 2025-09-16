@@ -375,7 +375,7 @@ export default function SchoolCard({
       {/* Legacy CORRESPONDING Display - Keep for backward compatibility */}
       {school.status === 'CORRESPONDING' && school.matchedSchool && (
         <div style={{ 
-          gridColumn: '1 / -1',
+          gridColumn: '1 / 3',
           padding: '0.75rem', 
           background: 'linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%)', 
           borderRadius: '8px',
