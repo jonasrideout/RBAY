@@ -233,19 +233,42 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
     setShowConfirmDialog(true);
   };
 
+  // UPDATED: Now actually creates the school match in the database
   const confirmMatch = async () => {
     if (!pinnedSchool || !selectedMatch) return;
 
     try {
-      // Just confirm the match visually - no API call yet
-      console.log('Match confirmed:', pinnedSchool.schoolName, 'with', selectedMatch.schoolName);
+      console.log('Creating school match:', pinnedSchool.schoolName, 'with', selectedMatch.schoolName);
       
-      // Set matched state to show new buttons in dialog
+      // Call the new match-schools API to create the school match
+      const response = await fetch('/api/admin/match-schools', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          school1Id: pinnedSchool.id,
+          school2Id: selectedMatch.id
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to match schools');
+      }
+
+      const result = await response.json();
+      console.log('Schools matched successfully:', result);
+
+      // Refresh school data to reflect the match
+      await onSchoolsUpdate([]);  // Empty array triggers fresh fetch in parent
+      
+      // Set matched state to show pen pal assignment button in dialog
       setIsMatched(true);
       
     } catch (err) {
-      console.error('Error confirming match:', err);
-      alert('Error confirming match. Please try again.');
+      console.error('Error matching schools:', err);
+      alert(`Error matching schools: ${err instanceof Error ? err.message : 'Please try again.'}`);
     }
   };
 
@@ -258,7 +281,7 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
         selectedMatchId: selectedMatch.id
       });
 
-      // UPDATED: Make actual API call to assign pen pals (which also updates school statuses)
+      // Call assign-penpals API for individual student pen pal assignment
       const response = await fetch('/api/admin/assign-penpals', {
         method: 'POST',
         headers: {
@@ -278,7 +301,7 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
       const result = await response.json();
       console.log('Pen pals assigned successfully:', result);
 
-      // FIXED: Just refresh data from server without manipulating local state
+      // Refresh data from server
       await onSchoolsUpdate([]);  // Empty array triggers fresh fetch in parent
       
       // Close dialog and reset state after successful assignment
