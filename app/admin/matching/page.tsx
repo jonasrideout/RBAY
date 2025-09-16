@@ -242,7 +242,6 @@ export default function AdminDashboard() {
     if (showMatchingWorkflow) {
       return (
         <div>
-          <h3 style={{ marginBottom: '1.5rem' }}>Match Schools - All Available Schools</h3>
           <MatchingWorkflow 
             schools={schools} 
             onSchoolsUpdate={handleSchoolsUpdate}
@@ -254,8 +253,6 @@ export default function AdminDashboard() {
 
     return (
       <div>
-        <h3 style={{ marginBottom: '1.5rem' }}>Schools Collecting Information ({collectingSchools.length})</h3>
-        
         {collectingSchools.length === 0 ? (
           <div style={{ 
             background: '#fff',
@@ -287,7 +284,6 @@ export default function AdminDashboard() {
   const renderReadyTab = () => {
     return (
       <div>
-        <h3 style={{ marginBottom: '1.5rem' }}>Schools Ready to be Matched / Paired</h3>
         <MatchingWorkflow 
           schools={schools} 
           onSchoolsUpdate={handleSchoolsUpdate}
@@ -331,7 +327,6 @@ export default function AdminDashboard() {
 
     return (
       <div>
-        <h3 style={{ marginBottom: '1.5rem' }}>Matched Schools + Paired Students</h3>
         {pairs.length === 0 ? (
           <div style={{ 
             background: '#fff',
@@ -628,20 +623,44 @@ export default function AdminDashboard() {
               {activeTab === 'collecting' && showMatchingWorkflow ? 'Done Matching' : 'Match Schools'}
             </button>
             
-            <button 
-              onClick={handleSeedData}
-              className="btn btn-primary"
-            >
-              Seed Data
-            </button>
+            {/* Temporary Testing Buttons Container */}
+            <div style={{
+              border: '1px solid #d1d5db',
+              borderRadius: '6px',
+              padding: '0.5rem',
+              position: 'relative',
+              display: 'flex',
+              gap: '0.5rem'
+            }}>
+              <span style={{
+                position: 'absolute',
+                top: '-0.6rem',
+                left: '0.5rem',
+                backgroundColor: 'white',
+                padding: '0 0.25rem',
+                fontSize: '0.7rem',
+                color: '#6b7280',
+                fontWeight: '500'
+              }}>
+                Temporary Testing Buttons
+              </span>
+              
+              <button 
+                onClick={handleSeedData}
+                className="btn btn-primary"
+                style={{ margin: 0 }}
+              >
+                Seed Data
+              </button>
 
-            <button 
-              onClick={handleClearData}
-              className="btn"
-              style={{ backgroundColor: '#dc3545', color: 'white' }}
-            >
-              Clear Data
-            </button>
+              <button 
+                onClick={handleClearData}
+                className="btn"
+                style={{ backgroundColor: '#dc3545', color: 'white', margin: 0 }}
+              >
+                Clear Data
+              </button>
+            </div>
           </div>
         </div>
 
