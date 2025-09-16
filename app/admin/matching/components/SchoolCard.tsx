@@ -8,6 +8,7 @@ interface SchoolCardProps {
   school: School;
   isPinned?: boolean;
   showMatchIcon?: boolean;
+  showActions?: boolean; // NEW: Controls visibility of pin/match icons
   onPin?: () => void;
   onMatch?: () => void;
 }
@@ -16,6 +17,7 @@ export default function SchoolCard({
   school, 
   isPinned = false, 
   showMatchIcon = false, 
+  showActions = true, // Default to true to maintain existing behavior
   onPin, 
   onMatch 
 }: SchoolCardProps) {
@@ -103,8 +105,8 @@ export default function SchoolCard({
         position: 'relative'
       }}
     >
-      {/* Pin/Match Icon - Top Right */}
-      {(onPin || onMatch) && (
+      {/* Pin/Match Icon - Top Right - Only show if showActions is true */}
+      {showActions && (onPin || onMatch) && (
         <div style={{ 
           position: 'absolute', 
           top: '12px', 
@@ -155,7 +157,7 @@ export default function SchoolCard({
         </div>
       )}
 
-      {/* School Information (60%) - NO REGION HERE */}
+      {/* School Information (60%) */}
       <div style={{ 
         display: 'flex', 
         flexDirection: 'column', 
@@ -173,7 +175,7 @@ export default function SchoolCard({
           {school.schoolName}
         </h3>
 
-        {/* Teacher Name with Email - IMPROVED */}
+        {/* Teacher Name with Email */}
         <div style={{ 
           display: 'flex', 
           alignItems: 'center', 
@@ -229,7 +231,7 @@ export default function SchoolCard({
         )}
       </div>
 
-      {/* Data & Actions (20%) - ADDED START MONTH BACK */}
+      {/* Data & Actions (20%) */}
       <div style={{ 
         display: 'flex', 
         flexDirection: 'column', 
@@ -237,7 +239,7 @@ export default function SchoolCard({
         fontSize: '0.9rem',
         gap: '0.5rem'
       }}>
-        {/* Data rows - Start month added back */}
+        {/* Data rows */}
         <div style={{
           display: 'flex',
           flexDirection: 'column',
@@ -351,8 +353,8 @@ export default function SchoolCard({
       {/* Empty Column (20%) - For spacing */}
       <div></div>
 
-      {/* Matched School Display */}
-      {school.status === 'MATCHED' && school.matchedSchool && (
+      {/* Matched School Display - Shows for any school with matchedWithSchoolId */}
+      {school.matchedWithSchoolId && school.matchedSchool && (
         <div style={{ 
           gridColumn: '1 / -1',
           padding: '0.75rem', 
@@ -370,7 +372,7 @@ export default function SchoolCard({
         </div>
       )}
 
-      {/* Corresponding Display */}
+      {/* Legacy CORRESPONDING Display - Keep for backward compatibility */}
       {school.status === 'CORRESPONDING' && school.matchedSchool && (
         <div style={{ 
           gridColumn: '1 / -1',
