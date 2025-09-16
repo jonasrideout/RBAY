@@ -624,23 +624,16 @@ export default function AdminDashboard() {
               Add School
             </Link>
             
-            {/* Match Schools button - disabled on Tab 2 & 3 */}
+            {/* Match Schools button - Always enabled */}
             <button 
-              onClick={() => {
-                if (activeTab === 'collecting') {
-                  setShowMatchingWorkflow(!showMatchingWorkflow);
-                }
-              }}
+              onClick={() => setShowMatchingWorkflow(!showMatchingWorkflow)}
               className="btn"
-              disabled={activeTab !== 'collecting'}
               style={{ 
-                backgroundColor: activeTab === 'collecting' ? '#2563eb' : '#9ca3af',
-                color: 'white',
-                cursor: activeTab === 'collecting' ? 'pointer' : 'not-allowed',
-                opacity: activeTab === 'collecting' ? 1 : 0.6
+                backgroundColor: '#2563eb',
+                color: 'white'
               }}
             >
-              {activeTab === 'collecting' && showMatchingWorkflow ? 'Done Matching' : 'Match Schools'}
+              {showMatchingWorkflow ? 'Done Matching' : 'Match Schools'}
             </button>
             
             {/* Temporary Testing Buttons Container */}
