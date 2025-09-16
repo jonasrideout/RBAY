@@ -356,7 +356,7 @@ export default function SchoolCard({
       {/* Matched School Display - Shows for any school with matchedWithSchoolId */}
       {school.matchedWithSchoolId && school.matchedSchool && (
         <div style={{ 
-          gridColumn: '1 / -1',
+          gridColumn: '1 / 3',
           padding: '0.75rem', 
           background: 'linear-gradient(135deg, #f0fff4 0%, #e8f5e9 100%)', 
           borderRadius: '8px',
