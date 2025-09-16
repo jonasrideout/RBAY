@@ -5,21 +5,21 @@ import { prisma } from '@/lib/prisma';
 export async function POST(request: NextRequest) {
   try {
     const { school1Id, school2Id } = await request.json();
-
+    
     if (!school1Id || !school2Id) {
       return NextResponse.json(
         { error: 'Both school1Id and school2Id are required' },
         { status: 400 }
       );
     }
-
+    
     if (school1Id === school2Id) {
       return NextResponse.json(
         { error: 'Cannot match a school with itself' },
         { status: 400 }
       );
     }
-
+    
     // Fetch both schools
     const [school1, school2] = await Promise.all([
       prisma.school.findUnique({
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
         }
       })
     ]);
-
+    
     if (!school1 || !school2) {
       return NextResponse.json(
         { 
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
         { status: 404 }
       );
     }
-
+    
     // Check if either school is already matched
     if (school1.matchedWithSchoolId) {
       return NextResponse.json(
@@ -64,14 +64,13 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
     if (school2.matchedWithSchoolId) {
       return NextResponse.json(
         { error: `${school2.schoolName} is already matched with another school` },
         { status: 400 }
       );
     }
-
+    
     // Allow matching schools in COLLECTING or READY status
     const allowedStatuses = ['COLLECTING', 'READY'];
     
@@ -81,32 +80,31 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
     if (!allowedStatuses.includes(school2.status)) {
       return NextResponse.json(
         { error: `${school2.schoolName} cannot be matched (current status: ${school2.status})` },
         { status: 400 }
       );
     }
-
-    // Update both schools to MATCHED status and set their matchedWithSchoolId
+    
+    // FIXED: Only set matchedWithSchoolId, preserve existing status
     const [updatedSchool1, updatedSchool2] = await Promise.all([
       prisma.school.update({
         where: { id: school1Id },
         data: { 
-          status: 'MATCHED',
           matchedWithSchoolId: school2Id
+          // Removed: status: 'MATCHED' - schools keep their current status
         }
       }),
       prisma.school.update({
         where: { id: school2Id },
         data: { 
-          status: 'MATCHED',
           matchedWithSchoolId: school1Id
+          // Removed: status: 'MATCHED' - schools keep their current status
         }
       })
     ]);
-
+    
     // Return success with updated school info
     return NextResponse.json({
       success: true,
@@ -126,7 +124,7 @@ export async function POST(request: NextRequest) {
         }
       }
     });
-
+    
   } catch (error) {
     console.error('Error matching schools:', error);
     return NextResponse.json(
