@@ -27,6 +27,8 @@ export default function AdminDashboard() {
   const [adminUser, setAdminUser] = useState<string>('');
   // Track which school pairs have pen pal assignments
   const [pairAssignments, setPairAssignments] = useState<{[key: string]: boolean}>({});
+  // Track actual count of schools with both matching and student pairings
+  const [schoolsWithPairingsCount, setSchoolsWithPairingsCount] = useState(0);
   
   const router = useRouter();
 
@@ -95,16 +97,17 @@ export default function AdminDashboard() {
 
   // Function to check if pen pal assignments exist for school pairs
   const checkPenPalAssignments = async (schoolsList: School[]) => {
-    const matchedSchools = schoolsList.filter(school => school.status === 'MATCHED');
+    const matchedSchools = schoolsList.filter(school => school.matchedWithSchoolId);
     const assignments: {[key: string]: boolean} = {};
     
     // Group schools into pairs and check each pair
     const processed = new Set<string>();
+    let schoolsWithPairingsCount = 0;
     
     for (const school of matchedSchools) {
-      if (processed.has(school.id) || !school.matchedSchool) continue;
+      if (processed.has(school.id) || !school.matchedWithSchoolId) continue;
       
-      const pairKey = [school.id, school.matchedSchool.id].sort().join('-');
+      const pairKey = [school.id, school.matchedWithSchoolId].sort().join('-');
       
       try {
         // Check if any students from school1 have pen pal assignments with students from school2
@@ -118,6 +121,11 @@ export default function AdminDashboard() {
           );
           
           assignments[pairKey] = hasAssignments;
+          
+          // Count individual schools with pairings
+          if (hasAssignments) {
+            schoolsWithPairingsCount += 2; // Both schools in the pair have pairings
+          }
           
           // DEBUG: Log to help troubleshoot
           console.log(`Checking assignments for pair ${pairKey}:`, {
@@ -134,10 +142,13 @@ export default function AdminDashboard() {
       }
       
       processed.add(school.id);
-      processed.add(school.matchedSchool.id);
+      if (school.matchedWithSchoolId) {
+        processed.add(school.matchedWithSchoolId);
+      }
     }
     
     setPairAssignments(assignments);
+    setSchoolsWithPairingsCount(schoolsWithPairingsCount);
   };
 
   const handleSchoolsUpdate = async (updatedSchools: School[]) => {
@@ -329,9 +340,9 @@ export default function AdminDashboard() {
             textAlign: 'center', 
             padding: '3rem' 
           }}>
-            <h4>No matched schools yet</h4>
+            <h4>No schools matched + students paired yet</h4>
             <p style={{ color: '#6c757d' }}>
-              Schools will appear here after they are paired together.
+              Schools will appear here after they are paired together AND students have been assigned pen pals.
             </p>
           </div>
         ) : (
@@ -609,7 +620,7 @@ export default function AdminDashboard() {
           {[
             { key: 'collecting', label: 'Schools Collecting Information', count: statusCounts.COLLECTING },
             { key: 'ready', label: 'Schools Ready to be Matched / Paired', count: statusCounts.READY },
-            { key: 'matched', label: 'Matched Schools + Paired Students', count: statusCounts.MATCHED }
+            { key: 'matched', label: 'Matched Schools + Paired Students', count: schoolsWithPairingsCount }
           ].map((tab) => (
             <button
               key={tab.key}
