@@ -240,10 +240,13 @@ export default function AdminDashboard() {
     const collectingSchools = getSchoolsByStatus('COLLECTING');
 
     if (showMatchingWorkflow) {
+      // Show all unmatched schools regardless of status
+      const unmatchedSchools = schools.filter(school => !school.matchedWithSchoolId);
+      
       return (
         <div>
           <MatchingWorkflow 
-            schools={schools} 
+            schools={unmatchedSchools} 
             onSchoolsUpdate={handleSchoolsUpdate}
             onTabChange={() => {}} // Not needed in this context
           />
@@ -676,43 +679,45 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* 3-Tab Navigation */}
-        <div style={{ 
-          display: 'flex', 
-          gap: '0',
-          marginBottom: '2rem',
-          borderBottom: '2px solid #e5e7eb'
-        }}>
-          {[
-            { key: 'collecting', label: 'Schools Collecting Information', count: statusCounts.COLLECTING },
-            { key: 'ready', label: 'Schools Ready to be Matched / Paired', count: statusCounts.READY },
-            { key: 'matched', label: 'Matched Schools + Paired Students', count: schoolsWithPairingsCount }
-          ].map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => {
-                setActiveTab(tab.key as ActiveTab);
-                if (tab.key === 'collecting') {
-                  setShowMatchingWorkflow(false); // Reset workflow state when switching to collecting tab
-                }
-              }}
-              style={{
-                background: 'none',
-                border: 'none',
-                borderBottom: activeTab === tab.key ? '3px solid #2563eb' : '3px solid transparent',
-                padding: '1rem 1.5rem',
-                cursor: 'pointer',
-                fontSize: '0.9rem',
-                fontWeight: '600',
-                color: activeTab === tab.key ? '#2563eb' : '#6b7280',
-                transition: 'all 0.2s ease',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              {tab.label} ({tab.count})
-            </button>
-          ))}
-        </div>
+        {/* 3-Tab Navigation - Hidden when in matching mode */}
+        {!showMatchingWorkflow && (
+          <div style={{ 
+            display: 'flex', 
+            gap: '0',
+            marginBottom: '2rem',
+            borderBottom: '2px solid #e5e7eb'
+          }}>
+            {[
+              { key: 'collecting', label: 'Schools Collecting Information', count: statusCounts.COLLECTING },
+              { key: 'ready', label: 'Schools Ready to be Matched / Paired', count: statusCounts.READY },
+              { key: 'matched', label: 'Matched Schools + Paired Students', count: schoolsWithPairingsCount }
+            ].map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => {
+                  setActiveTab(tab.key as ActiveTab);
+                  if (tab.key === 'collecting') {
+                    setShowMatchingWorkflow(false); // Reset workflow state when switching to collecting tab
+                  }
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  borderBottom: activeTab === tab.key ? '3px solid #2563eb' : '3px solid transparent',
+                  padding: '1rem 1.5rem',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                  fontWeight: '600',
+                  color: activeTab === tab.key ? '#2563eb' : '#6b7280',
+                  transition: 'all 0.2s ease',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                {tab.label} ({tab.count})
+              </button>
+            ))}
+          </div>
+        )}
 
         {renderTabContent()}
 
