@@ -104,7 +104,7 @@ export default function SchoolCard({
       }}
     >
       {/* Pin/Match Icon - Top Right */}
-      {isReady && (onPin || onMatch) && (
+      {(onPin || onMatch) && (
         <div style={{ 
           position: 'absolute', 
           top: '12px', 
