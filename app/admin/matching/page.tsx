@@ -231,27 +231,7 @@ export default function AdminDashboard() {
     if (showMatchingWorkflow) {
       return (
         <div>
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center',
-            marginBottom: '1.5rem'
-          }}>
-            <h3>Match Schools - All Available Schools</h3>
-            <button
-              onClick={() => setShowMatchingWorkflow(false)}
-              style={{
-                background: '#6b7280',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                padding: '0.5rem 1rem',
-                cursor: 'pointer'
-              }}
-            >
-              ← Back to Collecting Schools
-            </button>
-          </div>
+          <h3 style={{ marginBottom: '1.5rem' }}>Match Schools - All Available Schools</h3>
           <MatchingWorkflow 
             schools={schools} 
             onSchoolsUpdate={handleSchoolsUpdate}
@@ -263,31 +243,7 @@ export default function AdminDashboard() {
 
     return (
       <div>
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
-          marginBottom: '1.5rem'
-        }}>
-          <h3>Schools Collecting Information ({collectingSchools.length})</h3>
-          <button
-            onClick={() => setShowMatchingWorkflow(true)}
-            style={{
-              background: '#2563eb',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              padding: '0.75rem 1.5rem',
-              fontSize: '0.9rem',
-              fontWeight: '500',
-              cursor: 'pointer'
-            }}
-            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#1d4ed8'}
-            onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
-          >
-            Match Schools
-          </button>
-        </div>
+        <h3 style={{ marginBottom: '1.5rem' }}>Schools Collecting Information ({collectingSchools.length})</h3>
         
         {collectingSchools.length === 0 ? (
           <div style={{ 
@@ -335,20 +291,31 @@ export default function AdminDashboard() {
   };
 
   const renderMatchedTab = () => {
-    const matchedSchools = getSchoolsByStatus('MATCHED');
+    // Get schools that have both school matches AND student pairings (regardless of status)
+    const schoolsWithPairings = schools.filter(school => {
+      if (!school.matchedWithSchoolId) return false;
+      
+      const pairKey = [school.id, school.matchedWithSchoolId].sort().join('-');
+      return pairAssignments[pairKey] || false;
+    });
+    
     const pairs: [School, School][] = [];
     const processed = new Set<string>();
 
-    matchedSchools.forEach(school => {
+    schoolsWithPairings.forEach(school => {
       if (processed.has(school.id) || !school.matchedWithSchoolId) return;
       
       // Find the complete school object instead of using limited matchedSchool data
       const matchedSchoolFull = schools.find(s => s.id === school.matchedWithSchoolId);
       if (!matchedSchoolFull) return;
       
-      pairs.push([school, matchedSchoolFull]);
-      processed.add(school.id);
-      processed.add(matchedSchoolFull.id);
+      // Only add if the matched school also has student pairings
+      const pairKey = [school.id, matchedSchoolFull.id].sort().join('-');
+      if (pairAssignments[pairKey]) {
+        pairs.push([school, matchedSchoolFull]);
+        processed.add(school.id);
+        processed.add(matchedSchoolFull.id);
+      }
     });
 
     return (
@@ -674,6 +641,25 @@ export default function AdminDashboard() {
           <Link href="/register-school?admin=true" className="btn btn-primary">
             Add School
           </Link>
+          
+          {/* Match Schools button - 2nd position, disabled on Tab 2 & 3 */}
+          <button 
+            onClick={() => {
+              if (activeTab === 'collecting') {
+                setShowMatchingWorkflow(!showMatchingWorkflow);
+              }
+            }}
+            className="btn"
+            disabled={activeTab !== 'collecting'}
+            style={{ 
+              backgroundColor: activeTab === 'collecting' ? '#2563eb' : '#9ca3af',
+              color: 'white',
+              cursor: activeTab === 'collecting' ? 'pointer' : 'not-allowed',
+              opacity: activeTab === 'collecting' ? 1 : 0.6
+            }}
+          >
+            {activeTab === 'collecting' && showMatchingWorkflow ? 'Done Matching' : 'Match Schools'}
+          </button>
           
           <button 
             onClick={fetchAllSchools}
