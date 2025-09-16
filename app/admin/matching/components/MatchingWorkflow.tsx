@@ -70,20 +70,14 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
     }
   }, [schools]);
 
-  // UPDATED: Get schools available for matching - exclude already matched schools and the pinned school
+  // UPDATED: Now just uses the schools array passed from parent (already filtered for unmatched schools)
   const getAvailableSchools = () => {
-    // Allow schools in COLLECTING or READY status (not already matched)
-    let availableSchools = schools.filter(school => 
-      (school.status === 'COLLECTING' || school.status === 'READY') && 
-      !school.matchedWithSchoolId // Exclude schools that are already matched
-    );
-    
     // Remove pinned school from the list
     if (pinnedSchool) {
-      availableSchools = availableSchools.filter(school => school.id !== pinnedSchool.id);
+      return schools.filter(school => school.id !== pinnedSchool.id);
     }
     
-    return availableSchools;
+    return schools;
   };
 
   // ENHANCED: Apply filters including search functionality
@@ -390,15 +384,7 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
         pinnedSchoolRegion={pinnedSchool?.region}
       />
 
-      {/* School Cards */}
-      <h3 style={{ marginBottom: '1.5rem' }}>
-        {pinnedSchool ? 'Select a School to Match' : 'Available for Matching'} ({displaySchools.length})
-        {hasActiveFilters && !pinnedSchool && (
-          <span style={{ fontSize: '0.9rem', color: '#666', fontWeight: 'normal' }}>
-            {' '}- filtered results
-          </span>
-        )}
-      </h3>
+      {/* REMOVED: "Available for Matching" heading entirely */}
       
       {displaySchools.length === 0 ? (
         <div style={{ 
@@ -435,6 +421,7 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
               showMatchIcon={!!pinnedSchool}
               onPin={() => handlePinSchool(school)}
               onMatch={() => handleMatchRequest(school)}
+              showActions={true} // Always show pin/match actions in matching mode
             />
           ))}
         </div>
