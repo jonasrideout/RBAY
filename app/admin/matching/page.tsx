@@ -285,17 +285,34 @@ export default function AdminDashboard() {
   };
 
   const renderReadyTab = () => {
+    const readySchools = getSchoolsByStatus('READY');
+
     return (
       <div>
-        <MatchingWorkflow 
-          schools={schools} 
-          onSchoolsUpdate={handleSchoolsUpdate}
-          onTabChange={(status) => {
-            if (status === 'MATCHED') {
-              setActiveTab('matched');
-            }
-          }}
-        />
+        {readySchools.length === 0 ? (
+          <div style={{ 
+            background: '#fff',
+            border: '1px solid #e0e6ed',
+            borderRadius: '12px',
+            textAlign: 'center', 
+            padding: '3rem' 
+          }}>
+            <h4>No schools ready to be matched</h4>
+            <p style={{ color: '#6c757d' }}>
+              Schools will appear here when teachers indicate they are ready for matching.
+            </p>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {readySchools.map(school => (
+              <SchoolCard 
+                key={school.id} 
+                school={school} 
+                showActions={false} // No pin/match icons in tab view
+              />
+            ))}
+          </div>
+        )}
       </div>
     );
   };
