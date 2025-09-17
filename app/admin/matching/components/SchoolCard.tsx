@@ -8,7 +8,7 @@ interface SchoolCardProps {
   school: School;
   isPinned?: boolean;
   showMatchIcon?: boolean;
-  showActions?: boolean; // NEW: Controls visibility of pin/match icons
+  showActions?: boolean;
   onPin?: () => void;
   onMatch?: () => void;
 }
@@ -17,7 +17,7 @@ export default function SchoolCard({
   school, 
   isPinned = false, 
   showMatchIcon = false, 
-  showActions = true, // Default to true to maintain existing behavior
+  showActions = true,
   onPin, 
   onMatch 
 }: SchoolCardProps) {
@@ -157,7 +157,7 @@ export default function SchoolCard({
         </div>
       )}
 
-      {/* School Information (60%) */}
+      {/* School Information (55%) */}
       <div style={{ 
         display: 'flex', 
         flexDirection: 'column', 
@@ -231,13 +231,12 @@ export default function SchoolCard({
         )}
       </div>
 
-      {/* Data & Actions (20%) */}
+      {/* Data & Actions (35%) */}
       <div style={{ 
         display: 'flex', 
         flexDirection: 'column', 
-        justifyContent: 'flex-start',
-        fontSize: '0.9rem',
-        gap: '0.5rem'
+        justifyContent: 'space-between',
+        fontSize: '0.9rem'
       }}>
         {/* Data rows */}
         <div style={{
@@ -295,9 +294,21 @@ export default function SchoolCard({
             <span style={{ fontWeight: '500' }}>Ready:</span> 
             <span>{school.studentCounts?.ready || 0}</span>
           </div>
+          
+          {/* NEW: Status row */}
+          <div style={{ 
+            color: '#4b5563',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            minHeight: '1.1rem'
+          }}>
+            <span style={{ fontWeight: '500' }}>Status:</span> 
+            <span style={{ fontWeight: '500' }}>{school.status}</span>
+          </div>
         </div>
 
-        {/* Dashboard Links - At bottom of right column */}
+        {/* MOVED: Dashboard Links - Now at bottom right of middle column */}
         <div style={{
           display: 'flex',
           gap: '0.75rem',
@@ -350,7 +361,7 @@ export default function SchoolCard({
         </div>
       </div>
 
-      {/* Empty Column (20%) - For spacing */}
+      {/* Empty Column (10%) - For spacing */}
       <div></div>
 
       {/* Matched School Display - Shows for any school with matchedWithSchoolId */}
