@@ -21,6 +21,14 @@ export default function ConfirmationDialog({
   onCancel,
   onAssignPenPals
 }: ConfirmationDialogProps) {
+  // Check if both schools are READY status
+  const bothSchoolsReady = pinnedSchool.status === 'READY' && selectedMatch.status === 'READY';
+  
+  // The "Assign Pen Pals" button should only be clickable if:
+  // 1. Schools are matched (isMatched = true) AND
+  // 2. Both schools have READY status
+  const canAssignPenPals = isMatched && bothSchoolsReady;
+
   return (
     <div style={{
       position: 'fixed',
@@ -60,6 +68,20 @@ export default function ConfirmationDialog({
           </div>
         )}
         
+        {/* NEW: Warning when schools aren't both READY after matching */}
+        {isMatched && !bothSchoolsReady && (
+          <div style={{
+            backgroundColor: '#fff3cd',
+            border: '1px solid #ffeaa7',
+            borderRadius: '4px',
+            padding: '10px',
+            marginBottom: '15px',
+            color: '#856404'
+          }}>
+            ℹ️ Both schools must complete data collection (READY status) before pen pals can be assigned.
+          </div>
+        )}
+        
         <div style={{ marginBottom: '20px' }}>
           <div style={{ 
             marginBottom: '15px', 
@@ -72,6 +94,10 @@ export default function ConfirmationDialog({
             <span style={{ fontSize: '14px', color: '#666' }}>
               {pinnedSchool.region} | {pinnedSchool.studentCounts?.ready || 0} students | Starts {pinnedSchool.startMonth}
             </span>
+            {/* NEW: Show status */}
+            <div style={{ fontSize: '12px', color: pinnedSchool.status === 'READY' ? '#4caf50' : '#ff9800', fontWeight: '500', marginTop: '4px' }}>
+              Status: {pinnedSchool.status}
+            </div>
           </div>
           
           <div style={{ textAlign: 'center', margin: '10px 0' }}>
@@ -88,6 +114,10 @@ export default function ConfirmationDialog({
             <span style={{ fontSize: '14px', color: '#666' }}>
               {selectedMatch.region} | {selectedMatch.studentCounts?.ready || 0} students | Starts {selectedMatch.startMonth}
             </span>
+            {/* NEW: Show status */}
+            <div style={{ fontSize: '12px', color: selectedMatch.status === 'READY' ? '#4caf50' : '#ff9800', fontWeight: '500', marginTop: '4px' }}>
+              Status: {selectedMatch.status}
+            </div>
           </div>
         </div>
         
@@ -124,19 +154,26 @@ export default function ConfirmationDialog({
             Confirm Match
           </button>
           
-          {/* Assign Pen Pals Button - Disabled when not matched, active when matched */}
+          {/* FIXED: Assign Pen Pals Button - Now checks both isMatched AND bothSchoolsReady */}
           <button
             onClick={onAssignPenPals}
-            disabled={!isMatched}
+            disabled={!canAssignPenPals}
             style={{
               padding: '10px 20px',
               border: 'none',
               borderRadius: '4px',
-              backgroundColor: isMatched ? '#2196f3' : '#f5f5f5',
-              color: isMatched ? 'white' : '#666',
-              cursor: isMatched ? 'pointer' : 'default',
+              backgroundColor: canAssignPenPals ? '#2196f3' : '#f5f5f5',
+              color: canAssignPenPals ? 'white' : '#666',
+              cursor: canAssignPenPals ? 'pointer' : 'default',
               fontSize: '0.9rem'
             }}
+            title={
+              !isMatched 
+                ? "Match schools first" 
+                : !bothSchoolsReady 
+                  ? "Both schools must be READY status" 
+                  : "Assign pen pals between students"
+            }
           >
             Assign Pen Pals
           </button>
