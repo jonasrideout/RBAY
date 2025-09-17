@@ -231,9 +231,10 @@ export default function AdminDashboard() {
     return schools.filter(school => school.status === status);
   };
 
-  // Check if both schools in a matched pair are READY status
+  // FIXED: Check if both schools in a matched pair are READY or MATCHED status
   const areBothSchoolsReady = (school1: School, school2: School): boolean => {
-    return school1.status === 'READY' && school2.status === 'READY';
+    const validStatuses = ['READY', 'MATCHED'];
+    return validStatuses.includes(school1.status) && validStatuses.includes(school2.status);
   };
 
   const renderCollectingTab = () => {
@@ -371,7 +372,7 @@ export default function AdminDashboard() {
               const pairKey = [school1.id, school2.id].sort().join('-');
               const hasAssignments = pairAssignments[pairKey] || false;
               
-              // NEW: Check if both schools are READY before showing "Assign Pen Pals" button
+              // FIXED: Check if both schools are READY or MATCHED before showing "Assign Pen Pals" button
               const bothSchoolsReady = areBothSchoolsReady(school1, school2);
               const showAssignButton = bothSchoolsReady && !hasAssignments;
 
@@ -459,7 +460,7 @@ export default function AdminDashboard() {
                       justifyContent: 'center',
                       alignItems: 'center'
                     }}>
-                      {/* Show Assign button only if both schools are READY and no assignments exist */}
+                      {/* Show Assign button only if both schools are READY/MATCHED and no assignments exist */}
                       {showAssignButton ? (
                         <button
                           onClick={() => handleAssignPenPals(school1.id, school2.id)}
