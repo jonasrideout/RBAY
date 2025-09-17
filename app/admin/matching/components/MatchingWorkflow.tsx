@@ -227,7 +227,7 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
     setShowConfirmDialog(true);
   };
 
-  // UPDATED: Now actually creates the school match in the database
+  // FIXED: Remove immediate data refresh that was breaking dialog state
   const confirmMatch = async () => {
     if (!pinnedSchool || !selectedMatch) return;
 
@@ -254,8 +254,8 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
       const result = await response.json();
       console.log('Schools matched successfully:', result);
 
-      // Refresh school data to reflect the match
-      await onSchoolsUpdate([]);  // Empty array triggers fresh fetch in parent
+      // REMOVED: Don't refresh data here - it was causing the dialog to close
+      // await onSchoolsUpdate([]);  // <-- This line was breaking the dialog state
       
       // Set matched state to show pen pal assignment button in dialog
       setIsMatched(true);
