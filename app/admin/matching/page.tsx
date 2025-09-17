@@ -275,7 +275,14 @@ export default function AdminDashboard() {
       setShowWarning(false);
     }
     
-    setIsMatched(false);
+    // DEBUG: Log state before showing dialog
+    console.log('handleMatchRequest - setting state:', {
+      isMatched: false,
+      pinnedSchool: pinnedSchool.schoolName,
+      selectedMatch: school.schoolName
+    });
+    
+    setIsMatched(false);  // This should make "Confirm Match" clickable
     setShowConfirmDialog(true);
   };
 
@@ -283,6 +290,8 @@ export default function AdminDashboard() {
     if (!pinnedSchool || !selectedMatch) return;
 
     try {
+      console.log('confirmMatch called - current state:', { isMatched });
+      
       const response = await fetch('/api/admin/match-schools', {
         method: 'POST',
         headers: {
@@ -299,6 +308,7 @@ export default function AdminDashboard() {
         throw new Error(errorData.error || 'Failed to match schools');
       }
 
+      console.log('Match successful, setting isMatched to true');
       setIsMatched(true);
       
     } catch (err) {
@@ -344,6 +354,7 @@ export default function AdminDashboard() {
   };
 
   const cancelMatch = () => {
+    console.log('cancelMatch called');
     setShowConfirmDialog(false);
     setSelectedMatch(null);
     setShowWarning(false);
@@ -859,8 +870,17 @@ export default function AdminDashboard() {
 
       </main>
 
-      {/* Confirmation Dialog */}
-      {showConfirmDialog && pinnedSchool && selectedMatch && (
+      {/* Confirmation Dialog with DEBUG logging */}
+      {showConfirmDialog && pinnedSchool && selectedMatch && (() => {
+        // DEBUG: Log the actual props being passed to dialog
+        console.log('Rendering ConfirmationDialog with props:', {
+          isMatched: isMatched,
+          pinnedSchool: pinnedSchool.schoolName,
+          selectedMatch: selectedMatch.schoolName,
+          showWarning: showWarning
+        });
+        return true;
+      })() && (
         <ConfirmationDialog
           pinnedSchool={pinnedSchool}
           selectedMatch={selectedMatch}
