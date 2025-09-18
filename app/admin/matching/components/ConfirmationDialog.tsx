@@ -68,20 +68,6 @@ export default function ConfirmationDialog({
           </div>
         )}
         
-        {/* NEW: Warning when schools aren't both READY after matching */}
-        {isMatched && !bothSchoolsReady && (
-          <div style={{
-            backgroundColor: '#fff3cd',
-            border: '1px solid #ffeaa7',
-            borderRadius: '4px',
-            padding: '10px',
-            marginBottom: '15px',
-            color: '#856404'
-          }}>
-            ℹ️ Both schools must complete data collection (READY status) before pen pals can be assigned.
-          </div>
-        )}
-        
         <div style={{ marginBottom: '20px' }}>
           <div style={{ 
             marginBottom: '15px', 
@@ -137,7 +123,7 @@ export default function ConfirmationDialog({
             Cancel
           </button>
           
-          {/* Confirm Match Button - Active when not matched, disabled when matched */}
+          {/* FIXED: Dynamic button text based on match status */}
           <button
             onClick={onConfirm}
             disabled={isMatched}
@@ -151,7 +137,7 @@ export default function ConfirmationDialog({
               fontSize: '0.9rem'
             }}
           >
-            Confirm Match
+            {isMatched ? 'Match Confirmed' : 'Confirm Match'}
           </button>
           
           {/* FIXED: Assign Pen Pals Button - Now checks both isMatched AND bothSchoolsReady */}
@@ -178,6 +164,20 @@ export default function ConfirmationDialog({
             Assign Pen Pals
           </button>
         </div>
+        
+        {/* MOVED: Warning when schools aren't both READY after matching - now at bottom */}
+        {isMatched && !bothSchoolsReady && (
+          <div style={{
+            backgroundColor: '#fff3cd',
+            border: '1px solid #ffeaa7',
+            borderRadius: '4px',
+            padding: '10px',
+            marginTop: '15px',
+            color: '#856404'
+          }}>
+            ℹ️ Both schools must complete data collection (READY status) before pen pals can be assigned.
+          </div>
+        )}
       </div>
     </div>
   );
