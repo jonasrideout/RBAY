@@ -8,8 +8,8 @@ import Header from '../../components/Header';
 import FilterBar from './components/FilterBar';
 import ConfirmationDialog from './components/ConfirmationDialog';
 import SchoolCard from './components/SchoolCard';
-import { School, StatusCounts, Filters } from './types';
 import SchoolPairDisplay from './components/SchoolPairDisplay';
+import { School, StatusCounts, Filters } from './types';
 
 interface SchoolPair {
   school1: School;
@@ -276,14 +276,7 @@ export default function AdminDashboard() {
       setShowWarning(false);
     }
     
-    // DEBUG: Log state before showing dialog
-    console.log('handleMatchRequest - setting state:', {
-      isMatched: false,
-      pinnedSchool: pinnedSchool.schoolName,
-      selectedMatch: school.schoolName
-    });
-    
-    setIsMatched(false);  // This should make "Confirm Match" clickable
+    setIsMatched(false);
     setShowConfirmDialog(true);
   };
 
@@ -291,8 +284,6 @@ export default function AdminDashboard() {
     if (!pinnedSchool || !selectedMatch) return;
 
     try {
-      console.log('confirmMatch called - current state:', { isMatched });
-      
       const response = await fetch('/api/admin/match-schools', {
         method: 'POST',
         headers: {
@@ -309,7 +300,6 @@ export default function AdminDashboard() {
         throw new Error(errorData.error || 'Failed to match schools');
       }
 
-      console.log('Match successful, setting isMatched to true');
       setIsMatched(true);
       
     } catch (err) {
@@ -355,7 +345,6 @@ export default function AdminDashboard() {
   };
 
   const cancelMatch = () => {
-    console.log('cancelMatch called');
     setShowConfirmDialog(false);
     setSelectedMatch(null);
     setShowWarning(false);
@@ -363,10 +352,7 @@ export default function AdminDashboard() {
   };
 
   const handleCloseAfterMatch = async () => {
-    // Refresh the data first
     await handleSchoolsUpdate();
-    
-    // Then close the dialog
     setShowConfirmDialog(false);
     setSelectedMatch(null);
     setShowWarning(false);
@@ -500,154 +486,6 @@ export default function AdminDashboard() {
       completePairs
     };
   };
-
-  // Component for displaying school pairs side-by-side
-  const SchoolPairDisplay = ({ pair, showAssignButton = false }: { pair: SchoolPair, showAssignButton?: boolean }) => (
-    <div style={{
-      background: '#fff',
-      border: '1px solid #e0e6ed',
-      borderRadius: '12px',
-      padding: '1.5rem',
-      marginBottom: '1rem',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
-    }}>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: showAssignButton ? '1fr 1fr 220px' : '1fr 1fr',
-        gap: '1.5rem',
-        alignItems: 'center'
-      }}>
-        <div style={{
-          padding: '1rem',
-          background: '#f8f9fa',
-          borderRadius: '8px',
-          border: '1px solid #dee2e6'
-        }}>
-          <h4 style={{ margin: '0 0 0.5rem 0', color: '#1a365d' }}>
-            {pair.school1.schoolName}
-          </h4>
-          <div style={{ fontSize: '0.9rem', color: '#4a5568', marginBottom: '0.5rem' }}>
-            <strong>{pair.school1.teacherName}</strong>
-            <a 
-              href={`mailto:${pair.school1.teacherEmail}`}
-              style={{ marginLeft: '0.5rem', textDecoration: 'none', opacity: 0.7 }}
-              title={pair.school1.teacherEmail}
-            >
-              ✉️
-            </a>
-          </div>
-          <div style={{ fontSize: '0.85rem', color: '#718096' }}>
-            <strong>{pair.school1.region}</strong> | {pair.school1.studentCounts?.ready || 0} students | Starts {pair.school1.startMonth}
-          </div>
-          <div style={{ fontSize: '0.8rem', color: '#a0aec0', marginTop: '0.25rem' }}>
-            Status: <strong>{pair.school1.status}</strong>
-          </div>
-        </div>
-
-        <div style={{
-          padding: '1rem',
-          background: '#f8f9fa',
-          borderRadius: '8px',
-          border: '1px solid #dee2e6'
-        }}>
-          <h4 style={{ margin: '0 0 0.5rem 0', color: '#1a365d' }}>
-            {pair.school2.schoolName}
-          </h4>
-          <div style={{ fontSize: '0.9rem', color: '#4a5568', marginBottom: '0.5rem' }}>
-            <strong>{pair.school2.teacherName}</strong>
-            <a 
-              href={`mailto:${pair.school2.teacherEmail}`}
-              style={{ marginLeft: '0.5rem', textDecoration: 'none', opacity: 0.7 }}
-              title={pair.school2.teacherEmail}
-            >
-              ✉️
-            </a>
-          </div>
-          <div style={{ fontSize: '0.85rem', color: '#718096' }}>
-            <strong>{pair.school2.region}</strong> | {pair.school2.studentCounts?.ready || 0} students | Starts {pair.school2.startMonth}
-          </div>
-          <div style={{ fontSize: '0.8rem', color: '#a0aec0', marginTop: '0.25rem' }}>
-            Status: <strong>{pair.school2.status}</strong>
-          </div>
-        </div>
-
-        {showAssignButton && (
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.5rem',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}>
-            <button
-              onClick={() => handleAssignPenPals(pair.school1.id, pair.school2.id)}
-              style={{
-                backgroundColor: '#2563eb',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                padding: '0.75rem 1rem',
-                fontSize: '0.9rem',
-                fontWeight: '500',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                width: '100%',
-                textAlign: 'center'
-              }}
-              onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#1d4ed8'}
-              onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
-            >
-              Assign Pen Pals
-            </button>
-          </div>
-        )}
-
-        {pair.hasStudentPairings && !showAssignButton && (
-          <div style={{ 
-            gridColumn: showAssignButton ? '3 / 4' : '1 / 3',
-            display: 'flex', 
-            gap: '0.5rem',
-            justifyContent: 'center',
-            marginTop: '1rem'
-          }}>
-            <button
-              onClick={() => window.open(`/admin/pen-pal-list?schoolId=${pair.school1.id}`, '_blank')}
-              style={{
-                color: '#2563eb',
-                backgroundColor: 'white',
-                border: '1px solid #2563eb',
-                borderRadius: '4px',
-                padding: '0.75rem',
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-                textAlign: 'center'
-              }}
-            >
-              <div style={{ fontWeight: '600' }}>{pair.school1.schoolName}</div>
-              <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>View Pen Pal List</div>
-            </button>
-            
-            <button
-              onClick={() => window.open(`/admin/pen-pal-list?schoolId=${pair.school2.id}`, '_blank')}
-              style={{
-                color: '#2563eb',
-                backgroundColor: 'white',
-                border: '1px solid #2563eb',
-                borderRadius: '4px',
-                padding: '0.75rem',
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-                textAlign: 'center'
-              }}
-            >
-              <div style={{ fontWeight: '600' }}>{pair.school2.schoolName}</div>
-              <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>View Pen Pal List</div>
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
 
   if (isLoading) {
     return (
@@ -834,7 +672,11 @@ export default function AdminDashboard() {
               ) : (
                 <div>
                   {awaitingReadiness.map((pair, index) => (
-                    <SchoolPairDisplay key={`awaiting-${index}`} pair={pair} />
+                    <SchoolPairDisplay 
+                      key={`awaiting-${index}`} 
+                      pair={pair} 
+                      onAssignPenPals={handleAssignPenPals}
+                    />
                   ))}
                 </div>
               )}
@@ -855,7 +697,12 @@ export default function AdminDashboard() {
               ) : (
                 <div>
                   {readyForPairing.map((pair, index) => (
-                    <SchoolPairDisplay key={`ready-${index}`} pair={pair} showAssignButton={true} />
+                    <SchoolPairDisplay 
+                      key={`ready-${index}`} 
+                      pair={pair} 
+                      showAssignButton={true} 
+                      onAssignPenPals={handleAssignPenPals}
+                    />
                   ))}
                 </div>
               )}
@@ -876,7 +723,11 @@ export default function AdminDashboard() {
               ) : (
                 <div>
                   {completePairs.map((pair, index) => (
-                    <SchoolPairDisplay key={`complete-${index}`} pair={pair} />
+                    <SchoolPairDisplay 
+                      key={`complete-${index}`} 
+                      pair={pair} 
+                      onAssignPenPals={handleAssignPenPals}
+                    />
                   ))}
                 </div>
               )}
@@ -886,17 +737,7 @@ export default function AdminDashboard() {
 
       </main>
 
-      {/* Confirmation Dialog with DEBUG logging */}
-      {showConfirmDialog && pinnedSchool && selectedMatch && (() => {
-        // DEBUG: Log the actual props being passed to dialog
-        console.log('Rendering ConfirmationDialog with props:', {
-          isMatched: isMatched,
-          pinnedSchool: pinnedSchool.schoolName,
-          selectedMatch: selectedMatch.schoolName,
-          showWarning: showWarning
-        });
-        return true;
-      })() && (
+      {showConfirmDialog && pinnedSchool && selectedMatch && (
         <ConfirmationDialog
           pinnedSchool={pinnedSchool}
           selectedMatch={selectedMatch}
