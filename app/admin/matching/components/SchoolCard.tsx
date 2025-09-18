@@ -98,7 +98,7 @@ export default function SchoolCard({
           : '0 2px 8px rgba(0,0,0,0.06)',
         transition: 'all 0.15s ease',
         display: 'grid',
-        gridTemplateColumns: '1fr 200px 100px',
+        gridTemplateColumns: '1fr 200px 100px 50px',
         gap: '20px',
         alignItems: 'start',
         position: 'relative',
@@ -106,13 +106,13 @@ export default function SchoolCard({
         fontWeight: '300'
       }}
     >
-      {/* Pin/Match Icon - Top Right */}
+      {/* Pin/Match Icon - Column 4 */}
       {showActions && (onPin || onMatch) && (
         <div style={{ 
-          position: 'absolute', 
-          top: '16px', 
-          right: '16px',
-          zIndex: 10
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'flex-start',
+          paddingTop: '0px'
         }}>
           {showMatchIcon ? (
             <button
