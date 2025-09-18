@@ -98,8 +98,8 @@ export default function SchoolCard({
           : '0 2px 8px rgba(0,0,0,0.06)',
         transition: 'all 0.15s ease',
         display: 'grid',
-        gridTemplateColumns: '1fr 240px 120px',
-        gap: '32px',
+        gridTemplateColumns: '1fr 200px 100px',
+        gap: '20px',
         alignItems: 'start',
         position: 'relative',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
@@ -297,8 +297,9 @@ export default function SchoolCard({
       <div style={{
         display: 'flex',
         flexDirection: 'column',
+        justifyContent: 'center',
         gap: '8px',
-        minWidth: '120px'
+        alignSelf: 'center'
       }}>
         <button
           onClick={openDashboard}
