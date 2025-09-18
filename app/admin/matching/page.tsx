@@ -9,6 +9,7 @@ import FilterBar from './components/FilterBar';
 import ConfirmationDialog from './components/ConfirmationDialog';
 import SchoolCard from './components/SchoolCard';
 import { School, StatusCounts, Filters } from './types';
+import SchoolPairDisplay from './components/SchoolPairDisplay';
 
 interface SchoolPair {
   school1: School;
