@@ -361,6 +361,17 @@ export default function AdminDashboard() {
     setIsMatched(false);
   };
 
+  const handleCloseAfterMatch = async () => {
+    // Refresh the data first
+    await handleSchoolsUpdate();
+    
+    // Then close the dialog
+    setShowConfirmDialog(false);
+    setSelectedMatch(null);
+    setShowWarning(false);
+    setIsMatched(false);
+  };
+
   // Filter handling
   const handleFiltersChange = (newFilters: Filters) => {
     setFilters(newFilters);
@@ -652,10 +663,11 @@ export default function AdminDashboard() {
   
   // Get schools to display (filtered or unmatched, excluding pinned school)
   let unmatchedToShow = filtersApplied ? filteredSchools : unmatched;
-// Remove pinned school from the list
-if (pinnedSchool) {
-  unmatchedToShow = unmatchedToShow.filter(school => school.id !== pinnedSchool.id);
-}
+  // Remove pinned school from the list
+  if (pinnedSchool) {
+    unmatchedToShow = unmatchedToShow.filter(school => school.id !== pinnedSchool.id);
+  }
+
   return (
     <div className="page">
       <Header 
@@ -892,6 +904,7 @@ if (pinnedSchool) {
           onConfirm={confirmMatch}
           onCancel={cancelMatch}
           onAssignPenPals={handleAssignPenPalsFromDialog}
+          onClose={handleCloseAfterMatch}
         />
       )}
 
