@@ -10,7 +10,14 @@ export async function GET() {
           where: { isActive: true },
           select: {
             id: true,
-            profileCompleted: true
+            firstName: true,
+            lastInitial: true,
+            grade: true,
+            interests: true,
+            otherInterests: true,
+            profileCompleted: true,
+            parentConsent: true,
+            createdAt: true
           }
         },
         matchedWithSchool: {
@@ -27,7 +34,7 @@ export async function GET() {
       }
     });
     
-    // Transform schools with student counts
+    // Transform schools with student counts and full student data
     const transformedSchools = schools.map(school => ({
       id: school.id,
       schoolName: school.schoolName,
@@ -46,6 +53,8 @@ export async function GET() {
       lettersReceived: school.lettersReceived,
       matchedWithSchoolId: school.matchedWithSchoolId,
       matchedSchool: school.matchedWithSchool,
+      // Include full student data with profileCompleted field
+      students: school.students,
       studentCounts: {
         expected: school.expectedClassSize,
         registered: school.students.length,
