@@ -97,54 +97,79 @@ export default function SchoolPairDisplay({
           {/* Dashboard Links for School 1 */}
           <div style={{
             display: 'flex',
-            gap: '0.75rem',
+            justifyContent: 'space-between',
+            alignItems: 'center',
             marginTop: '0.75rem',
             paddingTop: '0.5rem',
             borderTop: '1px solid #e2e8f0'
           }}>
-            <button
-              onClick={() => openDashboard(pair.school1.id)}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: '#6b7280',
-                fontSize: '0.7rem',
-                fontWeight: '600',
-                letterSpacing: '0.5px',
-                cursor: 'pointer',
-                padding: '0.35rem 0',
-                textDecoration: 'underline',
-                textUnderlineOffset: '2px',
-                transition: 'color 0.2s ease'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.color = '#374151'}
-              onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
-              title="Open school dashboard in new tab"
-            >
-              OPEN DASHBOARD
-            </button>
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <button
+                onClick={() => openDashboard(pair.school1.id)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#6b7280',
+                  fontSize: '0.7rem',
+                  fontWeight: '600',
+                  letterSpacing: '0.5px',
+                  cursor: 'pointer',
+                  padding: '0.35rem 0',
+                  textDecoration: 'underline',
+                  textUnderlineOffset: '2px',
+                  transition: 'color 0.2s ease'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.color = '#374151'}
+                onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
+                title="Open school dashboard in new tab"
+              >
+                OPEN DASHBOARD
+              </button>
 
-            <button
-              onClick={() => copyDashboardUrl(pair.school1.id)}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: '#6b7280',
-                fontSize: '0.7rem',
-                fontWeight: '600',
-                letterSpacing: '0.5px',
-                cursor: 'pointer',
-                padding: '0.35rem 0',
-                textDecoration: 'underline',
-                textUnderlineOffset: '2px',
-                transition: 'color 0.2s ease'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.color = '#374151'}
-              onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
-              title="Copy school dashboard URL to clipboard"
-            >
-              COPY URL
-            </button>
+              <button
+                onClick={() => copyDashboardUrl(pair.school1.id)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#6b7280',
+                  fontSize: '0.7rem',
+                  fontWeight: '600',
+                  letterSpacing: '0.5px',
+                  cursor: 'pointer',
+                  padding: '0.35rem 0',
+                  textDecoration: 'underline',
+                  textUnderlineOffset: '2px',
+                  transition: 'color 0.2s ease'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.color = '#374151'}
+                onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
+                title="Copy school dashboard URL to clipboard"
+              >
+                COPY URL
+              </button>
+            </div>
+
+            {/* Pen Pal List Button for School 1 (only show if pair has student pairings) */}
+            {pair.hasStudentPairings && (
+              <button
+                onClick={() => window.open(`/admin/pen-pal-list?schoolId=${pair.school1.id}`, '_blank')}
+                style={{
+                  color: '#2563eb',
+                  backgroundColor: 'white',
+                  border: '1px solid #2563eb',
+                  borderRadius: '4px',
+                  padding: '0.35rem 0.5rem',
+                  fontSize: '0.7rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  textAlign: 'center',
+                  letterSpacing: '0.5px'
+                }}
+                title="View pen pal list for this school"
+              >
+                VIEW PEN PAL LIST
+              </button>
+            )}
           </div>
         </div>
 
@@ -183,54 +208,79 @@ export default function SchoolPairDisplay({
           {/* Dashboard Links for School 2 */}
           <div style={{
             display: 'flex',
-            gap: '0.75rem',
+            justifyContent: 'space-between',
+            alignItems: 'center',
             marginTop: '0.75rem',
             paddingTop: '0.5rem',
             borderTop: '1px solid #e2e8f0'
           }}>
-            <button
-              onClick={() => openDashboard(pair.school2.id)}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: '#6b7280',
-                fontSize: '0.7rem',
-                fontWeight: '600',
-                letterSpacing: '0.5px',
-                cursor: 'pointer',
-                padding: '0.35rem 0',
-                textDecoration: 'underline',
-                textUnderlineOffset: '2px',
-                transition: 'color 0.2s ease'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.color = '#374151'}
-              onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
-              title="Open school dashboard in new tab"
-            >
-              OPEN DASHBOARD
-            </button>
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <button
+                onClick={() => openDashboard(pair.school2.id)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#6b7280',
+                  fontSize: '0.7rem',
+                  fontWeight: '600',
+                  letterSpacing: '0.5px',
+                  cursor: 'pointer',
+                  padding: '0.35rem 0',
+                  textDecoration: 'underline',
+                  textUnderlineOffset: '2px',
+                  transition: 'color 0.2s ease'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.color = '#374151'}
+                onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
+                title="Open school dashboard in new tab"
+              >
+                OPEN DASHBOARD
+              </button>
 
-            <button
-              onClick={() => copyDashboardUrl(pair.school2.id)}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: '#6b7280',
-                fontSize: '0.7rem',
-                fontWeight: '600',
-                letterSpacing: '0.5px',
-                cursor: 'pointer',
-                padding: '0.35rem 0',
-                textDecoration: 'underline',
-                textUnderlineOffset: '2px',
-                transition: 'color 0.2s ease'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.color = '#374151'}
-              onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
-              title="Copy school dashboard URL to clipboard"
-            >
-              COPY URL
-            </button>
+              <button
+                onClick={() => copyDashboardUrl(pair.school2.id)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#6b7280',
+                  fontSize: '0.7rem',
+                  fontWeight: '600',
+                  letterSpacing: '0.5px',
+                  cursor: 'pointer',
+                  padding: '0.35rem 0',
+                  textDecoration: 'underline',
+                  textUnderlineOffset: '2px',
+                  transition: 'color 0.2s ease'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.color = '#374151'}
+                onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
+                title="Copy school dashboard URL to clipboard"
+              >
+                COPY URL
+              </button>
+            </div>
+
+            {/* Pen Pal List Button for School 2 (only show if pair has student pairings) */}
+            {pair.hasStudentPairings && (
+              <button
+                onClick={() => window.open(`/admin/pen-pal-list?schoolId=${pair.school2.id}`, '_blank')}
+                style={{
+                  color: '#2563eb',
+                  backgroundColor: 'white',
+                  border: '1px solid #2563eb',
+                  borderRadius: '4px',
+                  padding: '0.35rem 0.5rem',
+                  fontSize: '0.7rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  textAlign: 'center',
+                  letterSpacing: '0.5px'
+                }}
+                title="View pen pal list for this school"
+              >
+                VIEW PEN PAL LIST
+              </button>
+            )}
           </div>
         </div>
 
@@ -262,51 +312,6 @@ export default function SchoolPairDisplay({
               onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
             >
               Assign Pen Pals
-            </button>
-          </div>
-        )}
-
-        {/* Pen Pal List Buttons (for completed pairs) */}
-        {pair.hasStudentPairings && !showAssignButton && (
-          <div style={{ 
-            gridColumn: '1 / 3',
-            display: 'flex', 
-            gap: '0.5rem',
-            justifyContent: 'center',
-            marginTop: '1rem'
-          }}>
-            <button
-              onClick={() => window.open(`/admin/pen-pal-list?schoolId=${pair.school1.id}`, '_blank')}
-              style={{
-                color: '#2563eb',
-                backgroundColor: 'white',
-                border: '1px solid #2563eb',
-                borderRadius: '4px',
-                padding: '0.75rem',
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-                textAlign: 'center'
-              }}
-            >
-              <div style={{ fontWeight: '600' }}>{pair.school1.schoolName}</div>
-              <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>View Pen Pal List</div>
-            </button>
-            
-            <button
-              onClick={() => window.open(`/admin/pen-pal-list?schoolId=${pair.school2.id}`, '_blank')}
-              style={{
-                color: '#2563eb',
-                backgroundColor: 'white',
-                border: '1px solid #2563eb',
-                borderRadius: '4px',
-                padding: '0.75rem',
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-                textAlign: 'center'
-              }}
-            >
-              <div style={{ fontWeight: '600' }}>{pair.school2.schoolName}</div>
-              <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>View Pen Pal List</div>
             </button>
           </div>
         )}
