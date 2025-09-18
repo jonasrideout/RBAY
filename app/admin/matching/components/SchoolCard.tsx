@@ -98,8 +98,8 @@ export default function SchoolCard({
           : '0 2px 8px rgba(0,0,0,0.06)',
         transition: 'all 0.15s ease',
         display: 'grid',
-        gridTemplateColumns: '1fr auto auto',
-        gap: '24px',
+        gridTemplateColumns: '1fr 240px 120px',
+        gap: '32px',
         alignItems: 'start',
         position: 'relative',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
@@ -257,10 +257,9 @@ export default function SchoolCard({
       {/* Data Grid */}
       <div style={{ 
         display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: '16px 24px',
+        gridTemplateColumns: '1fr 1fr 1fr',
+        gap: '16px 20px',
         fontSize: '14px',
-        minWidth: '200px',
         fontWeight: '300'
       }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -271,6 +270,11 @@ export default function SchoolCard({
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
           <span style={{ color: '#999', fontSize: '12px', fontWeight: '400' }}>Start Date</span>
           <span style={{ color: '#333', fontWeight: '400' }}>{school.startMonth}</span>
+        </div>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+          <span style={{ color: '#999', fontSize: '12px', fontWeight: '400' }}>Status</span>
+          <span style={{ color: '#333', fontWeight: '400' }}>{school.status}</span>
         </div>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -286,11 +290,6 @@ export default function SchoolCard({
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
           <span style={{ color: '#999', fontSize: '12px', fontWeight: '400' }}>Ready</span>
           <span style={{ color: '#333', fontWeight: '400' }}>{school.studentCounts?.ready || 0}</span>
-        </div>
-        
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-          <span style={{ color: '#999', fontSize: '12px', fontWeight: '400' }}>Status</span>
-          <span style={{ color: '#333', fontWeight: '400' }}>{school.status}</span>
         </div>
       </div>
 
