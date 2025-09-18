@@ -50,7 +50,7 @@ export default function SchoolPairDisplay({
   // Helper function to get contextual student count display
   const getStudentCountDisplay = (school: School) => {
     if (school.status === 'COLLECTING') {
-      return `${school.studentCounts?.registered || 0}/${school.studentCounts?.expected || 0} registered`;
+      return `${school.studentCounts?.ready || 0}/${school.studentCounts?.registered || 0} ready`;
     } else {
       return `${school.studentCounts?.ready || 0} ready`;
     }
