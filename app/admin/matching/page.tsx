@@ -649,10 +649,13 @@ export default function AdminDashboard() {
   }
 
   const { unmatched, awaitingReadiness, readyForPairing, completePairs } = organizeSchoolsByWorkflow();
-
-  // Get schools to display (filtered or unmatched)
-  const unmatchedToShow = filtersApplied ? filteredSchools : unmatched;
-
+  
+  // Get schools to display (filtered or unmatched, excluding pinned school)
+  let unmatchedToShow = filtersApplied ? filteredSchools : unmatched;
+// Remove pinned school from the list
+if (pinnedSchool) {
+  unmatchedToShow = unmatchedToShow.filter(school => school.id !== pinnedSchool.id);
+}
   return (
     <div className="page">
       <Header 
