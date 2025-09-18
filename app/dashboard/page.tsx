@@ -135,8 +135,8 @@ function TeacherDashboardContent() {
         grade: student.grade,
         interests: student.interests || [],
         otherInterests: student.otherInterests || '',
-        hasInterests: (student.interests && student.interests.length > 0) || false,
-        status: (student.interests && student.interests.length > 0) ? 'ready' : 'needs-info'
+        hasInterests: student.profileCompleted || false,
+        status: student.profileCompleted ? 'ready' : 'needs-info'
       })) || [];
 
       setStudents(transformedStudents);
