@@ -47,6 +47,15 @@ export default function SchoolPairDisplay({
     }
   };
 
+  // Helper function to get contextual student count display
+  const getStudentCountDisplay = (school: School) => {
+    if (school.status === 'COLLECTING') {
+      return `${school.studentCounts?.registered || 0}/${school.studentCounts?.expected || 0} registered`;
+    } else {
+      return `${school.studentCounts?.ready || 0} ready`;
+    }
+  };
+
   return (
     <div style={{
       background: '#fff',
@@ -87,7 +96,7 @@ export default function SchoolPairDisplay({
               </a>
             </div>
             <div style={{ fontSize: '0.85rem', color: '#718096' }}>
-              <strong>{pair.school1.region}</strong> | {pair.school1.studentCounts?.ready || 0} students | Starts {pair.school1.startMonth}
+              <strong>{pair.school1.region}</strong> | {getStudentCountDisplay(pair.school1)} | Starts {pair.school1.startMonth}
             </div>
             <div style={{ fontSize: '0.8rem', color: '#a0aec0', marginTop: '0.25rem' }}>
               Status: <strong>{pair.school1.status}</strong>
@@ -198,7 +207,7 @@ export default function SchoolPairDisplay({
               </a>
             </div>
             <div style={{ fontSize: '0.85rem', color: '#718096' }}>
-              <strong>{pair.school2.region}</strong> | {pair.school2.studentCounts?.ready || 0} students | Starts {pair.school2.startMonth}
+              <strong>{pair.school2.region}</strong> | {getStudentCountDisplay(pair.school2)} | Starts {pair.school2.startMonth}
             </div>
             <div style={{ fontSize: '0.8rem', color: '#a0aec0', marginTop: '0.25rem' }}>
               Status: <strong>{pair.school2.status}</strong>
