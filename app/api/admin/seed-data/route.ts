@@ -173,7 +173,7 @@ export async function POST(request: NextRequest) {
         parentConsent: true,  // Keep only consent field
         penpalPreference: penpalPreference as "ONE" | "MULTIPLE",
         isActive: true,
-        profileCompleted: true,
+        profileCompleted: true, // Will be set correctly below based on actual data
         schoolId
       };
     };
@@ -182,6 +182,8 @@ export async function POST(request: NextRequest) {
     console.log('Creating Pacific Elementary students...');
     for (let i = 0; i < 20; i++) {
       const studentData = generateStudent(pacificSchool.id, i);
+      // Pacific students are all complete
+      studentData.profileCompleted = studentData.interests && studentData.interests.length > 0;
       await prisma.student.create({ data: studentData });
     }
 
@@ -189,6 +191,8 @@ export async function POST(request: NextRequest) {
     console.log('Creating Northeast Academy students...');
     for (let i = 0; i < 23; i++) {
       const studentData = generateStudent(northeastSchool.id, i + 20);
+      // Northeast students are all complete
+      studentData.profileCompleted = studentData.interests && studentData.interests.length > 0;
       await prisma.student.create({ data: studentData });
     }
 
@@ -198,22 +202,23 @@ export async function POST(request: NextRequest) {
       const studentData = generateStudent(southwestSchool.id, i + 43);
       
       // Create variety in completion status for testing:
-      // 20 students complete, 10 students incomplete (missing various fields)
-      if (i >= 20) {
+      // 27 students complete, 3 students incomplete (missing various fields)
+      if (i >= 27) {
         // Make some students incomplete for testing purposes
         if (i % 3 === 0) {
-          studentData.profileCompleted = false;
           studentData.interests = []; // Missing interests
+          studentData.otherInterests = null;
         } else if (i % 3 === 1) {
-          studentData.profileCompleted = false;
-          studentData.penpalPreference = "ONE"; // Missing parent consent
-          studentData.parentConsent = false;
+          studentData.parentConsent = false; // Missing parent consent
+          studentData.interests = []; // Remove interests so they're not complete
         } else {
-          studentData.profileCompleted = false;
           studentData.grade = ""; // Missing grade
+          studentData.interests = []; // Remove interests so they're not complete
         }
       }
       
+      // CONSISTENT LOGIC: profileCompleted = has interests
+      studentData.profileCompleted = studentData.interests && studentData.interests.length > 0;
       await prisma.student.create({ data: studentData });
     }
 
@@ -223,16 +228,19 @@ export async function POST(request: NextRequest) {
       const studentData = generateStudent(midwestSchool.id, i + 73);
       
       // Create variety in completion status for testing:
-      // 15 students complete, 8 students incomplete
-      if (i >= 15) {
-        studentData.profileCompleted = false;
+      // 19 students complete, 4 students incomplete
+      if (i >= 19) {
         if (i % 2 === 0) {
           studentData.interests = []; // Missing interests
+          studentData.otherInterests = null;
         } else {
           studentData.parentConsent = false; // Missing parent consent
+          studentData.interests = []; // Remove interests so they're not complete
         }
       }
       
+      // CONSISTENT LOGIC: profileCompleted = has interests
+      studentData.profileCompleted = studentData.interests && studentData.interests.length > 0;
       await prisma.student.create({ data: studentData });
     }
 
@@ -242,17 +250,20 @@ export async function POST(request: NextRequest) {
       const studentData = generateStudent(southeastSchool.id, i + 96);
       
       // Create variety in completion status for testing:
-      // 12 students complete, 8 students incomplete
-      if (i >= 12) {
-        studentData.profileCompleted = false;
+      // 17 students complete, 3 students incomplete
+      if (i >= 17) {
         if (i % 2 === 0) {
           studentData.grade = ""; // Missing grade
+          studentData.interests = []; // Remove interests so they're not complete
         } else {
           studentData.interests = []; // Missing interests
           studentData.parentConsent = false; // Missing multiple fields
+          studentData.otherInterests = null;
         }
       }
       
+      // CONSISTENT LOGIC: profileCompleted = has interests
+      studentData.profileCompleted = studentData.interests && studentData.interests.length > 0;
       await prisma.student.create({ data: studentData });
     }
 
@@ -283,14 +294,14 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({
-      message: 'Enhanced test data created successfully with privacy protection and dashboard tokens',
+      message: 'Enhanced test data created successfully with consistent profileCompleted logic',
       schools: 5,
       schoolDetails: {
-        pacificElementary: { students: 20, status: "READY" },
-        northeastAcademy: { students: 23, status: "READY" },
-        desertViewElementary: { students: 30, status: "COLLECTING", incomplete: 10 },
-        prairieViewMiddle: { students: 23, status: "COLLECTING", incomplete: 8 },
-        magnoliaElementary: { students: 20, status: "COLLECTING", incomplete: 8 }
+        pacificElementary: { students: 20, status: "READY", complete: 20 },
+        northeastAcademy: { students: 23, status: "READY", complete: 23 },
+        desertViewElementary: { students: 30, status: "COLLECTING", complete: 27, incomplete: 3 },
+        prairieViewMiddle: { students: 23, status: "COLLECTING", complete: 19, incomplete: 4 },
+        magnoliaElementary: { students: 20, status: "COLLECTING", complete: 17, incomplete: 3 }
       },
       totalStudents,
       dashboardTokens: createdSchools.map(school => ({
@@ -300,25 +311,19 @@ export async function POST(request: NextRequest) {
         dashboardUrl: `/dashboard?token=${school.dashboardToken}`,
         status: school.status
       })),
-      privacyFeatures: [
-        "Student names use 'First Name + Last Initial' format (Sarah J.)",
-        "No parent contact information collected (privacy protection)",
-        "Only parent consent field maintained for legal compliance"
-      ],
-      securityFeatures: [
-        "Dashboard tokens auto-generated for secure access",
-        "Token-based URLs replace email-based access",
-        "Each school gets unique dashboard token"
+      consistencyFix: [
+        "Fixed: profileCompleted now consistently equals (interests.length > 0)",
+        "All students with interests are marked as profileCompleted = true",
+        "All students without interests are marked as profileCompleted = false",
+        "This matches the logic in student registration and update APIs"
       ],
       testScenarios: [
         "Two schools READY for matching (Pacific + Northeast)",
         "Three schools COLLECTING information (Southwest, Midwest, Southeast)",
-        "Various student counts: 20, 23, 23, 30, 20",
-        "Different completion rates for dashboard testing",
-        "Multiple regions for FilterBar testing",
-        "Variety of pen pal preferences and interests",
-        "Mixed start months and special considerations",
-        "Dashboard tokens for secure teacher access testing"
+        "Various student counts: 20, 23, 30, 23, 20",
+        "Desert View: 27 ready students (matches teacher dashboard)",
+        "Prairie View: 19 ready students (matches teacher dashboard)",
+        "Consistent completion logic across all APIs"
       ]
     });
 
