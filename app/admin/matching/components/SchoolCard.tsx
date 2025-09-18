@@ -98,21 +98,21 @@ export default function SchoolCard({
           : '0 2px 8px rgba(0,0,0,0.06)',
         transition: 'all 0.15s ease',
         display: 'grid',
-        gridTemplateColumns: '1fr 200px 100px 50px',
-        gap: '20px',
+        gridTemplateColumns: '1fr 180px 110px',
+        gap: '16px',
         alignItems: 'start',
         position: 'relative',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
         fontWeight: '300'
       }}
     >
-      {/* Pin/Match Icon - Column 4 */}
+      {/* Pin/Match Icon - Back to absolute positioning */}
       {showActions && (onPin || onMatch) && (
         <div style={{ 
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'flex-start',
-          paddingTop: '0px'
+          position: 'absolute', 
+          top: '16px', 
+          right: '16px',
+          zIndex: 10
         }}>
           {showMatchIcon ? (
             <button
@@ -166,8 +166,7 @@ export default function SchoolCard({
                   e.currentTarget.style.borderColor = '#666';
                 }
               }}
-              title={isPinned ? "Unpin school" : "Pin school"}
-            >
+              title={isPinned ? "Unpin school" : "Pin school"}>
               {renderOutlineIcon('pin', 16)}
             </button>
           )}
