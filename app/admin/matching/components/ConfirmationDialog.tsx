@@ -10,6 +10,7 @@ interface ConfirmationDialogProps {
   onConfirm: () => void;
   onCancel: () => void;
   onAssignPenPals?: () => void;
+  onClose?: () => void; // NEW: Add onClose prop for post-match workflow
 }
 
 export default function ConfirmationDialog({
@@ -19,7 +20,8 @@ export default function ConfirmationDialog({
   isMatched = false,
   onConfirm,
   onCancel,
-  onAssignPenPals
+  onAssignPenPals,
+  onClose
 }: ConfirmationDialogProps) {
   // Check if both schools are READY status
   const bothSchoolsReady = pinnedSchool.status === 'READY' && selectedMatch.status === 'READY';
@@ -80,7 +82,6 @@ export default function ConfirmationDialog({
             <span style={{ fontSize: '14px', color: '#666' }}>
               {pinnedSchool.region} | {pinnedSchool.studentCounts?.ready || 0} students | Starts {pinnedSchool.startMonth}
             </span>
-            {/* NEW: Show status */}
             <div style={{ fontSize: '12px', color: pinnedSchool.status === 'READY' ? '#4caf50' : '#ff9800', fontWeight: '500', marginTop: '4px' }}>
               Status: {pinnedSchool.status}
             </div>
@@ -100,7 +101,6 @@ export default function ConfirmationDialog({
             <span style={{ fontSize: '14px', color: '#666' }}>
               {selectedMatch.region} | {selectedMatch.studentCounts?.ready || 0} students | Starts {selectedMatch.startMonth}
             </span>
-            {/* NEW: Show status */}
             <div style={{ fontSize: '12px', color: selectedMatch.status === 'READY' ? '#4caf50' : '#ff9800', fontWeight: '500', marginTop: '4px' }}>
               Status: {selectedMatch.status}
             </div>
@@ -108,22 +108,38 @@ export default function ConfirmationDialog({
         </div>
         
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-          {/* Cancel Button - Always active */}
-          <button
-            onClick={onCancel}
-            style={{
-              padding: '10px 20px',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              backgroundColor: 'white',
-              cursor: 'pointer',
-              fontSize: '0.9rem'
-            }}
-          >
-            Cancel
-          </button>
+          {/* UPDATED: Show Cancel before match, Close after match */}
+          {!isMatched ? (
+            <button
+              onClick={onCancel}
+              style={{
+                padding: '10px 20px',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+                backgroundColor: 'white',
+                cursor: 'pointer',
+                fontSize: '0.9rem'
+              }}
+            >
+              Cancel
+            </button>
+          ) : (
+            <button
+              onClick={onClose}
+              style={{
+                padding: '10px 20px',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+                backgroundColor: 'white',
+                cursor: 'pointer',
+                fontSize: '0.9rem'
+              }}
+            >
+              Close
+            </button>
+          )}
           
-          {/* FIXED: Dynamic button text based on match status */}
+          {/* UPDATED: Button text with exclamation point */}
           <button
             onClick={onConfirm}
             disabled={isMatched}
@@ -137,10 +153,9 @@ export default function ConfirmationDialog({
               fontSize: '0.9rem'
             }}
           >
-            {isMatched ? 'Match Confirmed' : 'Confirm Match'}
+            {isMatched ? 'Match Confirmed!' : 'Confirm Match'}
           </button>
           
-          {/* FIXED: Assign Pen Pals Button - Now checks both isMatched AND bothSchoolsReady */}
           <button
             onClick={onAssignPenPals}
             disabled={!canAssignPenPals}
@@ -165,7 +180,7 @@ export default function ConfirmationDialog({
           </button>
         </div>
         
-        {/* MOVED: Warning when schools aren't both READY after matching - now at bottom */}
+        {/* Yellow warning moved to bottom */}
         {isMatched && !bothSchoolsReady && (
           <div style={{
             backgroundColor: '#fff3cd',
