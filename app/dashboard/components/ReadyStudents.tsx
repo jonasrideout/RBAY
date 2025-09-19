@@ -1,4 +1,6 @@
+// /app/dashboard/components/ReadyStudents.tsx
 "use client";
+
 import StudentCard from './StudentCard';
 
 interface Student {
@@ -20,7 +22,7 @@ interface ReadyStudentsProps {
   onToggleRemovalMode: () => void;
   onRemoveStudent: (studentId: string) => void;
   onToggleExpansion: (studentId: string) => void;
-  readOnly?: boolean; // Added readOnly prop
+  readOnly?: boolean;
 }
 
 export default function ReadyStudents({
@@ -31,7 +33,7 @@ export default function ReadyStudents({
   onToggleRemovalMode,
   onRemoveStudent,
   onToggleExpansion,
-  readOnly = false // Added readOnly with default false
+  readOnly = false
 }: ReadyStudentsProps) {
   // Only show if there are ready students
   if (studentsWithInterests.length === 0) {
@@ -40,30 +42,42 @@ export default function ReadyStudents({
 
   return (
     <div className="card" style={{ marginBottom: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <h3>Ready Students ({studentsWithInterests.length})</h3>
-        {/* Conditionally hide Remove Student button when readOnly */}
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        marginBottom: '1.5rem' 
+      }}>
+        <h3 style={{
+          margin: '0',
+          fontSize: '1.2rem',
+          fontWeight: '400',
+          color: '#333'
+        }}>
+          Ready Students ({studentsWithInterests.length})
+        </h3>
+        
+        {/* Clean button styling */}
         {!readOnly && (
           <button
-            className="btn"
+            className={readyStudentsRemovalMode ? "btn btn-secondary" : "btn"}
             onClick={onToggleRemovalMode}
-            style={{ 
-              fontSize: '0.9rem',
-              backgroundColor: readyStudentsRemovalMode ? 'transparent' : '#6c757d',
-              color: readyStudentsRemovalMode ? '#6c757d' : 'white',
-              border: readyStudentsRemovalMode ? '1px solid #6c757d' : 'none'
-            }}
             disabled={readyForMatching}
             title={readyForMatching ? "Cannot remove students after matching requested" : undefined}
+            style={{
+              fontSize: '14px',
+              opacity: readyForMatching ? 0.6 : 1
+            }}
           >
             {readyStudentsRemovalMode ? 'Finished' : 'Remove Student'}
           </button>
         )}
       </div>
+
       <div style={{ 
         display: 'grid', 
         gridTemplateColumns: 'repeat(3, 1fr)', 
-        gap: '0.75rem'
+        gap: '12px'
       }}>
         {studentsWithInterests.map(student => (
           <StudentCard
@@ -74,7 +88,7 @@ export default function ReadyStudents({
             showRemoveButton={readyStudentsRemovalMode}
             onExpandClick={() => onToggleExpansion(student.id)}
             onRemoveClick={() => onRemoveStudent(student.id)}
-            readOnly={readOnly} // Pass readOnly to StudentCard if it supports it
+            readOnly={readOnly}
           />
         ))}
       </div>
