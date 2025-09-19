@@ -245,7 +245,9 @@ body {
 
 /* Base button styles - Clean white buttons like school cards */
 .btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 8px 16px;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -258,6 +260,7 @@ body {
   background: white;
   color: #555;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  line-height: 1;
 }
 
 .btn:disabled {
@@ -272,14 +275,14 @@ body {
 
 /* Specific button variants - only use when needed */
 .btn-danger {
-  background: #dc3545;
-  color: white;
+  background: white;
+  color: #dc3545;
   border-color: #dc3545;
 }
 
 .btn-danger:hover:not(:disabled) {
-  background: #c82333;
-  border-color: #c82333;
+  background: #dc3545;
+  color: white;
 }
 
 .btn-success {
@@ -314,6 +317,11 @@ body {
 .btn-secondary:hover:not(:disabled) {
   background: #f8f9fa;
   border-color: #999;
+}
+
+/* Fixed width button for toggle text */
+.btn-toggle {
+  min-width: 140px;
 }
 
 .btn-outline {
