@@ -356,7 +356,7 @@ export default function SchoolPairDisplay({
           borderTop: '1px solid #f0f0f0'
         }}>
           
-          {showAssignButton && onAssignPenPals && !pair.hasPenPals && (
+          {showAssignButton && onAssignPenPals && !pair.hasStudentPairings && (
             <button
               onClick={() => onAssignPenPals(pair.school1.id, pair.school2.id)}
               className="btn btn-primary"
