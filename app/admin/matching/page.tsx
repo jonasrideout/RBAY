@@ -529,18 +529,14 @@ export default function AdminDashboard() {
             </p>
           </div>
           
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             <Link href="/register-school?admin=true" className="btn btn-primary">
               Add School
             </Link>
             
             <button 
               onClick={() => setShowFilters(!showFilters)}
-              className="btn"
-              style={{ 
-                backgroundColor: '#2563eb',
-                color: 'white'
-              }}
+              className="btn btn-primary"
             >
               {showFilters ? 'Hide Filters' : 'Search for Schools'}
             </button>
@@ -548,29 +544,29 @@ export default function AdminDashboard() {
             <div style={{
               border: '1px solid #d1d5db',
               borderRadius: '6px',
-              padding: '0.5rem',
+              padding: '8px',
               position: 'relative',
               display: 'flex',
-              gap: '0.5rem'
+              gap: '8px'
             }}>
               <span style={{
                 position: 'absolute',
-                top: '-0.6rem',
-                left: '0.5rem',
+                top: '-8px',
+                left: '8px',
                 backgroundColor: 'white',
-                padding: '0 0.25rem',
-                fontSize: '0.7rem',
+                padding: '0 4px',
+                fontSize: '11px',
                 color: '#6b7280',
-                fontWeight: '500'
+                fontWeight: '400'
               }}>
                 Temporary Testing Buttons
               </span>
               
-              <button onClick={handleSeedData} className="btn btn-primary" style={{ margin: 0 }}>
+              <button onClick={handleSeedData} className="btn btn-primary">
                 Seed Data
               </button>
 
-              <button onClick={handleClearData} className="btn" style={{ backgroundColor: '#dc3545', color: 'white', margin: 0 }}>
+              <button onClick={handleClearData} className="btn btn-danger">
                 Clear Data
               </button>
             </div>
