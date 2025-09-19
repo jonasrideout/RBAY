@@ -146,79 +146,46 @@ export default function SchoolPairDisplay({
           </div>
         </div>
 
-        {/* Compact Data: Single Row */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr 1fr',
-          gap: '8px',
-          fontSize: '11px',
-          fontWeight: '300',
-          marginBottom: '8px'
-        }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ color: '#999', fontSize: '10px' }}>Region</div>
-            <div style={{ color: '#333', fontWeight: '300' }}>{school.region.toUpperCase()}</div>
-          </div>
-          
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ color: '#999', fontSize: '10px' }}>Start</div>
-            <div style={{ color: '#333', fontWeight: '300' }}>{school.startMonth.toUpperCase()}</div>
-          </div>
-          
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ color: '#999', fontSize: '10px' }}>Ready</div>
-            <div style={{ color: '#333', fontWeight: '300' }}>{school.studentCounts?.ready || 0}</div>
-          </div>
-        </div>
-
-        {/* Compact Action Buttons */}
+        {/* Horizontal Data + Buttons Layout */}
         <div style={{
           display: 'flex',
-          gap: '4px'
+          alignItems: 'center',
+          gap: '12px',
+          marginBottom: '8px'
         }}>
-          <button
-            onClick={() => openDashboard(school.id)}
-            style={{
-              flex: '1',
-              background: 'white',
-              border: '1px solid #ddd',
-              borderRadius: '3px',
-              color: '#555',
-              fontSize: '10px',
-              fontWeight: '400',
-              cursor: 'pointer',
-              padding: '4px 6px',
-              textAlign: 'center'
-            }}
-            title="Open school dashboard in new tab"
-          >
-            Dashboard
-          </button>
+          
+          {/* Data in single horizontal row */}
+          <div style={{
+            display: 'flex',
+            gap: '16px',
+            fontSize: '11px',
+            fontWeight: '300'
+          }}>
+            <div>
+              <span style={{ color: '#999', fontSize: '10px' }}>Region </span>
+              <span style={{ color: '#333', fontWeight: '300' }}>{school.region.toUpperCase()}</span>
+            </div>
+            
+            <div>
+              <span style={{ color: '#999', fontSize: '10px' }}>Start </span>
+              <span style={{ color: '#333', fontWeight: '300' }}>{school.startMonth.toUpperCase()}</span>
+            </div>
+            
+            <div>
+              <span style={{ color: '#999', fontSize: '10px' }}>Ready </span>
+              <span style={{ color: '#333', fontWeight: '300' }}>{school.studentCounts?.ready || 0}</span>
+            </div>
+          </div>
 
-          <button
-            onClick={() => copyDashboardUrl(school.id, isSchool1)}
-            style={{
-              flex: '1',
-              background: 'white',
-              border: '1px solid #ddd',
-              borderRadius: '3px',
-              color: '#555',
-              fontSize: '10px',
-              fontWeight: '400',
-              cursor: 'pointer',
-              padding: '4px 6px',
-              textAlign: 'center'
-            }}
-            title="Copy school dashboard URL to clipboard"
-          >
-            {copyButtonText === 'Copy URL' ? 'Copy' : 'Copied'}
-          </button>
-
-          {showPenPalListButtons && onViewPenPals && (
+          {/* Buttons aligned to the right */}
+          <div style={{
+            display: 'flex',
+            gap: '4px',
+            marginLeft: 'auto'
+          }}>
             <button
-              onClick={() => onViewPenPals(school.id)}
+              onClick={() => openDashboard(school.id)}
               style={{
-                flex: '1',
                 background: 'white',
                 border: '1px solid #ddd',
                 borderRadius: '3px',
@@ -226,14 +193,56 @@ export default function SchoolPairDisplay({
                 fontSize: '10px',
                 fontWeight: '400',
                 cursor: 'pointer',
-                padding: '4px 6px',
-                textAlign: 'center'
+                padding: '4px 8px',
+                textAlign: 'center',
+                minWidth: '60px'
               }}
-              title="View pen pal list for this school"
+              title="Open school dashboard in new tab"
             >
-              Pen Pals
+              Dashboard
             </button>
-          )}
+
+            <button
+              onClick={() => copyDashboardUrl(school.id, isSchool1)}
+              style={{
+                background: 'white',
+                border: '1px solid #ddd',
+                borderRadius: '3px',
+                color: '#555',
+                fontSize: '10px',
+                fontWeight: '400',
+                cursor: 'pointer',
+                padding: '4px 8px',
+                textAlign: 'center',
+                minWidth: '40px'
+              }}
+              title="Copy school dashboard URL to clipboard"
+            >
+              {copyButtonText === 'Copy URL' ? 'Copy' : 'Copied'}
+            </button>
+
+            {showPenPalListButtons && onViewPenPals && (
+              <button
+                onClick={() => onViewPenPals(school.id)}
+                style={{
+                  background: 'white',
+                  border: '1px solid #ddd',
+                  borderRadius: '3px',
+                  color: '#555',
+                  fontSize: '10px',
+                  fontWeight: '400',
+                  cursor: 'pointer',
+                  padding: '4px 8px',
+                  textAlign: 'center',
+                  minWidth: '55px'
+                }}
+                title="View pen pal list for this school"
+              >
+                Pen Pals
+              </button>
+            )}
+          </div>
+          
         </div>
 
         {/* Special Considerations - if present */}
