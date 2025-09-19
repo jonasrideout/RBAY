@@ -34,48 +34,114 @@ interface StudentMetricsGridProps {
 
 export default function StudentMetricsGrid({ schoolData, totalStudents, studentsWithInterests, readOnly = false }: StudentMetricsGridProps) {
   const estimatedClassSize = schoolData?.expectedClassSize || 0;
-
+  
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem', marginBottom: '3rem' }}>
-      <div className="card text-center" style={{ background: '#f8f9fa' }}>
-        <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#4a90e2', marginBottom: '0.5rem' }}>
+    <div className="grid grid-4" style={{ marginBottom: '3rem' }}>
+      
+      <div className="card text-center">
+        <div style={{ 
+          fontSize: '2.5rem', 
+          fontWeight: '300', 
+          color: '#333', 
+          marginBottom: '0.5rem' 
+        }}>
           {estimatedClassSize}
         </div>
-        <div style={{ color: '#6c757d', fontWeight: '600' }}>Estimated Class Size</div>
-        <div style={{ fontSize: '0.9rem', color: '#6c757d', marginTop: '0.25rem' }}>
+        <div style={{ 
+          color: '#555', 
+          fontWeight: '400',
+          fontSize: '14px',
+          marginBottom: '0.25rem'
+        }}>
+          Estimated Class Size
+        </div>
+        <div style={{ 
+          fontSize: '12px', 
+          color: '#777',
+          fontWeight: '300'
+        }}>
           Expected in class
         </div>
       </div>
 
-      <div className="card text-center" style={{ background: '#f8f9fa' }}>
-        <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#28a745', marginBottom: '0.5rem' }}>
+      <div className="card text-center">
+        <div style={{ 
+          fontSize: '2.5rem', 
+          fontWeight: '300', 
+          color: '#333', 
+          marginBottom: '0.5rem' 
+        }}>
           {totalStudents}
         </div>
-        <div style={{ color: '#6c757d', fontWeight: '600' }}>Students Registered</div>
-        <div style={{ fontSize: '0.9rem', color: '#6c757d', marginTop: '0.25rem' }}>
+        <div style={{ 
+          color: '#555', 
+          fontWeight: '400',
+          fontSize: '14px',
+          marginBottom: '0.25rem'
+        }}>
+          Students Registered
+        </div>
+        <div style={{ 
+          fontSize: '12px', 
+          color: '#777',
+          fontWeight: '300'
+        }}>
           Actually signed up
         </div>
       </div>
 
-      <div className="card text-center" style={{ background: '#f8f9fa' }}>
-        <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#17a2b8', marginBottom: '0.5rem' }}>
+      <div className="card text-center">
+        <div style={{ 
+          fontSize: '2.5rem', 
+          fontWeight: '300', 
+          color: '#333', 
+          marginBottom: '0.5rem' 
+        }}>
           {studentsWithInterests.length}
         </div>
-        <div style={{ color: '#6c757d', fontWeight: '600' }}>Students Ready to Match</div>
-        <div style={{ fontSize: '0.9rem', color: '#6c757d', marginTop: '0.25rem' }}>
+        <div style={{ 
+          color: '#555', 
+          fontWeight: '400',
+          fontSize: '14px',
+          marginBottom: '0.25rem'
+        }}>
+          Students Ready to Match
+        </div>
+        <div style={{ 
+          fontSize: '12px', 
+          color: '#777',
+          fontWeight: '300'
+        }}>
           Have complete profiles
         </div>
       </div>
 
-      <div className="card text-center" style={{ background: '#f8f9fa' }}>
-        <div style={{ fontSize: '1.8rem', fontWeight: 'bold', color: '#fd7e14', marginBottom: '0.5rem' }}>
+      <div className="card text-center">
+        <div style={{ 
+          fontSize: '1.8rem', 
+          fontWeight: '300', 
+          color: '#333', 
+          marginBottom: '0.5rem' 
+        }}>
           {schoolData?.startMonth || 'Not Set'}
         </div>
-        <div style={{ color: '#6c757d', fontWeight: '600' }}>Start Date</div>
-        <div style={{ fontSize: '0.9rem', color: '#6c757d', marginTop: '0.25rem' }}>
+        <div style={{ 
+          color: '#555', 
+          fontWeight: '400',
+          fontSize: '14px',
+          marginBottom: '0.25rem'
+        }}>
+          Start Date
+        </div>
+        <div style={{ 
+          fontSize: '12px', 
+          color: '#777',
+          fontWeight: '300'
+        }}>
           Requested timeline
         </div>
       </div>
+
     </div>
   );
 }
