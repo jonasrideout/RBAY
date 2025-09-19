@@ -177,10 +177,11 @@ export default function SchoolPairDisplay({
             </div>
           </div>
 
-          {/* Buttons aligned to the right */}
+          {/* Buttons stacked vertically and aligned to the right */}
           <div style={{
             display: 'flex',
-            gap: '4px',
+            flexDirection: 'column',
+            gap: '3px',
             marginLeft: 'auto'
           }}>
             <button
@@ -190,16 +191,16 @@ export default function SchoolPairDisplay({
                 border: '1px solid #ddd',
                 borderRadius: '3px',
                 color: '#555',
-                fontSize: '10px',
+                fontSize: '11px',
                 fontWeight: '400',
                 cursor: 'pointer',
                 padding: '4px 8px',
                 textAlign: 'center',
-                minWidth: '60px'
+                minWidth: '90px'
               }}
               title="Open school dashboard in new tab"
             >
-              Dashboard
+              Open Dashboard
             </button>
 
             <button
@@ -209,16 +210,16 @@ export default function SchoolPairDisplay({
                 border: '1px solid #ddd',
                 borderRadius: '3px',
                 color: '#555',
-                fontSize: '10px',
+                fontSize: '11px',
                 fontWeight: '400',
                 cursor: 'pointer',
                 padding: '4px 8px',
                 textAlign: 'center',
-                minWidth: '40px'
+                minWidth: '90px'
               }}
               title="Copy school dashboard URL to clipboard"
             >
-              {copyButtonText === 'Copy URL' ? 'Copy' : 'Copied'}
+              {copyButtonText === 'Copy URL' ? 'Copy URL' : 'Copied'}
             </button>
 
             {showPenPalListButtons && onViewPenPals && (
@@ -229,16 +230,16 @@ export default function SchoolPairDisplay({
                   border: '1px solid #ddd',
                   borderRadius: '3px',
                   color: '#555',
-                  fontSize: '10px',
+                  fontSize: '11px',
                   fontWeight: '400',
                   cursor: 'pointer',
                   padding: '4px 8px',
                   textAlign: 'center',
-                  minWidth: '55px'
+                  minWidth: '90px'
                 }}
                 title="View pen pal list for this school"
               >
-                Pen Pals
+                View Pen Pals
               </button>
             )}
           </div>
