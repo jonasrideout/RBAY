@@ -1,3 +1,4 @@
+// /app/dashboard/components/StudentCard.tsx
 "use client";
 
 import { useState } from 'react';
@@ -44,7 +45,7 @@ interface StudentCardProps {
   onCancelEdit?: () => void;
   onInterestChange?: (interest: string, checked: boolean) => void;
   onOtherInterestsChange?: (value: string) => void;
-  readOnly?: boolean; // Added readOnly prop
+  readOnly?: boolean;
 }
 
 export default function StudentCard({
@@ -63,7 +64,7 @@ export default function StudentCard({
   onCancelEdit,
   onInterestChange,
   onOtherInterestsChange,
-  readOnly = false // Added readOnly with default false
+  readOnly = false
 }: StudentCardProps) {
 
   const getInterestLabel = (value: string) => {
@@ -71,36 +72,77 @@ export default function StudentCard({
     return option ? option.label : value;
   };
 
-  // Missing info card in editing mode - show read-only form in admin mode
+  // Missing info card in editing mode
   if (type === 'missing-info' && isEditing) {
     return (
-      <div className="card" style={{ background: '#fff5f5', border: '2px solid #fed7d7' }}>
+      <div className="card">
         <div style={{ marginBottom: '1rem' }}>
-          <h4 style={{ color: '#c53030', marginBottom: '0.25rem' }}>{student.firstName} {student.lastInitial}.</h4>
-          <span style={{ color: '#6c757d', fontSize: '0.9rem' }}>
+          <h4 style={{ 
+            color: '#333', 
+            marginBottom: '0.25rem',
+            fontWeight: '400',
+            fontSize: '1.1rem'
+          }}>
+            {student.firstName} {student.lastInitial}.
+          </h4>
+          <span style={{ 
+            color: '#777', 
+            fontSize: '14px',
+            fontWeight: '300'
+          }}>
             Grade {student.grade} • {readOnly ? 'Viewing interests' : 'Adding interests'}
           </span>
         </div>
         
-        <div style={{ background: 'white', padding: '1.5rem', borderRadius: '6px', border: '1px solid #fed7d7' }}>
-          <h5 style={{ marginBottom: '1rem', color: '#495057' }}>
+        <div style={{ 
+          background: '#fafafa', 
+          padding: '1.5rem', 
+          borderRadius: '6px', 
+          border: '1px solid #e0e0e0' 
+        }}>
+          <h5 style={{ 
+            marginBottom: '1rem', 
+            color: '#333',
+            fontWeight: '400',
+            fontSize: '1rem'
+          }}>
             {readOnly ? `${student.firstName}'s Interests:` : `Select ${student.firstName}'s Interests:`}
           </h5>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.5rem', marginBottom: '1rem' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', 
+            gap: '0.5rem', 
+            marginBottom: '1rem' 
+          }}>
             {INTEREST_OPTIONS.map(interest => (
-              <label key={interest.value} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <label key={interest.value} style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.5rem',
+                fontSize: '14px',
+                fontWeight: '300',
+                color: '#555'
+              }}>
                 <input 
                   type="checkbox" 
                   checked={tempInterests.includes(interest.value)}
                   onChange={(e) => onInterestChange?.(interest.value, e.target.checked)}
-                  disabled={readOnly} // Disable checkboxes in read-only mode
+                  disabled={readOnly}
                 />
                 {interest.label}
               </label>
             ))}
           </div>
           <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Other Interests:</label>
+            <label style={{ 
+              display: 'block', 
+              marginBottom: '0.5rem', 
+              fontWeight: '400',
+              color: '#333',
+              fontSize: '14px'
+            }}>
+              Other Interests:
+            </label>
             <textarea 
               className="form-textarea" 
               placeholder={readOnly ? "No other interests listed" : "Any other hobbies or interests..."}
@@ -108,23 +150,20 @@ export default function StudentCard({
               value={tempOtherInterests}
               onChange={(e) => onOtherInterestsChange?.(e.target.value)}
               style={{ width: '100%' }}
-              disabled={readOnly} // Disable textarea in read-only mode
+              disabled={readOnly}
             />
           </div>
-          {/* Hide save/cancel buttons in read-only mode */}
           {!readOnly && (
-            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
               <button 
                 className="btn btn-secondary"
                 onClick={onCancelEdit}
-                style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
               >
                 Cancel
               </button>
               <button 
-                className="btn btn-primary" 
+                className="btn" 
                 onClick={onSaveInterests}
-                style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
               >
                 Save Interests
               </button>
@@ -138,43 +177,44 @@ export default function StudentCard({
   // Missing info card - compact default state
   if (type === 'missing-info') {
     return (
-      <div 
-        className="card" 
-        style={{ 
-          background: '#fff5f5', 
-          border: '2px solid #fed7d7', 
-          padding: '0.75rem',
-          margin: '0'
-        }}
-      >
+      <div className="card" style={{ padding: '12px', margin: '0' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h4 style={{ color: '#c53030', marginBottom: '0', fontSize: '1rem' }}>{student.firstName} {student.lastInitial}.</h4>
+            <h4 style={{ 
+              color: '#333', 
+              marginBottom: '0', 
+              fontSize: '1rem',
+              fontWeight: '400'
+            }}>
+              {student.firstName} {student.lastInitial}.
+            </h4>
+            <span style={{ 
+              color: '#777', 
+              fontSize: '12px',
+              fontWeight: '300'
+            }}>
+              Grade {student.grade}
+            </span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            {/* Hide Add Interests button in read-only mode */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {!readOnly && (
               <button 
-                className="btn btn-primary" 
+                className="btn" 
                 onClick={onEditClick}
-                style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
                 disabled={readyForMatching}
+                style={{ fontSize: '12px', padding: '6px 12px' }}
               >
                 {readyForMatching ? 'Locked' : 'Add Interests'}
               </button>
             )}
-            {/* Hide remove button in read-only mode */}
             {!readOnly && showRemoveButton && (
               <button
                 onClick={onRemoveClick}
-                style={{
-                  background: 'transparent',
-                  color: '#dc3545',
-                  border: '1px solid #dc3545',
-                  borderRadius: '4px',
-                  padding: '0.5rem',
-                  cursor: 'pointer',
-                  fontSize: '0.9rem'
+                className="btn btn-danger"
+                style={{ 
+                  fontSize: '12px',
+                  padding: '6px 8px',
+                  minWidth: 'auto'
                 }}
                 title={`Remove ${student.firstName} ${student.lastInitial}.`}
               >
@@ -192,33 +232,54 @@ export default function StudentCard({
     return (
       <div 
         className="card" 
-        style={{ background: '#f0f8ff', border: '2px solid #bee5eb', cursor: 'pointer', margin: '0' }}
+        style={{ cursor: 'pointer', margin: '0' }}
         onClick={onExpandClick}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'flex-start', 
+          marginBottom: '1rem' 
+        }}>
           <div>
-            <h4 style={{ color: '#0c5460', marginBottom: '0.25rem' }}>{student.firstName} {student.lastInitial}.</h4>
-            <span style={{ color: '#6c757d', fontSize: '0.9rem' }}>Grade {student.grade}</span>
+            <h4 style={{ 
+              color: '#333', 
+              marginBottom: '0.25rem',
+              fontWeight: '400',
+              fontSize: '1.1rem'
+            }}>
+              {student.firstName} {student.lastInitial}.
+            </h4>
+            <span style={{ 
+              color: '#777', 
+              fontSize: '14px',
+              fontWeight: '300'
+            }}>
+              Grade {student.grade}
+            </span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span className="status-ready">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{
+              background: '#f0f0f0',
+              color: '#333',
+              padding: '4px 8px',
+              borderRadius: '4px',
+              fontSize: '12px',
+              fontWeight: '400'
+            }}>
               ✅ Ready
             </span>
-            {/* Hide remove button in read-only mode */}
             {!readOnly && showRemoveButton && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onRemoveClick?.();
                 }}
-                style={{
-                  background: 'transparent',
-                  color: '#dc3545',
-                  border: '1px solid #dc3545',
-                  borderRadius: '4px',
-                  padding: '0.25rem 0.5rem',
-                  cursor: 'pointer',
-                  fontSize: '0.8rem'
+                className="btn btn-danger"
+                style={{ 
+                  fontSize: '12px',
+                  padding: '4px 6px',
+                  minWidth: 'auto'
                 }}
                 title={`Remove ${student.firstName} ${student.lastInitial}.`}
               >
@@ -229,14 +290,43 @@ export default function StudentCard({
         </div>
         
         <div style={{ marginBottom: '0' }}>
-          <strong style={{ color: '#495057' }}>Interests:</strong>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem' }}>
+          <strong style={{ 
+            color: '#333',
+            fontSize: '14px',
+            fontWeight: '400'
+          }}>
+            Interests:
+          </strong>
+          <div style={{ 
+            display: 'flex', 
+            flexWrap: 'wrap', 
+            gap: '6px', 
+            marginTop: '8px' 
+          }}>
             {student.interests.map(interest => (
-              <span key={interest} className="tag">{getInterestLabel(interest)}</span>
+              <span 
+                key={interest} 
+                style={{
+                  background: '#f0f0f0',
+                  color: '#555',
+                  padding: '4px 8px',
+                  borderRadius: '4px',
+                  fontSize: '12px',
+                  fontWeight: '300'
+                }}
+              >
+                {getInterestLabel(interest)}
+              </span>
             ))}
           </div>
           {student.otherInterests && (
-            <p style={{ color: '#6c757d', fontSize: '0.9rem', marginTop: '0.5rem', marginBottom: '0' }}>
+            <p style={{ 
+              color: '#777', 
+              fontSize: '14px', 
+              marginTop: '8px', 
+              marginBottom: '0',
+              fontWeight: '300'
+            }}>
               <em>Other:</em> {student.otherInterests}
             </p>
           )}
@@ -251,37 +341,52 @@ export default function StudentCard({
       <div 
         className="card" 
         style={{ 
-          background: '#f0f8ff', 
-          border: '2px solid #bee5eb', 
           cursor: 'pointer',
-          padding: '0.75rem',
+          padding: '12px',
           margin: '0'
         }}
         onClick={onExpandClick}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h4 style={{ color: '#0c5460', marginBottom: '0', fontSize: '1rem' }}>{student.firstName} {student.lastInitial}.</h4>
+            <h4 style={{ 
+              color: '#333', 
+              marginBottom: '0', 
+              fontSize: '1rem',
+              fontWeight: '400'
+            }}>
+              {student.firstName} {student.lastInitial}.
+            </h4>
+            <span style={{ 
+              color: '#777', 
+              fontSize: '12px',
+              fontWeight: '300'
+            }}>
+              Grade {student.grade}
+            </span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span className="status-ready">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{
+              background: '#f0f0f0',
+              color: '#333',
+              padding: '4px 8px',
+              borderRadius: '4px',
+              fontSize: '12px',
+              fontWeight: '400'
+            }}>
               ✅ Ready
             </span>
-            {/* Hide remove button in read-only mode */}
             {!readOnly && showRemoveButton && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onRemoveClick?.();
                 }}
-                style={{
-                  background: 'transparent',
-                  color: '#dc3545',
-                  border: '1px solid #dc3545',
-                  borderRadius: '4px',
-                  padding: '0.25rem 0.5rem',
-                  cursor: 'pointer',
-                  fontSize: '0.8rem'
+                className="btn btn-danger"
+                style={{ 
+                  fontSize: '12px',
+                  padding: '4px 6px',
+                  minWidth: 'auto'
                 }}
                 title={`Remove ${student.firstName} ${student.lastInitial}.`}
               >
