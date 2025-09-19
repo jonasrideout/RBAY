@@ -22,12 +22,8 @@ export default function Header({ showLogin = false, session, onLogout }: HeaderP
               <>
                 <button 
                   onClick={onLogout}
-                  className="btn btn-primary"
-                  style={{ 
-                    background: '#dc3545',
-                    borderColor: '#dc3545'
-                  }}
-                >
+                  className="btn btn-danger"
+                  >
                   Logout
                 </button>
                 <span style={{ fontSize: '0.85rem', color: '#6c757d' }}>
