@@ -125,13 +125,12 @@ export default function SchoolCard({
           <button
             onClick={copyEmailAddress}
             style={{
-              background: 'white',
-              border: '1px solid #ccc',
-              borderRadius: '3px',
+              background: 'transparent',
+              border: 'none',
               cursor: 'pointer',
-              fontSize: '12px',
+              fontSize: '16px',
               color: '#666',
-              padding: '3px 6px',
+              padding: '0',
               fontWeight: '300'
             }}
             title={`Copy email: ${school.teacherEmail}`}
