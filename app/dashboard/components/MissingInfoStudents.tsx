@@ -1,4 +1,6 @@
+// /app/dashboard/components/MissingInfoStudents.tsx
 "use client";
+
 import StudentCard from './StudentCard';
 
 interface Student {
@@ -26,7 +28,7 @@ interface MissingInfoStudentsProps {
   onCancelEdit: () => void;
   onInterestChange: (interest: string, checked: boolean) => void;
   onOtherInterestsChange: (value: string) => void;
-  readOnly?: boolean; // Added readOnly prop
+  readOnly?: boolean;
 }
 
 export default function MissingInfoStudents({
@@ -43,7 +45,7 @@ export default function MissingInfoStudents({
   onCancelEdit,
   onInterestChange,
   onOtherInterestsChange,
-  readOnly = false // Added readOnly with default false
+  readOnly = false
 }: MissingInfoStudentsProps) {
   // Only show if there are students needing info
   if (studentsNeedingInfo.length === 0) {
@@ -52,27 +54,43 @@ export default function MissingInfoStudents({
 
   return (
     <div className="card" style={{ marginBottom: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <h3>Students Missing Information</h3>
-        {/* Conditionally hide Remove Student button when readOnly */}
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        marginBottom: '1.5rem' 
+      }}>
+        <h3 style={{
+          margin: '0',
+          fontSize: '1.2rem',
+          fontWeight: '400',
+          color: '#333'
+        }}>
+          Students Missing Information
+        </h3>
+        
+        {/* Clean button styling */}
         {!readOnly && (
           <button
-            className="btn"
+            className={missingInfoRemovalMode ? "btn btn-secondary" : "btn"}
             onClick={onToggleRemovalMode}
-            style={{ 
-              fontSize: '0.9rem',
-              backgroundColor: missingInfoRemovalMode ? 'transparent' : '#6c757d',
-              color: missingInfoRemovalMode ? '#6c757d' : 'white',
-              border: missingInfoRemovalMode ? '1px solid #6c757d' : 'none'
-            }}
             disabled={readyForMatching}
             title={readyForMatching ? "Cannot remove students after matching requested" : undefined}
+            style={{
+              fontSize: '14px',
+              opacity: readyForMatching ? 0.6 : 1
+            }}
           >
             {missingInfoRemovalMode ? 'Finished' : 'Remove Student'}
           </button>
         )}
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+
+      <div style={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        gap: '12px' 
+      }}>
         {studentsNeedingInfo.map(student => (
           <StudentCard
             key={student.id}
@@ -89,7 +107,7 @@ export default function MissingInfoStudents({
             onCancelEdit={onCancelEdit}
             onInterestChange={onInterestChange}
             onOtherInterestsChange={onOtherInterestsChange}
-            readOnly={readOnly} // Pass readOnly to StudentCard if it supports it
+            readOnly={readOnly}
           />
         ))}
       </div>
