@@ -128,7 +128,7 @@ export default function SchoolCard({
               background: 'transparent',
               border: 'none',
               cursor: 'pointer',
-              fontSize: '16px',
+              fontSize: '22px',
               color: '#666',
               padding: '0',
               fontWeight: '300'
