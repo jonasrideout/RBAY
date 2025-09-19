@@ -218,6 +218,30 @@ export default function SchoolPairDisplay({
                 View Pen Pals
               </button>
             )}
+
+            {pair.hasPenPals && (
+              <button
+                onClick={() => {
+                  const downloadUrl = `/api/admin/pairings?schoolId=${school.id}`;
+                  window.open(downloadUrl, '_blank');
+                }}
+                style={{
+                  background: 'white',
+                  border: '1px solid #28a745',
+                  borderRadius: '3px',
+                  color: '#28a745',
+                  fontSize: '11px',
+                  fontWeight: '400',
+                  cursor: 'pointer',
+                  padding: '4px 8px',
+                  textAlign: 'center',
+                  minWidth: '90px'
+                }}
+                title="Download pen pal assignments for this school"
+              >
+                Download List
+              </button>
+            )}
           </div>
         </div>
 
