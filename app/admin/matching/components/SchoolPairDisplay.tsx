@@ -107,82 +107,58 @@ export default function SchoolPairDisplay({
         fontWeight: '300'
       }}>
         
-        {/* Compact Header: School Name + Teacher */}
-        <div style={{ marginBottom: '8px' }}>
-          <h4 style={{
-            margin: '0 0 2px 0',
-            fontSize: '16px',
-            fontWeight: '300',
-            color: '#111',
-            lineHeight: '1.2'
-          }}>
-            {school.schoolName}
-          </h4>
-          
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            fontSize: '12px',
-            fontWeight: '300',
-            color: '#555'
-          }}>
-            <span>{school.teacherName}</span>
-            <button
-              onClick={() => copyEmailAddress(school.teacherEmail, isSchool1)}
-              className="btn-icon"
-              style={{
-                fontSize: '16px',
-                color: '#666',
-                fontWeight: '300'
-              }}
-              title={`Copy email: ${school.teacherEmail}`}
-            >
-              {emailCopyText}
-            </button>
-            <span style={{ color: '#888', fontSize: '11px' }}>
-              • Grades {school.gradeLevel}
-            </span>
-          </div>
-        </div>
-
-        {/* Horizontal Data + Buttons Layout */}
+        {/* Header with School Name + Buttons on same row */}
         <div style={{
           display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
           marginBottom: '8px'
         }}>
           
-          {/* Data in single horizontal row */}
-          <div style={{
-            display: 'flex',
-            gap: '16px',
-            fontSize: '11px',
-            fontWeight: '300'
-          }}>
-            <div>
-              <span style={{ color: '#999', fontSize: '10px' }}>Region </span>
-              <span style={{ color: '#333', fontWeight: '300' }}>{school.region.toUpperCase()}</span>
-            </div>
+          {/* Left side: School info */}
+          <div style={{ flex: '1' }}>
+            <h4 style={{
+              margin: '0 0 2px 0',
+              fontSize: '16px',
+              fontWeight: '300',
+              color: '#111',
+              lineHeight: '1.2'
+            }}>
+              {school.schoolName}
+            </h4>
             
-            <div>
-              <span style={{ color: '#999', fontSize: '10px' }}>Start </span>
-              <span style={{ color: '#333', fontWeight: '300' }}>{school.startMonth.toUpperCase()}</span>
-            </div>
-            
-            <div>
-              <span style={{ color: '#999', fontSize: '10px' }}>Ready </span>
-              <span style={{ color: '#333', fontWeight: '300' }}>{school.studentCounts?.ready || 0}</span>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontSize: '12px',
+              fontWeight: '300',
+              color: '#555'
+            }}>
+              <span>{school.teacherName}</span>
+              <button
+                onClick={() => copyEmailAddress(school.teacherEmail, isSchool1)}
+                className="btn-icon"
+                style={{
+                  fontSize: '16px',
+                  color: '#666',
+                  fontWeight: '300'
+                }}
+                title={`Copy email: ${school.teacherEmail}`}
+              >
+                {emailCopyText}
+              </button>
+              <span style={{ color: '#888', fontSize: '11px' }}>
+                • Grades {school.gradeLevel}
+              </span>
             </div>
           </div>
 
-          {/* Buttons stacked vertically and aligned to the right */}
+          {/* Right side: Buttons stacked vertically */}
           <div style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: '3px',
-            marginLeft: 'auto'
+            gap: '3px'
           }}>
             <button
               onClick={() => openDashboard(school.id)}
@@ -243,7 +219,30 @@ export default function SchoolPairDisplay({
               </button>
             )}
           </div>
+        </div>
+
+        {/* Data in single horizontal row */}
+        <div style={{
+          display: 'flex',
+          gap: '16px',
+          fontSize: '11px',
+          fontWeight: '300',
+          marginBottom: '8px'
+        }}>
+          <div>
+            <span style={{ color: '#999', fontSize: '10px' }}>Region </span>
+            <span style={{ color: '#333', fontWeight: '300' }}>{school.region.toUpperCase()}</span>
+          </div>
           
+          <div>
+            <span style={{ color: '#999', fontSize: '10px' }}>Start </span>
+            <span style={{ color: '#333', fontWeight: '300' }}>{school.startMonth.toUpperCase()}</span>
+          </div>
+          
+          <div>
+            <span style={{ color: '#999', fontSize: '10px' }}>Ready </span>
+            <span style={{ color: '#333', fontWeight: '300' }}>{school.studentCounts?.ready || 0}</span>
+          </div>
         </div>
 
         {/* Special Considerations - if present */}
