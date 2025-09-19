@@ -1,27 +1,51 @@
 // app/admin/matching/components/SchoolPairDisplay.tsx
 "use client";
-import { School } from '../types';
+
+import { useState } from 'react';
+
+interface School {
+  id: string;
+  schoolName: string;
+  teacherName: string;
+  teacherEmail: string;
+  gradeLevel: string;
+  region: string;
+  startMonth: string;
+  status: string;
+  specialConsiderations?: string;
+  studentCounts?: {
+    expected: number;
+    registered: number;
+    ready: number;
+  };
+}
 
 interface SchoolPair {
   school1: School;
   school2: School;
-  hasStudentPairings: boolean;
-  bothSchoolsReady: boolean;
+  hasPenPals?: boolean;
 }
 
 interface SchoolPairDisplayProps {
   pair: SchoolPair;
   showAssignButton?: boolean;
-  onAssignPenPals: (school1Id: string, school2Id: string) => void;
+  showPenPalListButtons?: boolean;
+  onAssignPenPals?: (school1Id: string, school2Id: string) => void;
+  onViewPenPals?: (schoolId: string) => void;
 }
 
 export default function SchoolPairDisplay({ 
   pair, 
-  showAssignButton = false, 
-  onAssignPenPals 
+  showAssignButton = false,
+  showPenPalListButtons = false,
+  onAssignPenPals,
+  onViewPenPals
 }: SchoolPairDisplayProps) {
-  
-  // Helper function to generate dashboard URL
+  const [copyButtonText1, setCopyButtonText1] = useState('Copy URL');
+  const [copyButtonText2, setCopyButtonText2] = useState('Copy URL');
+  const [emailCopyText1, setEmailCopyText1] = useState('✉');
+  const [emailCopyText2, setEmailCopyText2] = useState('✉');
+
   const getDashboardUrl = (schoolId: string) => {
     const adminDashboardPath = `/admin/school-dashboard?schoolId=${schoolId}`;
     if (typeof window !== 'undefined') {
@@ -36,295 +60,216 @@ export default function SchoolPairDisplay({
     window.open(url, '_blank');
   };
 
-  const copyDashboardUrl = async (schoolId: string) => {
+  const copyDashboardUrl = async (schoolId: string, isSchool1: boolean) => {
     const url = getDashboardUrl(schoolId);
     try {
       await navigator.clipboard.writeText(url);
-      // You could add a temporary state for copy feedback if needed
+      if (isSchool1) {
+        setCopyButtonText1('Copied');
+        setTimeout(() => setCopyButtonText1('Copy URL'), 2000);
+      } else {
+        setCopyButtonText2('Copied');
+        setTimeout(() => setCopyButtonText2('Copy URL'), 2000);
+      }
     } catch (err) {
       console.error('Failed to copy URL:', err);
       prompt('Copy this URL:', url);
     }
   };
 
-  // Helper function to get contextual student count display
-  const getStudentCountDisplay = (school: School) => {
-    if (school.status === 'COLLECTING') {
-      return `${school.studentCounts?.ready || 0}/${school.studentCounts?.registered || 0} ready`;
-    } else {
-      return `${school.studentCounts?.ready || 0} ready`;
+  const copyEmailAddress = async (email: string, isSchool1: boolean) => {
+    try {
+      await navigator.clipboard.writeText(email);
+      if (isSchool1) {
+        setEmailCopyText1('✓');
+        setTimeout(() => setEmailCopyText1('✉'), 1500);
+      } else {
+        setEmailCopyText2('✓');
+        setTimeout(() => setEmailCopyText2('✉'), 1500);
+      }
+    } catch (err) {
+      console.error('Failed to copy email:', err);
+      prompt('Copy this email:', email);
     }
   };
 
-  return (
-    <div style={{
-      background: '#fff',
-      border: '1px solid #e0e6ed',
-      borderRadius: '12px',
-      padding: '1.5rem',
-      marginBottom: '1rem',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
-    }}>
+  const renderSchoolCard = (school: School, isSchool1: boolean) => {
+    const copyButtonText = isSchool1 ? copyButtonText1 : copyButtonText2;
+    const emailCopyText = isSchool1 ? emailCopyText1 : emailCopyText2;
+
+    return (
+      <div className="card-school grid-school-card">
+        
+        {/* Column 1: School Information */}
+        <div className="school-info-column">
+          <h3 className="text-school-name">
+            {school.schoolName}
+          </h3>
+          
+          <div className="teacher-info">
+            <span>{school.teacherName}</span>
+            <button
+              onClick={() => copyEmailAddress(school.teacherEmail, isSchool1)}
+              className="btn-icon btn-icon-email"
+              title={`Copy email: ${school.teacherEmail}`}
+            >
+              {emailCopyText}
+            </button>
+          </div>
+          
+          <div className="text-meta-info">
+            Grades {school.gradeLevel}
+          </div>
+
+          {school.specialConsiderations && (
+            <div className="special-considerations">
+              {school.specialConsiderations}
+            </div>
+          )}
+        </div>
+
+        {/* Column 2: Empty spacer */}
+        <div></div>
+
+        {/* Column 3: Data Grid */}
+        <div className="grid-data-3x2">
+          <div className="data-cell">
+            <span className="text-data-label">Region</span>
+            <span className="text-data-value-caps">{school.region}</span>
+          </div>
+          
+          <div className="data-cell">
+            <span className="text-data-label">Start Date</span>
+            <span className="text-data-value-caps">{school.startMonth}</span>
+          </div>
+          
+          <div className="data-cell">
+            <span className="text-data-label">Status</span>
+            <span className="text-data-value">{school.status}</span>
+          </div>
+          
+          <div className="data-cell">
+            <span className="text-data-label">Expected</span>
+            <span className="text-data-value">{school.studentCounts?.expected || 0}</span>
+          </div>
+          
+          <div className="data-cell">
+            <span className="text-data-label">Registered</span>
+            <span className="text-data-value">{school.studentCounts?.registered || 0}</span>
+          </div>
+          
+          <div className="data-cell">
+            <span className="text-data-label">Ready</span>
+            <span className="text-data-value">{school.studentCounts?.ready || 0}</span>
+          </div>
+        </div>
+
+        {/* Column 4: Spacer (takes remaining space) */}
+        <div></div>
+
+        {/* Column 5: Action Buttons */}
+        <div className="action-buttons-column">
+          <button
+            onClick={() => openDashboard(school.id)}
+            className="btn-school-action"
+            title="Open school dashboard in new tab"
+          >
+            Open Dashboard
+          </button>
+
+          <button
+            onClick={() => copyDashboardUrl(school.id, isSchool1)}
+            className="btn-school-action"
+            title="Copy school dashboard URL to clipboard"
+          >
+            {copyButtonText}
+          </button>
+
+          {showPenPalListButtons && onViewPenPals && (
+            <button
+              onClick={() => onViewPenPals(school.id)}
+              className="btn-school-action"
+              title="View pen pal list for this school"
+            >
+              View Pen Pal List
+            </button>
+          )}
+        </div>
+
+        {/* Column 6: Empty (no pin icon for paired schools) */}
+        <div></div>
+      </div>
+    );
+  };
+
+  const renderLinkIcon = () => (
+    <div className="flex items-center justify-center">
       <div style={{
-        display: 'grid',
-        gridTemplateColumns: showAssignButton ? '1fr 1fr 220px' : '1fr 1fr',
-        gap: '1.5rem',
-        alignItems: 'stretch'
+        background: '#f8f9fa',
+        border: '1px solid #dee2e6',
+        borderRadius: '50%',
+        width: '32px',
+        height: '32px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#666'
       }}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+        </svg>
+      </div>
+    </div>
+  );
+
+  return (
+    <div style={{ marginBottom: '24px' }}>
+      
+      {/* School Pair Container */}
+      <div className="grid-school-pair">
+        
         {/* School 1 */}
-        <div style={{
-          padding: '1rem',
-          background: '#f8f9fa',
-          borderRadius: '8px',
-          border: '1px solid #dee2e6',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between'
-        }}>
-          <div>
-            <h4 style={{ margin: '0 0 0.5rem 0', color: '#1a365d' }}>
-              {pair.school1.schoolName}
-            </h4>
-            <div style={{ fontSize: '0.9rem', color: '#4a5568', marginBottom: '0.5rem' }}>
-              <strong>{pair.school1.teacherName}</strong>
-              <a 
-                href={`mailto:${pair.school1.teacherEmail}`}
-                style={{ marginLeft: '0.5rem', textDecoration: 'none', opacity: 0.7 }}
-                title={pair.school1.teacherEmail}
-              >
-                ✉️
-              </a>
-            </div>
-            <div style={{ fontSize: '0.85rem', color: '#718096' }}>
-              <strong>{pair.school1.region}</strong> | {getStudentCountDisplay(pair.school1)} | Starts {pair.school1.startMonth}
-            </div>
-            <div style={{ fontSize: '0.8rem', color: '#a0aec0', marginTop: '0.25rem' }}>
-              Status: <strong>{pair.school1.status}</strong>
-            </div>
-          </div>
-          
-          {/* Dashboard Links for School 1 */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginTop: '0.75rem',
-            paddingTop: '0.5rem',
-            borderTop: '1px solid #e2e8f0'
-          }}>
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
-              <button
-                onClick={() => openDashboard(pair.school1.id)}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: '#6b7280',
-                  fontSize: '0.7rem',
-                  fontWeight: '600',
-                  letterSpacing: '0.5px',
-                  cursor: 'pointer',
-                  padding: '0.35rem 0',
-                  textDecoration: 'underline',
-                  textUnderlineOffset: '2px',
-                  transition: 'color 0.2s ease'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.color = '#374151'}
-                onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
-                title="Open school dashboard in new tab"
-              >
-                OPEN DASHBOARD
-              </button>
-
-              <button
-                onClick={() => copyDashboardUrl(pair.school1.id)}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: '#6b7280',
-                  fontSize: '0.7rem',
-                  fontWeight: '600',
-                  letterSpacing: '0.5px',
-                  cursor: 'pointer',
-                  padding: '0.35rem 0',
-                  textDecoration: 'underline',
-                  textUnderlineOffset: '2px',
-                  transition: 'color 0.2s ease'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.color = '#374151'}
-                onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
-                title="Copy school dashboard URL to clipboard"
-              >
-                COPY URL
-              </button>
-            </div>
-
-            {/* Pen Pal List Button for School 1 (only show if pair has student pairings) */}
-            {pair.hasStudentPairings && (
-              <button
-                onClick={() => window.open(`/admin/pen-pal-list?schoolId=${pair.school1.id}`, '_blank')}
-                style={{
-                  color: '#2563eb',
-                  backgroundColor: 'white',
-                  border: '1px solid #2563eb',
-                  borderRadius: '4px',
-                  padding: '0.35rem 0.5rem',
-                  fontSize: '0.7rem',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  textAlign: 'center',
-                  letterSpacing: '0.5px'
-                }}
-                title="View pen pal list for this school"
-              >
-                VIEW PEN PAL LIST
-              </button>
-            )}
-          </div>
-        </div>
-
+        {renderSchoolCard(pair.school1, true)}
+        
+        {/* Link Icon */}
+        {renderLinkIcon()}
+        
         {/* School 2 */}
-        <div style={{
-          padding: '1rem',
-          background: '#f8f9fa',
-          borderRadius: '8px',
-          border: '1px solid #dee2e6',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between'
-        }}>
-          <div>
-            <h4 style={{ margin: '0 0 0.5rem 0', color: '#1a365d' }}>
-              {pair.school2.schoolName}
-            </h4>
-            <div style={{ fontSize: '0.9rem', color: '#4a5568', marginBottom: '0.5rem' }}>
-              <strong>{pair.school2.teacherName}</strong>
-              <a 
-                href={`mailto:${pair.school2.teacherEmail}`}
-                style={{ marginLeft: '0.5rem', textDecoration: 'none', opacity: 0.7 }}
-                title={pair.school2.teacherEmail}
-              >
-                ✉️
-              </a>
-            </div>
-            <div style={{ fontSize: '0.85rem', color: '#718096' }}>
-              <strong>{pair.school2.region}</strong> | {getStudentCountDisplay(pair.school2)} | Starts {pair.school2.startMonth}
-            </div>
-            <div style={{ fontSize: '0.8rem', color: '#a0aec0', marginTop: '0.25rem' }}>
-              Status: <strong>{pair.school2.status}</strong>
-            </div>
-          </div>
+        {renderSchoolCard(pair.school2, false)}
+        
+      </div>
+
+      {/* Action Buttons Row - spans full width below the pair */}
+      {(showAssignButton || pair.hasPenPals) && (
+        <div className="flex justify-center gap-md" style={{ marginTop: '16px' }}>
           
-          {/* Dashboard Links for School 2 */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginTop: '0.75rem',
-            paddingTop: '0.5rem',
-            borderTop: '1px solid #e2e8f0'
-          }}>
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
-              <button
-                onClick={() => openDashboard(pair.school2.id)}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: '#6b7280',
-                  fontSize: '0.7rem',
-                  fontWeight: '600',
-                  letterSpacing: '0.5px',
-                  cursor: 'pointer',
-                  padding: '0.35rem 0',
-                  textDecoration: 'underline',
-                  textUnderlineOffset: '2px',
-                  transition: 'color 0.2s ease'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.color = '#374151'}
-                onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
-                title="Open school dashboard in new tab"
-              >
-                OPEN DASHBOARD
-              </button>
-
-              <button
-                onClick={() => copyDashboardUrl(pair.school2.id)}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: '#6b7280',
-                  fontSize: '0.7rem',
-                  fontWeight: '600',
-                  letterSpacing: '0.5px',
-                  cursor: 'pointer',
-                  padding: '0.35rem 0',
-                  textDecoration: 'underline',
-                  textUnderlineOffset: '2px',
-                  transition: 'color 0.2s ease'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.color = '#374151'}
-                onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
-                title="Copy school dashboard URL to clipboard"
-              >
-                COPY URL
-              </button>
-            </div>
-
-            {/* Pen Pal List Button for School 2 (only show if pair has student pairings) */}
-            {pair.hasStudentPairings && (
-              <button
-                onClick={() => window.open(`/admin/pen-pal-list?schoolId=${pair.school2.id}`, '_blank')}
-                style={{
-                  color: '#2563eb',
-                  backgroundColor: 'white',
-                  border: '1px solid #2563eb',
-                  borderRadius: '4px',
-                  padding: '0.35rem 0.5rem',
-                  fontSize: '0.7rem',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  textAlign: 'center',
-                  letterSpacing: '0.5px'
-                }}
-                title="View pen pal list for this school"
-              >
-                VIEW PEN PAL LIST
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Assign Button Column (if needed) */}
-        {showAssignButton && (
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.5rem',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}>
+          {showAssignButton && onAssignPenPals && !pair.hasPenPals && (
             <button
               onClick={() => onAssignPenPals(pair.school1.id, pair.school2.id)}
-              style={{
-                backgroundColor: '#2563eb',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                padding: '0.75rem 1rem',
-                fontSize: '0.9rem',
-                fontWeight: '500',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                width: '100%',
-                textAlign: 'center'
-              }}
-              onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#1d4ed8'}
-              onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
+              className="btn btn-primary"
+              style={{ minWidth: '160px' }}
             >
               Assign Pen Pals
             </button>
-          </div>
-        )}
-      </div>
+          )}
+
+          {pair.hasPenPals && (
+            <div className="flex items-center gap-sm text-data-value" style={{ 
+              color: '#28a745', 
+              fontWeight: '500',
+              fontSize: '14px'
+            }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+              Pen Pals Assigned
+            </div>
+          )}
+          
+        </div>
+      )}
+
     </div>
   );
 }
