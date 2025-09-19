@@ -252,7 +252,7 @@ export default function SchoolPairDisplay({
           gap: '16px',
           fontSize: '11px',
           fontWeight: '300',
-          marginBottom: '8px'
+          marginBottom: '6px'
         }}>
           <div>
             <span style={{ color: '#999', fontSize: '10px' }}>Region </span>
@@ -268,13 +268,18 @@ export default function SchoolPairDisplay({
             <span style={{ color: '#999', fontSize: '10px' }}>Ready </span>
             <span style={{ color: '#333', fontWeight: '300' }}>{school.studentCounts?.ready || 0}</span>
           </div>
-          
-          <div>
-            <span style={{ color: '#999', fontSize: '10px' }}>Status </span>
-            <span style={{ color: '#333', fontWeight: '300' }}>
-              {pair.hasStudentPairings ? 'Matched + Paired' : school.status}
-            </span>
-          </div>
+        </div>
+
+        {/* Status on separate row */}
+        <div style={{
+          fontSize: '12px',
+          fontWeight: '300',
+          marginBottom: '8px'
+        }}>
+          <span style={{ color: '#999', fontSize: '11px' }}>Status </span>
+          <span style={{ color: '#333', fontWeight: '300' }}>
+            {pair.hasStudentPairings ? 'MATCHED + PAIRED' : school.status}
+          </span>
         </div>
 
         {/* Special Considerations - if present */}
