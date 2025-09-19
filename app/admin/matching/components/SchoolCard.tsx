@@ -92,7 +92,7 @@ export default function SchoolCard({
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
       fontWeight: '300',
       display: 'grid',
-      gridTemplateColumns: '300px 200px 1fr auto auto',
+      gridTemplateColumns: '300px 100px 200px 1fr auto auto',
       gap: '20px',
       alignItems: 'start'
     }}>
@@ -165,7 +165,10 @@ export default function SchoolCard({
         )}
       </div>
 
-      {/* Column 2: Data Grid */}
+      {/* Column 2: Empty spacer */}
+      <div></div>
+
+      {/* Column 3: Data Grid */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: '1fr 1fr 1fr',
@@ -204,10 +207,10 @@ export default function SchoolCard({
         </div>
       </div>
 
-      {/* Column 3: Spacer (takes remaining space) */}
+      {/* Column 4: Spacer (takes remaining space) */}
       <div></div>
 
-      {/* Column 4: Action Buttons */}
+      {/* Column 5: Action Buttons */}
       <div style={{
         display: 'flex',
         flexDirection: 'column',
@@ -252,7 +255,7 @@ export default function SchoolCard({
         </button>
       </div>
 
-      {/* Column 5: Pin Icon */}
+      {/* Column 6: Pin Icon */}
       {showActions && (onPin || onMatch) && (
         <div style={{
           display: 'flex',
