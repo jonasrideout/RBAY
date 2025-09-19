@@ -90,7 +90,7 @@ export default function SchoolCard({
         ? '0 4px 16px rgba(0,0,0,0.1)' 
         : '0 2px 8px rgba(0,0,0,0.06)',
       fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      fontWeight: '400',
+      fontWeight: '300',
       display: 'grid',
       gridTemplateColumns: '300px 100px 200px 1fr auto auto',
       gap: '20px',
@@ -119,7 +119,7 @@ export default function SchoolCard({
           gap: '8px',
           color: '#555',
           fontSize: '14px',
-          fontWeight: '600'
+          fontWeight: '300'
         }}>
           <span>{school.teacherName}</span>
           <button
@@ -143,7 +143,7 @@ export default function SchoolCard({
         <div style={{
           color: '#666',
           fontSize: '13px',
-          fontWeight: '600'
+          fontWeight: '300'
         }}>
           Grades {school.gradeLevel}
         </div>
@@ -153,7 +153,7 @@ export default function SchoolCard({
             color: '#777',
             fontSize: '12px',
             fontStyle: 'italic',
-            fontWeight: '600',
+            fontWeight: '300',
             paddingLeft: '12px',
             borderLeft: '2px solid #eee',
             lineHeight: '1.4',
@@ -176,8 +176,8 @@ export default function SchoolCard({
         fontWeight: '300'
       }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-          <span style={{ color: '#999', fontSize: '12px', fontWeight: '400' }}>Region</span>
-          <span style={{ color: '#333', fontWeight: '400' }}>{school.region.toUpperCase()}</span>
+          <span style={{ color: '#999', fontSize: '12px', fontWeight: '300' }}>Region</span>
+          <span style={{ color: '#333', fontWeight: '300' }}>{school.region.toUpperCase()}</span>
         </div>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
