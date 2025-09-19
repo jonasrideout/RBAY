@@ -93,129 +93,187 @@ export default function SchoolPairDisplay({
     }
   };
 
-  const renderSchoolCard = (school: School, isSchool1: boolean) => {
+  const renderCompactSchoolCard = (school: School, isSchool1: boolean) => {
     const copyButtonText = isSchool1 ? copyButtonText1 : copyButtonText2;
     const emailCopyText = isSchool1 ? emailCopyText1 : emailCopyText2;
 
     return (
-      <div className="card-school grid-school-card">
+      <div style={{
+        background: 'white',
+        border: '1px solid #e0e0e0',
+        borderRadius: '6px',
+        padding: '12px',
+        fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        fontWeight: '300'
+      }}>
         
-        {/* Column 1: School Information */}
-        <div className="school-info-column">
-          <h3 className="text-school-name">
+        {/* Compact Header: School Name + Teacher */}
+        <div style={{ marginBottom: '8px' }}>
+          <h4 style={{
+            margin: '0 0 2px 0',
+            fontSize: '16px',
+            fontWeight: '300',
+            color: '#111',
+            lineHeight: '1.2'
+          }}>
             {school.schoolName}
-          </h3>
+          </h4>
           
-          <div className="teacher-info">
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            fontSize: '12px',
+            fontWeight: '300',
+            color: '#555'
+          }}>
             <span>{school.teacherName}</span>
             <button
               onClick={() => copyEmailAddress(school.teacherEmail, isSchool1)}
-              className="btn-icon btn-icon-email"
+              className="btn-icon"
+              style={{
+                fontSize: '16px',
+                color: '#666',
+                fontWeight: '300'
+              }}
               title={`Copy email: ${school.teacherEmail}`}
             >
               {emailCopyText}
             </button>
-          </div>
-          
-          <div className="text-meta-info">
-            Grades {school.gradeLevel}
-          </div>
-
-          {school.specialConsiderations && (
-            <div className="special-considerations">
-              {school.specialConsiderations}
-            </div>
-          )}
-        </div>
-
-        {/* Column 2: Empty spacer */}
-        <div></div>
-
-        {/* Column 3: Data Grid */}
-        <div className="grid-data-3x2">
-          <div className="data-cell">
-            <span className="text-data-label">Region</span>
-            <span className="text-data-value-caps">{school.region}</span>
-          </div>
-          
-          <div className="data-cell">
-            <span className="text-data-label">Start Date</span>
-            <span className="text-data-value-caps">{school.startMonth}</span>
-          </div>
-          
-          <div className="data-cell">
-            <span className="text-data-label">Status</span>
-            <span className="text-data-value">{school.status}</span>
-          </div>
-          
-          <div className="data-cell">
-            <span className="text-data-label">Expected</span>
-            <span className="text-data-value">{school.studentCounts?.expected || 0}</span>
-          </div>
-          
-          <div className="data-cell">
-            <span className="text-data-label">Registered</span>
-            <span className="text-data-value">{school.studentCounts?.registered || 0}</span>
-          </div>
-          
-          <div className="data-cell">
-            <span className="text-data-label">Ready</span>
-            <span className="text-data-value">{school.studentCounts?.ready || 0}</span>
+            <span style={{ color: '#888', fontSize: '11px' }}>
+              • Grades {school.gradeLevel}
+            </span>
           </div>
         </div>
 
-        {/* Column 4: Spacer (takes remaining space) */}
-        <div></div>
+        {/* Compact Data: Single Row */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr 1fr',
+          gap: '8px',
+          fontSize: '11px',
+          fontWeight: '300',
+          marginBottom: '8px'
+        }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ color: '#999', fontSize: '10px' }}>Region</div>
+            <div style={{ color: '#333', fontWeight: '300' }}>{school.region.toUpperCase()}</div>
+          </div>
+          
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ color: '#999', fontSize: '10px' }}>Start</div>
+            <div style={{ color: '#333', fontWeight: '300' }}>{school.startMonth.toUpperCase()}</div>
+          </div>
+          
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ color: '#999', fontSize: '10px' }}>Ready</div>
+            <div style={{ color: '#333', fontWeight: '300' }}>{school.studentCounts?.ready || 0}</div>
+          </div>
+        </div>
 
-        {/* Column 5: Action Buttons */}
-        <div className="action-buttons-column">
+        {/* Compact Action Buttons */}
+        <div style={{
+          display: 'flex',
+          gap: '4px'
+        }}>
           <button
             onClick={() => openDashboard(school.id)}
-            className="btn-school-action"
+            style={{
+              flex: '1',
+              background: 'white',
+              border: '1px solid #ddd',
+              borderRadius: '3px',
+              color: '#555',
+              fontSize: '10px',
+              fontWeight: '400',
+              cursor: 'pointer',
+              padding: '4px 6px',
+              textAlign: 'center'
+            }}
             title="Open school dashboard in new tab"
           >
-            Open Dashboard
+            Dashboard
           </button>
 
           <button
             onClick={() => copyDashboardUrl(school.id, isSchool1)}
-            className="btn-school-action"
+            style={{
+              flex: '1',
+              background: 'white',
+              border: '1px solid #ddd',
+              borderRadius: '3px',
+              color: '#555',
+              fontSize: '10px',
+              fontWeight: '400',
+              cursor: 'pointer',
+              padding: '4px 6px',
+              textAlign: 'center'
+            }}
             title="Copy school dashboard URL to clipboard"
           >
-            {copyButtonText}
+            {copyButtonText === 'Copy URL' ? 'Copy' : 'Copied'}
           </button>
 
           {showPenPalListButtons && onViewPenPals && (
             <button
               onClick={() => onViewPenPals(school.id)}
-              className="btn-school-action"
+              style={{
+                flex: '1',
+                background: 'white',
+                border: '1px solid #ddd',
+                borderRadius: '3px',
+                color: '#555',
+                fontSize: '10px',
+                fontWeight: '400',
+                cursor: 'pointer',
+                padding: '4px 6px',
+                textAlign: 'center'
+              }}
               title="View pen pal list for this school"
             >
-              View Pen Pal List
+              Pen Pals
             </button>
           )}
         </div>
 
-        {/* Column 6: Empty (no pin icon for paired schools) */}
-        <div></div>
+        {/* Special Considerations - if present */}
+        {school.specialConsiderations && (
+          <div style={{
+            color: '#777',
+            fontSize: '10px',
+            fontStyle: 'italic',
+            fontWeight: '300',
+            marginTop: '6px',
+            paddingTop: '6px',
+            borderTop: '1px solid #f0f0f0',
+            lineHeight: '1.3'
+          }}>
+            {school.specialConsiderations}
+          </div>
+        )}
       </div>
     );
   };
 
   const renderLinkIcon = () => (
-    <div className="flex items-center justify-center">
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '20px'
+    }}>
       <div style={{
         background: '#f8f9fa',
         border: '1px solid #dee2e6',
         borderRadius: '50%',
-        width: '32px',
-        height: '32px',
+        width: '20px',
+        height: '20px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         color: '#666'
       }}>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
           <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
         </svg>
@@ -224,43 +282,66 @@ export default function SchoolPairDisplay({
   );
 
   return (
-    <div style={{ marginBottom: '24px' }}>
+    <div style={{
+      background: 'white',
+      border: '1px solid #e0e0e0',
+      borderRadius: '8px',
+      padding: '20px',
+      marginBottom: '16px',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+      borderLeft: '3px solid #28a745'
+    }}>
       
-      {/* School Pair Container */}
-      <div className="grid-school-pair">
+      {/* Compact School Pair Container - Same width as single school */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 20px 1fr',
+        gap: '12px',
+        alignItems: 'start'
+      }}>
         
-        {/* School 1 */}
-        {renderSchoolCard(pair.school1, true)}
+        {/* School 1 - Compact */}
+        {renderCompactSchoolCard(pair.school1, true)}
         
         {/* Link Icon */}
         {renderLinkIcon()}
         
-        {/* School 2 */}
-        {renderSchoolCard(pair.school2, false)}
+        {/* School 2 - Compact */}
+        {renderCompactSchoolCard(pair.school2, false)}
         
       </div>
 
       {/* Action Buttons Row - spans full width below the pair */}
       {(showAssignButton || pair.hasPenPals) && (
-        <div className="flex justify-center gap-md" style={{ marginTop: '16px' }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '12px',
+          marginTop: '16px',
+          paddingTop: '16px',
+          borderTop: '1px solid #f0f0f0'
+        }}>
           
           {showAssignButton && onAssignPenPals && !pair.hasPenPals && (
             <button
               onClick={() => onAssignPenPals(pair.school1.id, pair.school2.id)}
               className="btn btn-primary"
-              style={{ minWidth: '160px' }}
+              style={{ minWidth: '140px', fontSize: '12px' }}
             >
               Assign Pen Pals
             </button>
           )}
 
           {pair.hasPenPals && (
-            <div className="flex items-center gap-sm text-data-value" style={{ 
-              color: '#28a745', 
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              color: '#28a745',
               fontWeight: '500',
-              fontSize: '14px'
+              fontSize: '12px'
             }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M20 6L9 17l-5-5"/>
               </svg>
               Pen Pals Assigned
