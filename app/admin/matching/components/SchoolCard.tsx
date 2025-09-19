@@ -90,117 +90,70 @@ export default function SchoolCard({
         ? '0 4px 16px rgba(0,0,0,0.1)' 
         : '0 2px 8px rgba(0,0,0,0.06)',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-      fontWeight: '300',
-      position: 'relative'
+      fontWeight: '300'
     }}>
-      {/* Main Content Layout */}
+      
+      {/* Main horizontal layout: School Info | Data Grid | Action Buttons | Pin Icon */}
       <div style={{
         display: 'flex',
-        justifyContent: 'space-between',
         alignItems: 'flex-start',
-        gap: '20px'
+        gap: '24px'
       }}>
         
         {/* Left: School Information */}
-        <div style={{ flex: '1', minWidth: '0' }}>
+        <div style={{ 
+          flex: '1',
+          minWidth: '0',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px'
+        }}>
+          <h3 style={{
+            margin: '0',
+            color: '#111',
+            fontSize: '24px',
+            fontWeight: '300',
+            lineHeight: '1.2',
+            letterSpacing: '-0.5px'
+          }}>
+            {school.schoolName}
+          </h3>
+          
           <div style={{
             display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'space-between',
-            marginBottom: '16px'
+            alignItems: 'center',
+            gap: '8px',
+            color: '#555',
+            fontSize: '15px',
+            fontWeight: '400'
           }}>
-            <div style={{ flex: '1' }}>
-              <h3 style={{
-                margin: '0 0 8px 0',
-                color: '#111',
-                fontSize: '24px',
-                fontWeight: '300',
-                lineHeight: '1.2',
-                letterSpacing: '-0.5px'
-              }}>
-                {school.schoolName}
-              </h3>
-              
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                color: '#555',
-                fontSize: '15px',
-                fontWeight: '400',
-                marginBottom: '6px'
-              }}>
-                <span>{school.teacherName}</span>
-                <button
-                  onClick={copyEmailAddress}
-                  style={{
-                    background: 'white',
-                    border: '1px solid #ccc',
-                    borderRadius: '3px',
-                    cursor: 'pointer',
-                    fontSize: '12px',
-                    color: '#666',
-                    padding: '3px 6px',
-                    fontWeight: '300'
-                  }}
-                  title={`Copy email: ${school.teacherEmail}`}
-                >
-                  {emailCopyText}
-                </button>
-              </div>
-              
-              <div style={{
+            <span>{school.teacherName}</span>
+            <button
+              onClick={copyEmailAddress}
+              style={{
+                background: 'white',
+                border: '1px solid #ccc',
+                borderRadius: '3px',
+                cursor: 'pointer',
+                fontSize: '12px',
                 color: '#666',
-                fontSize: '14px',
+                padding: '3px 6px',
                 fontWeight: '300'
-              }}>
-                Grades {school.gradeLevel}
-              </div>
-            </div>
-
-            {/* Pin/Match Icon */}
-            {showActions && (onPin || onMatch) && (
-              <div style={{ marginLeft: '16px' }}>
-                {showMatchIcon ? (
-                  <button
-                    onClick={onMatch}
-                    style={{
-                      background: 'white',
-                      border: '1px solid #666',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      padding: '8px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      color: '#333'
-                    }}
-                    title="Link with pinned school"
-                  >
-                    {renderIcon('lock')}
-                  </button>
-                ) : (
-                  <button
-                    onClick={onPin}
-                    style={{
-                      background: isPinned ? '#333' : 'white',
-                      border: '1px solid #666',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      padding: '8px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      color: isPinned ? 'white' : '#333'
-                    }}
-                    title={isPinned ? "Unpin school" : "Pin school"}
-                  >
-                    {renderIcon('pin')}
-                  </button>
-                )}
-              </div>
-            )}
+              }}
+              title={`Copy email: ${school.teacherEmail}`}
+            >
+              {emailCopyText}
+            </button>
+          </div>
+          
+          <div style={{
+            color: '#666',
+            fontSize: '14px',
+            fontWeight: '300'
+          }}>
+            Grades {school.gradeLevel}
           </div>
 
-          {/* Special Considerations */}
           {school.specialConsiderations && (
             <div style={{
               color: '#777',
@@ -209,52 +162,50 @@ export default function SchoolCard({
               fontWeight: '300',
               paddingLeft: '12px',
               borderLeft: '2px solid #eee',
-              lineHeight: '1.4',
-              marginBottom: '16px'
+              lineHeight: '1.4'
             }}>
               {school.specialConsiderations}
             </div>
           )}
+        </div>
 
-          {/* Data Grid */}
-          <div style={{
-            display: 'flex',
-            gap: '32px',
-            fontSize: '14px',
-            fontWeight: '300'
-          }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div>
-                <div style={{ color: '#999', fontSize: '12px', fontWeight: '400' }}>Region</div>
-                <div style={{ color: '#333', fontWeight: '400' }}>{school.region.toUpperCase()}</div>
-              </div>
-              <div>
-                <div style={{ color: '#999', fontSize: '12px', fontWeight: '400' }}>Expected</div>
-                <div style={{ color: '#333', fontWeight: '400' }}>{school.studentCounts?.expected || 0}</div>
-              </div>
-            </div>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div>
-                <div style={{ color: '#999', fontSize: '12px', fontWeight: '400' }}>Start Date</div>
-                <div style={{ color: '#333', fontWeight: '400' }}>{school.startMonth}</div>
-              </div>
-              <div>
-                <div style={{ color: '#999', fontSize: '12px', fontWeight: '400' }}>Registered</div>
-                <div style={{ color: '#333', fontWeight: '400' }}>{school.studentCounts?.registered || 0}</div>
-              </div>
-            </div>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div>
-                <div style={{ color: '#999', fontSize: '12px', fontWeight: '400' }}>Status</div>
-                <div style={{ color: '#333', fontWeight: '400' }}>{school.status}</div>
-              </div>
-              <div>
-                <div style={{ color: '#999', fontSize: '12px', fontWeight: '400' }}>Ready</div>
-                <div style={{ color: '#333', fontWeight: '400' }}>{school.studentCounts?.ready || 0}</div>
-              </div>
-            </div>
+        {/* Middle: Data Grid (3 columns x 2 rows) */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr 1fr',
+          gap: '16px 20px',
+          fontSize: '14px',
+          fontWeight: '300',
+          minWidth: '240px'
+        }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+            <span style={{ color: '#999', fontSize: '12px', fontWeight: '400' }}>Region</span>
+            <span style={{ color: '#333', fontWeight: '400' }}>{school.region.toUpperCase()}</span>
+          </div>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+            <span style={{ color: '#999', fontSize: '12px', fontWeight: '400' }}>Start Date</span>
+            <span style={{ color: '#333', fontWeight: '400' }}>{school.startMonth}</span>
+          </div>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+            <span style={{ color: '#999', fontSize: '12px', fontWeight: '400' }}>Status</span>
+            <span style={{ color: '#333', fontWeight: '400' }}>{school.status}</span>
+          </div>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+            <span style={{ color: '#999', fontSize: '12px', fontWeight: '400' }}>Expected</span>
+            <span style={{ color: '#333', fontWeight: '400' }}>{school.studentCounts?.expected || 0}</span>
+          </div>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+            <span style={{ color: '#999', fontSize: '12px', fontWeight: '400' }}>Registered</span>
+            <span style={{ color: '#333', fontWeight: '400' }}>{school.studentCounts?.registered || 0}</span>
+          </div>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+            <span style={{ color: '#999', fontSize: '12px', fontWeight: '400' }}>Ready</span>
+            <span style={{ color: '#333', fontWeight: '400' }}>{school.studentCounts?.ready || 0}</span>
           </div>
         </div>
 
@@ -262,6 +213,7 @@ export default function SchoolCard({
         <div style={{
           display: 'flex',
           flexDirection: 'column',
+          justifyContent: 'center',
           gap: '8px',
           minWidth: '110px'
         }}>
@@ -301,6 +253,50 @@ export default function SchoolCard({
             {copyButtonText}
           </button>
         </div>
+
+        {/* Far Right: Pin Icon */}
+        {showActions && (onPin || onMatch) && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center'
+          }}>
+            {showMatchIcon ? (
+              <button
+                onClick={onMatch}
+                style={{
+                  background: 'white',
+                  border: '1px solid #666',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  padding: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  color: '#333'
+                }}
+                title="Link with pinned school"
+              >
+                {renderIcon('lock')}
+              </button>
+            ) : (
+              <button
+                onClick={onPin}
+                style={{
+                  background: isPinned ? '#333' : 'white',
+                  border: '1px solid #666',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  padding: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  color: isPinned ? 'white' : '#333'
+                }}
+                title={isPinned ? "Unpin school" : "Pin school"}
+              >
+                {renderIcon('pin')}
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Matched School Display */}
