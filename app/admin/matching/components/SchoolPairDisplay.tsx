@@ -23,7 +23,8 @@ interface School {
 interface SchoolPair {
   school1: School;
   school2: School;
-  hasPenPals?: boolean;
+  hasStudentPairings: boolean;
+  bothSchoolsReady: boolean;
 }
 
 interface SchoolPairDisplayProps {
