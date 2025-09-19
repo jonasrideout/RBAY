@@ -98,7 +98,7 @@ export default function SchoolCard({
           : '0 2px 8px rgba(0,0,0,0.06)',
         transition: 'all 0.15s ease',
         display: 'grid',
-        gridTemplateColumns: '400px 180px 130px',
+        gridTemplateColumns: '350px 160px 100px',
         gap: '16px',
         alignItems: 'start',
         position: 'relative',
