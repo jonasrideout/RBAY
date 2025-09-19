@@ -181,8 +181,8 @@ export default function SchoolCard({
         </div>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-          <span style={{ color: '#999', fontSize: '12px', fontWeight: '400' }}>START DATE</span>
-          <span style={{ color: '#333', fontWeight: '400' }}>{school.startMonth}</span>
+          <span style={{ color: '#999', fontSize: '12px', fontWeight: '400' }}>Start Date</span>
+          <span style={{ color: '#333', fontWeight: '400' }}>{school.startMonth.toUpperCase()}</span>
         </div>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
