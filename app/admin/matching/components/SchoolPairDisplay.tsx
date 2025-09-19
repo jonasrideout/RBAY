@@ -346,7 +346,7 @@ export default function SchoolPairDisplay({
       </div>
 
       {/* Action Buttons Row - spans full width below the pair */}
-      {(showAssignButton || pair.hasPenPals) && (
+      {(showAssignButton || pair.hasStudentPairings) && (
         <div style={{
           display: 'flex',
           justifyContent: 'center',
@@ -366,7 +366,7 @@ export default function SchoolPairDisplay({
             </button>
           )}
 
-          {pair.hasPenPals && (
+          {pair.hasStudentPairings && (
             <div style={{
               display: 'flex',
               alignItems: 'center',
