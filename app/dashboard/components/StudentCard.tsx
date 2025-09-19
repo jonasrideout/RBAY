@@ -188,13 +188,6 @@ export default function StudentCard({
             }}>
               {student.firstName} {student.lastInitial}.
             </h4>
-            <span style={{ 
-              color: '#777', 
-              fontSize: '12px',
-              fontWeight: '300'
-            }}>
-              Grade {student.grade}
-            </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {!readOnly && (
@@ -250,13 +243,6 @@ export default function StudentCard({
             }}>
               {student.firstName} {student.lastInitial}.
             </h4>
-            <span style={{ 
-              color: '#777', 
-              fontSize: '14px',
-              fontWeight: '300'
-            }}>
-              Grade {student.grade}
-            </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{
@@ -357,13 +343,6 @@ export default function StudentCard({
             }}>
               {student.firstName} {student.lastInitial}.
             </h4>
-            <span style={{ 
-              color: '#777', 
-              fontSize: '12px',
-              fontWeight: '300'
-            }}>
-              Grade {student.grade}
-            </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{
