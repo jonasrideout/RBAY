@@ -268,23 +268,13 @@ export default function SchoolPairDisplay({
             <span style={{ color: '#999', fontSize: '10px' }}>Ready </span>
             <span style={{ color: '#333', fontWeight: '300' }}>{school.studentCounts?.ready || 0}</span>
           </div>
-        </div>
-
-        {/* School Status */}
-        <div style={{
-          marginBottom: '8px',
-          padding: '4px 8px',
-          backgroundColor: school.status === 'READY' ? '#d4edda' : '#fff3cd',
-          border: `1px solid ${school.status === 'READY' ? '#c3e6cb' : '#ffeaa7'}`,
-          borderRadius: '4px',
-          fontSize: '10px',
-          fontWeight: '400',
-          color: school.status === 'READY' ? '#155724' : '#856404',
-          textAlign: 'center',
-          textTransform: 'uppercase',
-          letterSpacing: '0.5px'
-        }}>
-          Status: {school.status}
+          
+          <div>
+            <span style={{ color: '#999', fontSize: '10px' }}>Status </span>
+            <span style={{ color: '#333', fontWeight: '300' }}>
+              {pair.hasStudentPairings ? 'Matched + Paired' : school.status}
+            </span>
+          </div>
         </div>
 
         {/* Special Considerations - if present */}
