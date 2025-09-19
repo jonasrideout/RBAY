@@ -102,8 +102,7 @@ export default function SchoolCard({
         
         {/* Left: School Information */}
         <div style={{ 
-          flex: '1',
-          minWidth: '0',
+          width: '320px',
           display: 'flex',
           flexDirection: 'column',
           gap: '12px'
