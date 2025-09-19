@@ -97,7 +97,7 @@ export default function SchoolCard({
       <div style={{
         display: 'flex',
         alignItems: 'flex-start',
-        gap: '24px'
+        gap: '40px'
       }}>
         
         {/* Left: School Information */}
@@ -214,7 +214,8 @@ export default function SchoolCard({
           flexDirection: 'column',
           justifyContent: 'center',
           gap: '8px',
-          minWidth: '110px'
+          minWidth: '110px',
+          marginLeft: '60px'
         }}>
           <button
             onClick={openDashboard}
