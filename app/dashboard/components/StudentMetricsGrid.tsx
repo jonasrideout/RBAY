@@ -36,7 +36,7 @@ export default function StudentMetricsGrid({ schoolData, totalStudents, students
   const estimatedClassSize = schoolData?.expectedClassSize || 0;
   
   return (
-    <div className="grid grid-4" style={{ marginBottom: '3rem' }}>
+    <div className="grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)', marginBottom: '3rem' }}>
       
       <div className="card text-center">
         <div style={{ 
