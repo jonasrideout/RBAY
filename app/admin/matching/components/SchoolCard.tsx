@@ -89,8 +89,8 @@ export default function SchoolCard({
       boxShadow: isPinned 
         ? '0 4px 16px rgba(0,0,0,0.1)' 
         : '0 2px 8px rgba(0,0,0,0.06)',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-      fontWeight: '300',
+      fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      fontWeight: '400',
       display: 'grid',
       gridTemplateColumns: '300px 100px 200px 1fr auto auto',
       gap: '20px',
@@ -106,10 +106,9 @@ export default function SchoolCard({
         <h3 style={{
           margin: '0',
           color: '#111',
-          fontSize: '24px',
-          fontWeight: '300',
-          lineHeight: '1.2',
-          letterSpacing: '-0.5px'
+          fontSize: '22px',
+          fontWeight: '600',
+          lineHeight: '1.3'
         }}>
           {school.schoolName}
         </h3>
@@ -119,8 +118,8 @@ export default function SchoolCard({
           alignItems: 'center',
           gap: '8px',
           color: '#555',
-          fontSize: '15px',
-          fontWeight: '400'
+          fontSize: '14px',
+          fontWeight: '600'
         }}>
           <span>{school.teacherName}</span>
           <button
@@ -143,8 +142,8 @@ export default function SchoolCard({
         
         <div style={{
           color: '#666',
-          fontSize: '14px',
-          fontWeight: '300'
+          fontSize: '13px',
+          fontWeight: '600'
         }}>
           Grades {school.gradeLevel}
         </div>
@@ -152,9 +151,9 @@ export default function SchoolCard({
         {school.specialConsiderations && (
           <div style={{
             color: '#777',
-            fontSize: '13px',
+            fontSize: '12px',
             fontStyle: 'italic',
-            fontWeight: '300',
+            fontWeight: '600',
             paddingLeft: '12px',
             borderLeft: '2px solid #eee',
             lineHeight: '1.4',
@@ -182,7 +181,7 @@ export default function SchoolCard({
         </div>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-          <span style={{ color: '#999', fontSize: '12px', fontWeight: '400' }}>Start Date</span>
+          <span style={{ color: '#999', fontSize: '12px', fontWeight: '400' }}>START DATE</span>
           <span style={{ color: '#333', fontWeight: '400' }}>{school.startMonth}</span>
         </div>
         
