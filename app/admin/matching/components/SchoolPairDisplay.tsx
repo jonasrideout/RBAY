@@ -219,10 +219,10 @@ export default function SchoolPairDisplay({
               </button>
             )}
 
-            {true && (
+            {pair.hasPenPals && (
               <button
                 onClick={() => {
-                  const downloadUrl = `/api/admin/pairings?schoolId=${school.id}`;
+                  const downloadUrl = `/api/admin/download-pairings?schoolId=${school.id}`;
                   window.open(downloadUrl, '_blank');
                 }}
                 style={{
