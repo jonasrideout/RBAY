@@ -223,8 +223,8 @@ export default function SchoolPairDisplay({
             {pair.hasStudentPairings && (
               <button
                 onClick={() => {
-                  const downloadUrl = `/api/admin/download-pairings?schoolId=${school.id}`;
-                  window.open(downloadUrl, '_blank');
+                  const penPalListUrl = `/admin/pen-pal-list?schoolId=${school.id}`;
+                  window.open(penPalListUrl, '_blank');
                 }}
                 style={{
                   background: 'white',
