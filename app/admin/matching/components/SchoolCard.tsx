@@ -107,7 +107,7 @@ export default function SchoolCard({
           margin: '0',
           color: '#111',
           fontSize: '22px',
-          fontWeight: '600',
+          fontWeight: '300',
           lineHeight: '1.3'
         }}>
           {school.schoolName}
