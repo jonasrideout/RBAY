@@ -536,9 +536,9 @@ export default function AdminDashboard() {
             
             <button 
               onClick={() => setShowFilters(!showFilters)}
-              className="btn btn-primary"
+              className="btn btn-primary btn-toggle"
             >
-              {showFilters ? 'Hide Filters' : 'Search for Schools'}
+            {showFilters ? 'Hide Filters' : 'Search for Schools'}  
             </button>
             
             <div style={{
