@@ -367,10 +367,11 @@ export default function AdminDashboard() {
   };
 
   const handleApplyFilters = () => {
-    // Get all unmatched schools (across all sections)
-    const unmatchedSchools = schools.filter(school => !school.matchedWithSchoolId);
-    
-    let filtered = unmatchedSchools;
+    // Context-aware filtering: when pinned (matching mode) use unmatched schools only, 
+    // when not pinned (general search) use all schools
+    let filtered = pinnedSchool 
+      ? schools.filter(school => !school.matchedWithSchoolId)
+      : schools;
 
     // Apply filters (same logic as MatchingWorkflow)
     if (filters.schoolSearch && filters.schoolSearch.trim()) {
