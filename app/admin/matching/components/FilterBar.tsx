@@ -21,6 +21,7 @@ export default function FilterBar({
 }: FilterBarProps) {
   const [dropdownStates, setDropdownStates] = useState({
     regions: false,
+    statuses: false,
     classSizes: false,
     grades: false,
     startDate: false
@@ -30,6 +31,10 @@ export default function FilterBar({
 
   const allRegions = [
     'NORTHEAST', 'SOUTHEAST', 'MIDWEST', 'SOUTHWEST', 'MOUNTAIN WEST', 'PACIFIC'
+  ];
+
+  const allStatuses = [
+    'COLLECTING', 'READY', 'MATCHED', 'CORRESPONDING', 'DONE'
   ];
 
   // Create regions list based on pinned school
@@ -68,6 +73,7 @@ export default function FilterBar({
     (filters.schoolSearch && filters.schoolSearch.trim()) ||
     (filters.teacherSearch && filters.teacherSearch.trim()) ||
     filters.regions.length > 0 ||
+    filters.statuses.length > 0 ||
     filters.classSizes.length > 0 ||
     filters.grades.length > 0 ||
     (filters.startDate && filters.startDate.trim())
@@ -90,6 +96,7 @@ export default function FilterBar({
   const toggleDropdown = (dropdown: keyof typeof dropdownStates) => {
     setDropdownStates(prev => ({
       regions: false,
+      statuses: false,
       classSizes: false,
       grades: false,
       startDate: false,
@@ -100,6 +107,7 @@ export default function FilterBar({
   const closeAllDropdowns = () => {
     setDropdownStates({
       regions: false,
+      statuses: false,
       classSizes: false,
       grades: false,
       startDate: false
@@ -132,7 +140,7 @@ export default function FilterBar({
         : [...currentValues, value];
       
       onFiltersChange({ ...filters, regions: newValues });
-    } else if (filterType === 'classSizes' || filterType === 'grades') {
+    } else if (filterType === 'statuses' || filterType === 'classSizes' || filterType === 'grades') {
       const currentValues = filters[filterType];
       const newValues = currentValues.includes(value)
         ? currentValues.filter(v => v !== value)
@@ -413,6 +421,11 @@ export default function FilterBar({
       {/* Regions Filter */}
       <div onClick={(e) => e.stopPropagation()}>
         {renderMultiSelectDropdown('Regions', 'regions', regions, filters.regions)}
+      </div>
+
+      {/* Status Filter - NEW */}
+      <div onClick={(e) => e.stopPropagation()}>
+        {renderMultiSelectDropdown('Status', 'statuses', allStatuses, filters.statuses)}
       </div>
 
       {/* Class Size Filter */}
