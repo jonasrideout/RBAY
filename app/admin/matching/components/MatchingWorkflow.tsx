@@ -21,11 +21,12 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
   const [showWarning, setShowWarning] = useState(false);
   const [isMatched, setIsMatched] = useState(false);
 
-  // Filter state - ENHANCED with search fields
+  // Filter state - ENHANCED with search fields and status filter
   const [filters, setFilters] = useState<Filters>({
     schoolSearch: '',
     teacherSearch: '',
     regions: [],
+    statuses: [],  // ADDED: Status filter
     classSizes: [],
     startDate: '',
     grades: []
@@ -80,7 +81,7 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
     return schools;
   };
 
-  // ENHANCED: Apply filters including search functionality
+  // ENHANCED: Apply filters including search functionality and status filter
   const applyFilters = () => {
     let filtered = getAvailableSchools();
 
@@ -129,6 +130,13 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
       });
     }
 
+    // Status filtering - NEW
+    if (filters.statuses.length > 0) {
+      filtered = filtered.filter(school => 
+        filters.statuses.includes(school.status)
+      );
+    }
+
     // Class size filtering
     if (filters.classSizes.length > 0) {
       filtered = filtered.filter(school => {
@@ -164,12 +172,13 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
     applyFilters();
   };
 
-  // ENHANCED: Clear filters function includes search fields
+  // ENHANCED: Clear filters function includes search fields and status filter
   const handleClearFilters = () => {
     const clearedFilters = {
       schoolSearch: '',
       teacherSearch: '',
       regions: [],
+      statuses: [],  // ADDED: Clear status filter
       classSizes: [],
       startDate: '',
       grades: []
@@ -185,6 +194,7 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
       schoolSearch: '',
       teacherSearch: '',
       regions: [],
+      statuses: [],  // ADDED: Clear status filter
       classSizes: [],
       startDate: '',
       grades: []
@@ -347,10 +357,10 @@ export default function MatchingWorkflow({ schools, onSchoolsUpdate, onTabChange
 
   const displaySchools = filtersApplied ? filteredSchools : getAvailableSchools();
 
-  // ADDED: Check if any filters are active
+  // ADDED: Check if any filters are active (including status filter)
   const hasActiveFilters = filters.schoolSearch || filters.teacherSearch || 
-    filters.regions.length > 0 || filters.classSizes.length > 0 || 
-    filters.startDate || filters.grades.length > 0;
+    filters.regions.length > 0 || filters.statuses.length > 0 || 
+    filters.classSizes.length > 0 || filters.startDate || filters.grades.length > 0;
 
   return (
     <div>
