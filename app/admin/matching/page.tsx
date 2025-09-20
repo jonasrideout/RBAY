@@ -534,7 +534,7 @@ export default function AdminDashboard() {
         }}>
           <div>
             <h1 style={{ marginBottom: '0.5rem', fontSize: '1.8rem' }}>Administrator Dashboard</h1>
-            <p style={{ color: '#6c757d', fontSize: '1.1rem', margin: 0 }}>
+            <p className="text-school-name" style={{ margin: 0 }}>
               Overview of all schools and their progress through the program.
             </p>
           </div>
