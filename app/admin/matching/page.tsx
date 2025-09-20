@@ -47,6 +47,7 @@ export default function AdminDashboard() {
     schoolSearch: '',
     teacherSearch: '',
     regions: [],
+    statuses: [],
     classSizes: [],
     startDate: '',
     grades: []
@@ -256,6 +257,7 @@ export default function AdminDashboard() {
         schoolSearch: '',
         teacherSearch: '',
         regions: [],
+        statuses: [],
         classSizes: [],
         startDate: '',
         grades: []
@@ -396,6 +398,12 @@ export default function AdminDashboard() {
       });
     }
 
+    if (filters.statuses.length > 0) {
+      filtered = filtered.filter(school => 
+        filters.statuses.includes(school.status)
+      );
+    }
+
     if (filters.classSizes.length > 0) {
       const classSizeBuckets = [
         { label: 'Under 10', min: 0, max: 9 },
@@ -434,6 +442,7 @@ export default function AdminDashboard() {
       schoolSearch: '',
       teacherSearch: '',
       regions: [],
+      statuses: [],
       classSizes: [],
       startDate: '',
       grades: []
