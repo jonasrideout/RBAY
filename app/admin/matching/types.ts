@@ -41,6 +41,7 @@ export interface Filters {
   schoolSearch?: string;
   teacherSearch?: string;
   regions: string[];
+  statuses: string[];  // NEW: Added status filter
   classSizes: string[];
   grades: string[];
   startDate?: string;
