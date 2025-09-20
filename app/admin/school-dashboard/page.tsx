@@ -34,6 +34,8 @@ interface SchoolData {
   programStartMonth: string;
   status: 'COLLECTING' | 'READY' | 'MATCHED' | 'CORRESPONDING' | 'DONE';
   students: any[];
+  matchedWithSchoolId?: string;
+  matchedSchoolName?: string;
 }
 
 function AdminSchoolDashboardContent() {
@@ -90,7 +92,7 @@ function AdminSchoolDashboardContent() {
         }
 
         // Transform API response to match expected SchoolData interface
-        const transformedSchoolData = {
+        const transformedSchoolData: SchoolData = {
           id: data.id,
           schoolName: data.name, // API returns 'name', components expect 'schoolName'
           teacherName: data.teacherName,
@@ -100,7 +102,9 @@ function AdminSchoolDashboardContent() {
           startMonth: data.startMonth || 'Not Set', 
           programStartMonth: data.programStartMonth || 'Not Set', 
           status: data.status,
-          students: data.students
+          students: data.students,
+          matchedWithSchoolId: data.matchedWithSchoolId,
+          matchedSchoolName: data.matchedSchoolName
         };
         
         setSchoolData(transformedSchoolData);
@@ -182,7 +186,7 @@ function AdminSchoolDashboardContent() {
           session={{ user: { email: adminUser } }} 
           onLogout={handleAdminLogout} 
         />
-        <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
+        <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
           <div style={{ textAlign: 'center', padding: '2rem' }}>
             <div className="loading" style={{ margin: '0 auto 1rem' }}></div>
             <p>Loading school dashboard...</p>
@@ -199,7 +203,7 @@ function AdminSchoolDashboardContent() {
           session={{ user: { email: adminUser } }} 
           onLogout={handleAdminLogout} 
         />
-        <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
+        <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
           <div className="alert alert-error">
             <strong>Error:</strong> {error}
           </div>
@@ -224,13 +228,15 @@ function AdminSchoolDashboardContent() {
         onLogout={handleAdminLogout} 
       />
 
-      <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
+      <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
         
         <DashboardHeader 
           schoolData={schoolData} 
           dashboardToken=""
           readOnly={true}
           adminBackButton={true}
+          allActiveStudentsComplete={allActiveStudentsComplete}
+          onMatchingRequested={handleAdminMatchingRequested}
         />
 
         <StudentMetricsGrid 
@@ -240,16 +246,12 @@ function AdminSchoolDashboardContent() {
           readOnly={true}
         />
 
-        {/* Admin Matching Status Card with Request Matching button */}
-        {allActiveStudentsComplete && (
-          <MatchingStatusCard 
-            schoolData={schoolData}
-            allActiveStudentsComplete={allActiveStudentsComplete}
-            onMatchingRequested={handleAdminMatchingRequested}
-            readOnly={false} // Allow admin to trigger matching
-            isAdminView={true} // Add admin view flag
-          />
-        )}
+        <MatchingStatusCard 
+          schoolData={schoolData}
+          allActiveStudentsComplete={allActiveStudentsComplete}
+          readOnly={true}
+          isAdminView={true}
+        />
 
         <MissingInfoStudents 
           studentsNeedingInfo={studentsNeedingInfo}
@@ -282,8 +284,15 @@ function AdminSchoolDashboardContent() {
         {/* No students message - read-only version */}
         {totalStudents === 0 && (
           <div className="card" style={{ textAlign: 'center', padding: '3rem', marginBottom: '2rem' }}>
-            <h3 style={{ color: '#6c757d', marginBottom: '1rem' }}>No Students Registered</h3>
-            <p style={{ color: '#6c757d', marginBottom: '0' }}>
+            <h3 style={{ 
+              color: '#1f2937', 
+              marginBottom: '1rem', 
+              fontSize: '1.4rem',
+              fontWeight: '400'
+            }}>
+              No Students Registered
+            </h3>
+            <p className="text-meta-info" style={{ marginBottom: '0' }}>
               This school has not registered any students yet.
             </p>
           </div>
@@ -304,7 +313,7 @@ function LoadingAdminDashboard() {
   return (
     <div className="page">
       <Header />
-      <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
+      <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
         <div style={{ textAlign: 'center', padding: '2rem' }}>
           <div>Loading school dashboard...</div>
         </div>
