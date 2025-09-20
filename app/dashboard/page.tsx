@@ -9,7 +9,6 @@ import Link from 'next/link';
 import Header from '../components/Header';
 
 // Import components
-import SchoolVerification from './components/SchoolVerification';
 import DashboardHeader from './components/DashboardHeader';
 import StudentMetricsGrid from './components/StudentMetricsGrid';
 import MatchingStatusCard from './components/MatchingStatusCard';
@@ -440,3 +439,52 @@ function TeacherDashboardContent() {
           >
             Add New Student
           </Link>
+          <button 
+            className="btn btn-primary"
+            disabled={!hasActiveStudents || readyForMatching}
+            onClick={() => {
+              if (hasActiveStudents && !readyForMatching && schoolData?.dashboardToken) {
+                window.open(`/dashboard/print?token=${schoolData.dashboardToken}`, '_blank');
+              }
+            }}
+            style={{
+              opacity: (!hasActiveStudents || readyForMatching) ? 0.6 : 1,
+              cursor: (!hasActiveStudents || readyForMatching) ? 'not-allowed' : 'pointer'
+            }}
+            title={readyForMatching ? "Matching has been requested" : (!hasActiveStudents ? "Need students first" : "Download student information")}
+          >
+            Download Student Info
+          </button>
+        </div>
+
+      </main>
+
+      <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
+        <div className="container text-center">
+          <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+function LoadingDashboard() {
+  return (
+    <div className="page">
+      <Header />
+      <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <div>Loading dashboard...</div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+export default function TeacherDashboard() {
+  return (
+    <Suspense fallback={<LoadingDashboard />}>
+      <TeacherDashboardContent />
+    </Suspense>
+  );
+}
