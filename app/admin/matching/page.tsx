@@ -545,7 +545,16 @@ export default function AdminDashboard() {
             </Link>
             
             <button 
-              onClick={() => setShowFilters(!showFilters)}
+              onClick={() => {
+                if (showFilters) {
+                  // When hiding filters, also clear them
+                  handleClearFilters();
+                  setShowFilters(false);
+                } else {
+                  // When showing filters, just show them
+                  setShowFilters(true);
+                }
+              }}
               className="btn btn-primary btn-toggle"
             >
             {showFilters ? 'Hide Filters' : 'Search for Schools'}  
