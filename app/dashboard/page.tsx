@@ -310,7 +310,7 @@ function TeacherDashboardContent() {
     return (
       <div className="page">
         <Header session={session} onLogout={handleLogout} />
-        <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
+        <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
           <div style={{ textAlign: 'center', padding: '2rem' }}>
             <div className="loading" style={{ margin: '0 auto 1rem' }}></div>
             <p>Loading dashboard...</p>
@@ -324,7 +324,7 @@ function TeacherDashboardContent() {
     return (
       <div className="page">
         <Header session={session} onLogout={handleLogout} />
-        <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
+        <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
           <div className="alert alert-error">
             <strong>Error:</strong> {error}
           </div>
@@ -332,7 +332,7 @@ function TeacherDashboardContent() {
             <Link href="/" className="btn btn-primary" style={{ marginRight: '1rem' }}>
               Go Home
             </Link>
-            <Link href="/register-school" className="btn btn-secondary">
+            <Link href="/register-school" className="btn btn-primary">
               Register School
             </Link>
           </div>
@@ -349,11 +349,13 @@ function TeacherDashboardContent() {
     <div className="page">
       <Header session={session} onLogout={handleLogout} />
 
-      <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
+      <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
         
         <DashboardHeader 
           schoolData={schoolData} 
-          dashboardToken={schoolData.dashboardToken} 
+          dashboardToken={schoolData.dashboardToken}
+          allActiveStudentsComplete={allActiveStudentsComplete}
+          onMatchingRequested={handleMatchingRequested}
         />
 
         <StudentMetricsGrid 
@@ -365,7 +367,6 @@ function TeacherDashboardContent() {
         <MatchingStatusCard 
           schoolData={schoolData}
           allActiveStudentsComplete={allActiveStudentsComplete}
-          onMatchingRequested={handleMatchingRequested}
         />
 
         <MissingInfoStudents 
@@ -405,8 +406,15 @@ function TeacherDashboardContent() {
         {/* No students message */}
         {totalStudents === 0 && (
           <div className="card" style={{ textAlign: 'center', padding: '3rem', marginBottom: '2rem' }}>
-            <h3 style={{ color: '#6c757d', marginBottom: '1rem' }}>No Students Registered Yet</h3>
-            <p style={{ color: '#6c757d', marginBottom: '2rem' }}>
+            <h3 style={{ 
+              color: '#1f2937', 
+              marginBottom: '1rem', 
+              fontSize: '1.4rem',
+              fontWeight: '400'
+            }}>
+              No Students Registered Yet
+            </h3>
+            <p className="text-meta-info" style={{ marginBottom: '2rem' }}>
               Share the student registration link above to get started, or add students manually.
             </p>
             <Link 
@@ -422,7 +430,7 @@ function TeacherDashboardContent() {
         <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
           <Link 
             href={`/register-student?token=${schoolData?.dashboardToken}`}
-            className="btn btn-secondary"
+            className="btn btn-primary"
             style={readyForMatching ? { 
               opacity: 0.6, 
               cursor: 'not-allowed',
@@ -432,53 +440,3 @@ function TeacherDashboardContent() {
           >
             Add New Student
           </Link>
-          <button 
-            className="btn" 
-            style={{ 
-              backgroundColor: (!hasActiveStudents || readyForMatching) ? '#6c757d' : '#4a90e2', 
-              color: 'white', 
-              cursor: (!hasActiveStudents || readyForMatching) ? 'not-allowed' : 'pointer'
-            }}
-            disabled={!hasActiveStudents || readyForMatching}
-            onClick={() => {
-              if (hasActiveStudents && !readyForMatching && schoolData?.dashboardToken) {
-                window.open(`/dashboard/print?token=${schoolData.dashboardToken}`, '_blank');
-              }
-            }}
-            title={readyForMatching ? "Matching has been requested" : (!hasActiveStudents ? "Need students first" : "Download student information")}
-          >
-            Download Student Info
-          </button>
-        </div>
-
-      </main>
-
-      <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
-        <div className="container text-center">
-          <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
-        </div>
-      </footer>
-    </div>
-  );
-}
-
-function LoadingDashboard() {
-  return (
-    <div className="page">
-      <Header />
-      <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
-        <div style={{ textAlign: 'center', padding: '2rem' }}>
-          <div>Loading dashboard...</div>
-        </div>
-      </main>
-    </div>
-  );
-}
-
-export default function TeacherDashboard() {
-  return (
-    <Suspense fallback={<LoadingDashboard />}>
-      <TeacherDashboardContent />
-    </Suspense>
-  );
-}
