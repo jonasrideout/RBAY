@@ -1,95 +1,43 @@
-// lib/adminAuth.ts
-import { SignJWT, jwtVerify } from 'jose';
-import { cookies } from 'next/headers';
-import { NextRequest } from 'next/server';
+// /lib/auth.ts
+import NextAuth from 'next-auth';
+import GoogleProvider from 'next-auth/providers/google';
 
-// Get admin users from environment variable
-function getAdminUsers(): Record<string, string> {
-  const adminUsersEnv = process.env.ADMIN_USERS || '';
-  console.log('Raw ADMIN_USERS env:', adminUsersEnv); // DEBUG
-  
-  const adminUsers: Record<string, string> = {};
-  
-  if (adminUsersEnv) {
-    adminUsersEnv.split(',').forEach(userPair => {
-      const [email, password] = userPair.split(':');
-      console.log('Parsing pair:', { userPair, email, password }); // DEBUG
-      if (email && password) {
-        adminUsers[email.trim()] = password.trim();
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+  ],
+  pages: {
+    signIn: '/login',
+    error: '/login',
+  },
+  callbacks: {
+    async signIn({ user, account, profile }) {
+      if (account?.provider === 'google') {
+        try {
+          // Allow any Google account to sign in
+          // We'll check school existence in the redirect callback instead
+          console.log(`Sign-in allowed for: ${user.email}`);
+          return true;
+        } catch (error) {
+          console.error('Sign-in callback error:', error);
+          return false;
+        }
       }
-    });
-  }
-  
-  console.log('Final admin users object:', adminUsers); // DEBUG
-  return adminUsers;
-}
-
-// Verify admin credentials
-export function verifyAdminCredentials(email: string, password: string): boolean {
-  const adminUsers = getAdminUsers();
-  console.log('All admin users:', adminUsers); // DEBUG
-  console.log('Looking for:', { email, password }); // DEBUG
-  console.log('Found match:', adminUsers[email] === password); // DEBUG
-  
-  return adminUsers[email] === password;
-}
-
-// JWT secret key
-const secret = new TextEncoder().encode(process.env.ADMIN_TOKEN_SECRET || 'fallback-secret');
-
-// Create admin JWT token
-export async function createAdminToken(email: string): Promise<string> {
-  const token = await new SignJWT({ email, role: 'admin' })
-    .setProtectedHeader({ alg: 'HS256' })
-    .setIssuedAt()
-    .setExpirationTime('24h')
-    .sign(secret);
-  
-  return token;
-}
-
-// Verify admin JWT token
-export async function verifyAdminToken(token: string): Promise<{ email: string; role: string } | null> {
-  try {
-    const { payload } = await jwtVerify(token, secret);
-    return payload as { email: string; role: string };
-  } catch {
-    return null;
-  }
-}
-
-// Set admin session cookie
-export async function setAdminSession(token: string) {
-  const cookieStore = await cookies();
-  cookieStore.set('admin-session', token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 60 * 60 * 24 // 24 hours
-  });
-}
-
-// Clear admin session cookie
-export async function clearAdminSession() {
-  const cookieStore = await cookies();
-  cookieStore.delete('admin-session');
-}
-
-// Get current admin session from cookies
-export async function getAdminSession(): Promise<{ email: string; role: string } | null> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('admin-session')?.value;
-  
-  if (!token) return null;
-  
-  return await verifyAdminToken(token);
-}
-
-// Middleware helper to check admin session from request
-export async function getAdminSessionFromRequest(request: NextRequest): Promise<{ email: string; role: string } | null> {
-  const token = request.cookies.get('admin-session')?.value;
-  
-  if (!token) return null;
-  
-  return await verifyAdminToken(token);
-}
+      return true;
+    },
+    async session({ session, token }) {
+      // School data will be fetched separately in dashboard and student registration
+      // This ensures sessions work properly
+      return session;
+    },
+    async redirect({ url, baseUrl }) {
+      return baseUrl; // Always redirect to home page for now
+    },
+  },
+  session: {
+    strategy: 'jwt',
+  },
+});
