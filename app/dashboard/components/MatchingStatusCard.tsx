@@ -36,8 +36,8 @@ export default function MatchingStatusCard({
   // Use status field for ready state (only relevant if not already matched)
   const readyForMatching = schoolData?.status === 'READY';
 
-  // Only show status when students are complete or already in matching process
-  if (!allActiveStudentsComplete && !readyForMatching && !isMatched) {
+  // Only show status when in matching process (not when just ready)
+  if (!readyForMatching && !isMatched) {
     return null;
   }
 
@@ -54,7 +54,7 @@ export default function MatchingStatusCard({
                 fontWeight: '400',
                 margin: 0
               }}>
-                🤝 Matched with Partner School
+                Matched with Partner School
               </h3>
               <p className="text-data-value" style={{ marginBottom: '0.5rem' }}>
                 <span className="text-data-label">Partner School:</span> {schoolData.matchedSchoolName || 'Loading...'}
@@ -77,7 +77,7 @@ export default function MatchingStatusCard({
                 fontWeight: '400',
                 margin: 0
               }}>
-                🎯 Matching Requested
+                Matching Requested
               </h3>
               <p className="text-meta-info" style={{ marginBottom: '0' }}>
                 {readOnly && !isAdminView
@@ -85,26 +85,6 @@ export default function MatchingStatusCard({
                   : isAdminView
                   ? 'This school has requested matching and is waiting for a partner school.'
                   : 'Waiting for partner school. We will email you when matching is complete.'
-                }
-              </p>
-            </>
-          ) : allActiveStudentsComplete ? (
-            <>
-              <h3 style={{ 
-                color: '#1f2937', 
-                marginBottom: '1rem', 
-                fontSize: '1.4rem',
-                fontWeight: '400',
-                margin: 0
-              }}>
-                ✅ Ready for Matching!
-              </h3>
-              <p className="text-meta-info" style={{ marginBottom: '0' }}>
-                {readOnly && !isAdminView
-                  ? 'All active students have provided their interest information. This school can request matching.'
-                  : isAdminView
-                  ? 'All students ready - matching can be requested anytime!'
-                  : 'All active students have provided their interest information. Use the "Request Matching" button above when ready!'
                 }
               </p>
             </>
