@@ -40,7 +40,7 @@ export default function MatchingSection({
   const hasMatchedSchoolInfo = schoolData?.matchedSchoolName != null;
 
   // Show matched school display when matched, otherwise show matching status
-  if (isMatched && hasMatchedSchoolInfo) {
+  if (isMatched && hasMatchedSchoolInfo && schoolData.matchedSchoolName) {
     return (
       <MatchedSchoolDisplay
         schoolData={schoolData}
