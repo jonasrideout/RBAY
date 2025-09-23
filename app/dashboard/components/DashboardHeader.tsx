@@ -138,18 +138,8 @@ export default function DashboardHeader({
         {/* Show all action buttons in teacher view */}
         {!readOnly && !adminBackButton && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: '320px' }}>
-            <h3 style={{ 
-              marginBottom: '0', 
-              textAlign: 'right', 
-              fontSize: '14px',
-              fontWeight: '400',
-              color: '#555',
-              marginTop: '0' 
-            }}>
-              Actions
-            </h3>
             
-            {/* Top row - Copy Link and Request Matching */}
+            {/* Top row - Copy Link and Add Student */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
               <button 
                 onClick={handleCopyLink}
@@ -170,6 +160,47 @@ export default function DashboardHeader({
                 ) : (
                   'Copy Student Link'
                 )}
+              </button>
+
+              <Link 
+                href={`/register-student?token=${schoolData.dashboardToken}`}
+                className="btn btn-primary"
+                style={{
+                  ...(readyForMatching ? { 
+                    opacity: 0.6, 
+                    cursor: 'not-allowed',
+                    pointerEvents: 'none'
+                  } : {}),
+                  fontSize: '13px',
+                  textDecoration: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+                title={readyForMatching ? "Cannot add students after matching is requested" : "Add new student"}
+              >
+                Add New Student
+              </Link>
+            </div>
+
+            {/* Bottom row - Download and Request Matching */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              <button 
+                className="btn btn-primary"
+                disabled={schoolData.students.length === 0 || readyForMatching}
+                onClick={() => {
+                  if (schoolData.students.length > 0 && !readyForMatching && schoolData?.dashboardToken) {
+                    window.open(`/dashboard/print?token=${schoolData.dashboardToken}`, '_blank');
+                  }
+                }}
+                style={{
+                  opacity: (schoolData.students.length === 0 || readyForMatching) ? 0.6 : 1,
+                  cursor: (schoolData.students.length === 0 || readyForMatching) ? 'not-allowed' : 'pointer',
+                  fontSize: '13px'
+                }}
+                title={readyForMatching ? "Matching has been requested" : (schoolData.students.length === 0 ? "Need students first" : "Download student information")}
+              >
+                Download Student Info
               </button>
 
               {/* Request Matching Button - show when not already matched, gray out when students incomplete */}
@@ -202,47 +233,6 @@ export default function DashboardHeader({
                   ) : 'Request Matching')}
                 </button>
               )}
-            </div>
-
-            {/* Bottom row - Add Student and Download */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-              <Link 
-                href={`/register-student?token=${schoolData.dashboardToken}`}
-                className="btn btn-primary"
-                style={{
-                  ...(readyForMatching ? { 
-                    opacity: 0.6, 
-                    cursor: 'not-allowed',
-                    pointerEvents: 'none'
-                  } : {}),
-                  fontSize: '13px',
-                  textDecoration: 'none',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-                title={readyForMatching ? "Cannot add students after matching is requested" : "Add new student"}
-              >
-                Add New Student
-              </Link>
-              
-              <button 
-                className="btn btn-primary"
-                disabled={schoolData.students.length === 0 || readyForMatching}
-                onClick={() => {
-                  if (schoolData.students.length > 0 && !readyForMatching && schoolData?.dashboardToken) {
-                    window.open(`/dashboard/print?token=${schoolData.dashboardToken}`, '_blank');
-                  }
-                }}
-                style={{
-                  opacity: (schoolData.students.length === 0 || readyForMatching) ? 0.6 : 1,
-                  cursor: (schoolData.students.length === 0 || readyForMatching) ? 'not-allowed' : 'pointer',
-                  fontSize: '13px'
-                }}
-                title={readyForMatching ? "Matching has been requested" : (schoolData.students.length === 0 ? "Need students first" : "Download student information")}
-              >
-                Download Student Info
-              </button>
             </div>
           </div>
         )}
