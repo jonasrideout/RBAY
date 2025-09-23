@@ -8,16 +8,28 @@ export async function DELETE() {
     // 1. First delete StudentPenpal records (they reference students)
     const deletedPenpals = await prisma.studentPenpal.deleteMany({});
     
-    // 2. Then delete students (they reference schools)
+    // 2. Delete SchoolPairing records (they reference schools)
+    const deletedSchoolPairings = await prisma.schoolPairing.deleteMany({});
+    
+    // 3. Clear all matchedWithSchoolId references before deleting schools
+    const clearedMatching = await prisma.school.updateMany({
+      data: {
+        matchedWithSchoolId: null
+      }
+    });
+    
+    // 4. Then delete students (they reference schools)
     const deletedStudents = await prisma.student.deleteMany({});
     
-    // 3. Finally delete schools (no dependencies)
+    // 5. Finally delete schools (no dependencies)
     const deletedSchools = await prisma.school.deleteMany({});
     
     return NextResponse.json({ 
       success: true, 
-      message: `Cleared all data: ${deletedPenpals.count} pen pal assignments, ${deletedStudents.count} students, and ${deletedSchools.count} schools deleted`,
+      message: `Cleared all data: ${deletedPenpals.count} pen pal assignments, ${deletedSchoolPairings.count} school pairings, ${deletedStudents.count} students, and ${deletedSchools.count} schools deleted`,
       penpalsDeleted: deletedPenpals.count,
+      schoolPairingsDeleted: deletedSchoolPairings.count,
+      matchingReferencesCleared: clearedMatching.count,
       studentsDeleted: deletedStudents.count,
       schoolsDeleted: deletedSchools.count
     });
@@ -36,16 +48,28 @@ export async function GET() {
     // 1. First delete StudentPenpal records (they reference students)
     const deletedPenpals = await prisma.studentPenpal.deleteMany({});
     
-    // 2. Then delete students (they reference schools)
+    // 2. Delete SchoolPairing records (they reference schools)
+    const deletedSchoolPairings = await prisma.schoolPairing.deleteMany({});
+    
+    // 3. Clear all matchedWithSchoolId references before deleting schools
+    const clearedMatching = await prisma.school.updateMany({
+      data: {
+        matchedWithSchoolId: null
+      }
+    });
+    
+    // 4. Then delete students (they reference schools)
     const deletedStudents = await prisma.student.deleteMany({});
     
-    // 3. Finally delete schools (no dependencies)
+    // 5. Finally delete schools (no dependencies)
     const deletedSchools = await prisma.school.deleteMany({});
     
     return NextResponse.json({ 
       success: true, 
-      message: `Cleared all data: ${deletedPenpals.count} pen pal assignments, ${deletedStudents.count} students, and ${deletedSchools.count} schools deleted`,
+      message: `Cleared all data: ${deletedPenpals.count} pen pal assignments, ${deletedSchoolPairings.count} school pairings, ${deletedStudents.count} students, and ${deletedSchools.count} schools deleted`,
       penpalsDeleted: deletedPenpals.count,
+      schoolPairingsDeleted: deletedSchoolPairings.count,
+      matchingReferencesCleared: clearedMatching.count,
       studentsDeleted: deletedStudents.count,
       schoolsDeleted: deletedSchools.count
     });
