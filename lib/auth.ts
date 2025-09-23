@@ -35,15 +35,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session;
     },
     async redirect({ url, baseUrl }) {
-      // Only redirect to dashboard after successful Google OAuth callback
-      if (url === `${baseUrl}/api/auth/callback/google`) {
-        return `${baseUrl}/dashboard`;
-      }
-      
-      // For all other cases, respect the intended URL
-      if (url.startsWith('/')) return `${baseUrl}${url}`;
-      if (new URL(url).origin === baseUrl) return url;
-      return baseUrl; // Default to home page, not dashboard
+      return baseUrl; // Always redirect to home page instead of dashboard
     },
   },
   session: {
