@@ -135,9 +135,9 @@ export default function DashboardHeader({
           </div>
         )}
         
-        {/* Show copy button and request matching in teacher view */}
+        {/* Show all action buttons in teacher view */}
         {!readOnly && !adminBackButton && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: '280px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: '320px' }}>
             <h3 style={{ 
               marginBottom: '0', 
               textAlign: 'right', 
@@ -146,58 +146,104 @@ export default function DashboardHeader({
               color: '#555',
               marginTop: '0' 
             }}>
-              Share This Link With Your Students
+              Actions
             </h3>
             
-            <button 
-              onClick={handleCopyLink}
-              className="btn btn-primary"
-              style={{ 
-                backgroundColor: copyStatus === 'copied' ? '#28a745' : 'white',
-                color: copyStatus === 'copied' ? 'white' : '#555',
-                border: copyStatus === 'copied' ? '1px solid #28a745' : '1px solid #ddd',
-                transition: 'all 0.3s ease'
-              }}
-            >
-              {copyStatus === 'copied' ? (
-                <>
-                  <span style={{ marginRight: '0.5rem' }}>✓</span>
-                  Copied!
-                </>
-              ) : (
-                'Copy Student Registration Link'
-              )}
-            </button>
-
-            {/* Request Matching Button - show when not already matched, gray out when students incomplete */}
-            {!isMatched && (
+            {/* Top row - Copy Link and Request Matching */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
               <button 
-                className="btn btn-primary" 
-                disabled={isRequestingMatching || readyForMatching || !allActiveStudentsComplete}
-                onClick={handleRequestMatchingClick}
-                style={{
-                  backgroundColor: readyForMatching ? '#28a745' : 'white',
-                  color: readyForMatching ? 'white' : '#555',
-                  border: readyForMatching ? '1px solid #28a745' : '1px solid #ddd',
-                  cursor: (isRequestingMatching || readyForMatching || !allActiveStudentsComplete) ? 'not-allowed' : 'pointer',
-                  opacity: (isRequestingMatching || readyForMatching || !allActiveStudentsComplete) ? 0.6 : 1
+                onClick={handleCopyLink}
+                className="btn btn-primary"
+                style={{ 
+                  backgroundColor: copyStatus === 'copied' ? '#28a745' : 'white',
+                  color: copyStatus === 'copied' ? 'white' : '#555',
+                  border: copyStatus === 'copied' ? '1px solid #28a745' : '1px solid #ddd',
+                  transition: 'all 0.3s ease',
+                  fontSize: '13px'
                 }}
-                title={
-                  readyForMatching 
-                    ? "Matching has been requested" 
-                    : !allActiveStudentsComplete
-                    ? "Complete all student profiles first"
-                    : "Request matching for your students"
-                }
               >
-                {readyForMatching ? 'Matching Requested' : (isRequestingMatching ? (
+                {copyStatus === 'copied' ? (
                   <>
-                    <span className="loading"></span>
-                    <span style={{ marginLeft: '0.5rem' }}>Requesting...</span>
+                    <span style={{ marginRight: '0.25rem' }}>✓</span>
+                    Copied!
                   </>
-                ) : 'Request Matching')}
+                ) : (
+                  'Copy Student Link'
+                )}
               </button>
-            )}
+
+              {/* Request Matching Button - show when not already matched, gray out when students incomplete */}
+              {!isMatched && (
+                <button 
+                  className="btn btn-primary" 
+                  disabled={isRequestingMatching || readyForMatching || !allActiveStudentsComplete}
+                  onClick={handleRequestMatchingClick}
+                  style={{
+                    backgroundColor: readyForMatching ? '#28a745' : 'white',
+                    color: readyForMatching ? 'white' : '#555',
+                    border: readyForMatching ? '1px solid #28a745' : '1px solid #ddd',
+                    cursor: (isRequestingMatching || readyForMatching || !allActiveStudentsComplete) ? 'not-allowed' : 'pointer',
+                    opacity: (isRequestingMatching || readyForMatching || !allActiveStudentsComplete) ? 0.6 : 1,
+                    fontSize: '13px'
+                  }}
+                  title={
+                    readyForMatching 
+                      ? "Matching has been requested" 
+                      : !allActiveStudentsComplete
+                      ? "Complete all student profiles first"
+                      : "Request matching for your students"
+                  }
+                >
+                  {readyForMatching ? 'Matching Requested' : (isRequestingMatching ? (
+                    <>
+                      <span className="loading"></span>
+                      <span style={{ marginLeft: '0.25rem' }}>Requesting...</span>
+                    </>
+                  ) : 'Request Matching')}
+                </button>
+              )}
+            </div>
+
+            {/* Bottom row - Add Student and Download */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              <Link 
+                href={`/register-student?token=${schoolData.dashboardToken}`}
+                className="btn btn-primary"
+                style={{
+                  ...(readyForMatching ? { 
+                    opacity: 0.6, 
+                    cursor: 'not-allowed',
+                    pointerEvents: 'none'
+                  } : {}),
+                  fontSize: '13px',
+                  textDecoration: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+                title={readyForMatching ? "Cannot add students after matching is requested" : "Add new student"}
+              >
+                Add New Student
+              </Link>
+              
+              <button 
+                className="btn btn-primary"
+                disabled={schoolData.students.length === 0 || readyForMatching}
+                onClick={() => {
+                  if (schoolData.students.length > 0 && !readyForMatching && schoolData?.dashboardToken) {
+                    window.open(`/dashboard/print?token=${schoolData.dashboardToken}`, '_blank');
+                  }
+                }}
+                style={{
+                  opacity: (schoolData.students.length === 0 || readyForMatching) ? 0.6 : 1,
+                  cursor: (schoolData.students.length === 0 || readyForMatching) ? 'not-allowed' : 'pointer',
+                  fontSize: '13px'
+                }}
+                title={readyForMatching ? "Matching has been requested" : (schoolData.students.length === 0 ? "Need students first" : "Download student information")}
+              >
+                Download Student Info
+              </button>
+            </div>
           </div>
         )}
       </div>
