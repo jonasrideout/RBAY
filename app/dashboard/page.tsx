@@ -12,7 +12,7 @@ import Header from '../components/Header';
 import DashboardHeader from './components/DashboardHeader';
 import StudentMetricsGrid from './components/StudentMetricsGrid';
 import MatchingStatusCard from './components/MatchingStatusCard';
-import MatchedSchoolDisplay from './components/MatchedSchoolDisplay';
+// import MatchedSchoolDisplay from './components/MatchedSchoolDisplay'; // TODO: Create this component file
 import MissingInfoStudents from './components/MissingInfoStudents';
 import ReadyStudents from './components/ReadyStudents';
 import ConfirmationDialog from './components/ConfirmationDialog';
@@ -376,7 +376,8 @@ function TeacherDashboardContent() {
         />
 
         {/* Show matched school display when matched, otherwise show matching status */}
-        {isMatched && schoolData.matchedSchoolName ? (
+        {/* TODO: Uncomment when MatchedSchoolDisplay component is created */}
+        {/*isMatched && schoolData.matchedSchoolName ? (
           <MatchedSchoolDisplay
             schoolData={schoolData}
             matchedSchoolName={schoolData.matchedSchoolName}
@@ -384,12 +385,12 @@ function TeacherDashboardContent() {
             matchedSchoolEmail={schoolData.matchedSchool?.teacherEmail}
             matchedSchoolRegion={schoolData.matchedSchool?.region}
           />
-        ) : (
+        ) : (*/}
           <MatchingStatusCard 
             schoolData={schoolData}
             allActiveStudentsComplete={allActiveStudentsComplete}
           />
-        )}
+        {/*})*/}
 
         <MissingInfoStudents 
           studentsNeedingInfo={studentsNeedingInfo}
