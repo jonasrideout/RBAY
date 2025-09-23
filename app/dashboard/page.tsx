@@ -414,48 +414,10 @@ function TeacherDashboardContent() {
               No Students Registered Yet
             </h3>
             <p className="text-meta-info" style={{ marginBottom: '2rem' }}>
-              Share the student registration link above to get started, or add students manually.
+              Use the "Copy Student Link" button above to share with your students, or click "Add New Student" to add them manually.
             </p>
-            <Link 
-              href={`/register-student?token=${schoolData?.dashboardToken}`}
-              className="btn btn-primary"
-            >
-              Add First Student
-            </Link>
           </div>
         )}
-
-        {/* Action Buttons */}
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-          <Link 
-            href={`/register-student?token=${schoolData?.dashboardToken}`}
-            className="btn btn-primary"
-            style={readyForMatching ? { 
-              opacity: 0.6, 
-              cursor: 'not-allowed',
-              pointerEvents: 'none'
-            } : {}}
-            title={readyForMatching ? "Cannot add students after matching is requested" : "Add new student"}
-          >
-            Add New Student
-          </Link>
-          <button 
-            className="btn btn-primary"
-            disabled={!hasActiveStudents || readyForMatching}
-            onClick={() => {
-              if (hasActiveStudents && !readyForMatching && schoolData?.dashboardToken) {
-                window.open(`/dashboard/print?token=${schoolData.dashboardToken}`, '_blank');
-              }
-            }}
-            style={{
-              opacity: (!hasActiveStudents || readyForMatching) ? 0.6 : 1,
-              cursor: (!hasActiveStudents || readyForMatching) ? 'not-allowed' : 'pointer'
-            }}
-            title={readyForMatching ? "Matching has been requested" : (!hasActiveStudents ? "Need students first" : "Download student information")}
-          >
-            Download Student Info
-          </button>
-        </div>
 
       </main>
 
