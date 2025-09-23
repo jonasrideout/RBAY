@@ -41,11 +41,6 @@ interface SchoolData {
   students: any[];
   matchedWithSchoolId?: string;
   matchedSchoolName?: string;
-  matchedSchool?: {
-    teacherName: string;
-    teacherEmail: string;
-    region: string;
-  };
 }
 
 function TeacherDashboardContent() {
@@ -115,12 +110,7 @@ function TeacherDashboardContent() {
         status: data.school.status,
         students: data.school.students,
         matchedWithSchoolId: data.school.matchedWithSchoolId,
-        matchedSchoolName: data.school.matchedWithSchool?.schoolName || undefined,
-        matchedSchool: data.school.matchedWithSchool ? {
-          teacherName: data.school.matchedWithSchool.teacherName,
-          teacherEmail: data.school.matchedWithSchool.teacherEmail,
-          region: data.school.matchedWithSchool.region
-        } : undefined
+        matchedSchoolName: data.school.matchedWithSchool?.schoolName || undefined
       };
 
       setSchoolData(transformedSchoolData);
@@ -375,22 +365,11 @@ function TeacherDashboardContent() {
           studentsWithInterests={studentsWithInterests}
         />
 
-        {/* Show matched school display when matched, otherwise show matching status */}
-        {/* TODO: Uncomment when MatchedSchoolDisplay component is created */}
-        {/*isMatched && schoolData.matchedSchoolName ? (
-          <MatchedSchoolDisplay
-            schoolData={schoolData}
-            matchedSchoolName={schoolData.matchedSchoolName}
-            matchedSchoolTeacher={schoolData.matchedSchool?.teacherName}
-            matchedSchoolEmail={schoolData.matchedSchool?.teacherEmail}
-            matchedSchoolRegion={schoolData.matchedSchool?.region}
-          />
-        ) : (*/}
-          <MatchingStatusCard 
-            schoolData={schoolData}
-            allActiveStudentsComplete={allActiveStudentsComplete}
-          />
-        {/*})*/}
+        {/* Show matching status card for all cases until MatchedSchoolDisplay is implemented */}
+        <MatchingStatusCard 
+          schoolData={schoolData}
+          allActiveStudentsComplete={allActiveStudentsComplete}
+        />
 
         <MissingInfoStudents 
           studentsNeedingInfo={studentsNeedingInfo}
