@@ -11,7 +11,7 @@ import Header from '../components/Header';
 // Import components
 import DashboardHeader from './components/DashboardHeader';
 import StudentMetricsGrid from './components/StudentMetricsGrid';
-import MatchingStatusCard from './components/MatchingStatusCard';
+import MatchingSection from './components/MatchingSection';
 import MissingInfoStudents from './components/MissingInfoStudents';
 import ReadyStudents from './components/ReadyStudents';
 import ConfirmationDialog from './components/ConfirmationDialog';
@@ -40,6 +40,11 @@ interface SchoolData {
   students: any[];
   matchedWithSchoolId?: string;
   matchedSchoolName?: string;
+  matchedSchool?: {
+    teacherName: string;
+    teacherEmail: string;
+    region: string;
+  };
 }
 
 function TeacherDashboardContent() {
@@ -109,7 +114,12 @@ function TeacherDashboardContent() {
         status: data.school.status,
         students: data.school.students,
         matchedWithSchoolId: data.school.matchedWithSchoolId,
-        matchedSchoolName: data.school.matchedWithSchool?.schoolName || undefined
+        matchedSchoolName: data.school.matchedWithSchool?.schoolName || undefined,
+        matchedSchool: data.school.matchedWithSchool ? {
+          teacherName: data.school.matchedWithSchool.teacherName,
+          teacherEmail: data.school.matchedWithSchool.teacherEmail,
+          region: data.school.matchedWithSchool.region
+        } : undefined
       };
 
       setSchoolData(transformedSchoolData);
@@ -362,9 +372,12 @@ function TeacherDashboardContent() {
           studentsWithInterests={studentsWithInterests}
         />
 
-        <MatchingStatusCard 
+        <MatchingSection 
           schoolData={schoolData}
           allActiveStudentsComplete={allActiveStudentsComplete}
+          matchedSchoolTeacher={schoolData.matchedSchool?.teacherName}
+          matchedSchoolEmail={schoolData.matchedSchool?.teacherEmail}
+          matchedSchoolRegion={schoolData.matchedSchool?.region}
         />
 
         <MissingInfoStudents 
