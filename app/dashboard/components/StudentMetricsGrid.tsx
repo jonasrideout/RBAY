@@ -41,7 +41,7 @@ export default function StudentMetricsGrid({
   const estimatedClassSize = schoolData?.expectedClassSize || 0;
   
   return (
-    <div className="grid-4" style={{ marginBottom: '3rem' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem', marginBottom: '3rem' }}>
       
       <div className="card text-center">
         <div style={{ 
