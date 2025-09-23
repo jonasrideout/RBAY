@@ -77,19 +77,13 @@ export default function StudentCard({
     return (
       <div className="card">
         <div style={{ marginBottom: '1rem' }}>
-          <h4 style={{ 
-            color: '#333', 
+          <h4 className="text-data-value" style={{ 
             marginBottom: '0.25rem',
-            fontWeight: '400',
             fontSize: '1.1rem'
           }}>
             {student.firstName} {student.lastInitial}.
           </h4>
-          <span style={{ 
-            color: '#777', 
-            fontSize: '14px',
-            fontWeight: '300'
-          }}>
+          <span className="text-meta-info">
             Grade {student.grade} • {readOnly ? 'Viewing interests' : 'Adding interests'}
           </span>
         </div>
@@ -100,10 +94,8 @@ export default function StudentCard({
           borderRadius: '6px', 
           border: '1px solid #e0e0e0' 
         }}>
-          <h5 style={{ 
+          <h5 className="text-data-value" style={{ 
             marginBottom: '1rem', 
-            color: '#333',
-            fontWeight: '400',
             fontSize: '1rem'
           }}>
             {readOnly ? `${student.firstName}'s Interests:` : `Select ${student.firstName}'s Interests:`}
@@ -115,13 +107,10 @@ export default function StudentCard({
             marginBottom: '1rem' 
           }}>
             {INTEREST_OPTIONS.map(interest => (
-              <label key={interest.value} style={{ 
+              <label key={interest.value} className="text-meta-info" style={{ 
                 display: 'flex', 
                 alignItems: 'center', 
-                gap: '0.5rem',
-                fontSize: '14px',
-                fontWeight: '300',
-                color: '#555'
+                gap: '0.5rem'
               }}>
                 <input 
                   type="checkbox" 
@@ -134,12 +123,9 @@ export default function StudentCard({
             ))}
           </div>
           <div style={{ marginBottom: '1rem' }}>
-            <label style={{ 
+            <label className="text-data-value" style={{ 
               display: 'block', 
-              marginBottom: '0.5rem', 
-              fontWeight: '400',
-              color: '#333',
-              fontSize: '14px'
+              marginBottom: '0.5rem'
             }}>
               Other Interests:
             </label>
@@ -180,11 +166,9 @@ export default function StudentCard({
       <div className="card" style={{ padding: '12px', margin: '0' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h4 style={{ 
-              color: '#333', 
+            <h4 className="text-data-value" style={{ 
               marginBottom: '0', 
-              fontSize: '1rem',
-              fontWeight: '400'
+              fontSize: '1rem'
             }}>
               {student.firstName} {student.lastInitial}.
             </h4>
@@ -235,10 +219,8 @@ export default function StudentCard({
           marginBottom: '1rem' 
         }}>
           <div>
-            <h4 style={{ 
-              color: '#333', 
+            <h4 className="text-data-value" style={{ 
               marginBottom: '0.25rem',
-              fontWeight: '400',
               fontSize: '1.1rem'
             }}>
               {student.firstName} {student.lastInitial}.
@@ -276,11 +258,7 @@ export default function StudentCard({
         </div>
         
         <div style={{ marginBottom: '0' }}>
-          <strong style={{ 
-            color: '#333',
-            fontSize: '14px',
-            fontWeight: '400'
-          }}>
+          <strong className="text-data-value">
             Interests:
           </strong>
           <div style={{ 
@@ -306,12 +284,9 @@ export default function StudentCard({
             ))}
           </div>
           {student.otherInterests && (
-            <p style={{ 
-              color: '#777', 
-              fontSize: '14px', 
+            <p className="text-meta-info" style={{ 
               marginTop: '8px', 
-              marginBottom: '0',
-              fontWeight: '300'
+              marginBottom: '0'
             }}>
               <em>Other:</em> {student.otherInterests}
             </p>
@@ -335,11 +310,9 @@ export default function StudentCard({
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h4 style={{ 
-              color: '#333', 
+            <h4 className="text-data-value" style={{ 
               marginBottom: '0', 
-              fontSize: '1rem',
-              fontWeight: '400'
+              fontSize: '1rem'
             }}>
               {student.firstName} {student.lastInitial}.
             </h4>
