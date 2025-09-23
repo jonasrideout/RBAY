@@ -1,10 +1,10 @@
 // /lib/auth.ts
-import NextAuth from 'next-auth';
-import Google from 'next-auth/providers/google';
+import { NextAuthOptions } from 'next-auth';
+import GoogleProvider from 'next-auth/providers/google';
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
-    Google({
+    GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
@@ -29,16 +29,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return true;
     },
     async session({ session, token }) {
-      // REMOVED PRISMA CALL - Edge Runtime compatible
       // School data will be fetched separately in dashboard and student registration
       // This ensures sessions work properly
       return session;
     },
     async redirect({ url, baseUrl }) {
-      return baseUrl; // Always redirect to home page instead of dashboard
+      return baseUrl; // Always redirect to home page for now
     },
   },
   session: {
     strategy: 'jwt',
   },
-});
+};
