@@ -32,11 +32,16 @@ interface StudentMetricsGridProps {
   readOnly?: boolean;
 }
 
-export default function StudentMetricsGrid({ schoolData, totalStudents, studentsWithInterests, readOnly = false }: StudentMetricsGridProps) {
+export default function StudentMetricsGrid({ 
+  schoolData, 
+  totalStudents, 
+  studentsWithInterests, 
+  readOnly = false 
+}: StudentMetricsGridProps) {
   const estimatedClassSize = schoolData?.expectedClassSize || 0;
   
   return (
-    <div className="grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)', marginBottom: '3rem' }}>
+    <div className="grid-4" style={{ marginBottom: '3rem' }}>
       
       <div className="card text-center">
         <div style={{ 
@@ -47,19 +52,10 @@ export default function StudentMetricsGrid({ schoolData, totalStudents, students
         }}>
           {estimatedClassSize}
         </div>
-        <div style={{ 
-          color: '#555', 
-          fontWeight: '400',
-          fontSize: '14px',
-          marginBottom: '0.25rem'
-        }}>
+        <div className="text-data-value" style={{ marginBottom: '0.25rem' }}>
           Estimated Class Size
         </div>
-        <div style={{ 
-          fontSize: '12px', 
-          color: '#777',
-          fontWeight: '300'
-        }}>
+        <div className="text-data-label">
           Expected in class
         </div>
       </div>
@@ -73,19 +69,10 @@ export default function StudentMetricsGrid({ schoolData, totalStudents, students
         }}>
           {totalStudents}
         </div>
-        <div style={{ 
-          color: '#555', 
-          fontWeight: '400',
-          fontSize: '14px',
-          marginBottom: '0.25rem'
-        }}>
+        <div className="text-data-value" style={{ marginBottom: '0.25rem' }}>
           Students Registered
         </div>
-        <div style={{ 
-          fontSize: '12px', 
-          color: '#777',
-          fontWeight: '300'
-        }}>
+        <div className="text-data-label">
           Actually signed up
         </div>
       </div>
@@ -99,19 +86,10 @@ export default function StudentMetricsGrid({ schoolData, totalStudents, students
         }}>
           {studentsWithInterests.length}
         </div>
-        <div style={{ 
-          color: '#555', 
-          fontWeight: '400',
-          fontSize: '14px',
-          marginBottom: '0.25rem'
-        }}>
+        <div className="text-data-value" style={{ marginBottom: '0.25rem' }}>
           Students Ready to Match
         </div>
-        <div style={{ 
-          fontSize: '12px', 
-          color: '#777',
-          fontWeight: '300'
-        }}>
+        <div className="text-data-label">
           Have complete profiles
         </div>
       </div>
@@ -125,19 +103,10 @@ export default function StudentMetricsGrid({ schoolData, totalStudents, students
         }}>
           {schoolData?.startMonth || 'Not Set'}
         </div>
-        <div style={{ 
-          color: '#555', 
-          fontWeight: '400',
-          fontSize: '14px',
-          marginBottom: '0.25rem'
-        }}>
+        <div className="text-data-value" style={{ marginBottom: '0.25rem' }}>
           Start Date
         </div>
-        <div style={{ 
-          fontSize: '12px', 
-          color: '#777',
-          fontWeight: '300'
-        }}>
+        <div className="text-data-label">
           Requested timeline
         </div>
       </div>
