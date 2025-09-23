@@ -169,27 +169,33 @@ export default function DashboardHeader({
               )}
             </button>
 
-            {/* Request Matching Button - only show when students are ready and not already matched/requested */}
-            {allActiveStudentsComplete && !isMatched && (
+            {/* Request Matching Button - show when not already matched, gray out when students incomplete */}
+            {!isMatched && (
               <button 
                 className="btn btn-primary" 
-                disabled={isRequestingMatching || readyForMatching}
+                disabled={isRequestingMatching || readyForMatching || !allActiveStudentsComplete}
                 onClick={handleRequestMatchingClick}
                 style={{
                   backgroundColor: readyForMatching ? '#28a745' : 'white',
                   color: readyForMatching ? 'white' : '#555',
                   border: readyForMatching ? '1px solid #28a745' : '1px solid #ddd',
-                  cursor: (isRequestingMatching || readyForMatching) ? 'not-allowed' : 'pointer',
-                  opacity: (isRequestingMatching || readyForMatching) ? 0.8 : 1
+                  cursor: (isRequestingMatching || readyForMatching || !allActiveStudentsComplete) ? 'not-allowed' : 'pointer',
+                  opacity: (isRequestingMatching || readyForMatching || !allActiveStudentsComplete) ? 0.6 : 1
                 }}
-                title={readyForMatching ? "Matching has been requested" : "Request matching for your students"}
+                title={
+                  readyForMatching 
+                    ? "Matching has been requested" 
+                    : !allActiveStudentsComplete
+                    ? "Complete all student profiles first"
+                    : "Request matching for your students"
+                }
               >
-                {readyForMatching ? '✅ Matching Requested' : (isRequestingMatching ? (
+                {readyForMatching ? 'Matching Requested' : (isRequestingMatching ? (
                   <>
                     <span className="loading"></span>
                     <span style={{ marginLeft: '0.5rem' }}>Requesting...</span>
                   </>
-                ) : '🎯 Request Matching')}
+                ) : 'Request Matching')}
               </button>
             )}
           </div>
