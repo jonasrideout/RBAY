@@ -13,7 +13,7 @@ function LoginContent() {
   const [error, setError] = useState('');
   const searchParams = useSearchParams();
   const router = useRouter();
-  const errorParam = searchParams.get('error');
+  const errorParam = searchParams?.get('error');
 
   useEffect(() => {
     // Check if user is already logged in
