@@ -4,7 +4,7 @@ import { getAdminSession } from '@/lib/adminAuth';
 
 export async function GET(request: NextRequest) {
   try {
-    const adminSession = await getAdminSession();
+    const adminSession = await getAdminSession(request);
 
     if (!adminSession) {
       return NextResponse.json(
@@ -15,9 +15,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       email: adminSession.email,
-      role: adminSession.role
     });
-
   } catch (error) {
     console.error('Admin session check error:', error);
     return NextResponse.json(
