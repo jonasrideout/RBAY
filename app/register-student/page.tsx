@@ -78,7 +78,7 @@ function RegisterStudentForm() {
         return;
       }
       
-      const token = searchParams.get('token');
+      const token = searchParams?.get('token');
       console.log('Token from URL:', token);
       
       // Try direct session API call first
