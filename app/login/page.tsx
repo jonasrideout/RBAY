@@ -2,7 +2,6 @@
 
 'use client';
 
-import { signIn, getSession } from 'next-auth/react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
@@ -16,16 +15,13 @@ function LoginContent() {
   const errorParam = searchParams?.get('error');
 
   useEffect(() => {
-    // Check if user is already logged in
-    getSession().then((session) => {
-      if (session) {
-        router.push('/dashboard');
-      }
-    });
-
     // Handle URL error parameters
     if (errorParam === 'AccessDenied') {
       setError('Access denied. Please try again or contact support.');
+    } else if (errorParam === 'no_code') {
+      setError('Authentication was cancelled. Please try again.');
+    } else if (errorParam === 'callback_error') {
+      setError('An error occurred during authentication. Please try again.');
     } else if (errorParam) {
       setError('An error occurred during sign-in. Please try again.');
     }
@@ -36,14 +32,11 @@ function LoginContent() {
       setIsLoading(true);
       setError('');
       
-      await signIn('google', {
-        callbackUrl: '/dashboard',
-        redirect: true,
-      });
+      // Redirect to our custom Google OAuth endpoint
+      window.location.href = '/api/auth/google-login';
     } catch (error) {
       console.error('Sign-in error:', error);
       setError('Failed to sign in. Please try again.');
-    } finally {
       setIsLoading(false);
     }
   };
