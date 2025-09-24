@@ -49,7 +49,7 @@ interface PenPalData {
 
 function PenPalListContent() {
   const searchParams = useSearchParams();
-  const schoolId = searchParams.get('schoolId');
+  const schoolId = searchParams?.get('schoolId');
   
   const [data, setData] = useState<PenPalData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
