@@ -8,7 +8,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   // Use the host header to build the redirect URI
   const protocol = req.headers['x-forwarded-proto'] || 'https';
   const host = req.headers.host;
-  const redirectUri = `${protocol}://${host}/api/auth/callback`;
+  const redirectUri = `${protocol}://${host}/api/auth/callback/google`;
 
   const googleAuthUrl = `https://accounts.google.com/oauth/authorize?` +
     `client_id=${process.env.GOOGLE_CLIENT_ID}&` +
