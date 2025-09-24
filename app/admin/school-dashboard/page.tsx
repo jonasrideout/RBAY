@@ -49,7 +49,7 @@ function AdminSchoolDashboardContent() {
   const [expandedReadyStudents, setExpandedReadyStudents] = useState<Set<string>>(new Set());
 
   // Get schoolId from URL parameters
-  const schoolId = searchParams.get('schoolId');
+  const schoolId = searchParams?.get('schoolId');
 
   // Check admin authentication and fetch school data
   useEffect(() => {
