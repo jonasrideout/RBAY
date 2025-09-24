@@ -22,7 +22,7 @@ function RegisterSchoolContent() {
   const [hasCheckedExistingSchool, setHasCheckedExistingSchool] = useState(false);
 
   // Check if this is admin mode
-  const isAdminMode = searchParams.get('admin') === 'true';
+  const isAdminMode = searchParams?.get('admin') === 'true';
 
   const [formData, setFormData] = useState<SchoolFormData>({
     teacherName: '',
