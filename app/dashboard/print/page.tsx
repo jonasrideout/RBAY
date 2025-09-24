@@ -32,7 +32,7 @@ function DashboardPrintContent() {
   const [error, setError] = useState('');
 
   // Get token from URL parameter (not teacher email)
-  const token = searchParams.get('token');
+  const token = searchParams?.get('token');
 
   useEffect(() => {
     if (token) {
