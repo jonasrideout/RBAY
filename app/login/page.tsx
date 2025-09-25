@@ -1,5 +1,3 @@
-// /app/login/page.tsx
-
 'use client';
 
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -8,15 +6,25 @@ import Link from 'next/link';
 import Header from '../components/Header';
 
 function LoginContent() {
+  const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
   const errorParam = searchParams?.get('error');
 
   useEffect(() => {
-    // Handle URL error parameters
-    if (errorParam === 'AccessDenied') {
+    // Handle URL error parameters from magic link verification
+    if (errorParam === 'invalid_link') {
+      setError('Invalid login link. Please request a new one.');
+    } else if (errorParam === 'invalid_or_expired') {
+      setError('Login link has expired. Please request a new one.');
+    } else if (errorParam === 'teacher_not_found') {
+      setError('Teacher account not found. Please register your school first.');
+    } else if (errorParam === 'verification_failed') {
+      setError('Login verification failed. Please try again.');
+    } else if (errorParam === 'AccessDenied') {
       setError('Access denied. Please try again or contact support.');
     } else if (errorParam === 'no_code') {
       setError('Authentication was cancelled. Please try again.');
@@ -27,73 +35,142 @@ function LoginContent() {
     }
   }, [errorParam, router]);
 
-  const handleGoogleSignIn = async () => {
+  const handleSendMagicLink = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email.trim()) {
+      setError('Please enter your email address.');
+      return;
+    }
+
     try {
       setIsLoading(true);
       setError('');
       
-      // Redirect to our custom Google OAuth endpoint
-      window.location.href = '/api/auth/google-login';
+      const response = await fetch('/api/auth/send-magic-link', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: email.trim().toLowerCase() }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (data.needsRegistration) {
+          setError('No school found for this email address. Please register your school first.');
+        } else {
+          throw new Error(data.error || 'Failed to send login link');
+        }
+        return;
+      }
+
+      setSuccess(true);
+      setEmail(''); // Clear email field
     } catch (error) {
-      console.error('Sign-in error:', error);
-      setError('Failed to sign in. Please try again.');
+      console.error('Send magic link error:', error);
+      setError(error instanceof Error ? error.message : 'Failed to send login link. Please try again.');
+    } finally {
       setIsLoading(false);
     }
   };
 
+  const handleNewLink = () => {
+    setSuccess(false);
+    setError('');
+  };
+
+  if (success) {
+    return (
+      <div className="page">
+        <Header showLogin={false} />
+        <main className="container" style={{ flex: 1, paddingTop: '2rem' }}>
+          <div className="card" style={{ 
+            maxWidth: '400px', 
+            margin: '0 auto',
+            textAlign: 'center' 
+          }}>
+            {/* Success Icon */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <div style={{
+                width: '60px',
+                height: '60px',
+                backgroundColor: '#28a745',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto'
+              }}>
+                <svg style={{ width: '30px', height: '30px', color: 'white' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            </div>
+
+            <h1 className="text-h2" style={{ marginBottom: '1rem' }}>
+              Check Your Email
+            </h1>
+            
+            <p className="text-meta-info" style={{ marginBottom: '2rem' }}>
+              We've sent you a secure login link. Click the link in your email to access your teacher dashboard.
+            </p>
+
+            <div className="alert alert-warning" style={{ marginBottom: '2rem' }}>
+              <strong>Note:</strong> The login link expires in 30 minutes for your security.
+            </div>
+
+            <div style={{ marginBottom: '2rem' }}>
+              <p className="text-meta-info" style={{ marginBottom: '1rem' }}>
+                Don't see the email? Check your spam folder or:
+              </p>
+              <button
+                onClick={handleNewLink}
+                className="nav-link"
+                style={{ background: 'none', border: 'none' }}
+              >
+                Send another login link
+              </button>
+            </div>
+
+            <div style={{ 
+              borderTop: '1px solid #e9ecef',
+              paddingTop: '1.5rem'
+            }}>
+              <a href="/" className="nav-link">
+                ← Back to Home
+              </a>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="page">
-      {/* Header */}
       <Header showLogin={false} />
 
-      {/* Main Content */}
-      <main style={{ 
-        flex: 1, 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        padding: '2rem 1rem' 
-      }}>
-        <div style={{ 
-          width: '100%', 
-          maxWidth: '400px',
-          backgroundColor: 'white',
-          borderRadius: '0.5rem',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-          padding: '2rem'
-        }}>
+      <main className="container" style={{ flex: 1, paddingTop: '2rem' }}>
+        <div className="card" style={{ maxWidth: '400px', margin: '0 auto' }}>
           {/* Title */}
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <h1 style={{ 
-              fontSize: '2.5rem', 
-              fontWeight: 'bold', 
-              color: '#2c5aa0', 
-              marginBottom: '0.5rem' 
-            }}>
+            <h1 className="text-h1" style={{ marginBottom: '0.5rem' }}>
               Welcome
             </h1>
-            <p style={{ 
-              color: '#6c757d', 
-              fontSize: '1rem',
-              lineHeight: '1.5'
-            }}>
-              Sign in to register or access your school
+            <p className="text-meta-info">
+              Enter your email to receive a secure login link
             </p>
           </div>
 
           {/* Error Message */}
           {error && (
-            <div style={{ 
-              marginBottom: '1.5rem',
-              backgroundColor: '#fef2f2',
-              border: '1px solid #fecaca',
-              borderRadius: '0.375rem',
-              padding: '1rem'
-            }}>
+            <div className="alert alert-error" style={{ marginBottom: '1.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'flex-start' }}>
                 <div style={{ flexShrink: 0, marginRight: '0.75rem' }}>
                   <svg 
-                    style={{ height: '20px', width: '20px', color: '#ef4444' }} 
+                    style={{ height: '20px', width: '20px', color: '#c53030' }} 
                     viewBox="0 0 20 20" 
                     fill="currentColor"
                   >
@@ -105,18 +182,10 @@ function LoginContent() {
                   </svg>
                 </div>
                 <div>
-                  <h3 style={{ 
-                    fontSize: '0.875rem', 
-                    fontWeight: '500', 
-                    color: '#dc2626',
-                    margin: '0 0 0.25rem 0'
-                  }}>
+                  <h3 className="text-normal" style={{ color: '#c53030', margin: '0 0 0.25rem 0' }}>
                     Sign-in Error
                   </h3>
-                  <div style={{ 
-                    fontSize: '0.875rem', 
-                    color: '#b91c1c' 
-                  }}>
+                  <div style={{ color: '#721c24' }}>
                     {error}
                   </div>
                 </div>
@@ -124,100 +193,55 @@ function LoginContent() {
             </div>
           )}
 
-          {/* Google Sign In Button */}
-          <button
-            onClick={handleGoogleSignIn}
-            disabled={isLoading}
-            style={{
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: '0.75rem 1rem',
-              border: '2px solid #e5e7eb',
-              borderRadius: '0.5rem',
-              backgroundColor: 'white',
-              color: '#374151',
-              fontSize: '1rem',
-              fontWeight: '500',
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              opacity: isLoading ? 0.5 : 1,
-              transition: 'all 0.2s ease',
-              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-            }}
-            onMouseOver={(e) => {
-              if (!isLoading) {
-                const target = e.target as HTMLButtonElement;
-                target.style.backgroundColor = '#f9fafb';
-                target.style.borderColor = '#d1d5db';
-              }
-            }}
-            onMouseOut={(e) => {
-              if (!isLoading) {
-                const target = e.target as HTMLButtonElement;
-                target.style.backgroundColor = 'white';
-                target.style.borderColor = '#e5e7eb';
-              }
-            }}
-          >
-            {isLoading ? (
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <svg 
-                  style={{ 
-                    animation: 'spin 1s linear infinite',
-                    marginLeft: '-0.25rem',
-                    marginRight: '0.75rem',
-                    height: '20px',
-                    width: '20px',
-                    color: '#374151'
-                  }} 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  fill="none" 
-                  viewBox="0 0 24 24"
-                >
-                  <circle 
-                    style={{ opacity: 0.25 }} 
-                    cx="12" 
-                    cy="12" 
-                    r="10" 
+          {/* Magic Link Form */}
+          <form onSubmit={handleSendMagicLink}>
+            <div className="form-group">
+              <label htmlFor="email" className="form-label">
+                Email Address
+              </label>
+              <input
+                type="email"
+                id="email"
+                className="form-input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="teacher@school.edu"
+                required
+                disabled={isLoading}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading || !email.trim()}
+              className="btn btn-primary"
+              style={{ width: '100%' }}
+            >
+              {isLoading ? (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div className="loading" style={{ marginRight: '0.75rem' }}></div>
+                  Sending Login Link...
+                </div>
+              ) : (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg 
+                    style={{ width: '20px', height: '20px', marginRight: '0.75rem' }} 
+                    fill="none" 
                     stroke="currentColor" 
-                    strokeWidth="4"
-                  ></circle>
-                  <path 
-                    style={{ opacity: 0.75 }} 
-                    fill="currentColor" 
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                Signing in...
-              </div>
-            ) : (
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <svg 
-                  style={{ width: '20px', height: '20px', marginRight: '0.75rem' }} 
-                  viewBox="0 0 24 24"
-                >
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                </svg>
-                Sign in with Google
-              </div>
-            )}
-          </button>
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                  </svg>
+                  Send Login Link
+                </div>
+              )}
+            </button>
+          </form>
 
           {/* Help Text */}
-          <div style={{ 
-            marginTop: '1.5rem', 
-            textAlign: 'center' 
-          }}>
-            <p style={{ 
-              fontSize: '0.875rem', 
-              color: '#6b7280',
-              lineHeight: '1.5'
-            }}>
-              New users will be guided through school registration after signing in.
+          <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+            <p className="text-meta-info">
+              New teachers should register their school first, then return here to sign in.
             </p>
           </div>
 
@@ -225,20 +249,12 @@ function LoginContent() {
           <div style={{ 
             marginTop: '1.5rem', 
             textAlign: 'center',
-            borderTop: '1px solid #e5e7eb',
+            borderTop: '1px solid #e9ecef',
             paddingTop: '1.5rem'
           }}>
-            <Link 
-              href="/" 
-              style={{ 
-                fontSize: '0.875rem', 
-                color: '#3b82f6', 
-                textDecoration: 'none',
-                fontWeight: '500'
-              }}
-            >
+            <a href="/" className="nav-link">
               ← Back to Home
-            </Link>
+            </a>
           </div>
         </div>
       </main>
@@ -249,46 +265,9 @@ function LoginContent() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div style={{ 
-        minHeight: '100vh', 
-        backgroundColor: '#f8f9fa',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        <div style={{ 
-          backgroundColor: 'white',
-          borderRadius: '0.5rem',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-          padding: '2rem',
-          display: 'flex',
-          justifyContent: 'center'
-        }}>
-          <svg 
-            style={{ 
-              animation: 'spin 1s linear infinite',
-              height: '32px',
-              width: '32px',
-              color: '#3b82f6'
-            }} 
-            xmlns="http://www.w3.org/2000/svg" 
-            fill="none" 
-            viewBox="0 0 24 24"
-          >
-            <circle 
-              style={{ opacity: 0.25 }} 
-              cx="12" 
-              cy="12" 
-              r="10" 
-              stroke="currentColor" 
-              strokeWidth="4"
-            ></circle>
-            <path 
-              style={{ opacity: 0.75 }} 
-              fill="currentColor" 
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
+      <div className="page">
+        <div className="container" style={{ textAlign: 'center', paddingTop: '2rem' }}>
+          <div className="loading" style={{ margin: '0 auto' }}></div>
         </div>
       </div>
     }>
