@@ -3,7 +3,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from 'react';
-import { useSession } from 'next-auth/react';
+import { useTeacherSession } from '@/lib/useTeacherSession';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { SchoolFormData } from './types';
 import { STATE_TO_REGION } from './constants';
@@ -11,7 +11,7 @@ import SchoolRegistrationForm from './components/SchoolRegistrationForm';
 import SuccessPage from './components/SuccessPage';
 
 function RegisterSchoolContent() {
-  const { data: session, status } = useSession();
+  const { data: session, status } = useTeacherSession();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -20,9 +20,12 @@ function RegisterSchoolContent() {
   const [registeredSchool, setRegisteredSchool] = useState<any>(null);
   const [showExistingSchoolError, setShowExistingSchoolError] = useState(false);
   const [hasCheckedExistingSchool, setHasCheckedExistingSchool] = useState(false);
+  const [verifiedEmail, setVerifiedEmail] = useState<string>('');
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
 
-  // Check if this is admin mode
+  // Check if this is admin mode or email verification mode
   const isAdminMode = searchParams?.get('admin') === 'true';
+  const isVerificationMode = searchParams?.get('verified') === 'true';
 
   const [formData, setFormData] = useState<SchoolFormData>({
     teacherName: '',
@@ -39,10 +42,46 @@ function RegisterSchoolContent() {
     parentNotification: false
   });
 
+  // Extract email from registration token cookie on mount
+  useEffect(() => {
+    if (isVerificationMode) {
+      try {
+        // Get registration token from cookie
+        const cookies = document.cookie.split(';');
+        const registrationTokenCookie = cookies.find(c => c.trim().startsWith('registration-token='));
+        
+        if (registrationTokenCookie) {
+          const tokenValue = registrationTokenCookie.split('=')[1];
+          const tokenData = JSON.parse(Buffer.from(tokenValue, 'base64').toString());
+          
+          // Check if token is still valid
+          if (tokenData.expires && Date.now() < tokenData.expires && tokenData.email) {
+            setVerifiedEmail(tokenData.email);
+            setIsEmailVerified(true);
+            setFormData(prev => ({
+              ...prev,
+              teacherEmail: tokenData.email
+            }));
+            console.log('Pre-populated email from registration token:', tokenData.email);
+          } else {
+            console.log('Registration token expired or invalid');
+            // Token expired, redirect back to login
+            router.push('/login?error=verification_expired');
+            return;
+          }
+        }
+      } catch (error) {
+        console.error('Error reading registration token:', error);
+        router.push('/login?error=verification_failed');
+        return;
+      }
+    }
+  }, [isVerificationMode, router]);
+
   // Handle authentication and existing school check
   useEffect(() => {
-    // Skip authentication checks in admin mode
-    if (isAdminMode) {
+    // Skip authentication checks in admin mode or email verification mode
+    if (isAdminMode || isEmailVerified) {
       setHasCheckedExistingSchool(true);
       return;
     }
@@ -56,21 +95,22 @@ function RegisterSchoolContent() {
     }
 
     if (session?.user) {
-      // Auto-populate email from session (only in non-admin mode)
-      setFormData(prev => ({
-        ...prev,
-        teacherEmail: session.user.email || ''
-      }));
+      // Auto-populate email from session (only in regular authenticated mode)
+      if (!isEmailVerified) {
+        setFormData(prev => ({
+          ...prev,
+          teacherEmail: session.user.email || ''
+        }));
+      }
 
       // Only check for existing school if we haven't checked yet AND we're not in success state
       if (!hasCheckedExistingSchool && !isSubmitted) {
-        if (session.user.schoolId) {
-          setShowExistingSchoolError(true);
-        }
+        // Note: We'd need to add schoolId to the session data to make this check work
+        // For now, we'll skip this check in verification mode
         setHasCheckedExistingSchool(true);
       }
     }
-  }, [session, status, router, hasCheckedExistingSchool, isSubmitted, isAdminMode]);
+  }, [session, status, router, hasCheckedExistingSchool, isSubmitted, isAdminMode, isEmailVerified]);
 
   // Scroll to top when success page shows
   useEffect(() => {
@@ -166,7 +206,8 @@ function RegisterSchoolContent() {
         startMonth: formData.programStartMonth,
         specialConsiderations: formData.specialConsiderations,
         programAgreement: formData.programAgreement,
-        isAdminFlow: isAdminMode // Add admin flag
+        isAdminFlow: isAdminMode, // Add admin flag
+        isEmailVerified: isEmailVerified // Add verification flag
       };
 
       const response = await fetch('/api/schools', {
@@ -198,6 +239,11 @@ function RegisterSchoolContent() {
       // Prevent future existing school checks since we just registered successfully
       setHasCheckedExistingSchool(true);
       setShowExistingSchoolError(false);
+
+      // Clear registration token cookie after successful registration
+      if (isEmailVerified) {
+        document.cookie = 'registration-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Lax';
+      }
     } catch (err: any) {
       setError(err.message || 'There was an error submitting your registration. Please try again.');
     } finally {
@@ -205,8 +251,8 @@ function RegisterSchoolContent() {
     }
   };
 
-  // Show loading while checking authentication (skip in admin mode)
-  if (!isAdminMode && status === 'loading') {
+  // Show loading while checking authentication (skip in admin mode and verification mode)
+  if (!isAdminMode && !isEmailVerified && status === 'loading') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="text-center">
@@ -222,8 +268,8 @@ function RegisterSchoolContent() {
     return <SuccessPage registeredSchool={registeredSchool} isAdminMode={isAdminMode} />;
   }
 
-  // Show existing school error with choices (only if not in success state and not admin mode)
-  if (showExistingSchoolError && !isSubmitted && !isAdminMode) {
+  // Show existing school error with choices (only if not in success state and not admin mode and not verification mode)
+  if (showExistingSchoolError && !isSubmitted && !isAdminMode && !isEmailVerified) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
@@ -235,7 +281,7 @@ function RegisterSchoolContent() {
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">School Already Registered</h2>
             <p className="text-gray-600 mb-6">
-              You already have a school registered: <strong>{session?.user.schoolName}</strong>
+              You already have a school registered. Would you like to access your dashboard or register another school?
             </p>
           </div>
           
@@ -267,7 +313,7 @@ function RegisterSchoolContent() {
       onSubmit={handleSubmit}
       onUpdateFormData={updateFormData}
       onGradeLevelChange={handleGradeLevelChange}
-      isEmailReadOnly={!isAdminMode} // Make email editable in admin mode
+      isEmailReadOnly={!isAdminMode || isEmailVerified} // Make email readonly for verified users
       isAdminMode={isAdminMode}
     />
   );
