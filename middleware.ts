@@ -1,4 +1,4 @@
-// /middleware.ts - Custom Session Authentication
+// /middleware.ts - Custom Session Authentication with Email Verification Support
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getSessionFromRequest } from '@/lib/magicLink';
@@ -59,7 +59,7 @@ export function middleware(req: NextRequest) {
   // Dashboard route with admin access support
   const isDashboardRoute = pathname.startsWith('/dashboard');
   
-  // Register school route with special admin mode handling
+  // Register school route with special admin mode and email verification handling
   const isRegisterSchoolRoute = pathname.startsWith('/register-school');
 
   // Dashboard route protection - allow teacher OR admin access
@@ -79,6 +79,10 @@ export function middleware(req: NextRequest) {
     // Check if this is admin mode
     const isAdminMode = searchParams.get('admin') === 'true';
     
+    // Check if this is email verification mode (from magic link)
+    const isEmailVerified = searchParams.get('verified') === 'true';
+    const verifiedEmail = searchParams.get('email');
+    
     if (isAdminMode) {
       // Admin mode - check for admin session
       const adminToken = req.cookies.get('admin-session');
@@ -88,6 +92,10 @@ export function middleware(req: NextRequest) {
         return NextResponse.redirect(adminLoginUrl);
       }
       // Admin authenticated, allow access
+    } else if (isEmailVerified && verifiedEmail) {
+      // Email verification mode - allow access for verified email users
+      console.log('Allowing register-school access for verified email:', verifiedEmail);
+      // Allow access without requiring teacher session
     } else {
       // Regular teacher mode - check for teacher session
       if (!isTeacherLoggedIn) {
