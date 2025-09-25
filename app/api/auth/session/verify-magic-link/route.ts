@@ -34,13 +34,14 @@ export async function GET(request: NextRequest) {
 
       await prisma.$disconnect();
 
+      // For new users (no school), redirect to register-school instead of error
       if (!school) {
-        console.error('Teacher verification failed for:', verification.email);
+        console.log('New teacher verification - redirecting to school registration:', verification.email);
         const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nextjs-boilerplate-beta-three-49.vercel.app';
-        return NextResponse.redirect(`${baseUrl}/login?error=teacher_not_found`);
+        return NextResponse.redirect(`${baseUrl}/register-school?email=${encodeURIComponent(verification.email)}&verified=true`);
       }
 
-      // Create teacher session
+      // Create teacher session for existing teachers
       const session = createTeacherSession(verification.email);
 
       // Create redirect response and set session cookie
@@ -53,6 +54,7 @@ export async function GET(request: NextRequest) {
       console.log('Magic link login successful for:', verification.email);
 
       return response;
+
     } catch (dbError) {
       await prisma.$disconnect();
       console.error('Database error during magic link verification:', dbError);
