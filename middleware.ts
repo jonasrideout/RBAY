@@ -79,9 +79,9 @@ export function middleware(req: NextRequest) {
     // Check if this is admin mode
     const isAdminMode = searchParams.get('admin') === 'true';
     
-    // Check if this is email verification mode (from magic link)
+    // Check if this is email verification mode (via registration token cookie)
     const isEmailVerified = searchParams.get('verified') === 'true';
-    const verifiedEmail = searchParams.get('email');
+    const registrationTokenCookie = req.cookies.get('registration-token');
     
     if (isAdminMode) {
       // Admin mode - check for admin session
@@ -92,10 +92,25 @@ export function middleware(req: NextRequest) {
         return NextResponse.redirect(adminLoginUrl);
       }
       // Admin authenticated, allow access
-    } else if (isEmailVerified && verifiedEmail) {
-      // Email verification mode - allow access for verified email users
-      console.log('Allowing register-school access for verified email:', verifiedEmail);
-      // Allow access without requiring teacher session
+    } else if (isEmailVerified && registrationTokenCookie) {
+      // Email verification mode - validate registration token
+      try {
+        const tokenData = JSON.parse(Buffer.from(registrationTokenCookie.value, 'base64').toString());
+        const now = Date.now();
+        
+        if (tokenData.expires && now < tokenData.expires && tokenData.email) {
+          console.log('Allowing register-school access for verified email via token');
+          // Allow access with valid registration token
+        } else {
+          console.log('Registration token expired or invalid, redirecting to login');
+          const loginUrl = new URL('/login', req.url);
+          return NextResponse.redirect(loginUrl);
+        }
+      } catch (error) {
+        console.log('Invalid registration token, redirecting to login');
+        const loginUrl = new URL('/login', req.url);
+        return NextResponse.redirect(loginUrl);
+      }
     } else {
       // Regular teacher mode - check for teacher session
       if (!isTeacherLoggedIn) {
