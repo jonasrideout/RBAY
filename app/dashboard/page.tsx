@@ -1,12 +1,10 @@
-// /app/dashboard/page.tsx
-
 "use client";
 
 import { useState, useEffect, Suspense } from 'react';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Header from '../components/Header';
+import { useTeacherSession, useSessionWarning } from '@/lib/useTeacherSession';
 
 // Import components
 import DashboardHeader from './components/DashboardHeader';
@@ -47,8 +45,68 @@ interface SchoolData {
   };
 }
 
+// Session Warning Component
+function SessionWarningBanner() {
+  const { showWarning, timeUntilExpiry, dismissWarning, extendSession } = useSessionWarning();
+  const [isExtending, setIsExtending] = useState(false);
+
+  const handleExtendSession = async () => {
+    setIsExtending(true);
+    const success = await extendSession();
+    setIsExtending(false);
+    
+    if (!success) {
+      alert('Failed to extend session. Please save your work and sign in again.');
+    }
+  };
+
+  if (!showWarning || timeUntilExpiry === null) {
+    return null;
+  }
+
+  return (
+    <div className="alert alert-warning" style={{ 
+      position: 'sticky', 
+      top: '0', 
+      zIndex: 1000,
+      marginBottom: '1rem'
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <strong>Session Expiring Soon!</strong> Your session will expire in {timeUntilExpiry} minute{timeUntilExpiry !== 1 ? 's' : ''}. 
+          You'll be automatically logged out unless you take action.
+        </div>
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <button 
+            onClick={handleExtendSession}
+            disabled={isExtending}
+            className="btn btn-success"
+            style={{ minWidth: '120px' }}
+          >
+            {isExtending ? (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div className="loading" style={{ marginRight: '0.5rem' }}></div>
+                Extending...
+              </div>
+            ) : (
+              'Stay Logged In'
+            )}
+          </button>
+          <button 
+            onClick={dismissWarning}
+            className="nav-link"
+            style={{ background: 'none', border: 'none', color: '#856404' }}
+          >
+            Dismiss
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function TeacherDashboardContent() {
-  const { data: session, status } = useSession();
+  const { data: session, status } = useTeacherSession();
   const router = useRouter();
   const [students, setStudents] = useState<Student[]>([]);
   const [schoolData, setSchoolData] = useState<SchoolData | null>(null);
@@ -358,6 +416,8 @@ function TeacherDashboardContent() {
       <Header session={session} onLogout={handleLogout} />
 
       <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
+        
+        <SessionWarningBanner />
         
         <DashboardHeader 
           schoolData={schoolData} 
