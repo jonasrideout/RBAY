@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyMagicLinkToken, createTeacherSession, setSessionCookie } from '@/lib/magicLink';
 import { PrismaClient } from '@prisma/client';
+import crypto from 'crypto';
 
 export async function GET(request: NextRequest) {
   try {
@@ -34,11 +35,33 @@ export async function GET(request: NextRequest) {
 
       await prisma.$disconnect();
 
-      // For new users (no school), redirect to register-school instead of error
+      // For new users (no school), create a temporary registration token
       if (!school) {
-        console.log('New teacher verification - redirecting to school registration:', verification.email);
+        // Generate a short-lived registration token (15 minutes)
+        const registrationToken = crypto.randomBytes(32).toString('hex');
+        const registrationData = {
+          email: verification.email,
+          expires: Date.now() + (15 * 60 * 1000), // 15 minutes
+          token: registrationToken
+        };
+        
+        console.log('New teacher verification - creating registration token for:', verification.email);
         const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nextjs-boilerplate-beta-three-49.vercel.app';
-        return NextResponse.redirect(`${baseUrl}/register-school?email=${encodeURIComponent(verification.email)}&verified=true`);
+        
+        // Create response with registration token cookie
+        const response = NextResponse.redirect(`${baseUrl}/register-school?verified=true`);
+        
+        // Set secure registration token cookie (15 minute expiry)
+        const tokenData = Buffer.from(JSON.stringify(registrationData)).toString('base64');
+        response.cookies.set('registration-token', tokenData, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          maxAge: 15 * 60, // 15 minutes in seconds
+          path: '/'
+        });
+        
+        return response;
       }
 
       // Create teacher session for existing teachers
