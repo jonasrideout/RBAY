@@ -50,34 +50,53 @@ export default function SchoolRegistrationForm({
         onLogout={handleLogout} 
       />
 
-      {/* Main Content */}
-      <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+      <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           
-          {/* Admin navigation */}
-          {isAdminMode && (
-            <div style={{ marginBottom: '2rem' }}>
-              <Link href="/admin/matching" className="btn btn-secondary">
-                Back to Admin Dashboard
-              </Link>
+          {/* Page Header - matches dashboard style */}
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'flex-start', 
+            marginBottom: '1.5rem' 
+          }}>
+            <div>
+              <h1 className="text-school-name" style={{ marginBottom: '0.5rem', fontSize: '1.8rem' }}>
+                {isAdminMode ? 'Register a New School' : 'Register Your School'}
+              </h1>
+              <p className="text-school-name" style={{ margin: 0 }}>
+                {isAdminMode ? 'Admin Dashboard - Create School' : 'The Right Back at You Project'}
+              </p>
             </div>
-          )}
+            
+            {/* Admin navigation button */}
+            {isAdminMode && (
+              <div>
+                <Link href="/admin/matching" className="btn btn-primary">
+                  ← Back to Admin Dashboard
+                </Link>
+              </div>
+            )}
+          </div>
           
+          {/* Main Form Card */}
           <div className="card">
-            <h1 className="text-center mb-3">
-              {isAdminMode ? 'Register a New School' : 'Register Your School'}
-            </h1>
-
             <form onSubmit={onSubmit}>
               
-              {/* Instructor Information */}
-              <div className="form-section" style={{ marginBottom: '0.5rem' }}>
-                <h3 style={{ color: '#2c5aa0', borderBottom: '2px solid #e9ecef', paddingBottom: '0.5rem', marginBottom: '1.2rem' }}>
+              {/* Instructor Information Section */}
+              <div style={{ marginBottom: '2rem' }}>
+                <h3 style={{ 
+                  color: '#333', 
+                  fontSize: '1.2rem',
+                  fontWeight: '400',
+                  borderBottom: '1px solid #e9ecef', 
+                  paddingBottom: '0.5rem', 
+                  marginBottom: '1.5rem' 
+                }}>
                   Instructor Information
                 </h3>
                 
-                {/* Single row with Name, Email, Phone */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 2fr 1.5fr', gap: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 2fr 1.5fr', gap: '1.5rem' }}>
                   <div className="form-group">
                     <label htmlFor="teacher-name" className="form-label">Name *</label>
                     <input 
@@ -109,12 +128,12 @@ export default function SchoolRegistrationForm({
                         cursor: 'not-allowed'
                       } : {}}
                     />
-                    <small style={{ color: '#6c757d', fontSize: '0.8rem' }}>
+                    <small className="text-meta-info" style={{ display: 'block', marginTop: '0.25rem' }}>
                       {isEmailReadOnly 
-                        ? 'Email from your Google account' 
+                        ? 'Email verified from your login' 
                         : isAdminMode 
                           ? 'Teacher will receive welcome email at this address'
-                          : 'Students join using this email'
+                          : 'Students will join using this email'
                       }
                     </small>
                   </div>
@@ -128,19 +147,26 @@ export default function SchoolRegistrationForm({
                       value={formData.teacherPhone}
                       onChange={(e) => onUpdateFormData('teacherPhone', e.target.value)}
                       disabled={isLoading}
+                      placeholder="(555) 123-4567"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* School Information */}
-              <div className="form-section" style={{ marginBottom: '0.5rem' }}>
-                <h3 style={{ color: '#2c5aa0', borderBottom: '2px solid #e9ecef', paddingBottom: '0.5rem', marginBottom: '1.2rem' }}>
+              {/* School Information Section */}
+              <div style={{ marginBottom: '2rem' }}>
+                <h3 style={{ 
+                  color: '#333', 
+                  fontSize: '1.2rem',
+                  fontWeight: '400',
+                  borderBottom: '1px solid #e9ecef', 
+                  paddingBottom: '0.5rem', 
+                  marginBottom: '1.5rem' 
+                }}>
                   School Information
                 </h3>
                 
-                {/* Single row with School Name, City, State */}
-                <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr 1fr', gap: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr 1fr', gap: '1.5rem', marginBottom: '1rem' }}>
                   <div className="form-group">
                     <label htmlFor="school-name" className="form-label">School Name *</label>
                     <input 
@@ -151,6 +177,7 @@ export default function SchoolRegistrationForm({
                       onChange={(e) => onUpdateFormData('schoolName', e.target.value)}
                       disabled={isLoading}
                       required
+                      placeholder="e.g., Lincoln Elementary School"
                     />
                   </div>
 
@@ -163,6 +190,7 @@ export default function SchoolRegistrationForm({
                       value={formData.schoolCity}
                       onChange={(e) => onUpdateFormData('schoolCity', e.target.value)}
                       disabled={isLoading}
+                      placeholder="e.g., Springfield"
                     />
                   </div>
 
@@ -184,50 +212,58 @@ export default function SchoolRegistrationForm({
                   </div>
                 </div>
 
-                {/* Region Display - Full width across all three fields */}
+                {/* Region Display */}
                 {formData.schoolState && (
                   <div style={{ 
-                    marginTop: '0.5rem', 
-                    padding: '0.75rem', 
-                    background: '#e8f4f8', 
-                    border: '1px solid #bee5eb', 
-                    borderRadius: '4px' 
+                    marginBottom: '1.5rem', 
+                    padding: '1rem', 
+                    background: '#f8f9fa', 
+                    border: '1px solid #e9ecef', 
+                    borderRadius: '6px',
+                    borderLeft: '3px solid #2c5aa0'
                   }}>
-                    <strong style={{ color: '#0c5460' }}>
-                      📍 Your Region: {getRegionForState(formData.schoolState)}
-                    </strong>
-                    <p style={{ 
-                      fontSize: '0.9rem', 
-                      color: '#6c757d', 
-                      marginTop: '0.25rem', 
-                      marginBottom: '0' 
-                    }}>
+                    <div className="text-data-value" style={{ fontWeight: '400', marginBottom: '0.25rem' }}>
+                      Your Region: {getRegionForState(formData.schoolState)}
+                    </div>
+                    <div className="text-meta-info">
                       You'll be matched with schools from other regions to promote cross-regional connections.
-                    </p>
+                    </div>
                   </div>
                 )}
 
-                {/* Grade Levels, Class Size, and Program Start on same row */}
-                <div style={{ display: 'grid', gridTemplateColumns: '2.3fr 1.7fr 1.5fr', gap: '1.5rem', marginTop: '1.2rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '2.5fr 1.5fr 1.5fr', gap: '1.5rem' }}>
                   <div className="form-group">
                     <label className="form-label">Grade Level(s) *</label>
-                    <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'nowrap', marginTop: '0.5rem' }}>
+                    <div style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: 'repeat(3, 1fr)', 
+                      gap: '0.75rem', 
+                      marginTop: '0.5rem' 
+                    }}>
                       {['3', '4', '5', '6', '7', '8'].map(grade => (
-                        <label key={grade} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', whiteSpace: 'nowrap' }}>
+                        <label key={grade} style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: '0.5rem',
+                          fontSize: '14px',
+                          fontWeight: '400',
+                          color: '#555'
+                        }}>
                           <input 
                             type="checkbox" 
                             checked={formData.gradeLevels.includes(grade)}
                             onChange={(e) => onGradeLevelChange(grade, e.target.checked)}
                             disabled={isLoading}
+                            style={{ accentColor: '#2c5aa0' }}
                           />
-                          {grade}{grade === '3' ? 'rd' : 'th'}
+                          {grade}{grade === '3' ? 'rd' : 'th'} Grade
                         </label>
                       ))}
                     </div>
                   </div>
                   
                   <div className="form-group">
-                    <label htmlFor="class-size" className="form-label">Estimated # of Students *</label>
+                    <label htmlFor="class-size" className="form-label">Est. # of Students *</label>
                     <input 
                       type="number" 
                       id="class-size" 
@@ -238,11 +274,12 @@ export default function SchoolRegistrationForm({
                       onChange={(e) => onUpdateFormData('classSize', e.target.value)}
                       disabled={isLoading}
                       required
+                      placeholder="e.g., 25"
                     />
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="program-start-month" className="form-label">Preferred start date? *</label>
+                    <label htmlFor="program-start-month" className="form-label">Preferred Start *</label>
                     <select 
                       id="program-start-month" 
                       className="form-select" 
@@ -251,7 +288,7 @@ export default function SchoolRegistrationForm({
                       disabled={isLoading}
                       required
                     >
-                      <option value="">Select month</option>
+                      <option value="">Select</option>
                       <option value="As soon as possible">As soon as possible</option>
                       <option value="Not sure yet">Not sure yet</option>
                       {[
@@ -265,9 +302,16 @@ export default function SchoolRegistrationForm({
                 </div>
               </div>
 
-              {/* Additional Information */}
-              <div className="form-section" style={{ marginBottom: '0.55rem' }}>
-                <h3 style={{ color: '#2c5aa0', borderBottom: '2px solid #e9ecef', paddingBottom: '0.5rem', marginBottom: '1.2rem' }}>
+              {/* Additional Information Section */}
+              <div style={{ marginBottom: '2rem' }}>
+                <h3 style={{ 
+                  color: '#333', 
+                  fontSize: '1.2rem',
+                  fontWeight: '400',
+                  borderBottom: '1px solid #e9ecef', 
+                  paddingBottom: '0.5rem', 
+                  marginBottom: '1.5rem' 
+                }}>
                   Additional Information
                 </h3>
                 
@@ -282,22 +326,48 @@ export default function SchoolRegistrationForm({
                     value={formData.specialConsiderations}
                     onChange={(e) => onUpdateFormData('specialConsiderations', e.target.value)}
                     disabled={isLoading}
+                    placeholder="Any special considerations, scheduling preferences, or notes for matching..."
                   />
                 </div>
               </div>
 
-              {/* Agreement */}
-              <div className="form-section" style={{ marginBottom: '.5rem' }}>
-                <div className="card" style={{ background: '#f8f9fa', padding: '1.5rem' }}>
-                  <h4>Program Agreement</h4>
-                  <div className="form-group">
-                    <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+              {/* Agreement Section */}
+              <div style={{ marginBottom: '2rem' }}>
+                <div style={{ 
+                  background: '#f8f9fa', 
+                  border: '1px solid #e9ecef',
+                  borderRadius: '6px',
+                  padding: '1.5rem' 
+                }}>
+                  <h4 style={{ 
+                    color: '#333', 
+                    fontSize: '1.1rem',
+                    fontWeight: '400',
+                    marginBottom: '1rem' 
+                  }}>
+                    Program Agreement
+                  </h4>
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label style={{ 
+                      display: 'flex', 
+                      alignItems: 'flex-start', 
+                      gap: '0.75rem',
+                      fontSize: '14px',
+                      fontWeight: '400',
+                      color: '#555',
+                      lineHeight: '1.5'
+                    }}>
                       <input 
                         type="checkbox" 
                         checked={formData.programAgreement}
                         onChange={(e) => onUpdateFormData('programAgreement', e.target.checked)}
                         disabled={isLoading}
-                        required 
+                        required
+                        style={{ 
+                          marginTop: '0.125rem',
+                          accentColor: '#2c5aa0',
+                          minWidth: '16px'
+                        }}
                       />
                       <span>
                         {isAdminMode 
@@ -310,57 +380,66 @@ export default function SchoolRegistrationForm({
                 </div>
               </div>
 
+              {/* Error Display */}
               {error && (
-                <div className="alert alert-error">
+                <div className="alert alert-error" style={{ marginBottom: '2rem' }}>
                   <strong>Error:</strong> {error}
                 </div>
               )}
 
               {/* Submit Button */}
-              <div className="form-group text-center">
+              <div style={{ textAlign: 'center' }}>
                 <button 
                   type="submit" 
-                  className="btn btn-primary" 
+                  className="btn btn-success" 
                   disabled={isLoading}
-                  style={{ padding: '1rem 3rem', fontSize: '1.2rem' }}
+                  style={{ 
+                    padding: '1rem 2.5rem', 
+                    fontSize: '1rem',
+                    fontWeight: '400'
+                  }}
                 >
                   {isLoading ? (
                     <>
-                      <span className="loading"></span>
-                      <span style={{ marginLeft: '0.5rem' }}>
-                        {isAdminMode ? 'Creating School...' : 'Registering...'}
-                      </span>
+                      <span className="loading" style={{ marginRight: '0.5rem' }}></span>
+                      {isAdminMode ? 'Creating School...' : 'Registering...'}
                     </>
                   ) : (
                     isAdminMode ? 'Create School' : 'Register My School'
                   )}
                 </button>
-                <p style={{ color: '#6c757d', marginTop: '1rem', fontSize: '0.9rem' }}>
+                
+                <div className="text-meta-info" style={{ marginTop: '1rem', textAlign: 'center' }}>
                   {isAdminMode 
                     ? 'The teacher will receive dashboard and student registration links via email.'
                     : 'After registration, you\'ll receive links for your dashboard and student registration.'
                   }
-                </p>
+                </div>
               </div>
             </form>
-
           </div>
 
           {/* Help Section */}
-          <div className="card mt-3" style={{ background: '#f8f9fa' }}>
-            <h3>Need Help?</h3>
-            <p style={{ marginBottom: '.5rem' }}>
+          <div className="card" style={{ background: '#f8f9fa', marginTop: '1.5rem' }}>
+            <h3 style={{ 
+              color: '#333', 
+              fontSize: '1.1rem',
+              fontWeight: '400',
+              marginBottom: '1rem' 
+            }}>
+              Need Help?
+            </h3>
+            <div className="text-data-value" style={{ marginBottom: '0.5rem' }}>
               If you have questions about {isAdminMode ? 'creating schools or' : ''} registering {isAdminMode ? '' : 'your school or'} setting up the program, please contact us:
-            </p>
-            <p style={{ marginBottom: '0' }}>
-              <strong>Email:</strong> <a href="mailto:carolyn.mackler@gmail.com" style={{ color: '#4a90e2' }}>carolyn.mackler@gmail.com</a>
-            </p>
+            </div>
+            <div className="text-data-value">
+              <strong>Email:</strong> <a href="mailto:carolyn.mackler@gmail.com" style={{ color: '#2c5aa0', textDecoration: 'none' }}>carolyn.mackler@gmail.com</a>
+            </div>
           </div>
 
         </div>
       </main>
 
-      {/* Footer */}
       <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
         <div className="container text-center">
           <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
