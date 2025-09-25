@@ -50,7 +50,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Send email using Resend
     const emailResult = await resend.emails.send({
-      from: 'Right Back at You Project <noreply@rightbackatyou.org>', // Update this to your verified domain
+      from: 'Right Back at You Project <onboarding@resend.dev>', // Using Resend's sandbox domain
       to: [email],
       subject: emailTemplate.subject,
       html: emailTemplate.html,
