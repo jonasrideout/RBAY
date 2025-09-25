@@ -117,105 +117,195 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
           onLogout={handleLogout} 
         />
 
-        <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
-          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-            <div className="card text-center" style={{ background: '#d4edda' }}>
-              <h2 style={{ color: '#155724' }}>School Created Successfully!</h2>
-              <p style={{ color: '#155724', fontSize: '1.2rem', marginBottom: '1.5rem' }}>
-                {registeredSchool?.schoolName} has been added to the system.
-              </p>
+        <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
+          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+            
+            {/* Page Header */}
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'flex-start', 
+              marginBottom: '1.5rem' 
+            }}>
+              <div>
+                <h1 className="text-school-name" style={{ marginBottom: '0.5rem', fontSize: '1.8rem' }}>
+                  School Created Successfully!
+                </h1>
+                <p className="text-school-name" style={{ margin: 0 }}>
+                  Admin Dashboard - {registeredSchool?.schoolName}
+                </p>
+              </div>
               
-              <div style={{ background: 'white', padding: '1.5rem', borderRadius: '6px', marginBottom: '2rem', border: '1px solid #c3e6cb' }}>
-                <h3 style={{ color: '#155724', marginBottom: '1rem' }}>School Information</h3>
-                <div style={{ textAlign: 'left', color: '#155724' }}>
-                  <p><strong>School:</strong> {registeredSchool?.schoolName}</p>
-                  <p><strong>Teacher:</strong> {registeredSchool?.teacherName || 'Not provided'}</p>
-                  <p><strong>Email:</strong> {registeredSchool?.teacherEmail}</p>
+              <div>
+                <Link href="/admin/matching" className="btn btn-primary">
+                  ← Back to Admin Dashboard
+                </Link>
+              </div>
+            </div>
+
+            {/* Success Status Card */}
+            <div className="card" style={{ 
+              background: '#f8f9fa', 
+              borderLeft: '3px solid #28a745',
+              marginBottom: '1.5rem'
+            }}>
+              <div style={{ textAlign: 'center', padding: '1rem 0' }}>
+                <div style={{ 
+                  fontSize: '1.2rem', 
+                  fontWeight: '400', 
+                  color: '#333',
+                  marginBottom: '0.5rem'
+                }}>
+                  ✓ School successfully added to the system
+                </div>
+                <div className="text-meta-info">
+                  The teacher can now access their dashboard and begin registering students
                 </div>
               </div>
+            </div>
 
-              <div style={{ background: 'white', padding: '1.5rem', borderRadius: '6px', marginBottom: '2rem', border: '1px solid #c3e6cb' }}>
-                <h3 style={{ color: '#155724', marginBottom: '1rem' }}>Generated Links</h3>
-                <div style={{ textAlign: 'left', color: '#155724', fontSize: '0.9rem' }}>
-                  <div style={{ marginBottom: '1rem' }}>
-                    <strong>Teacher Dashboard:</strong>
-                    <div style={{ 
-                      background: '#f8f9fa', 
-                      padding: '0.5rem', 
-                      borderRadius: '4px', 
-                      marginTop: '0.25rem',
-                      wordBreak: 'break-all',
-                      border: '1px solid #dee2e6'
-                    }}>
-                      {generateDashboardLink()}
-                    </div>
-                  </div>
-                  <div>
-                    <strong>Student Registration:</strong>
-                    <div style={{ 
-                      background: '#f8f9fa', 
-                      padding: '0.5rem', 
-                      borderRadius: '4px', 
-                      marginTop: '0.25rem',
-                      wordBreak: 'break-all',
-                      border: '1px solid #dee2e6'
-                    }}>
-                      {generateStudentLink()}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ 
-                display: 'flex', 
-                gap: '1rem', 
-                justifyContent: 'center',
-                flexWrap: 'wrap',
-                marginBottom: '2rem'
+            {/* School Information Card */}
+            <div className="card" style={{ marginBottom: '1.5rem' }}>
+              <h3 style={{ 
+                color: '#333', 
+                fontSize: '1.2rem',
+                fontWeight: '400',
+                borderBottom: '1px solid #e9ecef', 
+                paddingBottom: '0.5rem', 
+                marginBottom: '1.5rem' 
               }}>
+                School Information
+              </h3>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.5rem' }}>
+                <div className="data-cell">
+                  <div className="text-data-label">School Name</div>
+                  <div className="text-data-value">{registeredSchool?.schoolName}</div>
+                </div>
+                <div className="data-cell">
+                  <div className="text-data-label">Teacher Name</div>
+                  <div className="text-data-value">{registeredSchool?.teacherName || 'Not provided'}</div>
+                </div>
+                <div className="data-cell">
+                  <div className="text-data-label">Email Address</div>
+                  <div className="text-data-value">{registeredSchool?.teacherEmail}</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Generated Links Card */}
+            <div className="card" style={{ marginBottom: '1.5rem' }}>
+              <h3 style={{ 
+                color: '#333', 
+                fontSize: '1.2rem',
+                fontWeight: '400',
+                borderBottom: '1px solid #e9ecef', 
+                paddingBottom: '0.5rem', 
+                marginBottom: '1.5rem' 
+              }}>
+                Generated Links
+              </h3>
+              
+              <div style={{ marginBottom: '1.5rem' }}>
+                <div className="text-data-label" style={{ marginBottom: '0.5rem' }}>Teacher Dashboard</div>
+                <div style={{ 
+                  background: '#f8f9fa', 
+                  padding: '0.75rem', 
+                  borderRadius: '4px', 
+                  border: '1px solid #e9ecef',
+                  wordBreak: 'break-all',
+                  fontFamily: 'monospace',
+                  fontSize: '13px',
+                  color: '#555'
+                }}>
+                  {generateDashboardLink()}
+                </div>
+              </div>
+              
+              <div style={{ marginBottom: '1.5rem' }}>
+                <div className="text-data-label" style={{ marginBottom: '0.5rem' }}>Student Registration Link</div>
+                <div style={{ 
+                  background: '#f8f9fa', 
+                  padding: '0.75rem', 
+                  borderRadius: '4px', 
+                  border: '1px solid #e9ecef',
+                  wordBreak: 'break-all',
+                  fontFamily: 'monospace',
+                  fontSize: '13px',
+                  color: '#555'
+                }}>
+                  {generateStudentLink()}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <button 
                   onClick={handleCopyLinks}
                   className="btn btn-primary"
                   style={{ 
-                    backgroundColor: linksCopyStatus === 'copied' ? '#28a745' : '#007bff',
-                    width: '210px'
+                    backgroundColor: linksCopyStatus === 'copied' ? '#28a745' : 'white',
+                    color: linksCopyStatus === 'copied' ? 'white' : '#555',
+                    borderColor: linksCopyStatus === 'copied' ? '#28a745' : '#ddd'
                   }}
                 >
-                  {linksCopyStatus === 'copied' ? 'Links Copied!' : 'Copy Links'}
+                  {linksCopyStatus === 'copied' ? '✓ Links Copied!' : 'Copy Both Links'}
                 </button>
 
                 <button 
                   onClick={handleSendEmail}
-                  className="btn btn-secondary"
+                  className="btn btn-primary"
                   disabled={emailStatus === 'sending'}
                   style={{ 
                     backgroundColor: emailStatus === 'sent' ? '#28a745' : 
-                                   emailStatus === 'error' ? '#dc3545' : '#6c757d',
-                    width: '210px'
+                                   emailStatus === 'error' ? '#dc3545' : 'white',
+                    color: emailStatus === 'sent' ? 'white' :
+                           emailStatus === 'error' ? 'white' : '#555',
+                    borderColor: emailStatus === 'sent' ? '#28a745' :
+                                emailStatus === 'error' ? '#dc3545' : '#ddd'
                   }}
                 >
-                  {emailStatus === 'sending' ? 'Sending...' : 
-                   emailStatus === 'sent' ? 'Email Sent!' :
-                   emailStatus === 'error' ? 'Send Failed' : 'Send Welcome Email'}
+                  {emailStatus === 'sending' ? (
+                    <>
+                      <span className="loading" style={{ marginRight: '0.5rem' }}></span>
+                      Sending...
+                    </>
+                  ) : emailStatus === 'sent' ? '✓ Email Sent!' :
+                     emailStatus === 'error' ? '✗ Send Failed' : 'Send Welcome Email'}
                 </button>
               </div>
+            </div>
 
-              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            {/* Next Actions Card */}
+            <div className="card" style={{ textAlign: 'center' }}>
+              <h3 style={{ 
+                color: '#333', 
+                fontSize: '1.2rem',
+                fontWeight: '400',
+                marginBottom: '1.5rem' 
+              }}>
+                Next Actions
+              </h3>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <Link 
                   href="/register-school?admin=true"
-                  className="btn btn-outline"
+                  className="btn btn-primary"
+                  style={{ textDecoration: 'none' }}
                 >
                   Add Another School
                 </Link>
                 
                 <Link 
                   href="/admin/matching"
-                  className="btn btn-primary"
+                  className="btn btn-success"
+                  style={{ textDecoration: 'none' }}
                 >
                   View All Schools
                 </Link>
               </div>
             </div>
+
           </div>
         </main>
 
@@ -228,60 +318,169 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
     );
   }
 
-  // Regular teacher success page (existing functionality)
+  // Regular teacher success page
   return (
     <div className="page">
       <Header session={session} onLogout={handleLogout} />
 
-      <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          {/* Success Message */}
-          <div className="card text-center" style={{ background: '#d4edda' }}>
-            <h2 style={{ color: '#155724' }}>School Registration Complete!</h2>
-            <p style={{ color: '#155724', fontSize: '1.2rem', marginBottom: '1.5rem' }}>
-              {registeredSchool?.schoolName} has been successfully registered for The Right Back at You Project.
-            </p>
-            
-            <div style={{ background: 'white', padding: '1.5rem', borderRadius: '6px', marginBottom: '2rem', border: '1px solid #c3e6cb' }}>
-              <h3 style={{ color: '#155724', marginBottom: '1rem' }}>Next Steps:</h3>
-              <div style={{ textAlign: 'left', color: '#155724' }}>
-                <p><strong>1. Access Your Dashboard:</strong></p>
-                <div style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '4px', marginBottom: '1rem', border: '1px solid #dee2e6' }}>
-                  <p style={{ margin: 0, fontSize: '0.9rem' }}>
-                    You can access your dashboard anytime by logging in and going to:
-                  </p>
-                  <code style={{ color: '#e83e8c', fontSize: '0.9rem', wordBreak: 'break-all' }}>
-                    {generateDashboardLink()}
-                  </code>
-                </div>
-                
-                <p><strong>2. Share Student Registration Link:</strong></p>
-                <div style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '4px', marginBottom: '1rem', border: '1px solid #dee2e6' }}>
-                  <code style={{ color: '#e83e8c', fontSize: '0.9rem', wordBreak: 'break-all' }}>
-                    {generateStudentLink()}
-                  </code>
-                </div>
-                
-                <p><strong>3. Monitor Student Registration:</strong> Use your dashboard to track student signups</p>
-                <p><strong>4. Complete Student Information:</strong> Help students add their interests</p>
-                <p><strong>5. Request Matching:</strong> When all students are ready, request partner school matching</p>
-                <p><strong>6. Start Writing:</strong> Begin the penpal correspondence!</p>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Link 
-                href="/dashboard"
-                className="btn btn-primary"
-              >
-                Go to Dashboard
-              </Link>
+      <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          
+          {/* Page Header */}
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'flex-start', 
+            marginBottom: '1.5rem' 
+          }}>
+            <div>
+              <h1 className="text-school-name" style={{ marginBottom: '0.5rem', fontSize: '1.8rem' }}>
+                Registration Complete!
+              </h1>
+              <p className="text-school-name" style={{ margin: 0 }}>
+                {registeredSchool?.schoolName} - Welcome to the Program
+              </p>
             </div>
           </div>
+
+          {/* Success Status Card */}
+          <div className="card" style={{ 
+            background: '#f8f9fa', 
+            borderLeft: '3px solid #28a745',
+            marginBottom: '1.5rem'
+          }}>
+            <div style={{ textAlign: 'center', padding: '1rem 0' }}>
+              <div style={{ 
+                fontSize: '1.2rem', 
+                fontWeight: '400', 
+                color: '#333',
+                marginBottom: '0.5rem'
+              }}>
+                ✓ Your school has been successfully registered!
+              </div>
+              <div className="text-meta-info">
+                You can now access your dashboard and begin registering students
+              </div>
+            </div>
+          </div>
+
+          {/* Next Steps Card */}
+          <div className="card" style={{ marginBottom: '1.5rem' }}>
+            <h3 style={{ 
+              color: '#333', 
+              fontSize: '1.2rem',
+              fontWeight: '400',
+              borderBottom: '1px solid #e9ecef', 
+              paddingBottom: '0.5rem', 
+              marginBottom: '1.5rem' 
+            }}>
+              Your Next Steps
+            </h3>
+            
+            <div style={{ display: 'grid', gap: '1.5rem' }}>
+              
+              <div>
+                <div className="text-data-value" style={{ marginBottom: '0.5rem' }}>
+                  <strong>1. Access Your Dashboard</strong>
+                </div>
+                <div className="text-meta-info" style={{ marginBottom: '0.75rem' }}>
+                  You can access your dashboard anytime by logging in:
+                </div>
+                <div style={{ 
+                  background: '#f8f9fa', 
+                  padding: '0.75rem', 
+                  borderRadius: '4px', 
+                  border: '1px solid #e9ecef',
+                  wordBreak: 'break-all',
+                  fontFamily: 'monospace',
+                  fontSize: '13px',
+                  color: '#555'
+                }}>
+                  {generateDashboardLink()}
+                </div>
+              </div>
+              
+              <div>
+                <div className="text-data-value" style={{ marginBottom: '0.5rem' }}>
+                  <strong>2. Share Student Registration Link</strong>
+                </div>
+                <div className="text-meta-info" style={{ marginBottom: '0.75rem' }}>
+                  Students can register using this link:
+                </div>
+                <div style={{ 
+                  background: '#f8f9fa', 
+                  padding: '0.75rem', 
+                  borderRadius: '4px', 
+                  border: '1px solid #e9ecef',
+                  wordBreak: 'break-all',
+                  fontFamily: 'monospace',
+                  fontSize: '13px',
+                  color: '#555'
+                }}>
+                  {generateStudentLink()}
+                </div>
+              </div>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <div className="text-data-value" style={{ marginBottom: '0.5rem' }}>
+                    <strong>3. Monitor Registration</strong>
+                  </div>
+                  <div className="text-meta-info">
+                    Use your dashboard to track student signups
+                  </div>
+                </div>
+                
+                <div>
+                  <div className="text-data-value" style={{ marginBottom: '0.5rem' }}>
+                    <strong>4. Complete Student Profiles</strong>
+                  </div>
+                  <div className="text-meta-info">
+                    Help students add their interests
+                  </div>
+                </div>
+              </div>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <div className="text-data-value" style={{ marginBottom: '0.5rem' }}>
+                    <strong>5. Request Matching</strong>
+                  </div>
+                  <div className="text-meta-info">
+                    When all students are ready, request partner school matching
+                  </div>
+                </div>
+                
+                <div>
+                  <div className="text-data-value" style={{ marginBottom: '0.5rem' }}>
+                    <strong>6. Start Writing!</strong>
+                  </div>
+                  <div className="text-meta-info">
+                    Begin the penpal correspondence
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Button */}
+          <div className="card" style={{ textAlign: 'center' }}>
+            <Link 
+              href="/dashboard"
+              className="btn btn-success"
+              style={{ 
+                textDecoration: 'none',
+                padding: '1rem 2.5rem', 
+                fontSize: '1rem'
+              }}
+            >
+              Go to My Dashboard
+            </Link>
+          </div>
+
         </div>
       </main>
 
-      {/* Footer */}
       <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
         <div className="container text-center">
           <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
