@@ -23,18 +23,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'Invalid email format' });
     }
 
-    // Check if teacher exists in database
-    const teacherCheckResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/schools?teacherEmail=${encodeURIComponent(email)}`, {
-      method: 'GET',
-    });
+    // Check if teacher exists in database using Prisma directly
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
 
-    if (!teacherCheckResponse.ok) {
-      if (teacherCheckResponse.status === 404) {
+    try {
+      const school = await prisma.school.findUnique({
+        where: {
+          teacherEmail: email
+        }
+      });
+
+      if (!school) {
+        await prisma.$disconnect();
         return res.status(404).json({ 
           error: 'No school found for this email address. Please register your school first.',
           needsRegistration: true
         });
       }
+
+      await prisma.$disconnect();
+    } catch (dbError) {
+      await prisma.$disconnect();
+      console.error('Database error checking teacher:', dbError);
       throw new Error('Failed to verify teacher email');
     }
 
