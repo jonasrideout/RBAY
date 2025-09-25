@@ -10,6 +10,8 @@ function LoginContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [showVerification, setShowVerification] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState('');
   const searchParams = useSearchParams();
   const router = useRouter();
   const errorParam = searchParams?.get('error');
@@ -59,7 +61,10 @@ function LoginContent() {
 
       if (!response.ok) {
         if (data.needsRegistration) {
-          setError('No school found for this email address. Please register your school first.');
+          // Show email verification step for new teachers
+          setVerificationEmail(email.trim().toLowerCase());
+          setShowVerification(true);
+          setError('');
         } else {
           throw new Error(data.error || 'Failed to send login link');
         }
@@ -78,8 +83,105 @@ function LoginContent() {
 
   const handleNewLink = () => {
     setSuccess(false);
+    setShowVerification(false);
     setError('');
   };
+
+  const handleVerifyEmail = () => {
+    setShowVerification(false);
+    setEmail(verificationEmail);
+    handleSendMagicLink({ preventDefault: () => {} } as React.FormEvent);
+  };
+
+  // Email verification screen for new teachers
+  if (showVerification) {
+    return (
+      <div className="page">
+        <Header showLogin={false} />
+        <main className="container" style={{ flex: 1, paddingTop: '2rem' }}>
+          <div className="card" style={{ 
+            maxWidth: '500px', 
+            margin: '0 auto',
+            textAlign: 'center' 
+          }}>
+            <h1 className="text-h2" style={{ marginBottom: '1rem' }}>
+              Welcome to Right Back at You!
+            </h1>
+            
+            <p className="text-meta-info" style={{ marginBottom: '2rem', lineHeight: '1.6' }}>
+              We'd love to have you join our pen pal program! To get started, we need to verify your email address.
+            </p>
+
+            <div className="alert alert-warning" style={{ 
+              marginBottom: '2rem',
+              textAlign: 'left'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                <div style={{ flexShrink: 0, marginRight: '0.75rem' }}>
+                  <svg style={{ width: '20px', height: '20px', color: '#856404' }} fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div>
+                  <div style={{ fontWeight: '500', marginBottom: '0.5rem' }}>
+                    Email to verify: <strong>{verificationEmail}</strong>
+                  </div>
+                  <div style={{ fontSize: '0.875rem' }}>
+                    After verification, you'll be guided through school registration to join the program.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '2rem' }}>
+              <button
+                onClick={handleVerifyEmail}
+                className="btn btn-primary"
+                style={{ 
+                  width: '100%',
+                  padding: '0.875rem',
+                  marginBottom: '1rem'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg 
+                    style={{ width: '20px', height: '20px', marginRight: '0.75rem' }} 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                  </svg>
+                  Verify Email Address
+                </div>
+              </button>
+
+              <button
+                onClick={() => {
+                  setShowVerification(false);
+                  setEmail('');
+                  setVerificationEmail('');
+                }}
+                className="nav-link"
+                style={{ background: 'none', border: 'none' }}
+              >
+                Use a different email address
+              </button>
+            </div>
+
+            <div style={{ 
+              borderTop: '1px solid #e9ecef',
+              paddingTop: '1.5rem'
+            }}>
+              <a href="/" className="nav-link">
+                ← Back to Home
+              </a>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   if (success) {
     return (
