@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { sendWelcomeEmail } from '@/lib/email';
+import { createTeacherSession, setSessionCookie } from '@/lib/magicLink';
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,7 +23,8 @@ export async function POST(request: NextRequest) {
       expectedClassSize,
       startMonth,
       specialConsiderations,
-      isAdminFlow // New flag to detect admin registration
+      isAdminFlow, // Flag to detect admin registration
+      isEmailVerified // Flag to detect email verification flow
     } = body;
 
     // Updated validation - removed letterFrequency requirement
@@ -121,12 +123,13 @@ export async function POST(request: NextRequest) {
     const dashboardLink = `${baseUrl}/dashboard?token=${school.dashboardToken}`;
     const registrationLink = `${baseUrl}/register-student`;
 
-    return NextResponse.json({
+    // Create response with school data
+    const responseData = {
       success: true,
       school: {
         id: school.id,
         teacherEmail: school.teacherEmail,
-        dashboardToken: school.dashboardToken, // Include token in response
+        dashboardToken: school.dashboardToken,
         schoolName: school.schoolName,
         teacherName: school.teacherName,
         schoolState: school.schoolState,
@@ -135,10 +138,20 @@ export async function POST(request: NextRequest) {
       },
       emailSent,
       emailError: emailSent ? undefined : emailError,
-      // Include links in response for admin use
       dashboardLink,
       registrationLink
-    }, { status: 201 });
+    };
+
+    const response = NextResponse.json(responseData, { status: 201 });
+
+    // Create teacher session for email-verified users (but not admin flow)
+    if (isEmailVerified && !isAdminFlow) {
+      const teacherSession = createTeacherSession(teacherEmail);
+      setSessionCookie(response, teacherSession);
+      console.log('Created teacher session after school registration for:', teacherEmail);
+    }
+
+    return response;
 
   } catch (error: any) {
     console.error('School registration error:', error);
