@@ -5,7 +5,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useTeacherSession } from '@/lib/useTeacherSession';
 import Header from '../components/Header';
 
 interface StudentFormData {
@@ -46,7 +46,7 @@ const INTEREST_OPTIONS = [
 
 function RegisterStudentForm() {
   const searchParams = useSearchParams();
-  const { data: session, status } = useSession();
+  const { data: session, status } = useTeacherSession();
   const [currentStep, setCurrentStep] = useState<Step>('schoolVerify');
   const [isLoading, setIsLoading] = useState(false);
   const [schoolNameInput, setSchoolNameInput] = useState('');
@@ -65,13 +65,14 @@ function RegisterStudentForm() {
   const [error, setError] = useState('');
   const [registeredStudent, setRegisteredStudent] = useState<any>(null);
   const [isTeacherFlow, setIsTeacherFlow] = useState(false);
+  const [sessionCheckComplete, setSessionCheckComplete] = useState(false);
 
   // Handle session-based or token-based flow
   useEffect(() => {
     const checkAuthAndInitialize = async () => {
       console.log('=== STUDENT REGISTRATION DEBUG ===');
-      console.log('useSession status:', status);
-      console.log('useSession session:', session);
+      console.log('useTeacherSession status:', status);
+      console.log('useTeacherSession session:', session);
       
       if (status === 'loading') {
         console.log('Session still loading, returning early');
@@ -81,36 +82,36 @@ function RegisterStudentForm() {
       const token = searchParams?.get('token');
       console.log('Token from URL:', token);
       
-      // Try direct session API call first
-      try {
-        console.log('Making direct session API call...');
-        const sessionResponse = await fetch('/api/auth/session');
-        const sessionData = await sessionResponse.json();
-        console.log('Direct session API response:', sessionData);
-        
-        if (sessionData?.user?.email) {
-          console.log('Found user email in session, using teacher flow for:', sessionData.user.email);
-          fetchTeacherSchool(sessionData.user.email);
-          return;
-        } else {
-          console.log('No user email found in session data');
-        }
-      } catch (error) {
-        console.error('Session check failed:', error);
+      // Always set the token in formData if present
+      if (token) {
+        setFormData(prev => ({ ...prev, schoolToken: token }));
       }
       
-      // Fallback to token-based flow
-      if (token) {
-        console.log('Using token-based flow with token:', token);
-        setFormData(prev => ({ ...prev, schoolToken: token }));
-      } else {
-        console.log('No token found, showing error');
+      // Check if we have a teacher session (authenticated user)
+      if (status === 'authenticated' && session?.user?.email) {
+        console.log('Found authenticated teacher session, using teacher flow for:', session.user.email);
+        try {
+          await fetchTeacherSchool(session.user.email);
+        } catch (error) {
+          console.error('Failed to fetch teacher school:', error);
+          setError('Unable to load your school information. Please try using the student registration link instead.');
+        }
+        setSessionCheckComplete(true);
+        return;
+      }
+      
+      // No teacher session - mark session check as complete for student flow
+      setSessionCheckComplete(true);
+      
+      // If no teacher session and no token, show error
+      if (!token) {
+        console.log('No token found and no teacher session, showing error');
         setError('Invalid registration link. Please use the link provided by your teacher or log in first.');
       }
     };
     
     checkAuthAndInitialize();
-  }, [searchParams, status]);
+  }, [searchParams, status, session]);
 
   const fetchTeacherSchool = async (teacherEmail: string) => {
     console.log('fetchTeacherSchool called with:', teacherEmail);
@@ -139,16 +140,13 @@ function RegisterStudentForm() {
         schoolToken: data.school.dashboardToken 
       }));
 
-      console.log('Setting currentStep to info');
+      console.log('Setting currentStep to info and isTeacherFlow to true');
       setCurrentStep('info'); // Skip verification steps
-      
-      // Mark this as teacher flow AFTER successful school loading
-      console.log('Setting isTeacherFlow to true in fetchTeacherSchool');
       setIsTeacherFlow(true);
       
     } catch (err: any) {
       console.error('Error in fetchTeacherSchool:', err);
-      setError('Unable to load your school information. Please try using the student registration link instead.');
+      throw err; // Re-throw to be handled by caller
     } finally {
       setIsLoading(false);
     }
@@ -417,7 +415,7 @@ function RegisterStudentForm() {
     <div className="card">
       <div style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '6px', marginBottom: '1.5rem', border: '1px solid #dee2e6' }}>
         <h4 style={{ color: '#495057', marginBottom: '0.5rem' }}>
-          {status === 'authenticated' ? 'Adding Student to:' : 'Your School:'}
+          {isTeacherFlow ? 'Adding Student to:' : 'Your School:'}
         </h4>
         <p style={{ fontSize: '1.1rem', fontWeight: '600', color: '#2c5aa0', marginBottom: '0.25rem' }}>
           {schoolInfo?.name}
@@ -429,7 +427,10 @@ function RegisterStudentForm() {
 
       <h2 className="text-center mb-3">{isTeacherFlow ? 'Student Info' : 'Tell Us About Yourself'}</h2>
       <p className="text-center mb-4" style={{ color: '#6c757d' }}>
-        Helps us find your student a great penpal who shares their interests!
+        {isTeacherFlow 
+          ? "Helps us find your student a great penpal who shares their interests!"
+          : "Helps us find you a great penpal who shares your interests!"
+        }
       </p>
 
       <form onSubmit={handleSubmit}>
@@ -655,11 +656,8 @@ function RegisterStudentForm() {
   );
 
   const renderSuccessStep = () => {
-    console.log('Rendering success step - isTeacherFlow:', isTeacherFlow);
-    
     if (isTeacherFlow) {
       // Teacher-added student success page
-      console.log('Showing teacher success page');
       return (
         <div className="card text-center" style={{ background: '#d4edda' }}>
           <h2 style={{ color: '#155724' }}>{registeredStudent?.firstName} Registered</h2>
@@ -669,7 +667,7 @@ function RegisterStudentForm() {
               href="/dashboard"
               className="btn btn-primary"
             >
-              Dashboard
+              Return to Dashboard
             </Link>
             
             <Link 
@@ -683,7 +681,6 @@ function RegisterStudentForm() {
       );
     } else {
       // Student self-registration success page
-      console.log('Showing student success page');
       return (
         <div className="card text-center" style={{ background: '#d4edda' }}>
           <h2 style={{ color: '#155724' }}>Thank You, {registeredStudent?.firstName}!</h2>
@@ -706,18 +703,35 @@ function RegisterStudentForm() {
     }
   };
 
+  // Don't render anything until session check is complete
+  if (!sessionCheckComplete) {
+    return (
+      <div className="page">
+        <Header />
+        <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
+          <div className="card">
+            <div style={{ textAlign: 'center', padding: '2rem' }}>
+              <div className="loading" style={{ margin: '0 auto 1rem' }}></div>
+              <p>Loading registration form...</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="page">
       <Header />
 
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-          {/* Show loading while checking session or fetching teacher school */}
-          {(status === 'loading' || (status === 'authenticated' && isLoading)) && (
+          {/* Show loading during API calls */}
+          {isLoading && currentStep !== 'info' && (
             <div className="card">
               <div style={{ textAlign: 'center', padding: '2rem' }}>
                 <div className="loading" style={{ margin: '0 auto 1rem' }}></div>
-                <p>Loading registration form...</p>
+                <p>Processing...</p>
               </div>
             </div>
           )}
@@ -737,7 +751,7 @@ function RegisterStudentForm() {
           )}
 
           {/* Show form steps when ready */}
-          {!isLoading && !error && status !== 'loading' && (
+          {!isLoading && !error && (
             <>
               {currentStep === 'schoolVerify' && renderSchoolVerifyStep()}
               {currentStep === 'schoolConfirm' && renderSchoolConfirmStep()}
