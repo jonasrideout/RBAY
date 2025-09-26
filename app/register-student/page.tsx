@@ -434,58 +434,58 @@ function RegisterStudentForm() {
       </p>
 
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-2" style={{ gap: '1rem' }}>
-          <div className="form-group">
-            <label htmlFor="first-name" className="form-label">
-              {isTeacherFlow ? "Student's first name *" : "First Name *"}
-            </label>
-            <input 
-              type="text" 
-              id="first-name" 
-              className="form-input" 
-              placeholder={isTeacherFlow ? "Student's first name" : "Your first name"}
-              value={formData.firstName}
-              onChange={(e) => updateFormData('firstName', e.target.value)}
-              disabled={isLoading}
-              required
-            />
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="last-initial" className="form-label">Last Initial *</label>
-            <input 
-              type="text" 
-              id="last-initial" 
-              className="form-input" 
-              placeholder={isTeacherFlow ? "Enter the first 1 or 2 letters of their last name" : "Enter the first 1 or 2 letters of your last name"}
-              value={formData.lastInitial}
-              onChange={(e) => updateFormData('lastInitial', e.target.value)}
-              disabled={isLoading}
-              maxLength={2}
-              required
-            />
-          </div>
-        </div>
+       <div style={{ display: 'grid', gridTemplateColumns: '200px 120px 1fr', gap: '1rem' }}>
+  <div className="form-group">
+    <label htmlFor="first-name" className="form-label">
+      {isTeacherFlow ? "Student's first name *" : "First Name *"}
+    </label>
+    <input 
+      type="text" 
+      id="first-name" 
+      className="form-input" 
+      placeholder={isTeacherFlow ? "Student's first name" : "Your first name"}
+      value={formData.firstName}
+      onChange={(e) => updateFormData('firstName', e.target.value)}
+      disabled={isLoading}
+      required
+    />
+  </div>
+  
+  <div className="form-group">
+    <label htmlFor="last-initial" className="form-label">Last Initial *</label>
+    <input 
+      type="text" 
+      id="last-initial" 
+      className="form-input" 
+      placeholder={isTeacherFlow ? "Letters" : "Letters"}
+      value={formData.lastInitial}
+      onChange={(e) => updateFormData('lastInitial', e.target.value)}
+      disabled={isLoading}
+      maxLength={2}
+      required
+    />
+  </div>
 
-        <div className="form-group">
-          <label htmlFor="grade" className="form-label">Grade Level *</label>
-          <select 
-            id="grade" 
-            className="form-select" 
-            value={formData.grade}
-            onChange={(e) => updateFormData('grade', e.target.value)}
-            disabled={isLoading}
-            required
-          >
-            <option value="">{isTeacherFlow ? "Select their grade" : "Select your grade"}</option>
-            <option value="3">3rd Grade</option>
-            <option value="4">4th Grade</option>
-            <option value="5">5th Grade</option>
-            <option value="6">6th Grade</option>
-            <option value="7">7th Grade</option>
-            <option value="8">8th Grade</option>
-          </select>
-        </div>
+  <div className="form-group">
+    <label htmlFor="grade" className="form-label">Grade Level *</label>
+    <select 
+      id="grade" 
+      className="form-select" 
+      value={formData.grade}
+      onChange={(e) => updateFormData('grade', e.target.value)}
+      disabled={isLoading}
+      required
+    >
+      <option value="">{isTeacherFlow ? "Select their grade" : "Select your grade"}</option>
+      <option value="3">3rd Grade</option>
+      <option value="4">4th Grade</option>
+      <option value="5">5th Grade</option>
+      <option value="6">6th Grade</option>
+      <option value="7">7th Grade</option>
+      <option value="8">8th Grade</option>
+    </select>
+  </div>
+</div>
 
         <div className="form-group">
           <label className="form-label">{isTeacherFlow ? "Interests & Hobbies *" : "Your Interests & Hobbies *"}</label>
@@ -725,7 +725,6 @@ function RegisterStudentForm() {
       <Header />
 
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
-        <div className="container">
           {/* Show loading during API calls */}
           {isLoading && currentStep !== 'info' && (
             <div className="card">
