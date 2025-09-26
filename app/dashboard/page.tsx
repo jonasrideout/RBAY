@@ -42,6 +42,7 @@ interface SchoolData {
     id: string;
     schoolName: string;
     teacherName: string;
+    teacherEmail: string;
     schoolCity?: string;
     schoolState?: string;
     expectedClassSize: number;
@@ -181,6 +182,7 @@ function TeacherDashboardContent() {
           id: data.school.matchedWithSchool.id,
           schoolName: data.school.matchedWithSchool.schoolName,
           teacherName: data.school.matchedWithSchool.teacherName,
+          teacherEmail: data.school.matchedWithSchool.teacherEmail,
           schoolCity: data.school.matchedWithSchool.schoolCity,
           schoolState: data.school.matchedWithSchool.schoolState,
           expectedClassSize: data.school.matchedWithSchool.expectedClassSize,
