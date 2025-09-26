@@ -1,8 +1,8 @@
 // /app/register-school/components/SchoolRegistrationForm.tsx
 
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { useTeacherSession } from '@/lib/useTeacherSession';
 import Header from '../../components/Header';
 import { SchoolFormData } from '../types';
 import { US_STATES, STATE_TO_REGION } from '../constants';
@@ -28,7 +28,7 @@ export default function SchoolRegistrationForm({
   isEmailReadOnly = false,
   isAdminMode = false
 }: SchoolRegistrationFormProps) {
-  const { data: session } = useSession();
+  const { data: session } = useTeacherSession();
   const router = useRouter();
 
   const handleLogout = () => {
