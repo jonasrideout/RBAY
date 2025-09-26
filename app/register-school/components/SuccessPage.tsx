@@ -4,8 +4,8 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { useTeacherSession } from '@/lib/useTeacherSession';
 import Header from '../../components/Header';
 import { sendWelcomeEmail } from '@/lib/email';
 
@@ -23,7 +23,7 @@ interface SuccessPageProps {
 }
 
 export default function SuccessPage({ registeredSchool, isAdminMode = false }: SuccessPageProps) {
-  const { data: session } = useSession();
+  const { data: session } = useTeacherSession();
   const router = useRouter();
   
   // Copy button states
