@@ -33,7 +33,13 @@ export async function GET() {
         createdAt: 'asc'
       }
     });
-    
+
+    // TEMPORARY DEBUG - ADD THESE LINES HERE
+    console.log('=== SCHOOLS QUERY DEBUG ===');
+    console.log('Total schools found:', schools.length);
+    console.log('Jonas school present:', schools.some(s => s.teacherEmail === 'jonas.rideout@gmail.com'));
+    console.log('All emails:', schools.map(s => s.teacherEmail));
+
     // Transform schools with student counts and full student data
     const transformedSchools = schools.map(school => ({
       id: school.id,
