@@ -79,109 +79,115 @@ export default function MatchedSchoolDisplay({
     window.open(penPalListUrl, '_blank');
   };
 
+  // Get expected class size from matched school data or use a fallback
+  const expectedStudents = schoolData.expectedClassSize || '—';
+
   return (
-    <div className="card" style={{ marginBottom: '2rem' }}>
-      <div style={{ marginBottom: hasStudentPairings ? '1.5rem' : '0' }}>
-        <h3 style={{ 
-          color: '#1f2937', 
-          marginBottom: '1rem', 
-          fontSize: '1.4rem',
+    <div className="card" style={{ 
+      marginBottom: '2rem',
+      background: '#f8f9fa', 
+      borderLeft: '3px solid #2c5aa0',
+      padding: '1rem 1.5rem'
+    }}>
+      {/* Row 1: Header */}
+      <h3 style={{ 
+        color: '#333', 
+        fontSize: '1.2rem',
+        fontWeight: '400',
+        margin: '0 0 1rem 0'
+      }}>
+        Matched with Partner School
+      </h3>
+
+      {/* Row 2: School Info in single line */}
+      <div style={{ 
+        display: 'flex',
+        alignItems: 'center',
+        gap: '1rem',
+        marginBottom: '1rem',
+        flexWrap: 'wrap'
+      }}>
+        <div className="text-data-value" style={{ 
+          fontSize: '1.1rem',
           fontWeight: '400',
-          margin: '0 0 1rem 0'
+          color: '#333'
         }}>
-          Matched with Partner School
-        </h3>
-
-        {/* Partner School Info */}
+          {matchedSchoolName}
+        </div>
+        
+        <div style={{ color: '#999' }}>|</div>
+        
         <div style={{ 
-          background: '#fafafa', 
-          padding: '1.5rem', 
-          borderRadius: '6px', 
-          border: '1px solid #e0e0e0',
-          marginBottom: hasStudentPairings ? '1rem' : '0'
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '0.5rem'
         }}>
-          <div style={{ marginBottom: '0.5rem' }}>
-            <h4 className="text-data-value" style={{ 
-              marginBottom: '0.25rem',
-              fontSize: '1.2rem',
-              fontWeight: '400'
-            }}>
-              {matchedSchoolName}
-            </h4>
-          </div>
-
-          {/* Teacher info with email copy button */}
-          {matchedSchoolTeacher && (
-            <div style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '8px',
-              marginBottom: '0.5rem'
-            }}>
-              <span className="text-data-value">
-                Teacher: {matchedSchoolTeacher}
-              </span>
-              {matchedSchoolEmail && (
-                <button
-                  onClick={copyEmailAddress}
-                  className="btn-icon btn-icon-email"
-                  title={`Copy email: ${matchedSchoolEmail}`}
-                  style={{
-                    fontSize: '18px',
-                    color: '#666',
-                    fontWeight: '300'
-                  }}
-                >
-                  {emailCopyText}
-                </button>
-              )}
-            </div>
+          <span className="text-data-value">
+            {matchedSchoolTeacher || '—'}
+          </span>
+          {matchedSchoolEmail && (
+            <button
+              onClick={copyEmailAddress}
+              className="btn-icon btn-icon-email"
+              title={`Copy email: ${matchedSchoolEmail}`}
+              style={{
+                fontSize: '16px',
+                color: '#666',
+                fontWeight: '300',
+                marginLeft: '0.25rem'
+              }}
+            >
+              {emailCopyText}
+            </button>
           )}
-
-          {/* Region info */}
-          {matchedSchoolRegion && (
-            <div className="text-meta-info">
-              Region: {matchedSchoolRegion}
-            </div>
-          )}
-
-          <p className="text-meta-info" style={{ 
-            marginBottom: '0',
-            marginTop: '1rem'
-          }}>
-            Your students have been matched with a partner school! 
-            {hasStudentPairings 
-              ? ' Individual pen pal assignments are ready.' 
-              : ' Individual pen pal assignments will be completed soon.'
-            }
-          </p>
         </div>
 
-        {/* Pen Pal List Button */}
-        {hasStudentPairings && (
-          <div style={{ textAlign: 'center' }}>
-            <button 
-              onClick={openPenPalList}
-              className="btn btn-success"
-              style={{ minWidth: '200px' }}
-            >
-              View Pen Pal Assignments
-            </button>
-          </div>
-        )}
+        <div style={{ color: '#999' }}>|</div>
+        
+        <div className="text-data-value">
+          {expectedStudents} students
+        </div>
 
-        {/* Loading state for pairings check */}
-        {isCheckingPairings && (
-          <div style={{ 
-            textAlign: 'center', 
-            color: '#666',
-            fontSize: '14px',
-            fontStyle: 'italic'
-          }}>
-            Checking for pen pal assignments...
-          </div>
-        )}
+        <div style={{ color: '#999' }}>|</div>
+        
+        <div className="text-data-value">
+          {matchedSchoolRegion || '—'}
+        </div>
       </div>
+
+      {/* Row 3: Updated Message */}
+      <div className="text-meta-info" style={{ 
+        margin: '0',
+        fontSize: '14px'
+      }}>
+        Pen pals will be paired when both schools have completed collecting student information.
+      </div>
+
+      {/* Pen Pal List Button - only show when pairings exist */}
+      {hasStudentPairings && (
+        <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+          <button 
+            onClick={openPenPalList}
+            className="btn btn-success"
+            style={{ minWidth: '200px' }}
+          >
+            View Pen Pal Assignments
+          </button>
+        </div>
+      )}
+
+      {/* Loading state for pairings check */}
+      {isCheckingPairings && (
+        <div style={{ 
+          marginTop: '0.5rem',
+          textAlign: 'center', 
+          color: '#666',
+          fontSize: '14px',
+          fontStyle: 'italic'
+        }}>
+          Checking for pen pal assignments...
+        </div>
+      )}
     </div>
   );
 }
