@@ -1,6 +1,6 @@
 // /app/dashboard/components/DashboardHeader.tsx
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 interface SchoolData {
@@ -38,10 +38,39 @@ export default function DashboardHeader({
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied'>('idle');
   const [isRequestingMatching, setIsRequestingMatching] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [penPalsAssigned, setPenPalsAssigned] = useState(false);
+  const [checkingPenPals, setCheckingPenPals] = useState(false);
   
   // Check if school is already matched or ready for matching
   const isMatched = schoolData?.matchedWithSchoolId != null;
   const readyForMatching = schoolData?.status === 'READY';
+  
+  // Check for pen pal assignments when school is matched
+  useEffect(() => {
+    if (isMatched && schoolData?.id) {
+      checkPenPalAssignments();
+    }
+  }, [isMatched, schoolData?.id]);
+
+  const checkPenPalAssignments = async () => {
+    setCheckingPenPals(true);
+    try {
+      const response = await fetch(`/api/download-pairings?schoolId=${schoolData.id}`);
+      if (response.ok) {
+        const data = await response.json();
+        // Check if any students have pen pals assigned
+        const hasAssignments = data.pairings && data.pairings.some((student: any) => student.penpalCount > 0);
+        setPenPalsAssigned(hasAssignments);
+      } else {
+        setPenPalsAssigned(false);
+      }
+    } catch (error) {
+      console.error('Error checking pen pal assignments:', error);
+      setPenPalsAssigned(false);
+    } finally {
+      setCheckingPenPals(false);
+    }
+  };
   
   const generateStudentLink = () => {
     if (typeof window !== 'undefined' && schoolData.dashboardToken) {
@@ -104,6 +133,33 @@ export default function DashboardHeader({
 
   const handleCancelMatching = () => {
     setShowConfirmation(false);
+  };
+
+  const handleDownloadPenPals = async () => {
+    if (!penPalsAssigned) return;
+    
+    try {
+      const response = await fetch(`/api/download-pairings?schoolId=${schoolData.id}`);
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Create and download the file
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${schoolData.schoolName}_pen_pal_assignments.json`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } else {
+        throw new Error('Failed to download pen pal assignments');
+      }
+    } catch (error) {
+      console.error('Error downloading pen pals:', error);
+      alert('Error downloading pen pal assignments. Please try again.');
+    }
   };
   
   return (
@@ -183,7 +239,7 @@ export default function DashboardHeader({
               </Link>
             </div>
 
-            {/* Bottom row - Download and Request Matching */}
+            {/* Bottom row - Download and Request Matching/Download Pen Pals */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
               <button 
                 className="btn btn-primary"
@@ -203,8 +259,9 @@ export default function DashboardHeader({
                 Download Student Info
               </button>
 
-              {/* Request Matching Button - show when not already matched, gray out when students incomplete */}
-              {!isMatched && (
+              {/* Conditional button: Request Matching OR Download Pen Pals */}
+              {!isMatched ? (
+                // Request Matching Button - show when not matched
                 <button 
                   className="btn btn-primary" 
                   disabled={isRequestingMatching || readyForMatching || !allActiveStudentsComplete}
@@ -231,6 +288,35 @@ export default function DashboardHeader({
                       <span style={{ marginLeft: '0.25rem' }}>Requesting...</span>
                     </>
                   ) : 'Request Matching')}
+                </button>
+              ) : (
+                // Download Pen Pals Button - show when matched
+                <button 
+                  className="btn btn-primary" 
+                  disabled={!penPalsAssigned || checkingPenPals}
+                  onClick={handleDownloadPenPals}
+                  style={{
+                    backgroundColor: penPalsAssigned ? 'white' : '#f8f9fa',
+                    color: penPalsAssigned ? '#555' : '#999',
+                    border: penPalsAssigned ? '1px solid #ddd' : '1px solid #e0e0e0',
+                    cursor: penPalsAssigned ? 'pointer' : 'not-allowed',
+                    opacity: penPalsAssigned ? 1 : 0.6,
+                    fontSize: '13px'
+                  }}
+                  title={
+                    checkingPenPals 
+                      ? "Checking pen pal assignments..." 
+                      : penPalsAssigned 
+                      ? "Download pen pal assignments" 
+                      : "Pen pals not yet assigned"
+                  }
+                >
+                  {checkingPenPals ? (
+                    <>
+                      <span className="loading"></span>
+                      <span style={{ marginLeft: '0.25rem' }}>Checking...</span>
+                    </>
+                  ) : 'Download Pen Pals'}
                 </button>
               )}
             </div>
