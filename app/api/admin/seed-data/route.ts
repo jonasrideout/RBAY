@@ -315,6 +315,19 @@ export async function POST(request: NextRequest) {
     }
 
     const totalStudents = 20 + 23 + 30 + 23 + 20 + 12;
+
+    // === VERIFICATION SECTION ===
+    console.log('=== VERIFICATION ===');
+    const schoolCount = await prisma.school.count();
+    console.log('Total schools in database after seed:', schoolCount);
+
+    const schoolNames = await prisma.school.findMany({
+      select: { schoolName: true, status: true, region: true }
+    });
+    console.log('Schools found:', schoolNames);
+
+    const studentCount = await prisma.student.count();
+    console.log('Total students in database after seed:', studentCount);
     
     console.log('Enhanced seed data creation completed successfully');
     console.log(`Created ${totalStudents} students across 6 schools with dashboard tokens`);
@@ -343,6 +356,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       message: 'Enhanced test data created successfully with consistent profileCompleted logic',
+      verification: {
+        schoolsInDatabase: schoolCount,
+        studentsInDatabase: studentCount,
+        schoolsFound: schoolNames
+      },
       schools: 6,
       schoolDetails: {
         pacificElementary: { students: 20, status: "READY", complete: 20 },
