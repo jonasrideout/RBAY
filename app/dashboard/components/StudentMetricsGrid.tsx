@@ -1,6 +1,8 @@
 // /app/dashboard/components/StudentMetricsGrid.tsx
 "use client";
 
+import { useState } from 'react';
+
 interface SchoolData {
   id: string;
   schoolName: string;
@@ -29,6 +31,7 @@ interface MatchedSchool {
   id: string;
   schoolName: string;
   teacherName: string;
+  teacherEmail: string;
   schoolCity?: string;
   schoolState?: string;
   expectedClassSize: number;
@@ -53,16 +56,30 @@ export default function StudentMetricsGrid({
   isMatched = false
 }: StudentMetricsGridProps) {
   const estimatedClassSize = schoolData?.expectedClassSize || 0;
+  const [emailCopyText, setEmailCopyText] = useState('✉');
   
   // Determine grid columns: 5 if matched, 4 if not matched
   const gridColumns = isMatched ? 'repeat(5, 1fr)' : 'repeat(4, 1fr)';
   
   // Format location for matched school
   const formatLocation = () => {
-  if (matchedSchool?.schoolCity && matchedSchool?.schoolState) {
-    return `${matchedSchool.schoolCity}, ${matchedSchool.schoolState}`;
-  }
-  return '—';
+    if (matchedSchool?.schoolCity && matchedSchool?.schoolState) {
+      return `${matchedSchool.schoolCity}, ${matchedSchool.schoolState}`;
+    }
+    return '—';
+  };
+
+  const copyTeacherEmail = async () => {
+    if (!matchedSchool?.teacherEmail) return;
+
+    try {
+      await navigator.clipboard.writeText(matchedSchool.teacherEmail);
+      setEmailCopyText('✓');
+      setTimeout(() => setEmailCopyText('✉'), 1500);
+    } catch (err) {
+      console.error('Failed to copy email:', err);
+      prompt('Copy this email:', matchedSchool.teacherEmail);
+    }
   };
   
   return (
@@ -163,8 +180,31 @@ export default function StudentMetricsGrid({
           <div className="text-data-value" style={{ marginBottom: '0.25rem' }}>
             {formatLocation()}
           </div>
-          <div className="text-data-value" style={{ marginBottom: '0.25rem' }}>
-            {matchedSchool.teacherName}
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            gap: '0.5rem',
+            marginBottom: '0.25rem' 
+          }}>
+            <span className="text-data-value">
+              {matchedSchool.teacherName}
+            </span>
+            <button
+              onClick={copyTeacherEmail}
+              className="btn-icon btn-icon-email"
+              title={`Copy email: ${matchedSchool.teacherEmail}`}
+              style={{
+                fontSize: '14px',
+                color: '#666',
+                fontWeight: '300',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer'
+              }}
+            >
+              {emailCopyText}
+            </button>
           </div>
           <div className="text-data-label">
             {matchedSchool.expectedClassSize || 0} students
