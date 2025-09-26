@@ -705,20 +705,22 @@ function RegisterStudentForm() {
 
   // Don't render anything until session check is complete
   if (!sessionCheckComplete) {
-    return (
-      <div className="page">
-        <Header />
-        <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
-          <div className="card">
-            <div style={{ textAlign: 'center', padding: '2rem' }}>
-              <div className="loading" style={{ margin: '0 auto 1rem' }}></div>
-              <p>Loading registration form...</p>
-            </div>
-          </div>
-        </main>
-      </div>
-  }
   return (
+    <div className="page">
+      <Header />
+      <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
+        <div className="card">
+          <div style={{ textAlign: 'center', padding: '2rem' }}>
+            <div className="loading" style={{ margin: '0 auto 1rem' }}></div>
+            <p>Loading registration form...</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+return (
     <div className="page">
       <Header />
 
