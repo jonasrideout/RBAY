@@ -36,8 +36,8 @@ export default function MatchingStatusCard({
   // Use status field for ready state (only relevant if not already matched)
   const readyForMatching = schoolData?.status === 'READY';
 
-  // Only show status when in matching process (not when just ready)
-  if (!readyForMatching && !isMatched) {
+  // Don't show when matched - info is now in the 5th metric box
+  if (isMatched) {
     return null;
   }
 
