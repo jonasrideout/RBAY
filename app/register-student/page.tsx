@@ -717,7 +717,6 @@ function RegisterStudentForm() {
           </div>
         </main>
       </div>
- );
   }
   return (
     <div className="page">
