@@ -446,7 +446,6 @@ function TeacherDashboardContent() {
           schoolData={schoolData}
           allActiveStudentsComplete={allActiveStudentsComplete}
           matchedSchoolTeacher={schoolData.matchedSchool?.teacherName}
-          matchedSchoolEmail={schoolData.matchedSchool?.teacherEmail}
           matchedSchoolRegion={schoolData.matchedSchool?.region}
         />
 
