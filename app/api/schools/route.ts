@@ -221,7 +221,10 @@ export async function GET(request: NextRequest) {
             id: true,
             schoolName: true,
             teacherName: true,
+            teacherEmail: true,
+            schoolCity: true,
             schoolState: true,
+            expectedClassSize: true,
             region: true
           }
         }
