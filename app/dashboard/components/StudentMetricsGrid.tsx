@@ -59,10 +59,10 @@ export default function StudentMetricsGrid({
   
   // Format location for matched school
   const formatLocation = () => {
-    if (matchedSchool?.schoolCity && matchedSchool?.schoolState) {
-      return `${matchedSchool.schoolCity}, ${matchedSchool.schoolState}`;
-    }
-    return matchedSchool?.region || '—';
+  if (matchedSchool?.schoolCity && matchedSchool?.schoolState) {
+    return `${matchedSchool.schoolCity}, ${matchedSchool.schoolState}`;
+  }
+  return '—';
   };
   
   return (
@@ -167,7 +167,7 @@ export default function StudentMetricsGrid({
             {matchedSchool.teacherName}
           </div>
           <div className="text-data-label">
-            {matchedSchool.expectedClassSize} students
+            {matchedSchool.expectedClassSize || 0} students
           </div>
         </div>
       )}
