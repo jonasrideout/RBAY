@@ -25,6 +25,7 @@ export async function GET() {
             id: true,
             schoolName: true,
             teacherName: true,
+            teacherEmail: true,
             schoolCity: true,
             schoolState: true,
             expectedClassSize: true,
