@@ -178,8 +178,12 @@ function TeacherDashboardContent() {
         matchedWithSchoolId: data.school.matchedWithSchoolId,
         matchedSchoolName: data.school.matchedWithSchool?.schoolName || undefined,
         matchedSchool: data.school.matchedWithSchool ? {
+          id: data.school.matchedWithSchool.id,
+          schoolName: data.school.matchedWithSchool.schoolName,
           teacherName: data.school.matchedWithSchool.teacherName,
-          teacherEmail: data.school.matchedWithSchool.teacherEmail,
+          schoolCity: data.school.matchedWithSchool.schoolCity,
+          schoolState: data.school.matchedWithSchool.schoolState,
+          expectedClassSize: data.school.matchedWithSchool.expectedClassSize,
           region: data.school.matchedWithSchool.region
         } : undefined
       };
