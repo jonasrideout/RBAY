@@ -39,8 +39,12 @@ interface SchoolData {
   matchedWithSchoolId?: string;
   matchedSchoolName?: string;
   matchedSchool?: {
+    id: string;
+    schoolName: string;
     teacherName: string;
-    teacherEmail: string;
+    schoolCity?: string;
+    schoolState?: string;
+    expectedClassSize: number;
     region: string;
   };
 }
