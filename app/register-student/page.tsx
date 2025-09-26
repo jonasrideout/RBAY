@@ -725,7 +725,7 @@ function RegisterStudentForm() {
       <Header />
 
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
-        <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+        <div className="container">
           {/* Show loading during API calls */}
           {isLoading && currentStep !== 'info' && (
             <div className="card">
