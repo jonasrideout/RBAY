@@ -5,6 +5,8 @@ import { prisma } from '@/lib/prisma';
 export async function GET() {
   try {
     console.log('All-schools using DATABASE_URL:', process.env.DATABASE_URL?.substring(0, 50) + '...');
+    console.log('All-schools starting query...');
+    
     // Get all schools with their matched school data, students, and pen pal assignments
     const schools = await prisma.school.findMany({
       include: {
@@ -52,6 +54,8 @@ export async function GET() {
         createdAt: 'asc'
       }
     });
+    
+    console.log('All-schools found schools:', schools.length);
     
     // Calculate pen pal assignments for each school
     const transformedSchools = schools.map(school => {
@@ -127,15 +131,17 @@ export async function GET() {
       DONE: statusCounts.DONE || 0
     };
     
+    console.log('All-schools returning data - schools:', transformedSchools.length);
+    
     return NextResponse.json({
       schools: transformedSchools,
       statusCounts: completeStatusCounts,
       totalSchools: transformedSchools.length
     });
   } catch (error) {
-    console.error('Error fetching all schools:', error);
+    console.error('All-schools error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch schools data' },
+      { error: 'Failed to fetch schools data', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
