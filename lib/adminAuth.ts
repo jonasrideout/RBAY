@@ -49,7 +49,8 @@ export async function createAdminToken(email: string): Promise<string> {
 
 export async function getAdminSession(request: NextRequest): Promise<AdminSession | null> {
   try {
-    const token = request.cookies.get('admin-token')?.value;
+    // FIXED: Changed from 'admin-token' to 'admin-session' to match login endpoint
+    const token = request.cookies.get('admin-session')?.value;
     
     if (!token) {
       return null;
