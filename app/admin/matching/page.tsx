@@ -190,7 +190,7 @@ export default function AdminDashboard() {
   const handleClearData = async () => {
     if (confirm('This will permanently delete ALL schools and students. Are you sure?')) {
       try {
-        const response = await fetch('/api/admin/clear-data');
+        const response = await fetch('/api/admin/clear-data', { method: 'DELETE' });
         const data = await response.json();
         
         if (response.ok) {
