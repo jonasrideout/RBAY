@@ -41,9 +41,9 @@ export default function DashboardHeader({
   const [penPalsAssigned, setPenPalsAssigned] = useState(false);
   const [checkingPenPals, setCheckingPenPals] = useState(false);
   
-  // Check if school is already matched or ready for matching
+  // Check if school is already matched
   const isMatched = schoolData?.matchedWithSchoolId != null;
-  const readyForMatching = schoolData?.status === 'READY';
+  // Remove readyForMatching logic since admin can match schools at will now
   
   // Check for pen pal assignments when school is matched
   useEffect(() => {
@@ -94,11 +94,11 @@ export default function DashboardHeader({
     }
   };
 
-  const handleRequestMatchingClick = () => {
+  const handleRequestPairingClick = () => {
     setShowConfirmation(true);
   };
 
-  const handleConfirmMatching = async () => {
+  const handleConfirmPairing = async () => {
     setShowConfirmation(false);
     setIsRequestingMatching(true);
     
@@ -117,7 +117,7 @@ export default function DashboardHeader({
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to request matching');
+        throw new Error(data.error || 'Failed to request pairing');
       }
       
       if (onMatchingRequested) {
@@ -125,13 +125,13 @@ export default function DashboardHeader({
       }
       
     } catch (err: any) {
-      alert('Error requesting matching: ' + err.message);
+      alert('Error requesting pairing: ' + err.message);
     } finally {
       setIsRequestingMatching(false);
     }
   };
 
-  const handleCancelMatching = () => {
+  const handleCancelPairing = () => {
     setShowConfirmation(false);
   };
 
@@ -222,72 +222,62 @@ export default function DashboardHeader({
                 href={`/register-student?token=${schoolData.dashboardToken}`}
                 className="btn btn-primary"
                 style={{
-                  ...(readyForMatching ? { 
-                    opacity: 0.6, 
-                    cursor: 'not-allowed',
-                    pointerEvents: 'none'
-                  } : {}),
                   fontSize: '13px',
                   textDecoration: 'none',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center'
                 }}
-                title={readyForMatching ? "Cannot add students after matching is requested" : "Add new student"}
+                title="Add new student"
               >
                 Add New Student
               </Link>
             </div>
 
-            {/* Bottom row - Download and Request Matching/Download Pen Pals */}
+            {/* Bottom row - Download and Ready to Pair Pen Pals/Download Pen Pals */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
               <button 
                 className="btn btn-primary"
-                disabled={schoolData.students.length === 0 || readyForMatching}
+                disabled={schoolData.students.length === 0}
                 onClick={() => {
-                  if (schoolData.students.length > 0 && !readyForMatching && schoolData?.dashboardToken) {
+                  if (schoolData.students.length > 0 && schoolData?.dashboardToken) {
                     window.open(`/dashboard/print?token=${schoolData.dashboardToken}`, '_blank');
                   }
                 }}
                 style={{
-                  opacity: (schoolData.students.length === 0 || readyForMatching) ? 0.6 : 1,
-                  cursor: (schoolData.students.length === 0 || readyForMatching) ? 'not-allowed' : 'pointer',
+                  opacity: schoolData.students.length === 0 ? 0.6 : 1,
+                  cursor: schoolData.students.length === 0 ? 'not-allowed' : 'pointer',
                   fontSize: '13px'
                 }}
-                title={readyForMatching ? "Matching has been requested" : (schoolData.students.length === 0 ? "Need students first" : "Download student information")}
+                title={schoolData.students.length === 0 ? "Need students first" : "Download student information"}
               >
                 Download Student Info
               </button>
 
-              {/* Conditional button: Request Matching OR Download Pen Pals */}
+              {/* Conditional button: Ready to Pair Pen Pals OR Download Pen Pals */}
               {!isMatched ? (
-                // Request Matching Button - show when not matched
+                // Ready to Pair Pen Pals Button - show when not matched
                 <button 
                   className="btn btn-primary" 
-                  disabled={isRequestingMatching || readyForMatching || !allActiveStudentsComplete}
-                  onClick={handleRequestMatchingClick}
+                  disabled={isRequestingMatching || !allActiveStudentsComplete}
+                  onClick={handleRequestPairingClick}
                   style={{
-                    backgroundColor: readyForMatching ? '#28a745' : 'white',
-                    color: readyForMatching ? 'white' : '#555',
-                    border: readyForMatching ? '1px solid #28a745' : '1px solid #ddd',
-                    cursor: (isRequestingMatching || readyForMatching || !allActiveStudentsComplete) ? 'not-allowed' : 'pointer',
-                    opacity: (isRequestingMatching || readyForMatching || !allActiveStudentsComplete) ? 0.6 : 1,
+                    cursor: (isRequestingMatching || !allActiveStudentsComplete) ? 'not-allowed' : 'pointer',
+                    opacity: (isRequestingMatching || !allActiveStudentsComplete) ? 0.6 : 1,
                     fontSize: '13px'
                   }}
                   title={
-                    readyForMatching 
-                      ? "Matching has been requested" 
-                      : !allActiveStudentsComplete
+                    !allActiveStudentsComplete
                       ? "Complete all student profiles first"
-                      : "Request matching for your students"
+                      : "Indicate readiness to pair pen pals"
                   }
                 >
-                  {readyForMatching ? 'Matching Requested' : (isRequestingMatching ? (
+                  {isRequestingMatching ? (
                     <>
                       <span className="loading"></span>
                       <span style={{ marginLeft: '0.25rem' }}>Requesting...</span>
                     </>
-                  ) : 'Request Matching')}
+                  ) : 'Ready to Pair Pen Pals'}
                 </button>
               ) : (
                 // Download Pen Pals Button - show when matched
@@ -348,23 +338,23 @@ export default function DashboardHeader({
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
           }}>
             <h3 style={{ color: '#495057', marginBottom: '1rem' }}>
-              Confirm Matching Request
+              Ready to Pair Pen Pals?
             </h3>
             <p style={{ color: '#6c757d', marginBottom: '2rem', lineHeight: '1.5' }}>
-              Are you ready to request matching for your students? This will submit your class roster for the matching process.
+              Are you ready to indicate that your students are ready to be paired with pen pals? This will mark your class as ready for the pairing process.
             </p>
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
               <button 
-                onClick={handleCancelMatching}
+                onClick={handleCancelPairing}
                 className="btn btn-primary"
               >
                 Cancel
               </button>
               <button 
-                onClick={handleConfirmMatching}
+                onClick={handleConfirmPairing}
                 className="btn btn-success"
               >
-                Yes, Request Matching
+                Yes, Ready to Pair
               </button>
             </div>
           </div>
