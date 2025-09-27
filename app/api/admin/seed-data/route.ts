@@ -8,6 +8,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('Seed-data using DATABASE_URL:', process.env.DATABASE_URL?.substring(0, 50) + '...');
     console.log('Starting enhanced seed data creation...');
 
     // Create Pacific School - 20 students (READY status)
