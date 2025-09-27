@@ -633,7 +633,7 @@ export default function AdminDashboard() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {unmatchedToShow.map(school => (
                 <SchoolCard 
-                  key={school.id} 
+                  key={`${school.id}-${Date.now()}`}
                   school={school} 
                   showActions={true}
                   isPinned={pinnedSchool?.id === school.id}
