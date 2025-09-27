@@ -172,7 +172,7 @@ export default function AdminDashboard() {
   const handleSeedData = async () => {
     if (confirm('This will create test schools. Continue?')) {
       try {
-        const response = await fetch('/api/admin/seed-data');
+        const response = await fetch('/api/admin/seed-data', { method: 'POST' });
         const data = await response.json();
         
         if (response.ok) {
