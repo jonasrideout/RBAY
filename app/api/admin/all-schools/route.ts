@@ -1,9 +1,10 @@
+// /app/api/admin/all-schools/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
-    // Get all schools with their matched school data and student counts
+    // Get all schools with their matched school data, students, and pen pal assignments
     const schools = await prisma.school.findMany({
       include: {
         students: {
@@ -17,7 +18,20 @@ export async function GET() {
             otherInterests: true,
             profileCompleted: true,
             parentConsent: true,
-            createdAt: true
+            createdAt: true,
+            // Include pen pal connections to check assignment status
+            penpalConnections: {
+              select: {
+                id: true,
+                penpalId: true
+              }
+            },
+            penpalOf: {
+              select: {
+                id: true,
+                studentId: true
+              }
+            }
           }
         },
         matchedWithSchool: {
@@ -38,33 +52,64 @@ export async function GET() {
       }
     });
     
-    // Transform schools with student counts and full student data
-    const transformedSchools = schools.map(school => ({
-      id: school.id,
-      schoolName: school.schoolName,
-      teacherName: school.teacherName,
-      teacherEmail: school.teacherEmail,
-      teacherPhone: school.teacherPhone,
-      dashboardToken: school.dashboardToken,
-      region: school.region,
-      gradeLevel: school.gradeLevel,
-      expectedClassSize: school.expectedClassSize,
-      startMonth: school.startMonth,
-      specialConsiderations: school.specialConsiderations,
-      status: school.status,
-      letterFrequency: school.letterFrequency,
-      lettersSent: school.lettersSent,
-      lettersReceived: school.lettersReceived,
-      matchedWithSchoolId: school.matchedWithSchoolId,
-      matchedSchool: school.matchedWithSchool,
-      // Include full student data with profileCompleted field
-      students: school.students,
-      studentCounts: {
-        expected: school.expectedClassSize,
-        registered: school.students.length,
-        ready: school.students.filter(s => s.profileCompleted).length
-      }
-    }));
+    // Calculate pen pal assignments for each school
+    const transformedSchools = schools.map(school => {
+      // Count students with pen pal assignments
+      const studentsWithPenPals = school.students.filter(student => 
+        student.penpalConnections.length > 0 || student.penpalOf.length > 0
+      );
+      
+      // Calculate pen pal assignment status
+      const totalStudents = school.students.length;
+      const studentsWithAssignments = studentsWithPenPals.length;
+      const hasPenPalAssignments = studentsWithAssignments > 0;
+      const allStudentsAssigned = totalStudents > 0 && studentsWithAssignments === totalStudents;
+      
+      return {
+        id: school.id,
+        schoolName: school.schoolName,
+        teacherName: school.teacherName,
+        teacherEmail: school.teacherEmail,
+        teacherPhone: school.teacherPhone,
+        dashboardToken: school.dashboardToken,
+        region: school.region,
+        gradeLevel: school.gradeLevel,
+        expectedClassSize: school.expectedClassSize,
+        startMonth: school.startMonth,
+        specialConsiderations: school.specialConsiderations,
+        status: school.status,
+        letterFrequency: school.letterFrequency,
+        lettersSent: school.lettersSent,
+        lettersReceived: school.lettersReceived,
+        matchedWithSchoolId: school.matchedWithSchoolId,
+        matchedSchool: school.matchedWithSchool,
+        // Include full student data (without pen pal details for privacy)
+        students: school.students.map(student => ({
+          id: student.id,
+          firstName: student.firstName,
+          lastInitial: student.lastInitial,
+          grade: student.grade,
+          interests: student.interests,
+          otherInterests: student.otherInterests,
+          profileCompleted: student.profileCompleted,
+          parentConsent: student.parentConsent,
+          createdAt: student.createdAt
+        })),
+        studentCounts: {
+          expected: school.expectedClassSize,
+          registered: school.students.length,
+          ready: school.students.filter(s => s.profileCompleted).length
+        },
+        // New pen pal assignment data
+        penPalAssignments: {
+          hasAssignments: hasPenPalAssignments,
+          studentsWithPenPals: studentsWithAssignments,
+          totalStudents: totalStudents,
+          allStudentsAssigned: allStudentsAssigned,
+          assignmentPercentage: totalStudents > 0 ? Math.round((studentsWithAssignments / totalStudents) * 100) : 0
+        }
+      };
+    });
     
     // Calculate status counts
     const statusCounts = transformedSchools.reduce((acc, school) => {
