@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
+    console.log('All-schools using DATABASE_URL:', process.env.DATABASE_URL?.substring(0, 50) + '...');
     // Get all schools with their matched school data, students, and pen pal assignments
     const schools = await prisma.school.findMany({
       include: {
