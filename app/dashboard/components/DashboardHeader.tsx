@@ -119,12 +119,20 @@ export default function DashboardHeader({
       if (!response.ok) {
         throw new Error(data.error || 'Failed to request pairing');
       }
+
+      console.log('Request pairing successful:', data);
       
       if (onMatchingRequested) {
         onMatchingRequested();
       }
       
+      // Force a page refresh if the callback doesn't update the UI
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+      
     } catch (err: any) {
+      console.error('Error requesting pairing:', err);
       alert('Error requesting pairing: ' + err.message);
     } finally {
       setIsRequestingMatching(false);
