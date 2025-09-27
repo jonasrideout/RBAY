@@ -133,11 +133,16 @@ export async function GET() {
     
     console.log('All-schools returning data - schools:', transformedSchools.length);
     
-    return NextResponse.json({
-      schools: transformedSchools,
-      statusCounts: completeStatusCounts,
-      totalSchools: transformedSchools.length
-    });
+    const response = NextResponse.json({
+  schools: transformedSchools,
+  statusCounts: completeStatusCounts,
+  totalSchools: transformedSchools.length
+});
+
+response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+response.headers.set('Pragma', 'no-cache');
+response.headers.set('Expires', '0');
+    return response;
   } catch (error) {
     console.error('All-schools error:', error);
     return NextResponse.json(
