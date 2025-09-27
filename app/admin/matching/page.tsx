@@ -105,6 +105,7 @@ export default function AdminDashboard() {
       const response = await fetch('/api/admin/all-schools');
       const data = await response.json();
       console.log('fetchAllSchools received data:', data.schools?.length || 0, 'schools');
+      console.log('About to check response.ok, response status:', response.status);
       if (!response.ok) {
         throw new Error(data.error || 'Failed to fetch schools');
       }
