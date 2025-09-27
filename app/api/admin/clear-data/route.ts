@@ -11,6 +11,7 @@ export async function DELETE() {
     // Delete in correct order to avoid foreign key constraint violations
     // 1. First delete StudentPenpal records (they reference students)
     const deletedPenpals = await prisma.studentPenpal.deleteMany({});
+    console.log('Deleted penpals:', deletedPenpals.count);
     
     // 2. Delete SchoolPairing records (they reference schools)
     const deletedSchoolPairings = await prisma.schoolPairing.deleteMany({});
