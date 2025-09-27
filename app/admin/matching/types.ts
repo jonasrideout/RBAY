@@ -25,6 +25,14 @@ export interface School {
     registered: number;
     ready: number;
   };
+  // NEW: Added pen pal assignment data
+  penPalAssignments?: {
+    hasAssignments: boolean;
+    studentsWithPenPals: number;
+    totalStudents: number;
+    allStudentsAssigned: boolean;
+    assignmentPercentage: number;
+  };
 }
 
 export interface StatusCounts {
