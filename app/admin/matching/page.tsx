@@ -72,6 +72,7 @@ export default function AdminDashboard() {
         }
 
         // Fetch all schools data (now includes pen pal assignments)
+        await new Promise(resolve => setTimeout(resolve, 1000));
         await fetchAllSchools();
       } catch (error) {
         console.error('Admin initialization failed:', error);
