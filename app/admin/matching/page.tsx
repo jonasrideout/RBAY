@@ -31,9 +31,6 @@ export default function AdminDashboard() {
   const [error, setError] = useState('');
   const [adminUser, setAdminUser] = useState<string>('');
   
-  // Track which school pairs have pen pal assignments
-  const [pairAssignments, setPairAssignments] = useState<{[key: string]: boolean}>({});
-  
   // Matching and filtering state
   const [pinnedSchool, setPinnedSchool] = useState<School | null>(null);
   const [showFilters, setShowFilters] = useState(false);
@@ -57,25 +54,38 @@ export default function AdminDashboard() {
   
   const router = useRouter();
 
+  // Single useEffect for initialization
   useEffect(() => {
-    checkAdminAuth();
-    fetchAllSchools();
-  }, []);
+    let mounted = true;
+    
+    const initializeAdmin = async () => {
+      try {
+        // Check admin auth
+        const authResponse = await fetch('/api/admin/me');
+        if (!authResponse.ok) {
+          router.push('/admin/login');
+          return;
+        }
+        const authData = await authResponse.json();
+        if (mounted) {
+          setAdminUser(authData.email);
+        }
 
-  const checkAdminAuth = async () => {
-    try {
-      const response = await fetch('/api/admin/me');
-      if (response.ok) {
-        const data = await response.json();
-        setAdminUser(data.email);
-      } else {
+        // Fetch all schools data (now includes pen pal assignments)
+        await fetchAllSchools();
+      } catch (error) {
+        console.error('Admin initialization failed:', error);
         router.push('/admin/login');
       }
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      router.push('/admin/login');
-    }
-  };
+    };
+
+    initializeAdmin();
+
+    // Cleanup function
+    return () => {
+      mounted = false;
+    };
+  }, [router]);
 
   const handleAdminLogout = async () => {
     try {
@@ -108,53 +118,13 @@ export default function AdminDashboard() {
         DONE: 0
       });
 
-      // Check pen pal assignments for matched schools
-      await checkPenPalAssignments(data.schools || []);
+      // No more individual API calls - pen pal data comes from the main query!
 
     } catch (err: any) {
       setError('Error fetching schools: ' + err.message);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  // Function to check if pen pal assignments exist for school pairs
-  const checkPenPalAssignments = async (schoolsList: School[]) => {
-    const matchedSchools = schoolsList.filter(school => school.matchedWithSchoolId);
-    const assignments: {[key: string]: boolean} = {};
-    
-    const processed = new Set<string>();
-    
-    for (const school of matchedSchools) {
-      if (processed.has(school.id) || !school.matchedWithSchoolId) continue;
-      
-      const pairKey = [school.id, school.matchedWithSchoolId].sort().join('-');
-      
-      try {
-        const response = await fetch(`/api/admin/download-pairings?schoolId=${school.id}`);
-        if (response.ok) {
-          const data = await response.json();
-          
-          const hasAssignments = data.pairings && data.pairings.some((pairing: any) => 
-            pairing.penpalCount > 0 || (pairing.penpals && pairing.penpals.length > 0)
-          );
-          
-          assignments[pairKey] = hasAssignments;
-        } else {
-          assignments[pairKey] = false;
-        }
-      } catch (error) {
-        console.error(`Error checking assignments for ${pairKey}:`, error);
-        assignments[pairKey] = false;
-      }
-      
-      processed.add(school.id);
-      if (school.matchedWithSchoolId) {
-        processed.add(school.matchedWithSchoolId);
-      }
-    }
-    
-    setPairAssignments(assignments);
   };
 
   const handleSchoolsUpdate = async () => {
@@ -239,6 +209,12 @@ export default function AdminDashboard() {
   const areBothSchoolsReady = (school1: School, school2: School): boolean => {
     const validStatuses = ['READY', 'MATCHED'];
     return validStatuses.includes(school1.status) && validStatuses.includes(school2.status);
+  };
+
+  // Helper function to check if school pair has pen pal assignments (using new data structure)
+  const getPairPenPalStatus = (school1: School, school2: School): boolean => {
+    // Use the new penPalAssignments data from the API response
+    return school1.penPalAssignments?.hasAssignments || school2.penPalAssignments?.hasAssignments || false;
   };
 
   // Matching workflow functions
@@ -453,7 +429,7 @@ export default function AdminDashboard() {
     setFilteredSchools([]);
   };
 
-  // Organize schools by workflow stage
+  // Organize schools by workflow stage using new pen pal data structure
   const organizeSchoolsByWorkflow = () => {
     const unmatched: School[] = [];
     const matchedPairs: SchoolPair[] = [];
@@ -468,8 +444,8 @@ export default function AdminDashboard() {
       } else {
         const matchedSchoolFull = schools.find(s => s.id === school.matchedWithSchoolId);
         if (matchedSchoolFull && !processed.has(matchedSchoolFull.id)) {
-          const pairKey = [school.id, matchedSchoolFull.id].sort().join('-');
-          const hasStudentPairings = pairAssignments[pairKey] || false;
+          // Use new pen pal assignment data from API
+          const hasStudentPairings = getPairPenPalStatus(school, matchedSchoolFull);
           const bothSchoolsReady = areBothSchoolsReady(school, matchedSchoolFull);
 
           matchedPairs.push({
