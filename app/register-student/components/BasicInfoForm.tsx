@@ -26,7 +26,7 @@ export default function BasicInfoForm({
   onPenpalPreferenceChange
 }: BasicInfoFormProps) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '2fr 80px 150px 200px', gap: '1rem' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 80px 150px 200px', gap: '1rem' }}>
       <div className="form-group">
         <label htmlFor="first-name" className="form-label">
           {isTeacherFlow ? "Student's first name *" : "First Name *"}
