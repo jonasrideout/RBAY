@@ -4,6 +4,10 @@ import { prisma } from '@/lib/prisma';
 
 export async function DELETE() {
   try {
+    // Debug: Check what's actually in the database
+    const schoolCount = await prisma.school.count();
+    console.log('Schools found before deletion:', schoolCount);
+    
     // Delete in correct order to avoid foreign key constraint violations
     // 1. First delete StudentPenpal records (they reference students)
     const deletedPenpals = await prisma.studentPenpal.deleteMany({});
