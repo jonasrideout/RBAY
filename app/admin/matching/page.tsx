@@ -177,6 +177,7 @@ export default function AdminDashboard() {
         
         if (response.ok) {
           alert('Test data seeded successfully!');
+          console.log('About to call fetchAllSchools...');
           await fetchAllSchools();
         } else {
           alert('Error seeding data: ' + (data.error || 'Unknown error'));
