@@ -103,7 +103,7 @@ export default function AdminDashboard() {
     setError('');
 
     try {
-      const response = await fetch('/api/admin/all-schools');
+      const response = await fetch(`/api/admin/all-schools?t=${Date.now()}`);
       const data = await response.json();
       console.log('fetchAllSchools received data:', data.schools?.length || 0, 'schools');
       console.log('About to check response.ok, response status:', response.status);
