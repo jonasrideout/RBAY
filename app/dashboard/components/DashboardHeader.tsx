@@ -45,12 +45,12 @@ export default function DashboardHeader({
   const isMatched = schoolData?.matchedWithSchoolId != null;
   // Remove readyForMatching logic since admin can match schools at will now
   
-  // Check for pen pal assignments when school is matched
+  // Check for pen pal assignments when school has students
   useEffect(() => {
-    if (isMatched && schoolData?.id) {
+    if (schoolData?.id && schoolData.students?.length > 0) {
       checkPenPalAssignments();
     }
-  }, [isMatched, schoolData?.id]);
+  }, [schoolData?.id, schoolData.students?.length]);
 
   const checkPenPalAssignments = async () => {
     setCheckingPenPals(true);
@@ -255,8 +255,8 @@ export default function DashboardHeader({
               </button>
 
               {/* Conditional button: Ready to Pair Pen Pals OR Download Pen Pals */}
-              {!isMatched ? (
-                // Ready to Pair Pen Pals Button - show when not matched
+              {!penPalsAssigned ? (
+                // Ready to Pair Pen Pals Button - show when pen pals not yet assigned
                 <button 
                   className="btn btn-primary" 
                   disabled={isRequestingMatching || !allActiveStudentsComplete}
@@ -280,26 +280,15 @@ export default function DashboardHeader({
                   ) : 'Ready to Pair Pen Pals'}
                 </button>
               ) : (
-                // Download Pen Pals Button - show when matched
+                // Download Pen Pals Button - show when pen pals are assigned
                 <button 
                   className="btn btn-primary" 
-                  disabled={!penPalsAssigned || checkingPenPals}
+                  disabled={checkingPenPals}
                   onClick={handleDownloadPenPals}
                   style={{
-                    backgroundColor: penPalsAssigned ? 'white' : '#f8f9fa',
-                    color: penPalsAssigned ? '#555' : '#999',
-                    border: penPalsAssigned ? '1px solid #ddd' : '1px solid #e0e0e0',
-                    cursor: penPalsAssigned ? 'pointer' : 'not-allowed',
-                    opacity: penPalsAssigned ? 1 : 0.6,
                     fontSize: '13px'
                   }}
-                  title={
-                    checkingPenPals 
-                      ? "Checking pen pal assignments..." 
-                      : penPalsAssigned 
-                      ? "Download pen pal assignments" 
-                      : "Pen pals not yet assigned"
-                  }
+                  title="Download pen pal assignments"
                 >
                   {checkingPenPals ? (
                     <>
