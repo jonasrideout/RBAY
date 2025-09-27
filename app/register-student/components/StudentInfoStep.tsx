@@ -45,7 +45,7 @@ export default function StudentInfoStep({
   onInterestChange
 }: StudentInfoStepProps) {
   return (
-    <div className="card" style={{ maxWidth: '900px', margin: '0 auto' }}>
+    <div className="card" style={{ maxWidth: '915px', margin: '0 auto' }}>
       <div style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '6px', marginBottom: '1.5rem', border: '1px solid #dee2e6' }}>
         <h4 style={{ color: '#495057', marginBottom: '0.5rem' }}>
           {isTeacherFlow ? 'Adding Student to:' : 'Your School:'}
