@@ -26,7 +26,7 @@ export default function BasicInfoForm({
   onPenpalPreferenceChange
 }: BasicInfoFormProps) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '250px 80px 150px 200px', gap: '1rem' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: '280px 120px 170px 200px', gap: '1rem' }}>
       <div className="form-group">
         <label htmlFor="first-name" className="form-label">
           {isTeacherFlow ? "Student's first name *" : "First Name *"}
@@ -79,7 +79,7 @@ export default function BasicInfoForm({
       </div>
 
       <div className="form-group">
-        <label htmlFor="penpal-preference" className="form-label">Pen Pals *</label>
+        <label htmlFor="penpal-preference" className="form-label">How Many Pen Pals *</label>
         <select 
           id="penpal-preference" 
           className="form-select" 
