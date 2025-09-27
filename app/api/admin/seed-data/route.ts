@@ -10,6 +10,7 @@ export async function POST(request: NextRequest) {
   try {
     console.log('Seed-data using DATABASE_URL:', process.env.DATABASE_URL?.substring(0, 50) + '...');
     console.log('Starting enhanced seed data creation...');
+    console.log('Seed-data using DATABASE_URL_DIRECT:', process.env.DATABASE_URL_DIRECT?.substring(0, 50) + '...');
 
     // Create Pacific School - 20 students (READY status)
     const pacificSchool = await prisma.school.create({
