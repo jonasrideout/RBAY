@@ -110,6 +110,7 @@ export default function AdminDashboard() {
       }
 
       setSchools(data.schools || []);
+      console.log('Called setSchools with:', data.schools?.length, 'schools');
       setStatusCounts(data.statusCounts || {
         COLLECTING: 0,
         READY: 0,
