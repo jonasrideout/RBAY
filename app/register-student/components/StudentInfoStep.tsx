@@ -2,7 +2,6 @@
 
 import BasicInfoForm from './BasicInfoForm';
 import InterestsForm from './InterestsForm';
-import PenPalPreferenceForm from './PenPalPreferenceForm';
 import ParentConsentForm from './ParentConsentForm';
 
 interface SchoolInfo {
@@ -73,10 +72,12 @@ export default function StudentInfoStep({
           firstName={formData.firstName}
           lastInitial={formData.lastInitial}
           grade={formData.grade}
+          penpalPreference={formData.penpalPreference}
           isLoading={isLoading}
           onFirstNameChange={(value) => onUpdateFormData('firstName', value)}
           onLastInitialChange={(value) => onUpdateFormData('lastInitial', value)}
           onGradeChange={(value) => onUpdateFormData('grade', value)}
+          onPenpalPreferenceChange={(value) => onUpdateFormData('penpalPreference', value)}
         />
 
         <InterestsForm
@@ -86,13 +87,6 @@ export default function StudentInfoStep({
           isLoading={isLoading}
           onInterestChange={onInterestChange}
           onOtherInterestsChange={(value) => onUpdateFormData('otherInterests', value)}
-        />
-
-        <PenPalPreferenceForm
-          isTeacherFlow={isTeacherFlow}
-          penpalPreference={formData.penpalPreference}
-          isLoading={isLoading}
-          onPreferenceChange={(value) => onUpdateFormData('penpalPreference', value)}
         />
 
         <ParentConsentForm
