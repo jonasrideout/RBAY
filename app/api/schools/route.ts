@@ -224,6 +224,8 @@ export async function GET(request: NextRequest) {
             profileCompleted: true,
             parentConsent: true,
             createdAt: true
+            penpalConnections: true,
+            penpalOf: true
           }
         },
         // Include matched school information
@@ -256,11 +258,20 @@ export async function GET(request: NextRequest) {
       ready: school.students.filter(s => s.profileCompleted).length
     };
 
+    // Calculate pen pal statistics
+    const studentsWithPenpals = school.students.filter(student => 
+      student.penpalConnections.length > 0 || student.penpalOf.length > 0
+    );
+
     return NextResponse.json({
       success: true,
       school: {
         ...school,
-        studentStats
+        studentStats: {
+          ...studentStats,
+          studentsWithPenpals: studentsWithPenpals.length,
+          hasPenpalAssignments: studentsWithPenpals.length > 0
+        }
       }
     });
 
