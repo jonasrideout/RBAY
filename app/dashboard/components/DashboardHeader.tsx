@@ -47,7 +47,7 @@ export default function DashboardHeader({
   
   // Check for pen pal assignments when school has students
   useEffect(() => {
-    if (schoolData?.id && schoolData.students?.length > 0) {
+    if (schoolData?.id && schoolData.students?.length > 0 && schoolData.status === 'MATCHED') {
       checkPenPalAssignments();
     }
   }, [schoolData?.id, schoolData.students?.length]);
