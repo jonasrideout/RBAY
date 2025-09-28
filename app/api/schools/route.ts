@@ -93,12 +93,12 @@ export async function POST(request: NextRequest) {
         schoolName,
         schoolAddress: schoolAddress || null, // Optional - empty for now
         schoolCity: schoolCity || null, // Optional - may be provided
-        schoolState: schoolState || null, // Optional in admin mode
+        schoolState: schoolState || 'TBD', // Default for admin mode
         schoolZip: schoolZip || null, // Optional - empty for now
-        region: region || null, // Optional in admin mode
-        gradeLevel: gradeLevel || null, // Optional in admin mode
+        region: region || 'TBD', // Default for admin mode
+        gradeLevel: gradeLevel || 'TBD', // Default for admin mode
         expectedClassSize: expectedClassSize ? parseInt(expectedClassSize) : 0, // Default to 0 in admin mode
-        startMonth: startMonth || null, // Optional in admin mode
+        startMonth: startMonth || 'TBD', // Default for admin mode
         status: 'COLLECTING', // New schools start in collecting status
         specialConsiderations: specialConsiderations || null
       }
