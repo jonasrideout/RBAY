@@ -51,10 +51,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if school is already ready for matching
+    // Check if school is already ready for pen pal pairing
     if (school.status === 'READY') {
       return NextResponse.json(
-        { error: 'School has already requested matching' },
+        { error: 'School has already requested pen pal pairing' },
         { status: 409 }
       );
     }
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     if (school.students.length === 0) {
       return NextResponse.json(
         { 
-          error: 'Cannot request matching. No active students registered.' 
+          error: 'Cannot request pen pal pairing. No active students registered.' 
         },
         { status: 400 }
       );
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
       student => !student.interests || student.interests.length === 0
     );
 
-    // Note: We're allowing matching even if students don't have interests yet
+    // Note: We're allowing pairing even if students don't have interests yet
 
     // Validate that all active students have parent consent
     const studentsWithoutConsent = school.students.filter(
@@ -84,14 +84,14 @@ export async function POST(request: NextRequest) {
     if (studentsWithoutConsent.length > 0) {
       return NextResponse.json(
         { 
-          error: `Cannot request matching. ${studentsWithoutConsent.length} students do not have parent consent.`,
+          error: `Cannot request pen pal pairing. ${studentsWithoutConsent.length} students do not have parent consent.`,
           studentsNeedingConsent: studentsWithoutConsent.map(s => `${s.firstName} ${s.lastInitial}.`)
         },
         { status: 400 }
       );
     }
 
-    // Update the school to mark it as ready for matching
+    // Update the school to mark it as ready for pen pal pairing
     const updatedSchool = await prisma.school.update({
       where: { teacherEmail },
       data: { 
@@ -112,12 +112,12 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Log the matching request for potential notification/admin purposes
-    console.log(`School matching requested: ${school.schoolName} (${teacherEmail}) with ${school.students.length} students`);
+    // Log the pen pal pairing request for potential notification/admin purposes
+    console.log(`School pen pal pairing requested: ${school.schoolName} (${teacherEmail}) with ${school.students.length} students`);
 
     return NextResponse.json({
       success: true,
-      message: 'Matching request submitted successfully',
+      message: 'Pen pal pairing request submitted successfully',
       school: {
         id: updatedSchool.id,
         schoolName: updatedSchool.schoolName,
@@ -135,9 +135,9 @@ export async function POST(request: NextRequest) {
     }, { status: 200 });
 
   } catch (error) {
-    console.error('Request matching error:', error);
+    console.error('Request pen pal pairing error:', error);
     return NextResponse.json(
-      { error: 'Failed to request matching. Please try again.' },
+      { error: 'Failed to request pen pal pairing. Please try again.' },
       { status: 500 }
     );
   }
@@ -155,7 +155,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get the school's matching status
+    // Get the school's pen pal pairing status
     const school = await prisma.school.findUnique({
       where: { teacherEmail },
       select: {
@@ -179,15 +179,15 @@ export async function GET(request: NextRequest) {
         id: school.id,
         schoolName: school.schoolName,
         status: school.status,
-        readyForMatching: school.status === 'READY',
+        readyForPairing: school.status === 'READY',
         lastUpdated: school.updatedAt
       }
     });
 
   } catch (error) {
-    console.error('Get matching status error:', error);
+    console.error('Get pen pal pairing status error:', error);
     return NextResponse.json(
-      { error: 'Failed to get matching status' },
+      { error: 'Failed to get pen pal pairing status' },
       { status: 500 }
     );
   }
