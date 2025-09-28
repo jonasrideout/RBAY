@@ -223,7 +223,7 @@ export async function GET(request: NextRequest) {
             otherInterests: true,
             profileCompleted: true,
             parentConsent: true,
-            createdAt: true
+            createdAt: true,
             penpalConnections: true,
             penpalOf: true
           }
