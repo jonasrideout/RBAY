@@ -30,7 +30,8 @@ export default function MatchingSection({
   schoolData,
   allActiveStudentsComplete,
   matchedSchoolTeacher,
-  matchedSchoolRegion
+  matchedSchoolRegion,
+  onSchoolUpdated
 }: MatchingSectionProps) {
   
   // Check if school is matched
@@ -45,6 +46,7 @@ export default function MatchingSection({
     <MatchingStatusCard 
       schoolData={schoolData}
       allActiveStudentsComplete={allActiveStudentsComplete}
+      onSchoolUpdated={onSchoolUpdated}
     />
   );
 }
