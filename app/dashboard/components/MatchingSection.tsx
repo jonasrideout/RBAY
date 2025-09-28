@@ -23,6 +23,7 @@ interface MatchingSectionProps {
   allActiveStudentsComplete: boolean;
   matchedSchoolTeacher?: string;
   matchedSchoolRegion?: string;
+  onSchoolUpdated?: () => void;
 }
 
 export default function MatchingSection({
