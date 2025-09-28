@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from 'react';
-import { US_STATES, STATE_TO_REGION } from '@/app/register-school/constants';
+import SchoolEditModal from './SchoolEditModal';
 
 interface SchoolData {
   id: string;
@@ -50,17 +50,7 @@ export default function MatchingStatusCard({
   onSchoolUpdated
 }: MatchingStatusCardProps) {
   
-  const [showCompletionModal, setShowCompletionModal] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [completionData, setCompletionData] = useState({
-    schoolState: schoolData.schoolState || '',
-    schoolCity: schoolData.schoolCity || '',
-    gradeLevel: schoolData.gradeLevel || '',
-    expectedClassSize: schoolData.expectedClassSize?.toString() || '',
-    startMonth: schoolData.startMonth || '',
-    teacherPhone: schoolData.teacherPhone || '',
-    specialConsiderations: schoolData.specialConsiderations || ''
-  });
+  const [showEditModal, setShowEditModal] = useState(false);
 
   // Check if school data is incomplete (has 'TBD' values or missing required data)
   const isIncomplete = schoolData.schoolState === 'TBD' || 
@@ -81,78 +71,13 @@ export default function MatchingStatusCard({
     return null;
   }
 
-  const getRegionForState = (state: string) => {
-    return STATE_TO_REGION[state] || '';
-  };
-
-  const handleCompletionSubmit = async () => {
-    setIsUpdating(true);
-    
-    try {
-      // Validate required fields
-      if (!completionData.schoolState || !completionData.gradeLevel || 
-          !completionData.expectedClassSize || !completionData.startMonth) {
-        alert('Please fill in all required fields');
-        setIsUpdating(false);
-        return;
-      }
-
-      const region = getRegionForState(completionData.schoolState);
-      
-      const response = await fetch('/api/schools', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          schoolId: schoolData.id,
-          schoolState: completionData.schoolState,
-          schoolCity: completionData.schoolCity || null,
-          gradeLevel: completionData.gradeLevel,
-          expectedClassSize: completionData.expectedClassSize,
-          startMonth: completionData.startMonth,
-          teacherPhone: completionData.teacherPhone || null,
-          specialConsiderations: completionData.specialConsiderations || null,
-          region: region
-        })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to update school information');
-      }
-
-      setShowCompletionModal(false);
-      
-      // Refresh the dashboard data
-      if (onSchoolUpdated) {
-        onSchoolUpdated();
-      } else {
-        window.location.reload();
-      }
-
-    } catch (error: any) {
-      alert('Error updating school information: ' + error.message);
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
-  const handleGradeLevelChange = (grade: string, checked: boolean) => {
-    const currentGrades = completionData.gradeLevel.split(', ').filter(g => g.trim());
-    let newGrades;
-    
-    if (checked) {
-      newGrades = [...currentGrades, grade];
+  const handleModalSuccess = () => {
+    // Refresh the dashboard data
+    if (onSchoolUpdated) {
+      onSchoolUpdated();
     } else {
-      newGrades = currentGrades.filter(g => g !== grade);
+      window.location.reload();
     }
-    
-    setCompletionData(prev => ({
-      ...prev,
-      gradeLevel: newGrades.join(', ')
-    }));
   };
 
   // Show completion prompt if school data is incomplete
@@ -175,7 +100,7 @@ export default function MatchingStatusCard({
                 Your school profile is missing some required information. Please complete your profile to access all features.
               </p>
               <button 
-                onClick={() => setShowCompletionModal(true)}
+                onClick={() => setShowEditModal(true)}
                 className="btn"
                 style={{ 
                   padding: '0.75rem 1.5rem'
@@ -188,185 +113,12 @@ export default function MatchingStatusCard({
         </div>
 
         {/* School Profile Completion Modal */}
-        {showCompletionModal && (
-          <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000
-          }}>
-            <div style={{
-              backgroundColor: 'white',
-              padding: '2rem',
-              borderRadius: '8px',
-              maxWidth: '600px',
-              width: '90%',
-              maxHeight: '80vh',
-              overflowY: 'auto',
-              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
-            }}>
-              <h3 style={{ color: '#495057', marginBottom: '1.5rem' }}>
-                Complete School Information
-              </h3>
-              
-              <div style={{ display: 'grid', gap: '1.5rem' }}>
-                {/* State (Required) */}
-                <div className="form-group">
-                  <label className="form-label">State *</label>
-                  <select 
-                    className="form-select" 
-                    value={completionData.schoolState}
-                    onChange={(e) => setCompletionData(prev => ({ ...prev, schoolState: e.target.value }))}
-                    required
-                  >
-                    <option value="">Select State</option>
-                    {US_STATES.map(state => (
-                      <option key={state.value} value={state.value}>{state.value}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* City (Optional) */}
-                <div className="form-group">
-                  <label className="form-label">City</label>
-                  <input 
-                    type="text" 
-                    className="form-input" 
-                    value={completionData.schoolCity}
-                    onChange={(e) => setCompletionData(prev => ({ ...prev, schoolCity: e.target.value }))}
-                    placeholder="e.g., Springfield"
-                  />
-                </div>
-
-                {/* Grade Levels (Required) */}
-                <div className="form-group">
-                  <label className="form-label">Grade Level(s) *</label>
-                  <div style={{ 
-                    display: 'grid', 
-                    gridTemplateColumns: 'repeat(3, 1fr)', 
-                    gap: '0.75rem', 
-                    marginTop: '0.5rem' 
-                  }}>
-                    {['3', '4', '5', '6', '7', '8'].map(grade => (
-                      <label key={grade} style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        gap: '0.5rem',
-                        fontSize: '14px',
-                        fontWeight: '400',
-                        color: '#555'
-                      }}>
-                        <input 
-                          type="checkbox" 
-                          checked={completionData.gradeLevel.includes(grade)}
-                          onChange={(e) => handleGradeLevelChange(grade, e.target.checked)}
-                          style={{ accentColor: '#2c5aa0' }}
-                        />
-                        {grade}{grade === '3' ? 'rd' : 'th'} Grade
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Expected Class Size (Required) */}
-                <div className="form-group">
-                  <label className="form-label">Expected Number of Students *</label>
-                  <input 
-                    type="number" 
-                    className="form-input" 
-                    min="1"
-                    max="50"
-                    value={completionData.expectedClassSize}
-                    onChange={(e) => setCompletionData(prev => ({ ...prev, expectedClassSize: e.target.value }))}
-                    placeholder="e.g., 25"
-                    required
-                  />
-                </div>
-
-                {/* Start Month (Required) */}
-                <div className="form-group">
-                  <label className="form-label">Preferred Start Month *</label>
-                  <select 
-                    className="form-select" 
-                    value={completionData.startMonth}
-                    onChange={(e) => setCompletionData(prev => ({ ...prev, startMonth: e.target.value }))}
-                    required
-                  >
-                    <option value="">Select Start Month</option>
-                    <option value="As soon as possible">As soon as possible</option>
-                    <option value="Not sure yet">Not sure yet</option>
-                    {[
-                      'January', 'February', 'March', 'April', 'May', 'June',
-                      'July', 'August', 'September', 'October', 'November', 'December'
-                    ].map(month => (
-                      <option key={month} value={month}>{month}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Phone (Optional) */}
-                <div className="form-group">
-                  <label className="form-label">Phone Number</label>
-                  <input 
-                    type="tel" 
-                    className="form-input" 
-                    value={completionData.teacherPhone}
-                    onChange={(e) => setCompletionData(prev => ({ ...prev, teacherPhone: e.target.value }))}
-                    placeholder="(555) 123-4567"
-                  />
-                </div>
-
-                {/* Special Considerations (Optional) */}
-                <div className="form-group">
-                  <label className="form-label">Special Considerations or Notes</label>
-                  <textarea 
-                    className="form-textarea" 
-                    rows={3}
-                    value={completionData.specialConsiderations}
-                    onChange={(e) => setCompletionData(prev => ({ ...prev, specialConsiderations: e.target.value }))}
-                    placeholder="Any special considerations, scheduling preferences, or notes..."
-                  />
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '2rem' }}>
-                <button 
-                  onClick={() => setShowCompletionModal(false)}
-                  className="btn"
-                  disabled={isUpdating}
-                  style={{ padding: '0.75rem 1.5rem' }}
-                >
-                  Cancel
-                </button>
-                <button 
-                  onClick={handleCompletionSubmit}
-                  className="btn"
-                  disabled={isUpdating}
-                  style={{ 
-                    backgroundColor: '#28a745', 
-                    color: 'white', 
-                    padding: '0.75rem 1.5rem' 
-                  }}
-                >
-                  {isUpdating ? (
-                    <>
-                      <span className="loading" style={{ marginRight: '0.5rem' }}></span>
-                      Updating...
-                    </>
-                  ) : (
-                    'Save Profile'
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <SchoolEditModal
+          show={showEditModal}
+          schoolData={schoolData}
+          onClose={() => setShowEditModal(false)}
+          onSuccess={handleModalSuccess}
+        />
       </>
     );
   }
