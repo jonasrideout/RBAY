@@ -61,7 +61,7 @@ export default function SuccessStep({
             Return to Dashboard
           </Link>
           
-          <Link 
+          <a 
             href={`/register-student?token=${schoolToken}`}
             className="btn"
             style={{ 
@@ -70,7 +70,7 @@ export default function SuccessStep({
             }}
           >
             Add Another Student
-          </Link>
+          </a>
         </div>
       </div>
     );
