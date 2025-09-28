@@ -16,6 +16,11 @@ interface SchoolData {
   students: any[];
   matchedWithSchoolId?: string;
   matchedSchoolName?: string;
+  schoolState?: string;
+  schoolCity?: string;
+  gradeLevel?: string;
+  teacherPhone?: string;
+  specialConsiderations?: string;
 }
 
 interface MatchingSectionProps {
