@@ -15,6 +15,7 @@ export default function SuccessStep({
   registeredStudent,
   schoolToken
 }: SuccessStepProps) {
+  console.log('SuccessStep schoolToken:', schoolToken);
   const handleCloseWindow = () => {
     window.close();
   };
