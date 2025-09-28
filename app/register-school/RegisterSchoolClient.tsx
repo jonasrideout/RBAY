@@ -133,36 +133,55 @@ export default function RegisterSchoolClient({
     setIsLoading(true);
     setError('');
 
-    // Validation
-    const requiredFields = [
-      'teacherName', 'teacherEmail', 'schoolName', 
-      'schoolState', 'classSize', 'programStartMonth'
-    ];
+    // Admin mode validation - only require school name, teacher name, teacher email
+    if (isAdminMode) {
+      const adminRequiredFields = ['teacherName', 'teacherEmail', 'schoolName'];
+      
+      for (const field of adminRequiredFields) {
+        if (!formData[field as keyof SchoolFormData]) {
+          setError('Please fill in all required fields (Teacher Name, Teacher Email, School Name)');
+          setIsLoading(false);
+          return;
+        }
+      }
 
-    for (const field of requiredFields) {
-      if (!formData[field as keyof SchoolFormData]) {
-        setError('Please fill in all required fields');
+      if (!formData.teacherEmail.includes('@')) {
+        setError('Please enter a valid teacher email address');
         setIsLoading(false);
         return;
       }
-    }
+    } else {
+      // Regular mode validation - all original required fields
+      const requiredFields = [
+        'teacherName', 'teacherEmail', 'schoolName', 
+        'schoolState', 'classSize', 'programStartMonth'
+      ];
 
-    if (formData.gradeLevels.length === 0) {
-      setError('Please select at least one grade level');
-      setIsLoading(false);
-      return;
-    }
+      for (const field of requiredFields) {
+        if (!formData[field as keyof SchoolFormData]) {
+          setError('Please fill in all required fields');
+          setIsLoading(false);
+          return;
+        }
+      }
 
-    if (!formData.teacherEmail.includes('@')) {
-      setError('Please enter a valid email address');
-      setIsLoading(false);
-      return;
-    }
+      if (formData.gradeLevels.length === 0) {
+        setError('Please select at least one grade level');
+        setIsLoading(false);
+        return;
+      }
 
-    if (!formData.programAgreement) {
-      setError('Please check the agreement box to continue');
-      setIsLoading(false);
-      return;
+      if (!formData.teacherEmail.includes('@')) {
+        setError('Please enter a valid email address');
+        setIsLoading(false);
+        return;
+      }
+
+      if (!formData.programAgreement) {
+        setError('Please check the agreement box to continue');
+        setIsLoading(false);
+        return;
+      }
     }
 
     try {
