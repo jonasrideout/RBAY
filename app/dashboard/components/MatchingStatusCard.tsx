@@ -39,19 +39,18 @@ export default function MatchingStatusCard({
   isAdminView = false 
 }: MatchingStatusCardProps) {
   
-  // Check if school is already matched (this takes priority over status)
+  // Check if school is already matched
   const isMatched = schoolData?.matchedWithSchoolId != null;
   
-  // Use status field for ready state (only relevant if not already matched)
+  // Use status field for ready state
   const readyForPairing = schoolData?.status === 'READY';
   
-  // Hide container when empty (when matched, since info is now in the 5th metric box)
-  if (isMatched) {
-    return null;
-  }
-
-  // Also hide if not ready for pairing (empty state)
-  if (!readyForPairing) {
+  // Show the card when:
+  // 1. Status is READY but not matched yet (pending pairing request)
+  // 2. School is matched but no pen pals assigned yet (waiting for partner)
+  const shouldShowCard = readyForPairing || (isMatched && !readOnly && !isAdminView);
+  
+  if (!shouldShowCard) {
     return null;
   }
 
@@ -73,9 +72,11 @@ export default function MatchingStatusCard({
               ? 'This school is ready for pen pal pairing and is waiting for a partner school.'
               : isAdminView
               ? 'This school is ready for pen pal pairing and is waiting for a partner school.'
-              : schoolData.matchedSchool
+              : isMatched && schoolData.matchedSchool
               ? `Ready for pen pals. When ${schoolData.matchedSchool.schoolName} is done collecting student data, pen pals will be paired.`
-              : 'Ready for pen pals. When your partner school is done collecting student data, pen pals will be paired.'
+              : isMatched
+              ? 'Ready for pen pals. When your partner school is done collecting student data, pen pals will be paired.'
+              : 'Waiting for partner school. We will email you when matching is complete.'
             }
           </p>
         </div>
