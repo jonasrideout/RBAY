@@ -43,6 +43,14 @@ export default function SchoolRegistrationForm({
     return STATE_TO_REGION[state] || '';
   };
 
+  // Admin mode validation - only require school name, teacher name, teacher email
+  const isFieldRequired = (field: string) => {
+    if (isAdminMode) {
+      return ['schoolName', 'teacherName', 'teacherEmail'].includes(field);
+    }
+    return true; // All fields required in regular mode
+  };
+
   return (
     <div className="page">
       <Header 
@@ -72,7 +80,7 @@ export default function SchoolRegistrationForm({
             {/* Admin navigation button */}
             {isAdminMode && (
               <div>
-                <Link href="/admin/matching" className="btn btn-primary">
+                <Link href="/admin/matching" className="btn">
                   ← Back to Admin Dashboard
                 </Link>
               </div>
@@ -98,7 +106,9 @@ export default function SchoolRegistrationForm({
                 
                 <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 2fr 1.5fr', gap: '1.5rem' }}>
                   <div className="form-group">
-                    <label htmlFor="teacher-name" className="form-label">Name *</label>
+                    <label htmlFor="teacher-name" className="form-label">
+                      {isAdminMode ? 'Teacher Name' : 'Name'} *
+                    </label>
                     <input 
                       type="text" 
                       id="teacher-name" 
@@ -106,30 +116,32 @@ export default function SchoolRegistrationForm({
                       value={formData.teacherName}
                       onChange={(e) => onUpdateFormData('teacherName', e.target.value)}
                       disabled={isLoading}
-                      required
+                      required={isFieldRequired('teacherName')}
                       placeholder="e.g., Sarah Johnson"
                     />
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="teacher-email" className="form-label">Email Address *</label>
+                    <label htmlFor="teacher-email" className="form-label">
+                      {isAdminMode ? 'Teacher Email' : 'Email Address'} *
+                    </label>
                     <input 
                       type="email" 
                       id="teacher-email" 
                       className="form-input" 
                       value={formData.teacherEmail}
                       onChange={(e) => onUpdateFormData('teacherEmail', e.target.value)}
-                      disabled={isLoading || isEmailReadOnly}
-                      readOnly={isEmailReadOnly}
-                      required
-                      style={isEmailReadOnly ? { 
+                      disabled={isLoading || (!isAdminMode && isEmailReadOnly)}
+                      readOnly={!isAdminMode && isEmailReadOnly}
+                      required={isFieldRequired('teacherEmail')}
+                      style={(!isAdminMode && isEmailReadOnly) ? { 
                         backgroundColor: '#f8f9fa', 
                         color: '#6c757d',
                         cursor: 'not-allowed'
                       } : {}}
                     />
                     <small className="text-meta-info" style={{ display: 'block', marginTop: '0.25rem' }}>
-                      {isEmailReadOnly 
+                      {(!isAdminMode && isEmailReadOnly)
                         ? 'Email verified from your login' 
                         : isAdminMode 
                           ? 'Teacher will receive welcome email at this address'
@@ -139,7 +151,9 @@ export default function SchoolRegistrationForm({
                   </div>
                   
                   <div className="form-group">
-                    <label htmlFor="teacher-phone" className="form-label">Phone Number</label>
+                    <label htmlFor="teacher-phone" className="form-label">
+                      Phone Number{isFieldRequired('teacherPhone') ? ' *' : ''}
+                    </label>
                     <input 
                       type="tel" 
                       id="teacher-phone" 
@@ -147,6 +161,7 @@ export default function SchoolRegistrationForm({
                       value={formData.teacherPhone}
                       onChange={(e) => onUpdateFormData('teacherPhone', e.target.value)}
                       disabled={isLoading}
+                      required={isFieldRequired('teacherPhone')}
                       placeholder="(555) 123-4567"
                     />
                   </div>
@@ -176,13 +191,15 @@ export default function SchoolRegistrationForm({
                       value={formData.schoolName}
                       onChange={(e) => onUpdateFormData('schoolName', e.target.value)}
                       disabled={isLoading}
-                      required
+                      required={isFieldRequired('schoolName')}
                       placeholder="e.g., Lincoln Elementary School"
                     />
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="school-city" className="form-label">City</label>
+                    <label htmlFor="school-city" className="form-label">
+                      City{isFieldRequired('schoolCity') ? ' *' : ''}
+                    </label>
                     <input 
                       type="text" 
                       id="school-city" 
@@ -190,19 +207,22 @@ export default function SchoolRegistrationForm({
                       value={formData.schoolCity}
                       onChange={(e) => onUpdateFormData('schoolCity', e.target.value)}
                       disabled={isLoading}
+                      required={isFieldRequired('schoolCity')}
                       placeholder="e.g., Springfield"
                     />
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="school-state" className="form-label">State *</label>
+                    <label htmlFor="school-state" className="form-label">
+                      State{isFieldRequired('schoolState') ? ' *' : ''}
+                    </label>
                     <select 
                       id="school-state" 
                       className="form-select" 
                       value={formData.schoolState}
                       onChange={(e) => onUpdateFormData('schoolState', e.target.value)}
                       disabled={isLoading}
-                      required
+                      required={isFieldRequired('schoolState')}
                     >
                       <option value="">Select</option>
                       {US_STATES.map(state => (
@@ -223,17 +243,19 @@ export default function SchoolRegistrationForm({
                     borderLeft: '3px solid #2c5aa0'
                   }}>
                     <div className="text-data-value" style={{ fontWeight: '400', marginBottom: '0.25rem' }}>
-                      Your Region: {getRegionForState(formData.schoolState)}
+                      Region: {getRegionForState(formData.schoolState)}
                     </div>
                     <div className="text-meta-info">
-                      You'll be matched with schools from other regions to promote cross-regional connections.
+                      Schools will be matched with schools from other regions to promote cross-regional connections.
                     </div>
                   </div>
                 )}
 
                 <div style={{ display: 'grid', gridTemplateColumns: '2.5fr 1.5fr 1.5fr', gap: '1.5rem' }}>
                   <div className="form-group">
-                    <label className="form-label">Grade Level(s) *</label>
+                    <label className="form-label">
+                      Grade Level(s){isFieldRequired('gradeLevels') ? ' *' : ''}
+                    </label>
                     <div style={{ 
                       display: 'grid', 
                       gridTemplateColumns: 'repeat(3, 1fr)', 
@@ -254,6 +276,7 @@ export default function SchoolRegistrationForm({
                             checked={formData.gradeLevels.includes(grade)}
                             onChange={(e) => onGradeLevelChange(grade, e.target.checked)}
                             disabled={isLoading}
+                            required={isAdminMode ? false : isFieldRequired('gradeLevels') && formData.gradeLevels.length === 0}
                             style={{ accentColor: '#2c5aa0' }}
                           />
                           {grade}{grade === '3' ? 'rd' : 'th'} Grade
@@ -263,7 +286,9 @@ export default function SchoolRegistrationForm({
                   </div>
                   
                   <div className="form-group">
-                    <label htmlFor="class-size" className="form-label">Est. # of Students *</label>
+                    <label htmlFor="class-size" className="form-label">
+                      Est. # of Students{isFieldRequired('classSize') ? ' *' : ''}
+                    </label>
                     <input 
                       type="number" 
                       id="class-size" 
@@ -273,20 +298,22 @@ export default function SchoolRegistrationForm({
                       value={formData.classSize}
                       onChange={(e) => onUpdateFormData('classSize', e.target.value)}
                       disabled={isLoading}
-                      required
+                      required={isFieldRequired('classSize')}
                       placeholder="e.g., 25"
                     />
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="program-start-month" className="form-label">Preferred Start *</label>
+                    <label htmlFor="program-start-month" className="form-label">
+                      Preferred Start{isFieldRequired('programStartMonth') ? ' *' : ''}
+                    </label>
                     <select 
                       id="program-start-month" 
                       className="form-select" 
                       value={formData.programStartMonth}
                       onChange={(e) => onUpdateFormData('programStartMonth', e.target.value)}
                       disabled={isLoading}
-                      required
+                      required={isFieldRequired('programStartMonth')}
                     >
                       <option value="">Select</option>
                       <option value="As soon as possible">As soon as possible</option>
@@ -362,7 +389,7 @@ export default function SchoolRegistrationForm({
                         checked={formData.programAgreement}
                         onChange={(e) => onUpdateFormData('programAgreement', e.target.checked)}
                         disabled={isLoading}
-                        required
+                        required={isFieldRequired('programAgreement')}
                         style={{ 
                           marginTop: '0.125rem',
                           accentColor: '#2c5aa0',
@@ -373,7 +400,7 @@ export default function SchoolRegistrationForm({
                         {isAdminMode 
                           ? 'I confirm that this school will follow all program guidelines and obtain necessary permissions according to their school district policies. The teacher will ensure appropriate supervision and follow all policies regarding student communication.' 
                           : 'I understand that this program involves students exchanging letters with students from another school. I will ensure appropriate supervision and follow all school district policies regarding student communication. I will obtain any necessary permissions according to my school\'s policies.'
-                        } *
+                        }{isFieldRequired('programAgreement') ? ' *' : ''}
                       </span>
                     </label>
                   </div>
@@ -391,7 +418,7 @@ export default function SchoolRegistrationForm({
               <div style={{ textAlign: 'center' }}>
                 <button 
                   type="submit" 
-                  className="btn btn-success" 
+                  className="btn" 
                   disabled={isLoading}
                   style={{ 
                     padding: '1rem 2.5rem', 
