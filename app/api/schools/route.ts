@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
         schoolZip: schoolZip || null, // Optional - empty for now
         region: region || null, // Optional in admin mode
         gradeLevel: gradeLevel || null, // Optional in admin mode
-        expectedClassSize: expectedClassSize ? parseInt(expectedClassSize) : null, // Optional in admin mode
+        expectedClassSize: expectedClassSize ? parseInt(expectedClassSize) : 0, // Default to 0 in admin mode
         startMonth: startMonth || null, // Optional in admin mode
         status: 'COLLECTING', // New schools start in collecting status
         specialConsiderations: specialConsiderations || null
