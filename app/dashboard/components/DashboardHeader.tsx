@@ -41,8 +41,8 @@ export default function DashboardHeader({
   const [penPalsAssigned, setPenPalsAssigned] = useState(false);
   const [checkingPenPals, setCheckingPenPals] = useState(false);
   
-  // Check if school is already matched
-  const isMatched = schoolData?.matchedWithSchoolId != null;
+  // Check if school has requested pairing (status is READY)
+  const hasPairingRequested = schoolData?.status === 'READY';
   // Remove readyForMatching logic since admin can match schools at will now
   
   // Check for pen pal assignments when school has students
@@ -262,31 +262,50 @@ export default function DashboardHeader({
                 Download Student Info
               </button>
 
-              {/* Conditional button: Ready to Pair Pen Pals OR Download Pen Pals */}
+              {/* Conditional button: Ready to Pair Pen Pals OR Pending Pen Pals OR Download Pen Pals */}
               {!penPalsAssigned ? (
-                // Ready to Pair Pen Pals Button - show when pen pals not yet assigned
-                <button 
-                  className="btn btn-primary" 
-                  disabled={isRequestingMatching || !allActiveStudentsComplete}
-                  onClick={handleRequestPairingClick}
-                  style={{
-                    cursor: (isRequestingMatching || !allActiveStudentsComplete) ? 'not-allowed' : 'pointer',
-                    opacity: (isRequestingMatching || !allActiveStudentsComplete) ? 0.6 : 1,
-                    fontSize: '13px'
-                  }}
-                  title={
-                    !allActiveStudentsComplete
-                      ? "Complete all student profiles first"
-                      : "Indicate readiness to pair pen pals"
-                  }
-                >
-                  {isRequestingMatching ? (
-                    <>
-                      <span className="loading"></span>
-                      <span style={{ marginLeft: '0.25rem' }}>Requesting...</span>
-                    </>
-                  ) : 'Ready to Pair Pen Pals'}
-                </button>
+                hasPairingRequested ? (
+                  // Pending Pen Pals Button - show when pairing requested but no pen pals assigned yet
+                  <button 
+                    className="btn btn-primary" 
+                    disabled={true}
+                    style={{
+                      backgroundColor: '#f8f9fa',
+                      color: '#999',
+                      border: '1px solid #e0e0e0',
+                      cursor: 'not-allowed',
+                      opacity: 0.6,
+                      fontSize: '13px'
+                    }}
+                    title="Waiting for pen pal assignments"
+                  >
+                    Pending Pen Pals
+                  </button>
+                ) : (
+                  // Ready to Pair Pen Pals Button - show when not requested yet
+                  <button 
+                    className="btn btn-primary" 
+                    disabled={isRequestingMatching || !allActiveStudentsComplete}
+                    onClick={handleRequestPairingClick}
+                    style={{
+                      cursor: (isRequestingMatching || !allActiveStudentsComplete) ? 'not-allowed' : 'pointer',
+                      opacity: (isRequestingMatching || !allActiveStudentsComplete) ? 0.6 : 1,
+                      fontSize: '13px'
+                    }}
+                    title={
+                      !allActiveStudentsComplete
+                        ? "Complete all student profiles first"
+                        : "Indicate readiness to pair pen pals"
+                    }
+                  >
+                    {isRequestingMatching ? (
+                      <>
+                        <span className="loading"></span>
+                        <span style={{ marginLeft: '0.25rem' }}>Requesting...</span>
+                      </>
+                    ) : 'Ready to Pair Pen Pals'}
+                  </button>
+                )
               ) : (
                 // Download Pen Pals Button - show when pen pals are assigned
                 <button 
