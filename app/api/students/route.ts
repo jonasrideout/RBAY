@@ -46,36 +46,51 @@ export async function POST(request: NextRequest) {
     // Check if student interests are completed (has at least one interest)
     const profileCompleted = interests && interests.length > 0;
 
-    // Create the student with updated schema
-    const student = await prisma.student.create({
-      data: {
-        firstName,
-        lastInitial,  // Changed from lastName
-        grade,
-        interests: interests || [],
-        otherInterests: otherInterests || null,
-        // Removed parentName, parentEmail, parentPhone
-        parentConsent: parentConsent || false,
-        penpalPreference: penpalPreference || 'ONE',
-        isActive: true,
-        profileCompleted,
-        schoolId: school.id
+    // Start a transaction to create student and potentially update school status
+    const result = await prisma.$transaction(async (tx) => {
+      // Create the student with updated schema
+      const student = await tx.student.create({
+        data: {
+          firstName,
+          lastInitial,  // Changed from lastName
+          grade,
+          interests: interests || [],
+          otherInterests: otherInterests || null,
+          // Removed parentName, parentEmail, parentPhone
+          parentConsent: parentConsent || false,
+          penpalPreference: penpalPreference || 'ONE',
+          isActive: true,
+          profileCompleted,
+          schoolId: school.id
+        }
+      });
+
+      // If school was previously READY, reset to COLLECTING when new student added
+      let updatedSchool = school;
+      if (school.status === 'READY') {
+        updatedSchool = await tx.school.update({
+          where: { id: school.id },
+          data: { status: 'COLLECTING' }
+        });
       }
+
+      return { student, updatedSchool };
     });
 
     return NextResponse.json({
       message: 'Student registered successfully',
       student: {
-        id: student.id,
-        firstName: student.firstName,
-        lastInitial: student.lastInitial,  // Changed from lastName
-        grade: student.grade,
-        interests: student.interests,
-        otherInterests: student.otherInterests,
-        penpalPreference: student.penpalPreference,
-        profileCompleted: student.profileCompleted,
+        id: result.student.id,
+        firstName: result.student.firstName,
+        lastInitial: result.student.lastInitial,  // Changed from lastName
+        grade: result.student.grade,
+        interests: result.student.interests,
+        otherInterests: result.student.otherInterests,
+        penpalPreference: result.student.penpalPreference,
+        profileCompleted: result.student.profileCompleted,
         schoolName: school.schoolName
-      }
+      },
+      schoolStatusReset: school.status === 'READY' // Inform frontend if status was reset
     });
 
   } catch (error) {
