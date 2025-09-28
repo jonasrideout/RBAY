@@ -50,7 +50,8 @@ export default function SchoolEditModal({
     classSize: schoolData.expectedClassSize?.toString() || '',
     programStartMonth: schoolData.startMonth || schoolData.programStartMonth || '',
     specialConsiderations: schoolData.specialConsiderations || '',
-    programAgreement: true // Not needed for edit mode
+    programAgreement: true, // Not needed for edit mode
+    parentNotification: true // Default value for edit mode
   });
 
   const handleUpdateFormData = (field: keyof SchoolFormData, value: any) => {
