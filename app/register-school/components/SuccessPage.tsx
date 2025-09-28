@@ -137,7 +137,7 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
               </div>
               
               <div>
-                <Link href="/admin/matching" className="btn btn-primary">
+                <Link href="/admin/matching" className="btn">
                   ← Back to Admin Dashboard
                 </Link>
               </div>
@@ -238,32 +238,19 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              {/* All 4 Action Buttons in One Container */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '1rem' }}>
                 <button 
                   onClick={handleCopyLinks}
-                  className="btn btn-primary"
-                  style={{ 
-                    backgroundColor: linksCopyStatus === 'copied' ? '#28a745' : 'white',
-                    color: linksCopyStatus === 'copied' ? 'white' : '#555',
-                    borderColor: linksCopyStatus === 'copied' ? '#28a745' : '#ddd'
-                  }}
+                  className="btn"
                 >
                   {linksCopyStatus === 'copied' ? '✓ Links Copied!' : 'Copy Both Links'}
                 </button>
 
                 <button 
                   onClick={handleSendEmail}
-                  className="btn btn-primary"
+                  className="btn"
                   disabled={emailStatus === 'sending'}
-                  style={{ 
-                    backgroundColor: emailStatus === 'sent' ? '#28a745' : 
-                                   emailStatus === 'error' ? '#dc3545' : 'white',
-                    color: emailStatus === 'sent' ? 'white' :
-                           emailStatus === 'error' ? 'white' : '#555',
-                    borderColor: emailStatus === 'sent' ? '#28a745' :
-                                emailStatus === 'error' ? '#dc3545' : '#ddd'
-                  }}
                 >
                   {emailStatus === 'sending' ? (
                     <>
@@ -273,24 +260,10 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
                   ) : emailStatus === 'sent' ? '✓ Email Sent!' :
                      emailStatus === 'error' ? '✗ Send Failed' : 'Send Welcome Email'}
                 </button>
-              </div>
-            </div>
 
-            {/* Next Actions Card */}
-            <div className="card" style={{ textAlign: 'center' }}>
-              <h3 style={{ 
-                color: '#333', 
-                fontSize: '1.2rem',
-                fontWeight: '400',
-                marginBottom: '1.5rem' 
-              }}>
-                Next Actions
-              </h3>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <Link 
                   href="/register-school?admin=true"
-                  className="btn btn-primary"
+                  className="btn"
                   style={{ textDecoration: 'none' }}
                 >
                   Add Another School
@@ -298,7 +271,7 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
                 
                 <Link 
                   href="/admin/matching"
-                  className="btn btn-success"
+                  className="btn"
                   style={{ textDecoration: 'none' }}
                 >
                   View All Schools
@@ -467,7 +440,7 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
           <div className="card" style={{ textAlign: 'center' }}>
             <Link 
               href="/dashboard"
-              className="btn btn-success"
+              className="btn"
               style={{ 
                 textDecoration: 'none',
                 padding: '1rem 2.5rem', 
