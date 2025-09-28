@@ -74,7 +74,20 @@ function RegisterStudentForm() {
         setFormData(prev => ({ ...prev, schoolToken: token }));
       }
       
-      // Check if we have a teacher session (authenticated user)
+      // If there's a token, use token-based flow (even if there's a teacher session)
+      // This handles the "Add Another Student" button case
+      if (token) {
+        try {
+          await fetchSchoolByToken(token);
+        } catch (error) {
+          console.error('Failed to fetch school by token:', error);
+          setError('Invalid registration link. Please check with your teacher for the correct link.');
+        }
+        setSessionCheckComplete(true);
+        return;
+      }
+      
+      // No token but we have a teacher session - use email-based flow
       if (status === 'authenticated' && session?.user?.email) {
         try {
           await fetchTeacherSchool(session.user.email);
@@ -86,17 +99,53 @@ function RegisterStudentForm() {
         return;
       }
       
-      // No teacher session - mark session check as complete for student flow
+      // No teacher session and no token - show error
       setSessionCheckComplete(true);
-      
-      // If no teacher session and no token, show error
-      if (!token) {
-        setError('Invalid registration link. Please use the link provided by your teacher or log in first.');
-      }
+      setError('Invalid registration link. Please use the link provided by your teacher or log in first.');
     };
     
     checkAuthAndInitialize();
   }, [searchParams, status, session]);
+
+  const fetchSchoolByToken = async (token: string) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/schools?token=${encodeURIComponent(token)}`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Invalid registration link');
+      }
+
+      // Set school info for token-based flow
+      setSchoolInfo({
+        name: data.school.schoolName,
+        teacher: data.school.teacherName,
+        found: true,
+        schoolId: data.school.id,
+        teacherEmail: data.school.teacherEmail
+      });
+
+      // Check if the current user is a teacher with a session
+      const hasTeacherSession = status === 'authenticated' && session?.user?.email;
+      
+      if (hasTeacherSession) {
+        // Teacher with session using token - skip verification, go to form
+        setCurrentStep('info');
+        setIsTeacherFlow(true);
+      } else {
+        // Student flow - start with verification
+        setCurrentStep('schoolVerify');
+        setIsTeacherFlow(false);
+      }
+      
+    } catch (err: any) {
+      console.error('Error in fetchSchoolByToken:', err);
+      throw err; // Re-throw to be handled by caller
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const fetchTeacherSchool = async (teacherEmail: string) => {
     setIsLoading(true);
