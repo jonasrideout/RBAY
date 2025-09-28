@@ -1,6 +1,6 @@
 // /app/dashboard/components/DashboardHeader.tsx
 "use client";
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 
 interface SchoolData {
@@ -16,6 +16,13 @@ interface SchoolData {
   students: any[];
   matchedWithSchoolId?: string;
   matchedSchoolName?: string;
+  studentStats?: {
+    expected: number;
+    registered: number;
+    ready: number;
+    studentsWithPenpals: number;
+    hasPenpalAssignments: boolean;
+  };
 }
 
 interface DashboardHeaderProps {
@@ -38,39 +45,12 @@ export default function DashboardHeader({
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied'>('idle');
   const [isRequestingMatching, setIsRequestingMatching] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [penPalsAssigned, setPenPalsAssigned] = useState(false);
-  const [checkingPenPals, setCheckingPenPals] = useState(false);
   
   // Check if school has requested pairing (status is READY)
   const hasPairingRequested = schoolData?.status === 'READY';
-  // Remove readyForMatching logic since admin can match schools at will now
   
-  // Check for pen pal assignments when school has students
-  useEffect(() => {
-    if (schoolData?.id && schoolData.students?.length > 0 && schoolData.status === 'MATCHED') {
-      checkPenPalAssignments();
-    }
-  }, [schoolData?.id, schoolData.students?.length]);
-
-  const checkPenPalAssignments = async () => {
-    setCheckingPenPals(true);
-    try {
-      const response = await fetch(`/api/admin/download-pairings?schoolId=${schoolData.id}`);
-      if (response.ok) {
-        const data = await response.json();
-        // Check if any students have pen pals assigned
-        const hasAssignments = data.pairings && data.pairings.some((student: any) => student.penpalCount > 0);
-        setPenPalsAssigned(hasAssignments);
-      } else {
-        setPenPalsAssigned(false);
-      }
-    } catch (error) {
-      console.error('Error checking pen pal assignments:', error);
-      setPenPalsAssigned(false);
-    } finally {
-      setCheckingPenPals(false);
-    }
-  };
+  // Get pen pal assignment status from school data
+  const penPalsAssigned = schoolData?.studentStats?.hasPenpalAssignments || false;
   
   const generateStudentLink = () => {
     if (typeof window !== 'undefined' && schoolData.dashboardToken) {
@@ -192,7 +172,7 @@ export default function DashboardHeader({
           <div>
             <Link 
               href="/admin/matching" 
-              className="btn btn-primary"
+              className="btn"
             >
               ← Back to Admin Dashboard
             </Link>
@@ -207,7 +187,7 @@ export default function DashboardHeader({
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
               <button 
                 onClick={handleCopyLink}
-                className="btn btn-primary"
+                className="btn"
                 style={{ 
                   backgroundColor: copyStatus === 'copied' ? '#28a745' : 'white',
                   color: copyStatus === 'copied' ? 'white' : '#555',
@@ -228,7 +208,7 @@ export default function DashboardHeader({
 
               <Link 
                 href={`/register-student?token=${schoolData.dashboardToken}`}
-                className="btn btn-primary"
+                className="btn"
                 style={{
                   fontSize: '13px',
                   textDecoration: 'none',
@@ -245,7 +225,7 @@ export default function DashboardHeader({
             {/* Bottom row - Download and Ready to Pair Pen Pals/Download Pen Pals */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
               <button 
-                className="btn btn-primary"
+                className="btn"
                 disabled={schoolData.students.length === 0}
                 onClick={() => {
                   if (schoolData.students.length > 0 && schoolData?.dashboardToken) {
@@ -267,7 +247,7 @@ export default function DashboardHeader({
                 hasPairingRequested ? (
                   // Pending Pen Pals Button - show when pairing requested but no pen pals assigned yet
                   <button 
-                    className="btn btn-primary" 
+                    className="btn" 
                     disabled={true}
                     style={{
                       backgroundColor: '#f8f9fa',
@@ -284,7 +264,7 @@ export default function DashboardHeader({
                 ) : (
                   // Ready to Pair Pen Pals Button - show when not requested yet
                   <button 
-                    className="btn btn-primary" 
+                    className="btn" 
                     disabled={isRequestingMatching || !allActiveStudentsComplete}
                     onClick={handleRequestPairingClick}
                     style={{
@@ -309,20 +289,14 @@ export default function DashboardHeader({
               ) : (
                 // Download Pen Pals Button - show when pen pals are assigned
                 <button 
-                  className="btn btn-primary" 
-                  disabled={checkingPenPals}
+                  className="btn" 
                   onClick={handleDownloadPenPals}
                   style={{
                     fontSize: '13px'
                   }}
                   title="Download pen pal assignments"
                 >
-                  {checkingPenPals ? (
-                    <>
-                      <span className="loading"></span>
-                      <span style={{ marginLeft: '0.25rem' }}>Checking...</span>
-                    </>
-                  ) : 'Download Pen Pals'}
+                  Download Pen Pals
                 </button>
               )}
             </div>
@@ -362,13 +336,18 @@ export default function DashboardHeader({
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
               <button 
                 onClick={handleCancelPairing}
-                className="btn btn-primary"
+                className="btn"
               >
                 Cancel
               </button>
               <button 
                 onClick={handleConfirmPairing}
-                className="btn btn-success"
+                className="btn"
+                style={{
+                  backgroundColor: '#28a745',
+                  color: 'white',
+                  borderColor: '#28a745'
+                }}
               >
                 Yes, Ready to Pair
               </button>
