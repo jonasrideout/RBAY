@@ -55,7 +55,7 @@ export default function DashboardHeader({
   const checkPenPalAssignments = async () => {
     setCheckingPenPals(true);
     try {
-      const response = await fetch(`/api/download-pairings?schoolId=${schoolData.id}`);
+      const response = await fetch(`/api/admin/download-pairings?schoolId=${schoolData.id}`);
       if (response.ok) {
         const data = await response.json();
         // Check if any students have pen pals assigned
@@ -147,7 +147,7 @@ export default function DashboardHeader({
     if (!penPalsAssigned) return;
     
     try {
-      const response = await fetch(`/api/download-pairings?schoolId=${schoolData.id}`);
+      const response = await fetch(`/api/admin/download-pairings?schoolId=${schoolData.id}`);
       if (response.ok) {
         const data = await response.json();
         
