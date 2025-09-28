@@ -1,5 +1,4 @@
 // /app/register-student/components/SuccessStep.tsx
-
 import Link from 'next/link';
 
 interface SuccessStepProps {
@@ -16,23 +15,58 @@ export default function SuccessStep({
   registeredStudent,
   schoolToken
 }: SuccessStepProps) {
+  const handleCloseWindow = () => {
+    window.close();
+  };
+
   if (isTeacherFlow) {
     // Teacher-added student success page
     return (
-      <div className="card text-center" style={{ background: '#d4edda' }}>
-        <h2 style={{ color: '#155724' }}>{registeredStudent?.firstName} Registered</h2>
+      <div className="card" style={{ 
+        background: '#f8f9fa', 
+        borderLeft: '3px solid #28a745',
+        textAlign: 'center' as const,
+        marginBottom: '1.5rem'
+      }}>
+        <div style={{ padding: '1rem 0' }}>
+          <div style={{ 
+            fontSize: '1.2rem', 
+            fontWeight: '400', 
+            color: '#333',
+            marginBottom: '0.5rem'
+          }}>
+            ✓ {registeredStudent?.firstName} has been registered successfully!
+          </div>
+          <div className="text-meta-info">
+            The student can now be managed from your dashboard and will be included in pen pal pairing.
+          </div>
+        </div>
         
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap', marginTop: '2rem' }}>
+        <div style={{ 
+          display: 'flex', 
+          gap: '1rem', 
+          justifyContent: 'center', 
+          flexWrap: 'wrap', 
+          marginTop: '1.5rem' 
+        }}>
           <Link 
             href="/dashboard"
-            className="btn btn-primary"
+            className="btn"
+            style={{ 
+              padding: '0.75rem 1.5rem',
+              textDecoration: 'none'
+            }}
           >
             Return to Dashboard
           </Link>
           
           <Link 
             href={`/register-student?token=${schoolToken}`}
-            className="btn btn-secondary"
+            className="btn"
+            style={{ 
+              padding: '0.75rem 1.5rem',
+              textDecoration: 'none'
+            }}
           >
             Add Another Student
           </Link>
@@ -42,22 +76,54 @@ export default function SuccessStep({
   } else {
     // Student self-registration success page
     return (
-      <div className="card text-center" style={{ background: '#d4edda' }}>
-        <h2 style={{ color: '#155724' }}>Thank You, {registeredStudent?.firstName}!</h2>
-        <p style={{ color: '#155724', fontSize: '1.1rem' }}>
-          Your registration for The Right Back at You Project has been submitted successfully. 
-        </p>
-        <div style={{ background: 'white', padding: '1.5rem', borderRadius: '6px', margin: '1.5rem 0', border: '1px solid #c3e6cb' }}>
-          <p style={{ color: '#155724', marginBottom: '1rem' }}>
-            <strong>School:</strong> {registeredStudent?.schoolName}
-          </p>
-          <p style={{ color: '#155724', marginBottom: '0' }}>
-            Your teacher will receive your details and you'll be matched with a penpal soon!
-          </p>
+      <div className="card" style={{ 
+        background: '#f8f9fa', 
+        borderLeft: '3px solid #28a745',
+        textAlign: 'center' as const,
+        marginBottom: '1.5rem'
+      }}>
+        <div style={{ padding: '1rem 0' }}>
+          <div style={{ 
+            fontSize: '1.2rem', 
+            fontWeight: '400', 
+            color: '#333',
+            marginBottom: '0.5rem'
+          }}>
+            ✓ Thank you, {registeredStudent?.firstName}!
+          </div>
+          <div className="text-meta-info" style={{ marginBottom: '1.5rem' }}>
+            Your registration for The Right Back at You Project has been submitted successfully.
+          </div>
         </div>
-        <p style={{ color: '#6c757d', marginTop: '1.5rem' }}>
+
+        <div style={{ 
+          background: 'white', 
+          padding: '1.5rem', 
+          borderRadius: '6px', 
+          margin: '1.5rem 0', 
+          border: '1px solid #e9ecef' 
+        }}>
+          <div className="text-data-value" style={{ marginBottom: '1rem' }}>
+            <strong>School:</strong> {registeredStudent?.schoolName}
+          </div>
+          <div className="text-data-value">
+            Your teacher will receive your details and you'll be matched with a pen pal soon!
+          </div>
+        </div>
+
+        <div className="text-meta-info" style={{ marginBottom: '1.5rem' }}>
           You can close this page now. Your teacher will let you know when it's time to start writing letters!
-        </p>
+        </div>
+
+        <button 
+          onClick={handleCloseWindow}
+          className="btn"
+          style={{ 
+            padding: '0.75rem 1.5rem'
+          }}
+        >
+          Close this page
+        </button>
       </div>
     );
   }
