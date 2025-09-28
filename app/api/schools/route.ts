@@ -27,13 +27,24 @@ export async function POST(request: NextRequest) {
       isEmailVerified // Flag to detect email verification flow
     } = body;
 
-    // Updated validation - removed letterFrequency requirement
-    if (!teacherName || !teacherEmail || !schoolName || 
-        !schoolState || !gradeLevel || !expectedClassSize || !startMonth) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      );
+    // Conditional validation based on admin context
+    if (isAdminFlow) {
+      // Admin mode - only require teacher name, teacher email, school name
+      if (!teacherName || !teacherEmail || !schoolName) {
+        return NextResponse.json(
+          { error: 'Missing required fields: Teacher Name, Teacher Email, and School Name are required' },
+          { status: 400 }
+        );
+      }
+    } else {
+      // Regular mode - require all original fields
+      if (!teacherName || !teacherEmail || !schoolName || 
+          !schoolState || !gradeLevel || !expectedClassSize || !startMonth) {
+        return NextResponse.json(
+          { error: 'Missing required fields' },
+          { status: 400 }
+        );
+      }
     }
 
     // Validate email format
@@ -45,18 +56,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate state format (should be 2-letter code)
-    if (!schoolState || schoolState.length !== 2) {
+    // Validate state format only if provided (required in regular mode, optional in admin mode)
+    if (schoolState && schoolState.length !== 2) {
       return NextResponse.json(
         { error: 'Invalid state format' },
         { status: 400 }
       );
     }
 
-    // Validate region is provided
-    if (!region) {
+    // Only validate region if state is provided
+    if (schoolState && !region) {
       return NextResponse.json(
-        { error: 'Region is required' },
+        { error: 'Region is required when state is provided' },
         { status: 400 }
       );
     }
@@ -82,12 +93,12 @@ export async function POST(request: NextRequest) {
         schoolName,
         schoolAddress: schoolAddress || null, // Optional - empty for now
         schoolCity: schoolCity || null, // Optional - may be provided
-        schoolState,
+        schoolState: schoolState || null, // Optional in admin mode
         schoolZip: schoolZip || null, // Optional - empty for now
-        region,
-        gradeLevel,
-        expectedClassSize: parseInt(expectedClassSize),
-        startMonth,
+        region: region || null, // Optional in admin mode
+        gradeLevel: gradeLevel || null, // Optional in admin mode
+        expectedClassSize: expectedClassSize ? parseInt(expectedClassSize) : null, // Optional in admin mode
+        startMonth: startMonth || null, // Optional in admin mode
         status: 'COLLECTING', // New schools start in collecting status
         specialConsiderations: specialConsiderations || null
       }
@@ -240,7 +251,7 @@ export async function GET(request: NextRequest) {
 
     // Calculate student statistics
     const studentStats = {
-      expected: school.expectedClassSize,
+      expected: school.expectedClassSize || 0, // Handle null values from admin-created schools
       registered: school.students.length,
       ready: school.students.filter(s => s.profileCompleted).length
     };
