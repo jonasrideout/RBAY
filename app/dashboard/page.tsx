@@ -38,6 +38,11 @@ interface SchoolData {
   students: any[];
   matchedWithSchoolId?: string;
   matchedSchoolName?: string;
+  schoolState?: string;
+  schoolCity?: string;
+  gradeLevel?: string;
+  teacherPhone?: string;
+  specialConsiderations?: string;
   matchedSchool?: {
     id: string;
     schoolName: string;
@@ -178,6 +183,11 @@ function TeacherDashboardContent() {
         students: data.school.students,
         matchedWithSchoolId: data.school.matchedWithSchoolId,
         matchedSchoolName: data.school.matchedWithSchool?.schoolName || undefined,
+        schoolState: data.school.schoolState,
+        schoolCity: data.school.schoolCity,
+        gradeLevel: data.school.gradeLevel,
+        teacherPhone: data.school.teacherPhone,
+        specialConsiderations: data.school.specialConsiderations,
         matchedSchool: data.school.matchedWithSchool ? {
           id: data.school.matchedWithSchool.id,
           schoolName: data.school.matchedWithSchool.schoolName,
@@ -235,6 +245,13 @@ function TeacherDashboardContent() {
   const handleMatchingRequested = () => {
     // Update local state to reflect matching request
     setSchoolData(prev => prev ? { ...prev, status: 'READY' } : null);
+  };
+
+  const handleSchoolUpdated = () => {
+    // Refresh school data after profile completion
+    if (session?.user?.email) {
+      fetchSchoolByEmail(session.user.email);
+    }
   };
 
   const handleRemoveStudent = async (studentId: string) => {
@@ -449,6 +466,7 @@ function TeacherDashboardContent() {
           allActiveStudentsComplete={allActiveStudentsComplete}
           matchedSchoolTeacher={schoolData.matchedSchool?.teacherName}
           matchedSchoolRegion={schoolData.matchedSchool?.region}
+          onSchoolUpdated={handleSchoolUpdated}
         />
 
         <MissingInfoStudents 
