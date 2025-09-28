@@ -190,6 +190,94 @@ export async function POST(request: NextRequest) {
   }
 }
 
+export async function PUT(request: NextRequest) {
+  try {
+    const body = await request.json();
+    
+    const {
+      schoolId, // Required for updates
+      teacherPhone,
+      schoolAddress,
+      schoolCity,
+      schoolState,
+      schoolZip,
+      region,
+      gradeLevel,
+      expectedClassSize,
+      startMonth,
+      specialConsiderations
+    } = body;
+
+    // Validate required fields for update
+    if (!schoolId) {
+      return NextResponse.json(
+        { error: 'School ID is required for updates' },
+        { status: 400 }
+      );
+    }
+
+    if (!schoolState || !gradeLevel || !expectedClassSize || !startMonth) {
+      return NextResponse.json(
+        { error: 'Missing required fields: State, Grade Level, Expected Class Size, and Start Month are required' },
+        { status: 400 }
+      );
+    }
+
+    // Validate state format
+    if (schoolState.length !== 2) {
+      return NextResponse.json(
+        { error: 'Invalid state format' },
+        { status: 400 }
+      );
+    }
+
+    // Validate region is provided
+    if (!region) {
+      return NextResponse.json(
+        { error: 'Region is required when state is provided' },
+        { status: 400 }
+      );
+    }
+
+    // Update the school
+    const updatedSchool = await prisma.school.update({
+      where: { id: schoolId },
+      data: {
+        teacherPhone: teacherPhone || null,
+        schoolAddress: schoolAddress || null,
+        schoolCity: schoolCity || null,
+        schoolState,
+        schoolZip: schoolZip || null,
+        region,
+        gradeLevel,
+        expectedClassSize: parseInt(expectedClassSize),
+        startMonth,
+        specialConsiderations: specialConsiderations || null
+      }
+    });
+
+    return NextResponse.json({
+      success: true,
+      school: updatedSchool
+    });
+
+  } catch (error: any) {
+    console.error('School update error:', error);
+    
+    if (error?.code === 'P2025') {
+      return NextResponse.json(
+        { error: 'School not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { error: 'Failed to update school information' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
