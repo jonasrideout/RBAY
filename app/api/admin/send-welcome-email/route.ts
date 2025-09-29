@@ -1,5 +1,4 @@
 // /app/api/admin/send-welcome-email/route.ts
-
 import { NextRequest, NextResponse } from 'next/server';
 import { sendWelcomeEmail } from '@/lib/email';
 
@@ -24,12 +23,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Use the existing sendWelcomeEmail function
+    // Use the existing sendWelcomeEmail function with admin context flag
     const result = await sendWelcomeEmail({
       teacherName: teacherName || 'Teacher',
       teacherEmail,
       schoolName,
-      dashboardToken
+      dashboardToken,
+      isAdminCreated: true // Mark this as admin-created
     });
 
     if (!result.success) {
@@ -43,7 +43,6 @@ export async function POST(request: NextRequest) {
       success: true,
       message: 'Welcome email sent successfully'
     });
-
   } catch (error: any) {
     console.error('Admin welcome email error:', error);
     return NextResponse.json(
