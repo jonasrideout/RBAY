@@ -16,9 +16,6 @@ export default function SuccessStep({
   schoolToken
 }: SuccessStepProps) {
   console.log('SuccessStep schoolToken:', schoolToken);
-  const handleCloseWindow = () => {
-    window.close();
-  };
 
   if (isTeacherFlow) {
     // Teacher-added student success page
@@ -112,19 +109,9 @@ export default function SuccessStep({
           </div>
         </div>
 
-        <div className="text-meta-info" style={{ marginBottom: '1.5rem' }}>
-          You can close this page now. Your teacher will let you know when it's time to start writing letters!
+       <div className="text-meta-info">
+          You can close this tab now. Your teacher will let you know when it's time to start writing letters!
         </div>
-
-        <button 
-          onClick={handleCloseWindow}
-          className="btn"
-          style={{ 
-            padding: '0.75rem 1.5rem'
-          }}
-        >
-          Close this page
-        </button>
       </div>
     );
   }
