@@ -32,6 +32,7 @@ interface DashboardHeaderProps {
   adminBackButton?: boolean;
   allActiveStudentsComplete?: boolean;
   onMatchingRequested?: () => void;
+  isProfileIncomplete?: boolean;
 }
 
 export default function DashboardHeader({ 
@@ -40,7 +41,8 @@ export default function DashboardHeader({
   readOnly = false, 
   adminBackButton = false,
   allActiveStudentsComplete = false,
-  onMatchingRequested 
+  onMatchingRequested,
+  isProfileIncomplete = false 
 }: DashboardHeaderProps) {
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied'>('idle');
   const [isRequestingMatching, setIsRequestingMatching] = useState(false);
@@ -188,6 +190,7 @@ export default function DashboardHeader({
               <button 
                 onClick={handleCopyLink}
                 className="btn"
+                disabled={isProfileIncomplete}
                 style={{ 
                   backgroundColor: copyStatus === 'copied' ? '#28a745' : 'white',
                   color: copyStatus === 'copied' ? 'white' : '#555',
@@ -207,8 +210,9 @@ export default function DashboardHeader({
               </button>
 
               <Link 
-                href={`/register-student?token=${schoolData.dashboardToken}`}
+                href={isProfileIncomplete ? '#' : `/register-student?token=${schoolData.dashboardToken}`}
                 className="btn"
+                onClick={(e) => { if (isProfileIncomplete) e.preventDefault(); }}
                 style={{
                   fontSize: '13px',
                   textDecoration: 'none',
