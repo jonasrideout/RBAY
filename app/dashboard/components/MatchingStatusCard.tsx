@@ -97,7 +97,7 @@ export default function MatchingStatusCard({
                 Complete Your School Profile
               </h3>
               <p className="text-meta-info" style={{ marginBottom: '1rem' }}>
-                Your school profile is missing some required information. Please complete your profile to access all features.
+                Your school profile is missing some required information. Please complete your profile to start registering students.
               </p>
               <button 
                 onClick={() => setShowEditModal(true)}
