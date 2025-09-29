@@ -11,6 +11,7 @@ export interface SendWelcomeEmailParams {
   teacherEmail: string;
   schoolName: string;
   dashboardToken: string;
+  isAdminCreated?: boolean; // New optional parameter
 }
 
 export interface SendMagicLinkEmailParams {
@@ -22,20 +23,27 @@ export async function sendWelcomeEmail({
   teacherName,
   teacherEmail,
   schoolName,
-  dashboardToken
+  dashboardToken,
+  isAdminCreated = false // Default to false for backward compatibility
 }: SendWelcomeEmailParams): Promise<{ success: boolean; error?: string }> {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nextjs-boilerplate-beta-three-49.vercel.app';
     
+    // Determine subject based on context
+    const subject = isAdminCreated
+      ? `Welcome to Right Back at You - Complete Your School Profile`
+      : `Welcome to Right Back at You - ${schoolName}`;
+    
     const { data, error } = await resend.emails.send({
       from: 'Right Back at You Project <onboarding@resend.dev>',
       to: [teacherEmail],
-      subject: `Welcome to Right Back at You - ${schoolName}`,
+      subject: subject,
       react: WelcomeEmail({
         teacherName,
         schoolName,
         dashboardUrl: `${baseUrl}/dashboard?token=${dashboardToken}`,
-        studentRegistrationUrl: `${baseUrl}/register-student?token=${dashboardToken}`
+        studentRegistrationUrl: `${baseUrl}/register-student?token=${dashboardToken}`,
+        isAdminCreated // Pass the context to the email template
       }),
     });
 
@@ -71,11 +79,11 @@ export async function sendMagicLinkEmail({
     // Determine email type and content
     const isNewUser = !school;
     const teacherName = school?.teacherName || '';
-
+    
     const subject = isNewUser 
       ? 'Welcome to Right Back at You - Verify Your Email to Get Started'
       : 'Your Right Back at You Dashboard Login Link';
-
+    
     const { data, error } = await resend.emails.send({
       from: 'Right Back at You Project <onboarding@resend.dev>',
       to: [teacherEmail],
