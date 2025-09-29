@@ -58,8 +58,8 @@ export default function StudentMetricsGrid({
   const estimatedClassSize = schoolData?.expectedClassSize || 0;
   const [emailCopyText, setEmailCopyText] = useState('✉');
   
-  // Determine grid columns: 5 if matched, 4 if not matched
-  const gridColumns = isMatched ? 'repeat(5, 1fr)' : 'repeat(4, 1fr)';
+  // Determine grid columns: 4 if matched, 3 if not matched
+  const gridColumns = isMatched ? 'repeat(4, 1fr)' : 'repeat(3, 1fr)';
   
   // Format location for matched school
   const formatLocation = () => {
@@ -122,29 +122,11 @@ export default function StudentMetricsGrid({
           Students Registered
         </div>
         <div className="text-data-label">
-          Actually signed up
-        </div>
-      </div>
-
-      {/* Box 3: Students Ready to Match */}
-      <div className="card text-center">
-        <div style={{ 
-          fontSize: '2.5rem', 
-          fontWeight: '300', 
-          color: '#333', 
-          marginBottom: '0.5rem' 
-        }}>
-          {studentsWithInterests.length}
-        </div>
-        <div className="text-data-value" style={{ marginBottom: '0.25rem' }}>
-          Students Ready to Match
-        </div>
-        <div className="text-data-label">
           Have complete profiles
         </div>
       </div>
 
-      {/* Box 4: Start Date */}
+      {/* Box 3: Start Date */}
       <div className="card text-center">
         <div style={{ 
           fontSize: '1.8rem', 
@@ -162,7 +144,7 @@ export default function StudentMetricsGrid({
         </div>
       </div>
 
-      {/* Box 5: Matched School (only show when matched) */}
+      {/* Box 4: Matched School (only show when matched) */}
       {isMatched && matchedSchool && (
         <div className="card text-center" style={{ 
           borderLeft: '3px solid #2c5aa0',
