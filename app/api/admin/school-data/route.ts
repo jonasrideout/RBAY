@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
           }
         }
       }
-    });RetryClaude can make mistakes. Please double-check responses.
+    });
 
     if (!school) {
       return NextResponse.json(
