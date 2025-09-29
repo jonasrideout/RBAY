@@ -20,9 +20,14 @@ export async function GET(request: NextRequest) {
     const school = await prisma.school.findUnique({
       where: { id: schoolId },
       include: {
-        students: true
+        students: true,
+        matchedWithSchool: {
+          select: {
+            schoolName: true
+          }
+        }
       }
-    });
+    });RetryClaude can make mistakes. Please double-check responses.
 
     if (!school) {
       return NextResponse.json(
@@ -35,11 +40,16 @@ export async function GET(request: NextRequest) {
     // Using exact schema field names from prisma/schema.prisma
     const dashboardData = {
       id: school.id,
-      name: school.schoolName, // Schema uses schoolName
+      name: school.schoolName,
       teacherName: school.teacherName,
       teacherEmail: school.teacherEmail,
-      location: `${school.schoolCity || ''}, ${school.schoolState}`.trim().replace(/^,\s*/, ''), // Combine city and state
+      location: `${school.schoolCity || ''}, ${school.schoolState}`.trim().replace(/^,\s*/, ''),
       status: school.status,
+      expectedClassSize: school.expectedClassSize,
+      startMonth: school.startMonth,
+      dashboardToken: school.dashboardToken,
+      matchedWithSchoolId: school.matchedWithSchoolId,
+      matchedSchoolName: school.matchedWithSchool?.schoolName,
       students: school.students.map(student => ({
         id: student.id,
         firstName: student.firstName,
