@@ -218,7 +218,10 @@ export default function DashboardHeader({
                   textDecoration: 'none',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  opacity: isProfileIncomplete ? 0.6 : 1,
+                  cursor: isProfileIncomplete ? 'not-allowed' : 'pointer',
+                  pointerEvents: isProfileIncomplete ? 'none' : 'auto'
                 }}
                 title="Add new student"
               >
