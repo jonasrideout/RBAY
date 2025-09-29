@@ -238,6 +238,12 @@ function TeacherDashboardContent() {
   const studentsNeedingInfo = students.filter(s => !s.hasInterests);
   const totalStudents = students.length;
   
+  // Check if school profile is incomplete
+  const isProfileIncomplete = schoolData?.schoolState === 'TBD' || 
+                              schoolData?.gradeLevel === 'TBD' || 
+                              schoolData?.startMonth === 'TBD' ||
+                              schoolData?.expectedClassSize === 0;
+  
   // Simplified ready logic - teacher decides when ready
   const allActiveStudentsComplete = totalStudents > 0 && studentsNeedingInfo.length === 0;
   const readyForMatching = schoolData?.status === 'READY';
@@ -451,6 +457,7 @@ function TeacherDashboardContent() {
           dashboardToken={schoolData.dashboardToken}
           allActiveStudentsComplete={allActiveStudentsComplete}
           onMatchingRequested={handleMatchingRequested}
+          isProfileIncomplete={isProfileIncomplete}
         />
 
         <StudentMetricsGrid 
