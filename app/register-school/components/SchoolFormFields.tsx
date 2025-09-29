@@ -326,8 +326,8 @@ export default function SchoolFormFields({
         </div>
       </div>
 
-      {/* Agreement Section - Only show in non-edit mode */}
-      {!editMode && (
+      {/* Agreement Section - Show in both modes */}
+      {(
         <div style={{ marginBottom: '2rem' }}>
           <div style={{ 
             background: '#f8f9fa', 
