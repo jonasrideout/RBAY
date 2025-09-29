@@ -135,6 +135,13 @@ body {
   gap: 12px 16px;
 }
 
+/* Data grid (2x2+1 for school stats - 5 cells) */
+.grid-data-2x2 {
+  display: grid;
+  grid-template-columns: 80px 120px 80px 80px 100px;
+  gap: 12px 16px;
+}
+
 /* General layout grids */
 .grid {
   display: grid;
