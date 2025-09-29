@@ -114,7 +114,7 @@ export default function SchoolCard({
       <div></div>
 
       {/* Column 3: Data Grid */}
-      <div className="grid-data-3x2">
+     <div className="grid-data-2x2">
         <div className="data-cell">
           <span className="text-data-label">Region</span>
           <span className="text-data-value-caps">{school.region}</span>
@@ -139,13 +139,7 @@ export default function SchoolCard({
           <span className="text-data-label">Registered</span>
           <span className="text-data-value">{school.studentCounts?.registered || 0}</span>
         </div>
-        
-        <div className="data-cell">
-          <span className="text-data-label">Ready</span>
-          <span className="text-data-value">{school.studentCounts?.ready || 0}</span>
-        </div>
       </div>
-
       {/* Column 4: Spacer (takes remaining space) */}
       <div></div>
 
