@@ -10,7 +10,6 @@ import { useTeacherSession, useSessionWarning } from '@/lib/useTeacherSession';
 import DashboardHeader from './components/DashboardHeader';
 import StudentMetricsGrid from './components/StudentMetricsGrid';
 import MatchingSection from './components/MatchingSection';
-import MissingInfoStudents from './components/MissingInfoStudents';
 import ReadyStudents from './components/ReadyStudents';
 import ConfirmationDialog from './components/ConfirmationDialog';
 
@@ -122,13 +121,9 @@ function TeacherDashboardContent() {
   const [schoolData, setSchoolData] = useState<SchoolData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  const [editingStudent, setEditingStudent] = useState<string | null>(null);
-  const [tempInterests, setTempInterests] = useState<string[]>([]);
-  const [tempOtherInterests, setTempOtherInterests] = useState('');
   const [expandedReadyStudents, setExpandedReadyStudents] = useState<Set<string>>(new Set());
   
-  // Removal mode states
-  const [missingInfoRemovalMode, setMissingInfoRemovalMode] = useState(false);
+  // Removal mode state
   const [readyStudentsRemovalMode, setReadyStudentsRemovalMode] = useState(false);
   
   // Confirmation dialog state
@@ -235,7 +230,6 @@ function TeacherDashboardContent() {
   };
 
   const studentsWithInterests = students.filter(s => s.hasInterests);
-  const studentsNeedingInfo = students.filter(s => !s.hasInterests);
   const totalStudents = students.length;
   
   // Check if school profile is incomplete
@@ -244,8 +238,8 @@ function TeacherDashboardContent() {
                               schoolData?.startMonth === 'TBD' ||
                               schoolData?.expectedClassSize === 0;
   
-  // Simplified ready logic - teacher decides when ready
-  const allActiveStudentsComplete = totalStudents > 0 && studentsNeedingInfo.length === 0;
+  // Simplified ready logic - all students have complete profiles
+  const allActiveStudentsComplete = totalStudents > 0;
   const readyForMatching = schoolData?.status === 'READY';
 
   const handleMatchingRequested = () => {
@@ -302,79 +296,6 @@ function TeacherDashboardContent() {
     setConfirmDialog({ show: false, studentName: '', studentId: '' });
   };
 
-  const handleEditInterests = (studentId: string) => {
-    if (readyForMatching) {
-      alert('Cannot edit student information after matching has been requested. Contact support if you need to make changes.');
-      return;
-    }
-
-    const student = students.find(s => s.id === studentId);
-    if (student) {
-      setEditingStudent(studentId);
-      setTempInterests([...student.interests]);
-      setTempOtherInterests(student.otherInterests);
-    }
-  };
-
-  const handleInterestChange = (interest: string, checked: boolean) => {
-    setTempInterests(prev => 
-      checked 
-        ? [...prev, interest]
-        : prev.filter(i => i !== interest)
-    );
-  };
-
-  const handleSaveInterests = async (studentId: string) => {
-    if (readyForMatching) {
-      alert('Cannot edit student information after matching has been requested.');
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/students', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          studentId,
-          interests: tempInterests,
-          otherInterests: tempOtherInterests
-        })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to update student');
-      }
-
-      setStudents(prev => prev.map(student => 
-        student.id === studentId 
-          ? {
-              ...student,
-              interests: tempInterests,
-              otherInterests: tempOtherInterests,
-              hasInterests: tempInterests.length > 0,
-              status: tempInterests.length > 0 ? 'ready' as const : 'needs-info' as const
-            }
-          : student
-      ));
-
-      setEditingStudent(null);
-      setTempInterests([]);
-      setTempOtherInterests('');
-    } catch (err: any) {
-      alert('Error saving interests: ' + err.message);
-    }
-  };
-
-  const handleCancelEdit = () => {
-    setEditingStudent(null);
-    setTempInterests([]);
-    setTempOtherInterests('');
-  };
-
   const toggleReadyStudentExpansion = (studentId: string) => {
     setExpandedReadyStudents(prev => {
       const newSet = new Set(prev);
@@ -387,18 +308,8 @@ function TeacherDashboardContent() {
     });
   };
 
-  const toggleMissingInfoRemovalMode = () => {
-    setMissingInfoRemovalMode(!missingInfoRemovalMode);
-    if (readyStudentsRemovalMode) {
-      setReadyStudentsRemovalMode(false);
-    }
-  };
-
   const toggleReadyStudentsRemovalMode = () => {
     setReadyStudentsRemovalMode(!readyStudentsRemovalMode);
-    if (missingInfoRemovalMode) {
-      setMissingInfoRemovalMode(false);
-    }
   };
 
   const handleLogout = () => {
@@ -474,22 +385,6 @@ function TeacherDashboardContent() {
           matchedSchoolTeacher={schoolData.matchedSchool?.teacherName}
           matchedSchoolRegion={schoolData.matchedSchool?.region}
           onSchoolUpdated={handleSchoolUpdated}
-        />
-
-        <MissingInfoStudents 
-          studentsNeedingInfo={studentsNeedingInfo}
-          missingInfoRemovalMode={missingInfoRemovalMode}
-          editingStudent={editingStudent}
-          tempInterests={tempInterests}
-          tempOtherInterests={tempOtherInterests}
-          readyForMatching={readyForMatching}
-          onToggleRemovalMode={toggleMissingInfoRemovalMode}
-          onEditInterests={handleEditInterests}
-          onRemoveStudent={handleRemoveStudent}
-          onSaveInterests={handleSaveInterests}
-          onCancelEdit={handleCancelEdit}
-          onInterestChange={handleInterestChange}
-          onOtherInterestsChange={setTempOtherInterests}
         />
 
         <ReadyStudents 
