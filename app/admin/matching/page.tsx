@@ -356,18 +356,20 @@ export default function AdminDashboard() {
     // Apply filters (same logic as MatchingWorkflow)
     if (filters.schoolSearch && filters.schoolSearch.trim()) {
       const searchTerm = filters.schoolSearch.toLowerCase().trim();
-      filtered = filtered.filter(school => 
-        school.schoolName.toLowerCase().includes(searchTerm)
-      );
-    }
-
-    if (filters.teacherSearch && filters.teacherSearch.trim()) {
-      const searchTerm = filters.teacherSearch.toLowerCase().trim();
+      console.log('Searching for:', searchTerm);
+      console.log('Before filter:', filtered.length, 'schools');
+      
       filtered = filtered.filter(school => {
-        const teacherName = school.teacherName.toLowerCase();
-        const teacherEmail = school.teacherEmail.toLowerCase();
-        return teacherName.includes(searchTerm) || teacherEmail.includes(searchTerm);
+        const schoolNameMatch = school.schoolName?.toLowerCase().includes(searchTerm);
+        const teacherNameMatch = school.teacherName?.toLowerCase().includes(searchTerm);
+        const teacherEmailMatch = school.teacherEmail?.toLowerCase().includes(searchTerm);
+        
+        console.log(`School: ${school.schoolName}, Name match: ${schoolNameMatch}, Teacher match: ${teacherNameMatch}, Email match: ${teacherEmailMatch}`);
+        
+        return schoolNameMatch || teacherNameMatch || teacherEmailMatch;
       });
+      
+      console.log('After filter:', filtered.length, 'schools');
     }
 
     if (filters.regions.length > 0) {
