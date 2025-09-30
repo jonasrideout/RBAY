@@ -231,14 +231,14 @@ function LoginContent() {
       <Header showLogin={false} />
 
       <main className="container" style={{ flex: 1, paddingTop: '2rem' }}>
-        <div className="card" style={{ maxWidth: '400px', margin: '0 auto' }}>
+        <div className="card" style={{ maxWidth: '500px', margin: '0 auto' }}>
           {/* Title */}
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <h1 className="text-h1" style={{ marginBottom: '0.5rem' }}>
-              Welcome
+              Welcome to the Right Back At You Project
             </h1>
             <p className="text-meta-info">
-              Enter your email to receive a secure login link where you can register your class for the Right Back At You project.
+              Enter your email to receive a secure link to register your class.
             </p>
           </div>
 
