@@ -18,7 +18,7 @@ interface ReadyStudentsProps {
   studentsWithInterests: Student[];
   readyStudentsRemovalMode: boolean;
   expandedReadyStudents: Set<string>;
-  readyForMatching: boolean;
+  penPalsAssigned: boolean;
   onToggleRemovalMode: () => void;
   onRemoveStudent: (studentId: string) => void;
   onToggleExpansion: (studentId: string) => void;
@@ -29,7 +29,7 @@ export default function ReadyStudents({
   studentsWithInterests,
   readyStudentsRemovalMode,
   expandedReadyStudents,
-  readyForMatching,
+  penPalsAssigned,
   onToggleRemovalMode,
   onRemoveStudent,
   onToggleExpansion,
@@ -60,16 +60,16 @@ export default function ReadyStudents({
         {/* Clean button styling */}
         {!readOnly && (
           <button
-            className={readyStudentsRemovalMode ? "btn btn-secondary" : "btn"}
-            onClick={onToggleRemovalMode}
-            disabled={readyForMatching}
-            title={readyForMatching ? "Cannot remove students after matching requested" : undefined}
-            style={{
-              fontSize: '14px',
-              opacity: readyForMatching ? 0.6 : 1
-            }}
-          >
-            {readyStudentsRemovalMode ? 'Finished' : 'Remove Student'}
+           className={readyStudentsRemovalMode ? "btn btn-secondary" : "btn"}
+          onClick={onToggleRemovalMode}
+          disabled={penPalsAssigned}
+          title={penPalsAssigned ? "Cannot remove students after pen pals are assigned" : undefined}
+          style={{
+          fontSize: '14px',
+          opacity: penPalsAssigned ? 0.6 : 1
+        }}
+      >
+  {readyStudentsRemovalMode ? 'Finished' : 'Remove Student'}
           </button>
         )}
       </div>
