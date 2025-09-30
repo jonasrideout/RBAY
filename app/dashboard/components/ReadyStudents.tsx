@@ -76,7 +76,7 @@ export default function ReadyStudents({
 
       <div style={{ 
         display: 'grid', 
-        gridTemplateColumns: 'repeat(3, 1fr)', 
+        gridTemplateColumns: 'repeat(3, minmax(200px, 1fr))',
         gap: '12px'
       }}>
         {studentsWithInterests.map(student => (
