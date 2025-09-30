@@ -100,7 +100,7 @@ function LoginContent() {
         <Header showLogin={false} />
         <main className="container" style={{ flex: 1, paddingTop: '2rem' }}>
           <div className="card" style={{ 
-            maxWidth: '600px', 
+            maxWidth: '500px', 
             margin: '0 auto',
             textAlign: 'center' 
           }}>
@@ -179,12 +179,12 @@ function LoginContent() {
         <Header showLogin={false} />
         <main className="container" style={{ flex: 1, paddingTop: '2rem' }}>
           <div className="card" style={{ 
-            maxWidth: '600px', 
+            maxWidth: '500px', 
             margin: '0 auto'
           }}>
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
               <h1 className="text-h1" style={{ marginBottom: '0.5rem' }}>
-                Welcome to the Right Back At You Project
+                Welcome to the<br />Right Back At You Project
               </h1>
               
               <p className="text-normal" style={{ marginBottom: '2rem', lineHeight: '1.6' }}>
@@ -237,11 +237,11 @@ function LoginContent() {
       <Header showLogin={false} />
 
       <main className="container" style={{ flex: 1, paddingTop: '2rem' }}>
-        <div className="card" style={{ maxWidth: '600px', margin: '0 auto' }}>
+        <div className="card" style={{ maxWidth: '500px', margin: '0 auto' }}>
           {/* Title */}
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <h1 className="text-h1" style={{ marginBottom: '0.5rem' }}>
-              Welcome to the Right Back At You Project
+              Welcome to the<br />Right Back At You Project
             </h1>
             <p className="text-meta-info">
               Enter your email to receive a secure link to register your class.
