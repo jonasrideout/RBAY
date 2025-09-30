@@ -100,7 +100,7 @@ function LoginContent() {
         <Header showLogin={false} />
         <main className="container" style={{ flex: 1, paddingTop: '2rem' }}>
           <div className="card" style={{ 
-            maxWidth: '500px', 
+            maxWidth: '600px', 
             margin: '0 auto',
             textAlign: 'center' 
           }}>
@@ -179,26 +179,32 @@ function LoginContent() {
         <Header showLogin={false} />
         <main className="container" style={{ flex: 1, paddingTop: '2rem' }}>
           <div className="card" style={{ 
-            maxWidth: '500px', 
+            maxWidth: '600px', 
             margin: '0 auto'
           }}>
-            <h1 className="text-h2" style={{ marginBottom: '1rem' }}>
-              Welcome to the Right Back At You Project
-            </h1>
-            
-            <p className="text-normal" style={{ marginBottom: '2rem', lineHeight: '1.6' }}>
-              Check your email for a secure link to register your class.
-            </p>
+            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+              <h1 className="text-h1" style={{ marginBottom: '0.5rem' }}>
+                Welcome to the Right Back At You Project
+              </h1>
+              
+              <p className="text-normal" style={{ marginBottom: '2rem', lineHeight: '1.6' }}>
+                Check your email for a secure link to register your class.
+              </p>
 
-            <p className="text-meta-info" style={{ marginBottom: '2rem' }}>
-              The login link expires in 30 minutes for your security.
-            </p>
+              <p className="text-meta-info" style={{ marginBottom: '2rem' }}>
+                The login link expires in 30 minutes for your security.
+              </p>
+            </div>
 
             <div style={{ marginBottom: '2rem' }}>
               <button
                 onClick={handleNewLink}
-                className="btn"
-                style={{ width: '100%' }}
+                className="btn btn-primary"
+                style={{ 
+                  width: '100%',
+                  padding: '0.875rem',
+                  fontSize: '1rem'
+                }}
               >
                 Send another login link
               </button>
@@ -231,7 +237,7 @@ function LoginContent() {
       <Header showLogin={false} />
 
       <main className="container" style={{ flex: 1, paddingTop: '2rem' }}>
-        <div className="card" style={{ maxWidth: '500px', margin: '0 auto' }}>
+        <div className="card" style={{ maxWidth: '600px', margin: '0 auto' }}>
           {/* Title */}
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <h1 className="text-h1" style={{ marginBottom: '0.5rem' }}>
@@ -293,7 +299,11 @@ function LoginContent() {
               type="submit"
               disabled={isLoading || !email.trim()}
               className="btn btn-primary"
-              style={{ width: '100%' }}
+              style={{ 
+                width: '100%',
+                padding: '0.875rem',
+                fontSize: '1rem'
+              }}
             >
               {isLoading ? (
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
