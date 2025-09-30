@@ -28,6 +28,7 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
   
   // Copy button states
   const [linksCopyStatus, setLinksCopyStatus] = useState<'idle' | 'copied'>('idle');
+  const [studentLinkCopyStatus, setStudentLinkCopyStatus] = useState<'idle' | 'copied'>('idle');
   const [emailStatus, setEmailStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
 
   const handleLogout = () => {
@@ -73,6 +74,18 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
       setTimeout(() => setLinksCopyStatus('idle'), 2000);
     } catch (err) {
       console.error('Failed to copy links:', err);
+    }
+  };
+
+  // Copy student registration link
+  const handleCopyStudentLink = async () => {
+    try {
+      const studentLink = generateStudentLink();
+      await navigator.clipboard.writeText(studentLink);
+      setStudentLinkCopyStatus('copied');
+      setTimeout(() => setStudentLinkCopyStatus('idle'), 2000);
+    } catch (err) {
+      console.error('Failed to copy student link:', err);
     }
   };
 
@@ -383,23 +396,19 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
                 <div className="text-meta-info" style={{ marginBottom: '0.75rem' }}>
                   Students can register using this link
                 </div>
-                <a 
-                  href={generateStudentLink()}
+                <button 
+                  onClick={handleCopyStudentLink}
                   className="btn"
-                  target="_blank"
-                  rel="noopener noreferrer"
                   style={{ 
-                    textDecoration: 'none',
                     backgroundColor: '#2c5aa0',
                     color: 'white',
                     border: '1px solid #2c5aa0',
                     fontWeight: '500',
-                    padding: '0.75rem 1.5rem',
-                    display: 'inline-block'
+                    padding: '0.75rem 1.5rem'
                   }}
                 >
-                  Open Student Registration
-                </a>
+                  {studentLinkCopyStatus === 'copied' ? '✓ Link Copied!' : 'Copy Student Registration Link'}
+                </button>
               </div>
               
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
