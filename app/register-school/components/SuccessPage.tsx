@@ -357,20 +357,23 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
                   <strong>1. Access Your Dashboard</strong>
                 </div>
                 <div className="text-meta-info" style={{ marginBottom: '0.75rem' }}>
-                  You can access your dashboard anytime by logging in:
+                  You can access your dashboard anytime by logging in
                 </div>
-                <div style={{ 
-                  background: '#f8f9fa', 
-                  padding: '0.75rem', 
-                  borderRadius: '4px', 
-                  border: '1px solid #e9ecef',
-                  wordBreak: 'break-all',
-                  fontFamily: 'monospace',
-                  fontSize: '13px',
-                  color: '#555'
-                }}>
-                  {generateDashboardLink()}
-                </div>
+                <Link 
+                  href={generateDashboardLink()}
+                  className="btn"
+                  style={{ 
+                    textDecoration: 'none',
+                    backgroundColor: '#2c5aa0',
+                    color: 'white',
+                    border: '1px solid #2c5aa0',
+                    fontWeight: '500',
+                    padding: '0.75rem 1.5rem',
+                    display: 'inline-block'
+                  }}
+                >
+                  Go to Dashboard
+                </Link>
               </div>
               
               <div>
@@ -378,20 +381,25 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
                   <strong>2. Share Student Registration Link</strong>
                 </div>
                 <div className="text-meta-info" style={{ marginBottom: '0.75rem' }}>
-                  Students can register using this link:
+                  Students can register using this link
                 </div>
-                <div style={{ 
-                  background: '#f8f9fa', 
-                  padding: '0.75rem', 
-                  borderRadius: '4px', 
-                  border: '1px solid #e9ecef',
-                  wordBreak: 'break-all',
-                  fontFamily: 'monospace',
-                  fontSize: '13px',
-                  color: '#555'
-                }}>
-                  {generateStudentLink()}
-                </div>
+                <a 
+                  href={generateStudentLink()}
+                  className="btn"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ 
+                    textDecoration: 'none',
+                    backgroundColor: '#2c5aa0',
+                    color: 'white',
+                    border: '1px solid #2c5aa0',
+                    fontWeight: '500',
+                    padding: '0.75rem 1.5rem',
+                    display: 'inline-block'
+                  }}
+                >
+                  Open Student Registration
+                </a>
               </div>
               
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
@@ -444,7 +452,11 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
               style={{ 
                 textDecoration: 'none',
                 padding: '1rem 2.5rem', 
-                fontSize: '1rem'
+                fontSize: '1rem',
+                backgroundColor: '#2c5aa0',
+                color: 'white',
+                border: '1px solid #2c5aa0',
+                fontWeight: '500'
               }}
             >
               Go to My Dashboard
