@@ -183,7 +183,7 @@ export default function DashboardHeader({
         
         {/* Show all action buttons in teacher view */}
         {!readOnly && !adminBackButton && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: '320px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             
             {/* Top row - Copy Link and Add Student */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
