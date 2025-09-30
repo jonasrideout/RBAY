@@ -179,20 +179,20 @@ function LoginContent() {
         <Header showLogin={false} />
         <main className="container" style={{ flex: 1, paddingTop: '2rem' }}>
           <div className="card" style={{ 
-            maxWidth: '400px', 
+            maxWidth: '500px', 
             margin: '0 auto'
           }}>
             <h1 className="text-h2" style={{ marginBottom: '1rem' }}>
-              Check Your Email
+              Welcome to the Right Back At You Project
             </h1>
             
             <p className="text-normal" style={{ marginBottom: '2rem', lineHeight: '1.6' }}>
               Check your email for a secure link to register your class.
             </p>
 
-            <div className="alert alert-warning" style={{ marginBottom: '2rem' }}>
+            <p className="text-meta-info" style={{ marginBottom: '2rem' }}>
               The login link expires in 30 minutes for your security.
-            </div>
+            </p>
 
             <div style={{ marginBottom: '2rem' }}>
               <button
