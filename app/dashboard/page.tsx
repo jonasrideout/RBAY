@@ -320,7 +320,7 @@ function TeacherDashboardContent() {
     return (
       <div className="page">
         <Header session={session} onLogout={handleLogout} />
-        <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
+        <main className="container" style={{ flex: 1, paddingTop: '1.5rem', minWidth: '1200px' }}>
           <div style={{ textAlign: 'center', padding: '2rem' }}>
             <div className="loading" style={{ margin: '0 auto 1rem' }}></div>
             <p>Loading dashboard...</p>
