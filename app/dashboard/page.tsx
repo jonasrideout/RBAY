@@ -241,6 +241,7 @@ function TeacherDashboardContent() {
   // Simplified ready logic - all students have complete profiles
   const allActiveStudentsComplete = totalStudents > 0;
   const readyForMatching = schoolData?.status === 'READY';
+  const penPalsAssigned = schoolData?.studentStats?.hasPenpalAssignments || false;
 
   const handleMatchingRequested = () => {
     // Update local state to reflect matching request
@@ -391,7 +392,7 @@ function TeacherDashboardContent() {
           studentsWithInterests={studentsWithInterests}
           readyStudentsRemovalMode={readyStudentsRemovalMode}
           expandedReadyStudents={expandedReadyStudents}
-          readyForMatching={readyForMatching}
+          penPalsAssigned={penPalsAssigned}
           onToggleRemovalMode={toggleReadyStudentsRemovalMode}
           onRemoveStudent={handleRemoveStudent}
           onToggleExpansion={toggleReadyStudentExpansion}
