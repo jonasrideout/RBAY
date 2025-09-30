@@ -165,7 +165,7 @@ export default function DashboardHeader({
             {schoolData.schoolName}
           </h1>
           <p className="text-school-name" style={{ margin: 0 }}>
-            Teacher Dashboard - {schoolData.teacherName}
+            {schoolData.teacherName}
           </p>
         </div>
         
