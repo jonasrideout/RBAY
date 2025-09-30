@@ -143,17 +143,7 @@ function LoginContent() {
                   marginBottom: '1rem'
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <svg 
-                    style={{ width: '20px', height: '20px', marginRight: '0.75rem' }} 
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-                  </svg>
-                  Verify Email Address
-                </div>
+                Verify Email Address
               </button>
 
               <button
@@ -190,55 +180,41 @@ function LoginContent() {
         <main className="container" style={{ flex: 1, paddingTop: '2rem' }}>
           <div className="card" style={{ 
             maxWidth: '400px', 
-            margin: '0 auto',
-            textAlign: 'center' 
+            margin: '0 auto'
           }}>
-            {/* Success Icon */}
-            <div style={{ marginBottom: '1.5rem' }}>
-              <div style={{
-                width: '60px',
-                height: '60px',
-                backgroundColor: '#28a745',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto'
-              }}>
-                <svg style={{ width: '30px', height: '30px', color: 'white' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-            </div>
-
             <h1 className="text-h2" style={{ marginBottom: '1rem' }}>
               Check Your Email
             </h1>
             
-            <p className="text-meta-info" style={{ marginBottom: '2rem' }}>
-              We've sent you a secure login link. Click the link in your email to access your teacher dashboard.
+            <p className="text-normal" style={{ marginBottom: '2rem', lineHeight: '1.6' }}>
+              Check your email for a secure link to register your class.
             </p>
 
             <div className="alert alert-warning" style={{ marginBottom: '2rem' }}>
-              <strong>Note:</strong> The login link expires in 30 minutes for your security.
+              The login link expires in 30 minutes for your security.
             </div>
 
             <div style={{ marginBottom: '2rem' }}>
-              <p className="text-meta-info" style={{ marginBottom: '1rem' }}>
-                Don't see the email? Check your spam folder or:
-              </p>
               <button
                 onClick={handleNewLink}
-                className="nav-link"
-                style={{ background: 'none', border: 'none' }}
+                className="btn"
+                style={{ width: '100%' }}
               >
                 Send another login link
               </button>
             </div>
 
+            <p className="text-meta-info" style={{ 
+              marginBottom: '1.5rem',
+              textAlign: 'center'
+            }}>
+              You can close this tab now
+            </p>
+
             <div style={{ 
               borderTop: '1px solid #e9ecef',
-              paddingTop: '1.5rem'
+              paddingTop: '1.5rem',
+              textAlign: 'center'
             }}>
               <a href="/" className="nav-link">
                 ← Back to Home
@@ -262,7 +238,7 @@ function LoginContent() {
               Welcome
             </h1>
             <p className="text-meta-info">
-              Enter your email to receive a secure login link
+              Enter your email to receive a secure login link where you can register your class for the Right Back At You project.
             </p>
           </div>
 
@@ -307,7 +283,7 @@ function LoginContent() {
                 className="form-input"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="teacher@school.edu"
+                placeholder=""
                 required
                 disabled={isLoading}
               />
@@ -325,27 +301,10 @@ function LoginContent() {
                   Sending Login Link...
                 </div>
               ) : (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <svg 
-                    style={{ width: '20px', height: '20px', marginRight: '0.75rem' }} 
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-                  </svg>
-                  Send Login Link
-                </div>
+                'Send Login Link'
               )}
             </button>
           </form>
-
-          {/* Help Text */}
-          <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
-            <p className="text-meta-info">
-              New teachers should register their school first, then return here to sign in.
-            </p>
-          </div>
 
           {/* Back to Home */}
           <div style={{ 
