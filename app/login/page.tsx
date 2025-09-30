@@ -100,7 +100,7 @@ function LoginContent() {
         <Header showLogin={false} />
         <main className="container" style={{ flex: 1, paddingTop: '2rem' }}>
           <div className="card" style={{ 
-            maxWidth: '500px', 
+            maxWidth: '550px', 
             margin: '0 auto',
             textAlign: 'center' 
           }}>
@@ -136,11 +136,15 @@ function LoginContent() {
             <div style={{ marginBottom: '2rem' }}>
               <button
                 onClick={handleVerifyEmail}
-                className="btn btn-primary"
+                className="btn"
                 style={{ 
                   width: '100%',
                   padding: '0.875rem',
-                  marginBottom: '1rem'
+                  marginBottom: '1rem',
+                  backgroundColor: '#2c5aa0',
+                  color: 'white',
+                  border: '1px solid #2c5aa0',
+                  fontWeight: '500'
                 }}
               >
                 Verify Email Address
@@ -179,11 +183,17 @@ function LoginContent() {
         <Header showLogin={false} />
         <main className="container" style={{ flex: 1, paddingTop: '2rem' }}>
           <div className="card" style={{ 
-            maxWidth: '500px', 
+            maxWidth: '550px', 
             margin: '0 auto'
           }}>
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-              <h1 className="text-h1" style={{ marginBottom: '0.5rem' }}>
+              <h1 style={{ 
+                fontSize: '2rem',
+                fontWeight: 700,
+                color: '#2c5aa0',
+                marginBottom: '0.5rem',
+                lineHeight: '1.2'
+              }}>
                 Welcome to the<br />Right Back At You Project
               </h1>
               
@@ -199,11 +209,15 @@ function LoginContent() {
             <div style={{ marginBottom: '2rem' }}>
               <button
                 onClick={handleNewLink}
-                className="btn btn-primary"
+                className="btn"
                 style={{ 
                   width: '100%',
                   padding: '0.875rem',
-                  fontSize: '1rem'
+                  fontSize: '1rem',
+                  backgroundColor: '#2c5aa0',
+                  color: 'white',
+                  border: '1px solid #2c5aa0',
+                  fontWeight: '500'
                 }}
               >
                 Send another login link
@@ -237,10 +251,16 @@ function LoginContent() {
       <Header showLogin={false} />
 
       <main className="container" style={{ flex: 1, paddingTop: '2rem' }}>
-        <div className="card" style={{ maxWidth: '500px', margin: '0 auto' }}>
+        <div className="card" style={{ maxWidth: '550px', margin: '0 auto' }}>
           {/* Title */}
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <h1 className="text-h1" style={{ marginBottom: '0.5rem' }}>
+            <h1 style={{ 
+              fontSize: '2rem',
+              fontWeight: 700,
+              color: '#2c5aa0',
+              marginBottom: '0.5rem',
+              lineHeight: '1.2'
+            }}>
               Welcome to the<br />Right Back At You Project
             </h1>
             <p className="text-meta-info">
@@ -298,11 +318,15 @@ function LoginContent() {
             <button
               type="submit"
               disabled={isLoading || !email.trim()}
-              className="btn btn-primary"
+              className="btn"
               style={{ 
                 width: '100%',
                 padding: '0.875rem',
-                fontSize: '1rem'
+                fontSize: '1rem',
+                backgroundColor: '#2c5aa0',
+                color: 'white',
+                border: '1px solid #2c5aa0',
+                fontWeight: '500'
               }}
             >
               {isLoading ? (
