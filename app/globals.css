@@ -494,9 +494,11 @@ body {
 
 /* Container and Layout */
 .container {
-  max-width: 1200px;
+  width: 1200px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 0 20px;
+  box-sizing: border-box;
 }
 
 .page {
