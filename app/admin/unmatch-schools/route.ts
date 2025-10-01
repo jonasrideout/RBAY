@@ -15,11 +15,15 @@ export async function POST(request: Request) {
       );
     }
 
-    // Get the school and its match
+    // Get the school
     const school = await prisma.school.findUnique({
       where: { id: schoolId },
       include: {
-        studentStats: true
+        students: {
+          include: {
+            penpalConnections: true
+          }
+        }
       }
     });
 
@@ -30,8 +34,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if pen pals have been assigned
-    if (school.studentStats?.hasPenpalAssignments) {
+    // Check if any students have pen pal assignments
+    const hasPenpalAssignments = school.students.some(
+      student => student.penpalConnections.length > 0
+    );
+
+    if (hasPenpalAssignments) {
       return NextResponse.json(
         { error: 'Cannot unmatch schools after pen pals have been assigned' },
         { status: 400 }
