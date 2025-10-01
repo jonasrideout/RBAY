@@ -19,7 +19,6 @@ export async function POST(request: Request) {
     const school = await prisma.school.findUnique({
       where: { id: schoolId },
       include: {
-        matchedWith: true,
         studentStats: true
       }
     });
@@ -39,24 +38,24 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!school.matchedWithId) {
+    if (!school.matchedWithSchoolId) {
       return NextResponse.json(
         { error: 'School is not currently matched' },
         { status: 400 }
       );
     }
 
-    const matchedSchoolId = school.matchedWithId;
+    const matchedSchoolId = school.matchedWithSchoolId;
 
     // Clear the match for both schools (status stays the same)
     await prisma.$transaction([
       prisma.school.update({
         where: { id: schoolId },
-        data: { matchedWithId: null }
+        data: { matchedWithSchoolId: null }
       }),
       prisma.school.update({
         where: { id: matchedSchoolId },
-        data: { matchedWithId: null }
+        data: { matchedWithSchoolId: null }
       })
     ]);
 
