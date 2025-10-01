@@ -171,6 +171,32 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleUnmatchSchools = async (schoolId: string, school1Name: string, school2Name: string) => {
+    if (!window.confirm(
+      `Are you sure you want to unmatch ${school1Name} from ${school2Name}?\n\nBoth schools will no longer be matched together.`
+    )) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/admin/unmatch-schools?t=${Date.now()}&r=${Math.random()}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ schoolId })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to unmatch schools');
+      }
+
+      await fetchAllSchools();
+    } catch (error) {
+      console.error('Error unmatching schools:', error);
+      alert(error instanceof Error ? error.message : 'Failed to unmatch schools');
+    }
+  };
+
   // Helper function to check if both schools are ready for pen pal assignment
   const areBothSchoolsReady = (school1: School, school2: School): boolean => {
     const validStatuses = ['READY', 'MATCHED'];
@@ -610,7 +636,7 @@ export default function AdminDashboard() {
                       key={`awaiting-${index}`} 
                       pair={pair} 
                       onAssignPenPals={handleAssignPenPals}
-                      onUpdate={handleSchoolsUpdate}
+                      onUnmatch={handleUnmatchSchools}
                     />
                   ))}
                 </div>
@@ -637,7 +663,7 @@ export default function AdminDashboard() {
                       pair={pair} 
                       showAssignButton={true} 
                       onAssignPenPals={handleAssignPenPals}
-                      onUpdate={handleSchoolsUpdate}
+                      onUnmatch={handleUnmatchSchools}
                     />
                   ))}
                 </div>
@@ -663,7 +689,7 @@ export default function AdminDashboard() {
                       key={`complete-${index}`} 
                       pair={pair} 
                       onAssignPenPals={handleAssignPenPals}
-                      onUpdate={handleSchoolsUpdate}
+                      onUnmatch={handleUnmatchSchools}
                     />
                   ))}
                 </div>
