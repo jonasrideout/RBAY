@@ -477,8 +477,10 @@ export default function AdminDashboard() {
           marginBottom: '1.5rem' 
         }}>
           <div>
-            <h1 style={{ marginBottom: '0.5rem', fontSize: '1.8rem' }}>Administrator Dashboard</h1>
-            <p className="text-school-name" style={{ margin: 0 }}>
+            <h1 className="text-school-name" style={{ marginBottom: '0.5rem' }}>
+              Administrator Dashboard
+            </h1>
+            <p className="text-meta-info" style={{ margin: 0 }}>
               Overview of all schools and their progress through the program.
             </p>
           </div>
@@ -554,7 +556,7 @@ export default function AdminDashboard() {
 
         {/* Section 1: Schools Available for Matching */}
         <section style={{ marginBottom: '3rem' }}>
-          <h2 style={{ color: '#1f2937', marginBottom: '1rem', fontSize: '1.4rem' }}>
+          <h2 className="text-teacher-name" style={{ marginBottom: '1rem', fontSize: '16px' }}>
             Schools Available for Matching ({unmatchedToShow.length})
           </h2>
           {unmatchedToShow.length === 0 ? (
@@ -589,7 +591,7 @@ export default function AdminDashboard() {
           <>
             {/* Section 2: Matched Schools Awaiting Student Readiness */}
             <section style={{ marginBottom: '3rem' }}>
-              <h2 style={{ color: '#1f2937', marginBottom: '1rem', fontSize: '1.4rem' }}>
+              <h2 className="text-teacher-name" style={{ marginBottom: '1rem', fontSize: '16px' }}>
                 Matched Schools Awaiting Student Readiness ({awaitingReadiness.length})
               </h2>
               {awaitingReadiness.length === 0 ? (
@@ -614,7 +616,7 @@ export default function AdminDashboard() {
 
             {/* Section 3: Matched Schools Ready for Pen Pal Assignment */}
             <section style={{ marginBottom: '3rem' }}>
-              <h2 style={{ color: '#1f2937', marginBottom: '1rem', fontSize: '1.4rem' }}>
+              <h2 className="text-teacher-name" style={{ marginBottom: '1rem', fontSize: '16px' }}>
                 Ready for Pen Pal Assignment ({readyForPairing.length})
               </h2>
               {readyForPairing.length === 0 ? (
@@ -640,7 +642,7 @@ export default function AdminDashboard() {
 
             {/* Section 4: Complete Pairs with Assigned Pen Pals */}
             <section style={{ marginBottom: '3rem' }}>
-              <h2 style={{ color: '#1f2937', marginBottom: '1rem', fontSize: '1.4rem' }}>
+              <h2 className="text-teacher-name" style={{ marginBottom: '1rem', fontSize: '16px' }}>
                 Complete Pairs with Assigned Pen Pals ({completePairs.length})
               </h2>
               {completePairs.length === 0 ? (
