@@ -276,4 +276,433 @@ export default function AdminDashboard() {
       await handleSchoolsUpdate();
       
       setTimeout(() => {
-        setShowConfirmDialog(false
+        setShowConfirmDialog(false);
+        setSelectedMatch(null);
+        setShowWarning(false);
+        setIsMatched(false);
+      }, 1000);
+      
+    } catch (err) {
+      console.error('Error assigning pen pals:', err);
+      alert(`Error assigning pen pals: ${err instanceof Error ? err.message : 'Please try again.'}`);
+    }
+  };
+
+  const cancelMatch = () => {
+    setShowConfirmDialog(false);
+    setSelectedMatch(null);
+    setShowWarning(false);
+    setIsMatched(false);
+  };
+
+  const handleCloseAfterMatch = async () => {
+    await handleSchoolsUpdate();
+    setShowConfirmDialog(false);
+    setSelectedMatch(null);
+    setShowWarning(false);
+    setIsMatched(false);
+  };
+
+  // Filter handling
+  const handleFiltersChange = (newFilters: Filters) => {
+    setFilters(newFilters);
+  };
+
+  const handleApplyFilters = () => {
+    // Context-aware filtering: when pinned (matching mode) use unmatched schools only, 
+    // when not pinned (general search) use all schools
+    let filtered = pinnedSchool 
+      ? schools.filter(school => !school.matchedWithSchoolId)
+      : schools;
+
+    // Apply filters (same logic as MatchingWorkflow)
+    if (filters.schoolSearch && filters.schoolSearch.trim()) {
+      const searchTerm = filters.schoolSearch.toLowerCase().trim();
+      console.log('Searching for:', searchTerm);
+      console.log('Before filter:', filtered.length, 'schools');
+      
+      filtered = filtered.filter(school => {
+        const schoolNameMatch = school.schoolName?.toLowerCase().includes(searchTerm);
+        const teacherNameMatch = school.teacherName?.toLowerCase().includes(searchTerm);
+        const teacherEmailMatch = school.teacherEmail?.toLowerCase().includes(searchTerm);
+        
+        console.log(`School: ${school.schoolName}, Name match: ${schoolNameMatch}, Teacher match: ${teacherNameMatch}, Email match: ${teacherEmailMatch}`);
+        
+        return schoolNameMatch || teacherNameMatch || teacherEmailMatch;
+      });
+      
+      console.log('After filter:', filtered.length, 'schools');
+    }
+
+    if (filters.regions.length > 0) {
+      filtered = filtered.filter(school => {
+        const schoolRegion = String(school.region).toUpperCase();
+        return filters.regions.some(filterRegion => 
+          String(filterRegion).toUpperCase() === schoolRegion
+        );
+      });
+    }
+
+    if (filters.statuses.length > 0) {
+      filtered = filtered.filter(school => 
+        filters.statuses.includes(school.status)
+      );
+    }
+
+    if (filters.classSizes.length > 0) {
+      const classSizeBuckets = [
+        { label: 'Under 10', min: 0, max: 9 },
+        { label: '10-20', min: 10, max: 20 },
+        { label: '21-30', min: 21, max: 30 },
+        { label: '31-40', min: 31, max: 40 },
+        { label: '41-50', min: 41, max: 50 },
+        { label: 'Over 50', min: 51, max: 999 }
+      ];
+      
+      filtered = filtered.filter(school => {
+        const studentCount = school.studentCounts?.ready || 0;
+        return filters.classSizes.some(bucket => {
+          const bucketData = classSizeBuckets.find(b => b.label === bucket);
+          return bucketData && studentCount >= bucketData.min && studentCount <= bucketData.max;
+        });
+      });
+    }
+
+    if (filters.startDate) {
+      filtered = filtered.filter(school => school.startMonth === filters.startDate);
+    }
+
+    if (filters.grades.length > 0) {
+      filtered = filtered.filter(school => 
+        filters.grades.some(grade => school.gradeLevel.includes(grade.replace('Grade ', '')))
+      );
+    }
+
+    setFilteredSchools(filtered);
+    setFiltersApplied(true);
+  };
+
+  const handleClearFilters = () => {
+    const clearedFilters = {
+      schoolSearch: '',
+      teacherSearch: '',
+      regions: [],
+      statuses: [],
+      classSizes: [],
+      startDate: '',
+      grades: []
+    };
+    setFilters(clearedFilters);
+    setFiltersApplied(false);
+    setFilteredSchools([]);
+  };
+
+  // Organize schools by workflow stage using new pen pal data structure
+  const organizeSchoolsByWorkflow = () => {
+    const unmatched: School[] = [];
+    const matchedPairs: SchoolPair[] = [];
+    
+    const processed = new Set<string>();
+
+    schools.forEach(school => {
+      if (processed.has(school.id)) return;
+
+      if (!school.matchedWithSchoolId) {
+        unmatched.push(school);
+      } else {
+        const matchedSchoolFull = schools.find(s => s.id === school.matchedWithSchoolId);
+        if (matchedSchoolFull && !processed.has(matchedSchoolFull.id)) {
+          // Use new pen pal assignment data from API
+          const hasStudentPairings = getPairPenPalStatus(school, matchedSchoolFull);
+          const bothSchoolsReady = areBothSchoolsReady(school, matchedSchoolFull);
+
+          matchedPairs.push({
+            school1: school,
+            school2: matchedSchoolFull,
+            hasStudentPairings,
+            bothSchoolsReady
+          });
+
+          processed.add(school.id);
+          processed.add(matchedSchoolFull.id);
+        }
+      }
+    });
+
+    const awaitingReadiness = matchedPairs.filter(pair => !pair.bothSchoolsReady);
+    const readyForPairing = matchedPairs.filter(pair => pair.bothSchoolsReady && !pair.hasStudentPairings);
+    const completePairs = matchedPairs.filter(pair => pair.hasStudentPairings);
+
+    return {
+      unmatched,
+      awaitingReadiness,
+      readyForPairing,
+      completePairs
+    };
+  };
+
+  if (isLoading) {
+    return (
+      <div className="page">
+        <Header />
+        <div className="container" style={{ textAlign: 'center', padding: '3rem' }}>
+          <h2>Loading Dashboard...</h2>
+        </div>
+      </div>
+    );
+  }
+
+  const { unmatched, awaitingReadiness, readyForPairing, completePairs } = organizeSchoolsByWorkflow();
+  
+  // Get schools to display (filtered or unmatched, excluding pinned school)
+  let unmatchedToShow = filtersApplied ? filteredSchools : unmatched;
+  // Remove pinned school from the list
+  if (pinnedSchool) {
+    unmatchedToShow = unmatchedToShow.filter(school => school.id !== pinnedSchool.id);
+  }
+
+  return (
+    <div className="page">
+      <Header 
+        session={{ user: { email: adminUser } }} 
+        onLogout={handleAdminLogout} 
+      />
+
+      <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
+        
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'flex-start',
+          marginBottom: '1.5rem' 
+        }}>
+          <div>
+            <h1 style={{ marginBottom: '0.5rem', fontSize: '1.8rem' }}>Administrator Dashboard</h1>
+            <p className="text-school-name" style={{ margin: 0 }}>
+              Overview of all schools and their progress through the program.
+            </p>
+          </div>
+          
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <Link href="/register-school?admin=true" className="btn btn-primary">
+              Add School
+            </Link>
+            
+            <button 
+              onClick={() => {
+                if (showFilters) {
+                  // When hiding filters, also clear them
+                  handleClearFilters();
+                  setShowFilters(false);
+                } else {
+                  // When showing filters, just show them
+                  setShowFilters(true);
+                }
+              }}
+              className="btn btn-primary"
+              style={{ minWidth: '160px' }}
+            >
+              {showFilters ? 'Hide Filters' : 'Search for Schools'}  
+            </button>
+          </div>
+        </div>
+
+        {error && (
+          <div className="alert alert-error" style={{ marginBottom: '2rem' }}>
+            <strong>Error:</strong> {error}
+            <button onClick={fetchAllSchools} style={{ marginLeft: '1rem', padding: '0.25rem 0.5rem' }}>
+              Retry
+            </button>
+          </div>
+        )}
+
+        {/* Pinned School Display */}
+        {pinnedSchool && (
+          <div style={{ 
+            position: 'sticky',
+            top: 0,
+            zIndex: 100,
+            backgroundColor: 'white',
+            paddingBottom: '1rem',
+            marginBottom: '1rem',
+            borderBottom: '2px solid #e5e7eb'
+          }}>
+            <h3 style={{ marginBottom: '1rem', color: '#1976d2', marginTop: 0 }}>
+              📌 Pinned School - Select a match below
+            </h3>
+            <SchoolCard
+              school={pinnedSchool}
+              isPinned={true}
+              onPin={() => handlePinSchool(pinnedSchool)}
+              showActions={true}
+            />
+          </div>
+        )}
+
+        {/* Filter Bar */}
+        {showFilters && (
+          <div style={{ marginBottom: '2rem' }}>
+            <FilterBar 
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
+              onApplyFilters={handleApplyFilters}
+              onClearFilters={handleClearFilters}
+              pinnedSchoolRegion={pinnedSchool?.region}
+            />
+          </div>
+        )}
+
+        {/* Section 1: Schools Available for Matching */}
+        <section style={{ marginBottom: '3rem' }}>
+          <h2 style={{ color: '#1f2937', marginBottom: '1rem', fontSize: '1.4rem' }}>
+            Schools Available for Matching ({unmatchedToShow.length})
+          </h2>
+          {unmatchedToShow.length === 0 ? (
+            <div style={{ 
+              background: '#fff', border: '1px solid #e0e6ed', borderRadius: '12px',
+              textAlign: 'center', padding: '2rem', color: '#6c757d'
+            }}>
+              {filtersApplied 
+                ? 'No schools match the current filters. Try adjusting your search criteria.'
+                : 'All schools have been matched. New schools will appear here when added.'
+              }
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {unmatchedToShow.map(school => (
+                <SchoolCard 
+                  key={`${school.id}-${Date.now()}`}
+                  school={school} 
+                  showActions={true}
+                  isPinned={pinnedSchool?.id === school.id}
+                  showMatchIcon={!!pinnedSchool && pinnedSchool.id !== school.id}
+                  onPin={() => handlePinSchool(school)}
+                  onMatch={() => handleMatchRequest(school)}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Only show other sections when not filtering */}
+        {!filtersApplied && (
+          <>
+            {/* Section 2: Matched Schools Awaiting Student Readiness */}
+            <section style={{ marginBottom: '3rem' }}>
+              <h2 style={{ color: '#1f2937', marginBottom: '1rem', fontSize: '1.4rem' }}>
+                Matched Schools Awaiting Student Readiness ({awaitingReadiness.length})
+              </h2>
+              {awaitingReadiness.length === 0 ? (
+                <div style={{ 
+                  background: '#fff', border: '1px solid #e0e6ed', borderRadius: '12px',
+                  textAlign: 'center', padding: '2rem', color: '#6c757d'
+                }}>
+                  No matched schools are waiting for student data collection.
+                </div>
+              ) : (
+                <div>
+                  {awaitingReadiness.map((pair, index) => (
+                    <SchoolPairDisplay 
+                      key={`awaiting-${index}`} 
+                      pair={pair} 
+                      onAssignPenPals={handleAssignPenPals}
+                    />
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {/* Section 3: Matched Schools Ready for Pen Pal Assignment */}
+            <section style={{ marginBottom: '3rem' }}>
+              <h2 style={{ color: '#1f2937', marginBottom: '1rem', fontSize: '1.4rem' }}>
+                Ready for Pen Pal Assignment ({readyForPairing.length})
+              </h2>
+              {readyForPairing.length === 0 ? (
+                <div style={{ 
+                  background: '#fff', border: '1px solid #e0e6ed', borderRadius: '12px',
+                  textAlign: 'center', padding: '2rem', color: '#6c757d'
+                }}>
+                  No school pairs are ready for pen pal assignment.
+                </div>
+              ) : (
+                <div>
+                  {readyForPairing.map((pair, index) => (
+                    <SchoolPairDisplay 
+                      key={`ready-${index}`} 
+                      pair={pair} 
+                      showAssignButton={true} 
+                      onAssignPenPals={handleAssignPenPals}
+                    />
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {/* Section 4: Complete Pairs with Assigned Pen Pals */}
+            <section style={{ marginBottom: '3rem' }}>
+              <h2 style={{ color: '#1f2937', marginBottom: '1rem', fontSize: '1.4rem' }}>
+                Complete Pairs with Assigned Pen Pals ({completePairs.length})
+              </h2>
+              {completePairs.length === 0 ? (
+                <div style={{ 
+                  background: '#fff', border: '1px solid #e0e6ed', borderRadius: '12px',
+                  textAlign: 'center', padding: '2rem', color: '#6c757d'
+                }}>
+                  No school pairs have completed pen pal assignments yet.
+                </div>
+              ) : (
+                <div>
+                  {completePairs.map((pair, index) => (
+                    <SchoolPairDisplay 
+                      key={`complete-${index}`} 
+                      pair={pair} 
+                      onAssignPenPals={handleAssignPenPals}
+                    />
+                  ))}
+                </div>
+              )}
+            </section>
+          </>
+        )}
+
+        {/* Link to testing page - small, unobtrusive */}
+        <div style={{ textAlign: 'center', marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid #e9ecef' }}>
+          <Link 
+            href="/admin/testing" 
+            style={{ 
+              fontSize: '12px', 
+              color: '#999', 
+              textDecoration: 'none',
+              padding: '0.5rem 1rem',
+              border: '1px solid #e9ecef',
+              borderRadius: '4px',
+              display: 'inline-block'
+            }}
+          >
+            Testing Tools
+          </Link>
+        </div>
+
+      </main>
+
+      {showConfirmDialog && pinnedSchool && selectedMatch && (
+        <ConfirmationDialog
+          pinnedSchool={pinnedSchool}
+          selectedMatch={selectedMatch}
+          showWarning={showWarning}
+          isMatched={isMatched}
+          onConfirm={confirmMatch}
+          onCancel={cancelMatch}
+          onAssignPenPals={handleAssignPenPalsFromDialog}
+          onClose={handleCloseAfterMatch}
+        />
+      )}
+
+      <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
+        <div className="container text-center">
+          <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
+        </div>
+      </footer>
+    </div>
+  );
+}
