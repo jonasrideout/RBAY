@@ -35,7 +35,7 @@ export async function sendWelcomeEmail({
       : `Welcome to Right Back at You - ${schoolName}`;
     
     const { data, error } = await resend.emails.send({
-      from: 'Right Back at You Project <onboarding@resend.dev>',
+      from: 'Right Back at You <noreply@carolynmackler.com>',
       to: [teacherEmail],
       subject: subject,
       react: WelcomeEmail({
@@ -85,7 +85,7 @@ export async function sendMagicLinkEmail({
       : 'Your Right Back at You Dashboard Login Link';
     
     const { data, error } = await resend.emails.send({
-      from: 'Right Back at You Project <onboarding@resend.dev>',
+      from: 'Right Back at You <noreply@carolynmackler.com>',
       to: [teacherEmail],
       subject: subject,
       react: MagicLinkEmail({
