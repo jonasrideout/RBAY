@@ -114,11 +114,13 @@ export default function SchoolCard({
       <div></div>
 
       {/* Column 3: Data Grid */}
-     <div className="grid-data-2x2">
+      <div className="grid-data-2x2">
         <div className="data-cell">
           <span className="text-data-label">Region</span>
           <span className="text-data-value-caps">{school.region}</span>
         </div>
+        
+        <div></div> {/* Empty spacer column */}
         
         <div className="data-cell">
           <span className="text-data-label">Start Date</span>
@@ -130,6 +132,8 @@ export default function SchoolCard({
           <span className="text-data-value">{school.status}</span>
         </div>
         
+        <div></div> {/* Empty spacer column */}
+        
         <div className="data-cell">
           <span className="text-data-label">Expected</span>
           <span className="text-data-value">{school.studentCounts?.expected || 0}</span>
@@ -140,6 +144,7 @@ export default function SchoolCard({
           <span className="text-data-value">{school.studentCounts?.registered || 0}</span>
         </div>
       </div>
+
       {/* Column 4: Spacer (takes remaining space) */}
       <div></div>
 
