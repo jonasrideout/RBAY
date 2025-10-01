@@ -291,8 +291,24 @@ function TeacherDashboardContent() {
         throw new Error(data.error || 'Failed to remove student');
       }
 
-      setStudents(prev => prev.filter(s => s.id !== studentId));
-      setConfirmDialog({ show: false, studentName: '', studentId: '' });
+      const updatedStudents = students.filter(s => s.id !== studentId);
+setStudents(updatedStudents);
+setConfirmDialog({ show: false, studentName: '', studentId: '' });
+
+// If no students remain and status is READY, reset to COLLECTING
+if (updatedStudents.length === 0 && schoolData?.status === 'READY') {
+  await fetch('/api/schools/reset-status', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ 
+      schoolId: schoolData.id,
+      status: 'COLLECTING'
+    })
+  });
+  setSchoolData(prev => prev ? { ...prev, status: 'COLLECTING' } : null);
+}
       
     } catch (err: any) {
       alert('Error removing student: ' + err.message);
