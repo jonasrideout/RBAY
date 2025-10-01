@@ -209,15 +209,18 @@ function LoginContent() {
             <div style={{ marginBottom: '2rem' }}>
               <button
                 onClick={handleNewLink}
-                className="btn"
-                style={{ 
-                  width: '100%',
-                  padding: '0.875rem',
-                  fontSize: '1rem',
-                  backgroundColor: '#2c5aa0',
-                  color: 'white',
-                  border: '1px solid #2c5aa0',
-                  fontWeight: '500'
+                  className="btn"
+                  style={{ 
+                    width: 'auto',
+                    padding: '0.875rem 2rem',
+                    fontSize: '1rem',
+                    backgroundColor: 'transparent',
+                    color: '#2c5aa0',
+                    border: '2px solid #2c5aa0',
+                    fontWeight: '500',
+                    boxShadow: '0 4px 6px rgba(44, 90, 160, 0.2)',
+                    margin: '0 auto',
+                    display: 'block'
                 }}
               >
                 Send another login link
@@ -320,13 +323,16 @@ function LoginContent() {
               disabled={isLoading || !email.trim()}
               className="btn"
               style={{ 
-                width: '100%',
-                padding: '0.875rem',
+                width: 'auto',
+                padding: '0.875rem 2rem',
                 fontSize: '1rem',
-                backgroundColor: '#2c5aa0',
-                color: 'white',
-                border: '1px solid #2c5aa0',
-                fontWeight: '500'
+                backgroundColor: 'transparent',
+                color: '#2c5aa0',
+                border: '2px solid #2c5aa0',
+                fontWeight: '500',
+                boxShadow: '0 4px 6px rgba(44, 90, 160, 0.2)',
+                margin: '0 auto',
+                display: 'block'
               }}
             >
               {isLoading ? (
