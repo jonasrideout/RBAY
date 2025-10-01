@@ -32,7 +32,11 @@ export default function SchoolFormFields({
     if (isAdminMode && !editMode) {
       return ['schoolName', 'teacherName', 'teacherEmail'].includes(field);
     }
-    return true; // All fields required in regular mode and edit mode
+    // Phone number is always optional
+    if (field === 'teacherPhone') {
+      return false;
+    }
+    return true; // All other fields required in regular mode and edit mode
   };
 
   return (
