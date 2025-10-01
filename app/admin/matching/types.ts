@@ -33,6 +33,10 @@ export interface School {
     allStudentsAssigned: boolean;
     assignmentPercentage: number;
   };
+  // NEW: Added student stats for unmatch logic
+  studentStats?: {
+    hasPenpalAssignments: boolean;
+  };
 }
 
 export interface StatusCounts {
