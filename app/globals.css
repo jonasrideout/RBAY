@@ -115,7 +115,7 @@ body {
 /* SchoolCard 6-column grid system */
 .grid-school-card {
   display: grid;
-  grid-template-columns: 300px 100px 200px 1fr auto auto;
+  grid-template-columns: 300px 40px 225px 1fr auto auto;
   gap: 20px;
   align-items: start;
 }
