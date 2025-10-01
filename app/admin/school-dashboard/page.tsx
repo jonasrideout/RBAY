@@ -274,7 +274,7 @@ function AdminSchoolDashboardContent() {
           studentsWithInterests={studentsWithInterests}
           readyStudentsRemovalMode={false}
           expandedReadyStudents={expandedReadyStudents}
-          readyForMatching={true}
+          penPalsAssigned={false}
           onToggleRemovalMode={noOpFunction}
           onRemoveStudent={noOpStringFunction}
           onToggleExpansion={toggleReadyStudentExpansion} // Enable clicking for admin
