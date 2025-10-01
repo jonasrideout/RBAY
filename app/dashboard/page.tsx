@@ -42,6 +42,13 @@ interface SchoolData {
   gradeLevel?: string;
   teacherPhone?: string;
   specialConsiderations?: string;
+    studentStats?: {
+    expected: number;
+    registered: number;
+    ready: number;
+    studentsWithPenpals: number;
+    hasPenpalAssignments: boolean;
+  };
   matchedSchool?: {
     id: string;
     schoolName: string;
