@@ -537,6 +537,7 @@ export default function AdminDashboard() {
               isPinned={true}
               onPin={() => handlePinSchool(pinnedSchool)}
               showActions={true}
+              onUpdate={handleSchoolsUpdate}
             />
           </div>
         )}
@@ -580,6 +581,7 @@ export default function AdminDashboard() {
                   showMatchIcon={!!pinnedSchool && pinnedSchool.id !== school.id}
                   onPin={() => handlePinSchool(school)}
                   onMatch={() => handleMatchRequest(school)}
+                  onUpdate={handleSchoolsUpdate}
                 />
               ))}
             </div>
@@ -608,6 +610,7 @@ export default function AdminDashboard() {
                       key={`awaiting-${index}`} 
                       pair={pair} 
                       onAssignPenPals={handleAssignPenPals}
+                      onUpdate={handleSchoolsUpdate}
                     />
                   ))}
                 </div>
@@ -634,6 +637,7 @@ export default function AdminDashboard() {
                       pair={pair} 
                       showAssignButton={true} 
                       onAssignPenPals={handleAssignPenPals}
+                      onUpdate={handleSchoolsUpdate}
                     />
                   ))}
                 </div>
@@ -659,6 +663,7 @@ export default function AdminDashboard() {
                       key={`complete-${index}`} 
                       pair={pair} 
                       onAssignPenPals={handleAssignPenPals}
+                      onUpdate={handleSchoolsUpdate}
                     />
                   ))}
                 </div>
