@@ -272,17 +272,19 @@ export default function DashboardHeader({
                   // Ready to Pair Pen Pals Button - show when not requested yet
                   <button 
                     className="btn" 
-                    disabled={isRequestingMatching || !allActiveStudentsComplete}
+                    disabled={isRequestingMatching || !allActiveStudentsComplete || schoolData.students.length === 0}
                     onClick={handleRequestPairingClick}
                     style={{
-                      cursor: (isRequestingMatching || !allActiveStudentsComplete) ? 'not-allowed' : 'pointer',
-                      opacity: (isRequestingMatching || !allActiveStudentsComplete) ? 0.6 : 1,
+                      cursor: (isRequestingMatching || !allActiveStudentsComplete || schoolData.students.length === 0) ? 'not-allowed' : 'pointer',
+                        opacity: (isRequestingMatching || !allActiveStudentsComplete || schoolData.students.length === 0) ? 0.6 : 1,
                       fontSize: '13px'
                     }}
                     title={
-                      !allActiveStudentsComplete
-                        ? "Complete all student profiles first"
-                        : "Indicate readiness to pair pen pals"
+                      schoolData.students.length === 0
+                      ? "Need students first"
+                      : !allActiveStudentsComplete
+                      ? "Complete all student profiles first"
+                      : "Indicate readiness to pair pen pals"
                     }
                   >
                     {isRequestingMatching ? (
