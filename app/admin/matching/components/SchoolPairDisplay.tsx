@@ -33,7 +33,7 @@ interface SchoolPairDisplayProps {
   showPenPalListButtons?: boolean;
   onAssignPenPals?: (school1Id: string, school2Id: string) => void;
   onViewPenPals?: (schoolId: string) => void;
-  onUpdate?: () => void;
+  onUnmatch?: (schoolId: string, school1Name: string, school2Name: string) => void;
 }
 
 export default function SchoolPairDisplay({ 
@@ -42,14 +42,12 @@ export default function SchoolPairDisplay({
   showPenPalListButtons = false,
   onAssignPenPals,
   onViewPenPals,
-  onUpdate
+  onUnmatch
 }: SchoolPairDisplayProps) {
   const [copyButtonText1, setCopyButtonText1] = useState('Copy URL');
   const [copyButtonText2, setCopyButtonText2] = useState('Copy URL');
   const [emailCopyText1, setEmailCopyText1] = useState('✉');
   const [emailCopyText2, setEmailCopyText2] = useState('✉');
-  const [showUnmatchModal, setShowUnmatchModal] = useState(false);
-  const [isUnmatching, setIsUnmatching] = useState(false);
 
   const getDashboardUrl = (schoolId: string) => {
     const adminDashboardPath = `/admin/school-dashboard?schoolId=${schoolId}`;
@@ -103,33 +101,9 @@ export default function SchoolPairDisplay({
       alert('Cannot unmatch schools after pen pals have been assigned');
       return;
     }
-    setShowUnmatchModal(true);
-  };
-
-  const handleUnmatchConfirm = async () => {
-    setIsUnmatching(true);
-
-    try {
-      const response = await fetch(`/api/admin/unmatch-schools?t=${Date.now()}&r=${Math.random()}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ schoolId: pair.school1.id })
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to unmatch schools');
-      }
-
-      setShowUnmatchModal(false);
-      if (onUpdate) {
-        onUpdate();
-      }
-    } catch (error) {
-      console.error('Error unmatching schools:', error);
-      alert(error instanceof Error ? error.message : 'Failed to unmatch schools');
-    } finally {
-      setIsUnmatching(false);
+    
+    if (onUnmatch) {
+      onUnmatch(pair.school1.id, pair.school1.schoolName, pair.school2.schoolName);
     }
   };
 
@@ -375,111 +349,75 @@ export default function SchoolPairDisplay({
   );
 
   return (
-    <>
+    <div style={{
+      background: 'white',
+      border: '1px solid #e0e0e0',
+      borderRadius: '8px',
+      padding: '20px',
+      marginBottom: '16px',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+      borderLeft: '3px solid #28a745'
+    }}>
+      
+      {/* Compact School Pair Container - Same width as single school */}
       <div style={{
-        background: 'white',
-        border: '1px solid #e0e0e0',
-        borderRadius: '8px',
-        padding: '20px',
-        marginBottom: '16px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-        borderLeft: '3px solid #28a745'
+        display: 'grid',
+        gridTemplateColumns: '1fr 20px 1fr',
+        gap: '12px',
+        alignItems: 'start'
       }}>
         
-        {/* Compact School Pair Container - Same width as single school */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 20px 1fr',
-          gap: '12px',
-          alignItems: 'start'
-        }}>
-          
-          {/* School 1 - Compact */}
-          {renderCompactSchoolCard(pair.school1, true)}
-          
-          {/* Link Icon */}
-          {renderLinkIcon()}
-          
-          {/* School 2 - Compact */}
-          {renderCompactSchoolCard(pair.school2, false)}
-          
-        </div>
-
-        {/* Action Buttons Row - spans full width below the pair */}
-        {(showAssignButton || pair.hasStudentPairings) && (
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: '12px',
-            marginTop: '16px',
-            paddingTop: '16px',
-            borderTop: '1px solid #f0f0f0'
-          }}>
-            
-            {showAssignButton && onAssignPenPals && !pair.hasStudentPairings && (
-              <button
-                onClick={() => onAssignPenPals(pair.school1.id, pair.school2.id)}
-                className="btn btn-primary"
-                style={{ minWidth: '140px', fontSize: '12px' }}
-              >
-                Assign Pen Pals
-              </button>
-            )}
-
-            {pair.hasStudentPairings && (
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                color: '#28a745',
-                fontWeight: '500',
-                fontSize: '12px'
-              }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M20 6L9 17l-5-5"/>
-                </svg>
-                Pen Pals Assigned
-              </div>
-            )}
-            
-          </div>
-        )}
-
+        {/* School 1 - Compact */}
+        {renderCompactSchoolCard(pair.school1, true)}
+        
+        {/* Link Icon */}
+        {renderLinkIcon()}
+        
+        {/* School 2 - Compact */}
+        {renderCompactSchoolCard(pair.school2, false)}
+        
       </div>
 
-      {/* Unmatch Confirmation Modal */}
-      {showUnmatchModal && (
-        <div className="modal-overlay" onClick={() => !isUnmatching && setShowUnmatchModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-school-name" style={{ marginBottom: '16px' }}>
-              Unmatch Schools?
-            </h2>
-            <p className="text-normal" style={{ marginBottom: '20px' }}>
-              Are you sure you want to unmatch <strong>{pair.school1.schoolName}</strong> from{' '}
-              <strong>{pair.school2.schoolName}</strong>?
-            </p>
-            <p className="text-meta-info" style={{ marginBottom: '24px' }}>
-              Both schools will remain in their current status ({pair.school1.status}) but will no longer be matched together.
-            </p>
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-              <button
-                onClick={() => setShowUnmatchModal(false)}
-                className="btn btn-secondary"
-                disabled={isUnmatching}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleUnmatchConfirm}
-                className="btn btn-primary"
-                disabled={isUnmatching}
-              >
-                {isUnmatching ? 'Unmatching...' : 'Yes, Unmatch'}
-              </button>
+      {/* Action Buttons Row - spans full width below the pair */}
+      {(showAssignButton || pair.hasStudentPairings) && (
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '12px',
+          marginTop: '16px',
+          paddingTop: '16px',
+          borderTop: '1px solid #f0f0f0'
+        }}>
+          
+          {showAssignButton && onAssignPenPals && !pair.hasStudentPairings && (
+            <button
+              onClick={() => onAssignPenPals(pair.school1.id, pair.school2.id)}
+              className="btn btn-primary"
+              style={{ minWidth: '140px', fontSize: '12px' }}
+            >
+              Assign Pen Pals
+            </button>
+          )}
+
+          {pair.hasStudentPairings && (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              color: '#28a745',
+              fontWeight: '500',
+              fontSize: '12px'
+            }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+              Pen Pals Assigned
             </div>
-          </div>
+          )}
+          
         </div>
       )}
-    </>
+
+    </div>
   );
 }
