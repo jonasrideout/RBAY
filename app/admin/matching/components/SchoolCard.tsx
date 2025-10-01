@@ -115,31 +115,27 @@ export default function SchoolCard({
 
       {/* Column 3: Data Grid */}
       <div className="grid-data-2x2">
-        <div className="data-cell">
+        <div className="data-cell" style={{ gridColumn: '1', gridRow: '1' }}>
           <span className="text-data-label">Region</span>
           <span className="text-data-value-caps">{school.region}</span>
         </div>
         
-        <div></div> {/* Empty spacer column */}
-        
-        <div className="data-cell">
+        <div className="data-cell" style={{ gridColumn: '3', gridRow: '1' }}>
           <span className="text-data-label">Start Date</span>
           <span className="text-data-value-caps">{school.startMonth}</span>
         </div>
         
-        <div className="data-cell">
+        <div className="data-cell" style={{ gridColumn: '4', gridRow: '1' }}>
           <span className="text-data-label">Status</span>
           <span className="text-data-value">{school.status}</span>
         </div>
         
-        <div></div> {/* Empty spacer column */}
-        
-        <div className="data-cell">
+        <div className="data-cell" style={{ gridColumn: '1', gridRow: '2' }}>
           <span className="text-data-label">Expected</span>
           <span className="text-data-value">{school.studentCounts?.expected || 0}</span>
         </div>
         
-        <div className="data-cell">
+        <div className="data-cell" style={{ gridColumn: '3', gridRow: '2' }}>
           <span className="text-data-label">Registered</span>
           <span className="text-data-value">{school.studentCounts?.registered || 0}</span>
         </div>
