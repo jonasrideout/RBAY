@@ -32,6 +32,7 @@ interface DashboardHeaderProps {
   adminBackButton?: boolean;
   allActiveStudentsComplete?: boolean;
   onMatchingRequested?: () => void;
+  onPenpalPreferenceCheckNeeded?: (required: number, current: number) => void;
   isProfileIncomplete?: boolean;
 }
 
@@ -42,6 +43,7 @@ export default function DashboardHeader({
   adminBackButton = false,
   allActiveStudentsComplete = false,
   onMatchingRequested,
+  onPenpalPreferenceCheckNeeded,
   isProfileIncomplete = false 
 }: DashboardHeaderProps) {
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied'>('idle');
@@ -76,8 +78,44 @@ export default function DashboardHeader({
     }
   };
 
-  const handleRequestPairingClick = () => {
-    setShowConfirmation(true);
+  const handleRequestPairingClick = async () => {
+    // Calculate if pen pal preference updates are needed
+    const classSize = schoolData.students.length;
+    const requiredMultiplePenpals = Math.ceil((30 - classSize) / 2);
+    
+    if (requiredMultiplePenpals > 0) {
+      // Need to check how many students currently have MULTIPLE preference
+      try {
+        const response = await fetch(`/api/students?teacherEmail=${encodeURIComponent(schoolData.teacherEmail)}`);
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch student data');
+        }
+        
+        const currentMultipleCount = data.students.filter(
+          (s: any) => s.penpalPreference === 'MULTIPLE'
+        ).length;
+        
+        if (currentMultipleCount < requiredMultiplePenpals) {
+          // Not enough students set to MULTIPLE - trigger the update UI
+          if (onPenpalPreferenceCheckNeeded) {
+            onPenpalPreferenceCheckNeeded(requiredMultiplePenpals, currentMultipleCount);
+          }
+          return; // Don't proceed with pairing yet
+        }
+        
+        // Enough students have MULTIPLE - proceed with confirmation
+        setShowConfirmation(true);
+        
+      } catch (err) {
+        console.error('Error checking pen pal preferences:', err);
+        alert('Error checking student preferences. Please try again.');
+      }
+    } else {
+      // Class is large enough - proceed directly to confirmation
+      setShowConfirmation(true);
+    }
   };
 
   const handleConfirmPairing = async () => {
@@ -276,15 +314,15 @@ export default function DashboardHeader({
                     onClick={handleRequestPairingClick}
                     style={{
                       cursor: (isRequestingMatching || !allActiveStudentsComplete || schoolData.students.length === 0) ? 'not-allowed' : 'pointer',
-                        opacity: (isRequestingMatching || !allActiveStudentsComplete || schoolData.students.length === 0) ? 0.6 : 1,
+                      opacity: (isRequestingMatching || !allActiveStudentsComplete || schoolData.students.length === 0) ? 0.6 : 1,
                       fontSize: '13px'
                     }}
                     title={
                       schoolData.students.length === 0
-                      ? "Need students first"
-                      : !allActiveStudentsComplete
-                      ? "Complete all student profiles first"
-                      : "Indicate readiness to pair pen pals"
+                        ? "Need students first"
+                        : !allActiveStudentsComplete
+                        ? "Complete all student profiles first"
+                        : "Indicate readiness to pair pen pals"
                     }
                   >
                     {isRequestingMatching ? (
