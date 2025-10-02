@@ -53,30 +53,13 @@ export default function GroupMembershipCard({
           alignItems: 'center',
           justifyContent: 'space-between'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              backgroundColor: '#6c757d',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              fontSize: '18px',
-              fontWeight: '300',
-              flexShrink: 0
-            }}>
-              {schools.length}
-            </div>
-            <div>
-              <span className="text-teacher-name" style={{ fontSize: '16px' }}>
-                Combined Class Group.
-              </span>
-              <span className="text-meta-info" style={{ marginLeft: '6px', fontSize: '14px' }}>
-                Your class is combined with {getOtherTeacherText()} for pen pal matching.
-              </span>
-            </div>
+          <div>
+            <span className="text-teacher-name" style={{ fontSize: '16px' }}>
+              Combined Class Group.
+            </span>
+            <span className="text-meta-info" style={{ marginLeft: '6px', fontSize: '14px' }}>
+              Your class is combined with {getOtherTeacherText()} for pen pal matching.
+            </span>
           </div>
           <div style={{ 
             fontSize: '20px', 
@@ -93,101 +76,78 @@ export default function GroupMembershipCard({
         <div>
           <div style={{ 
             display: 'flex', 
+            justifyContent: 'space-between', 
             alignItems: 'flex-start',
-            gap: '16px'
+            marginBottom: '8px'
           }}>
-            <div style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              backgroundColor: '#6c757d',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              fontSize: '18px',
-              fontWeight: '300',
-              flexShrink: 0
+            <h3 className="text-teacher-name" style={{ 
+              fontSize: '16px',
+              marginBottom: '0'
             }}>
-              {schools.length}
+              Combined Class Group
+            </h3>
+            <div style={{ 
+              fontSize: '20px', 
+              color: '#6c757d',
+              paddingLeft: '8px'
+            }}>
+              ▲
             </div>
+          </div>
+          
+          <p className="text-meta-info" style={{ 
+            marginBottom: '12px',
+            lineHeight: '1.5'
+          }}>
+            Your class is combined with {otherSchools.length === 1 ? 'another class' : `${otherSchools.length} other classes`} for pen pal matching. Each teacher manages their own students separately, but you'll be matched as one combined class of {totalStudents} students.
+          </p>
 
-            <div style={{ flex: 1 }}>
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'flex-start' 
-              }}>
-                <h3 className="text-teacher-name" style={{ 
-                  fontSize: '16px',
-                  marginBottom: '8px'
-                }}>
-                  Combined Class Group
-                </h3>
-                <div style={{ 
-                  fontSize: '20px', 
-                  color: '#6c757d',
-                  paddingLeft: '8px'
-                }}>
-                  ▲
-                </div>
-              </div>
-              
-              <p className="text-meta-info" style={{ 
-                marginBottom: '12px',
-                lineHeight: '1.5'
-              }}>
-                Your class is combined with {otherSchools.length === 1 ? 'another class' : `${otherSchools.length} other classes`} for pen pal matching. Each teacher manages their own students separately, but you'll be matched as one combined class of {totalStudents} students.
-              </p>
-
-              <div style={{
-                borderTop: '1px solid #dee2e6',
-                paddingTop: '12px',
-                marginTop: '12px'
-              }}>
-                <div className="text-data-label" style={{ marginBottom: '8px' }}>
-                  Classes in This Group
-                </div>
-                {schools.map(school => (
-                  <div
-                    key={school.id}
-                    style={{
-                      padding: '8px 0',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      backgroundColor: school.id === currentSchoolId 
-                        ? 'rgba(108, 117, 125, 0.1)' 
-                        : 'transparent',
-                      paddingLeft: school.id === currentSchoolId ? '8px' : '0',
-                      paddingRight: school.id === currentSchoolId ? '8px' : '0',
-                      borderRadius: '4px'
-                    }}
-                  >
-                    <div>
-                      <div className="text-school-name" style={{ fontSize: '14px' }}>
-                        {school.schoolName}
-                        {school.id === currentSchoolId && (
-                          <span style={{ 
-                            fontSize: '12px', 
-                            color: '#6c757d',
-                            marginLeft: '8px'
-                          }}>
-                            (your class)
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-meta-info" style={{ fontSize: '12px' }}>
-                        {school.teacherName}
-                      </div>
-                    </div>
-                    <div className="text-data-value">
-                      {school.studentCount} students
-                    </div>
+          <div style={{
+            borderTop: '1px solid #dee2e6',
+            paddingTop: '12px',
+            marginTop: '12px'
+          }}>
+            <div className="text-data-label" style={{ marginBottom: '8px' }}>
+              Classes in This Group
+            </div>
+            {schools.map(school => (
+              <div
+                key={school.id}
+                style={{
+                  padding: '8px 0',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  backgroundColor: school.id === currentSchoolId 
+                    ? 'rgba(108, 117, 125, 0.1)' 
+                    : 'transparent',
+                  paddingLeft: school.id === currentSchoolId ? '8px' : '0',
+                  paddingRight: school.id === currentSchoolId ? '8px' : '0',
+                  borderRadius: '4px'
+                }}
+              >
+                <div>
+                  <div className="text-school-name" style={{ fontSize: '14px' }}>
+                    {school.schoolName}
+                    {school.id === currentSchoolId && (
+                      <span style={{ 
+                        fontSize: '12px', 
+                        color: '#6c757d',
+                        marginLeft: '8px'
+                      }}>
+                        (your class)
+                      </span>
+                    )}
                   </div>
-                ))}
+                  <div className="text-meta-info" style={{ fontSize: '12px' }}>
+                    {school.teacherName}
+                  </div>
+                </div>
+                <div className="text-data-value">
+                  {school.studentCount} students
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       )}
