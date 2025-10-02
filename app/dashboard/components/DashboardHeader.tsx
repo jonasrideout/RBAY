@@ -81,7 +81,9 @@ export default function DashboardHeader({
   const handleRequestPairingClick = async () => {
     // Calculate if pen pal preference updates are needed
     const classSize = schoolData.students.length;
-    const requiredMultiplePenpals = Math.ceil((30 - classSize) / 2);
+    const formulaRequired = Math.ceil((30 - classSize) / 2);
+    const maxPossible = Math.floor(classSize * 0.8);
+    const requiredMultiplePenpals = Math.min(formulaRequired, maxPossible);
     
     if (requiredMultiplePenpals > 0) {
       // Need to check how many students currently have MULTIPLE preference
