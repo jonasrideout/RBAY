@@ -1,4 +1,5 @@
 // /app/admin/matching/types.ts
+
 export interface School {
   id: string;
   schoolName: string;
@@ -20,7 +21,8 @@ export interface School {
   updatedAt: Date;
   matchedWithSchoolId?: string;
   matchedSchool?: School;
-  schoolGroupId?: string;  // NEW: For school group membership
+  schoolGroupId?: string;
+  schoolGroup?: SchoolGroup; // NEW: Full group data when school is in a group
   studentCounts?: {
     expected: number;
     registered: number;
@@ -33,9 +35,61 @@ export interface School {
     allStudentsAssigned: boolean;
     assignmentPercentage: number;
   };
+  penPalPreferences?: { // NEW
+    studentsWithMultiple: number;
+    requiredMultiple: number;
+    meetsRequirement: boolean;
+  };
   studentStats?: {
     hasPenpalAssignments: boolean;
   };
+}
+
+// NEW: School Group interface
+export interface SchoolGroup {
+  id: string;
+  name: string;
+  type: 'group';
+  matchedWithGroupId?: string;
+  matchedWithGroup?: {
+    id: string;
+    name: string;
+  };
+  schools: {
+    id: string;
+    schoolName: string;
+    teacherName: string;
+    studentCount: number;
+  }[];
+  studentCounts: {
+    total: number;
+    ready: number;
+  };
+  penPalAssignments: {
+    hasAssignments: boolean;
+    studentsWithPenPals: number;
+    totalStudents: number;
+    allStudentsAssigned: boolean;
+    assignmentPercentage: number;
+  };
+  penPalPreferences: {
+    studentsWithMultiple: number;
+    requiredMultiple: number;
+    meetsRequirement: boolean;
+  };
+  isReadyForMatching: boolean;
+}
+
+// NEW: Union type for matchable units
+export type MatchableUnit = School | SchoolGroup;
+
+// NEW: Type guard functions
+export function isSchool(unit: MatchableUnit): unit is School {
+  return !('type' in unit) || unit.type !== 'group';
+}
+
+export function isGroup(unit: MatchableUnit): unit is SchoolGroup {
+  return 'type' in unit && unit.type === 'group';
 }
 
 export interface StatusCounts {
@@ -56,4 +110,13 @@ export interface Filters {
   classSizes: string[];
   grades: string[];
   startDate?: string;
+}
+
+// NEW: Interface for matched pairs (can be school-school, group-group, or group-school)
+export interface MatchedPair {
+  unit1: MatchableUnit;
+  unit2: MatchableUnit;
+  hasStudentPairings: boolean;
+  bothUnitsReady: boolean;
+  matchType: 'school-school' | 'group-group' | 'group-school';
 }
