@@ -12,6 +12,7 @@ import StudentMetricsGrid from './components/StudentMetricsGrid';
 import MatchingSection from './components/MatchingSection';
 import ReadyStudents from './components/ReadyStudents';
 import ConfirmationDialog from './components/ConfirmationDialog';
+import UpdatePenpalPreferences from './components/UpdatePenpalPreferences';
 
 interface Student {
   id: string;
@@ -22,6 +23,7 @@ interface Student {
   otherInterests: string;
   hasInterests: boolean;
   status: 'ready' | 'needs-info' | 'matched';
+  penpalPreference?: 'ONE' | 'MULTIPLE';
 }
 
 interface SchoolData {
@@ -42,7 +44,7 @@ interface SchoolData {
   gradeLevel?: string;
   teacherPhone?: string;
   specialConsiderations?: string;
-    studentStats?: {
+  studentStats?: {
     expected: number;
     registered: number;
     ready: number;
@@ -132,6 +134,11 @@ function TeacherDashboardContent() {
   
   // Removal mode state
   const [readyStudentsRemovalMode, setReadyStudentsRemovalMode] = useState(false);
+  
+  // Pen pal preference update state
+  const [showPenpalPreferenceUpdate, setShowPenpalPreferenceUpdate] = useState(false);
+  const [penpalPreferenceRequired, setPenpalPreferenceRequired] = useState(0);
+  const [penpalPreferenceCurrent, setPenpalPreferenceCurrent] = useState(0);
   
   // Confirmation dialog state
   const [confirmDialog, setConfirmDialog] = useState<{
@@ -225,7 +232,8 @@ function TeacherDashboardContent() {
         interests: student.interests || [],
         otherInterests: student.otherInterests || '',
         hasInterests: student.profileCompleted || false,
-        status: student.profileCompleted ? 'ready' : 'needs-info'
+        status: student.profileCompleted ? 'ready' : 'needs-info',
+        penpalPreference: student.penpalPreference || 'ONE'
       })) || [];
 
       setStudents(transformedStudents);
@@ -262,6 +270,49 @@ function TeacherDashboardContent() {
     }
   };
 
+  const handlePenpalPreferenceCheckNeeded = (required: number, current: number) => {
+    setPenpalPreferenceRequired(required);
+    setPenpalPreferenceCurrent(current);
+    setShowPenpalPreferenceUpdate(true);
+  };
+
+  const handlePenpalPreferenceUpdateComplete = async () => {
+    setShowPenpalPreferenceUpdate(false);
+    
+    // Now proceed with setting school to READY status
+    try {
+      const response = await fetch('/api/schools/request-matching', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          teacherEmail: schoolData?.teacherEmail,
+          dashboardToken: schoolData?.dashboardToken 
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to request pairing');
+      }
+
+      console.log('Request pairing successful after preference update:', data);
+      
+      // Refresh the page to show updated status
+      window.location.reload();
+      
+    } catch (err: any) {
+      console.error('Error requesting pairing after preference update:', err);
+      alert('Error requesting pairing: ' + err.message);
+    }
+  };
+
+  const handlePenpalPreferenceUpdateCancel = () => {
+    setShowPenpalPreferenceUpdate(false);
+  };
+
   const handleRemoveStudent = async (studentId: string) => {
     const student = students.find(s => s.id === studentId);
     if (!student) return;
@@ -292,23 +343,23 @@ function TeacherDashboardContent() {
       }
 
       const updatedStudents = students.filter(s => s.id !== studentId);
-setStudents(updatedStudents);
-setConfirmDialog({ show: false, studentName: '', studentId: '' });
+      setStudents(updatedStudents);
+      setConfirmDialog({ show: false, studentName: '', studentId: '' });
 
-// If no students remain and status is READY, reset to COLLECTING
-if (updatedStudents.length === 0 && schoolData?.status === 'READY') {
-  await fetch('/api/schools/reset-status', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ 
-      schoolId: schoolData.id,
-      status: 'COLLECTING'
-    })
-  });
-  setSchoolData(prev => prev ? { ...prev, status: 'COLLECTING' } : null);
-}
+      // If no students remain and status is READY, reset to COLLECTING
+      if (updatedStudents.length === 0 && schoolData?.status === 'READY') {
+        await fetch('/api/schools/reset-status', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            schoolId: schoolData.id,
+            status: 'COLLECTING'
+          })
+        });
+        setSchoolData(prev => prev ? { ...prev, status: 'COLLECTING' } : null);
+      }
       
     } catch (err: any) {
       alert('Error removing student: ' + err.message);
@@ -392,6 +443,7 @@ if (updatedStudents.length === 0 && schoolData?.status === 'READY') {
           dashboardToken={schoolData.dashboardToken}
           allActiveStudentsComplete={allActiveStudentsComplete}
           onMatchingRequested={handleMatchingRequested}
+          onPenpalPreferenceCheckNeeded={handlePenpalPreferenceCheckNeeded}
           isProfileIncomplete={isProfileIncomplete}
         />
 
@@ -428,6 +480,18 @@ if (updatedStudents.length === 0 && schoolData?.status === 'READY') {
           onConfirm={confirmRemoveStudent}
           onCancel={cancelRemoveStudent}
         />
+
+        {/* Pen Pal Preference Update Modal */}
+        {showPenpalPreferenceUpdate && (
+          <UpdatePenpalPreferences
+            students={students}
+            requiredCount={penpalPreferenceRequired}
+            currentCount={penpalPreferenceCurrent}
+            classSize={totalStudents}
+            onComplete={handlePenpalPreferenceUpdateComplete}
+            onCancel={handlePenpalPreferenceUpdateCancel}
+          />
+        )}
 
         {/* No students message */}
         {totalStudents === 0 && (
