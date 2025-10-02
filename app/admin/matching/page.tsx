@@ -1,4 +1,3 @@
-// app/admin/matching/page.tsx 
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -10,17 +9,12 @@ import ConfirmationDialog from './components/ConfirmationDialog';
 import SchoolCard from './components/SchoolCard';
 import SchoolPairDisplay from './components/SchoolPairDisplay';
 import CreateGroupModal from './components/CreateGroupModal';
-import { School, StatusCounts, Filters } from './types';
-
-interface SchoolPair {
-  school1: School;
-  school2: School;
-  hasStudentPairings: boolean;
-  bothSchoolsReady: boolean;
-}
+import GroupCard from './components/GroupCard';
+import { School, SchoolGroup, MatchableUnit, MatchedPair, StatusCounts, Filters, isSchool, isGroup } from './types';
 
 export default function AdminDashboard() {
   const [schools, setSchools] = useState<School[]>([]);
+  const [groups, setGroups] = useState<SchoolGroup[]>([]);
   const [statusCounts, setStatusCounts] = useState<StatusCounts>({
     COLLECTING: 0,
     READY: 0,
@@ -33,10 +27,10 @@ export default function AdminDashboard() {
   const [adminUser, setAdminUser] = useState<string>('');
   
   // Matching and filtering state
-  const [pinnedSchool, setPinnedSchool] = useState<School | null>(null);
+  const [pinnedUnit, setPinnedUnit] = useState<MatchableUnit | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [selectedMatch, setSelectedMatch] = useState<School | null>(null);
+  const [selectedMatch, setSelectedMatch] = useState<MatchableUnit | null>(null);
   const [showWarning, setShowWarning] = useState(false);
   const [isMatched, setIsMatched] = useState(false);
   
@@ -53,18 +47,16 @@ export default function AdminDashboard() {
     startDate: '',
     grades: []
   });
-  const [filteredSchools, setFilteredSchools] = useState<School[]>([]);
+  const [filteredUnits, setFilteredUnits] = useState<MatchableUnit[]>([]);
   const [filtersApplied, setFiltersApplied] = useState(false);
   
   const router = useRouter();
 
-  // Single useEffect for initialization
   useEffect(() => {
     let mounted = true;
     
     const initializeAdmin = async () => {
       try {
-        // Check admin auth
         const authResponse = await fetch('/api/admin/me');
         if (!authResponse.ok) {
           router.push('/admin/login');
@@ -75,9 +67,8 @@ export default function AdminDashboard() {
           setAdminUser(authData.email);
         }
 
-        // Fetch all schools data (now includes pen pal assignments)
         await new Promise(resolve => setTimeout(resolve, 1000));
-        await fetchAllSchools();
+        await fetchAllData();
       } catch (error) {
         console.error('Admin initialization failed:', error);
         router.push('/admin/login');
@@ -86,7 +77,6 @@ export default function AdminDashboard() {
 
     initializeAdmin();
 
-    // Cleanup function
     return () => {
       mounted = false;
     };
@@ -102,21 +92,20 @@ export default function AdminDashboard() {
     }
   };
 
-  const fetchAllSchools = async () => {
+  const fetchAllData = async () => {
     setIsLoading(true);
     setError('');
 
     try {
-      const response = await fetch(`/api/admin/all-schools?v=2&t=${Date.now()}&r=${Math.random()}`);
+      const response = await fetch(`/api/admin/all-schools?v=3&t=${Date.now()}&r=${Math.random()}`);
       const data = await response.json();
-      console.log('fetchAllSchools received data:', data.schools?.length || 0, 'schools');
-      console.log('About to check response.ok, response status:', response.status);
+      
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to fetch schools');
+        throw new Error(data.error || 'Failed to fetch data');
       }
 
       setSchools(data.schools || []);
-      console.log('Called setSchools with:', data.schools?.length, 'schools');
+      setGroups(data.groups || []);
       setStatusCounts(data.statusCounts || {
         COLLECTING: 0,
         READY: 0,
@@ -125,10 +114,8 @@ export default function AdminDashboard() {
         DONE: 0
       });
 
-      // No more individual API calls - pen pal data comes from the main query!
-
     } catch (err: any) {
-      setError('Error fetching schools: ' + err.message);
+      setError('Error fetching data: ' + err.message);
     } finally {
       setIsLoading(false);
     }
@@ -136,34 +123,66 @@ export default function AdminDashboard() {
 
   const handleSchoolsUpdate = async () => {
     try {
-      await fetchAllSchools();
-      // Clear matching state after successful update
-      setPinnedSchool(null);
+      await fetchAllData();
+      setPinnedUnit(null);
       setShowFilters(false);
       setFiltersApplied(false);
       return Promise.resolve();
     } catch (error) {
-      console.error('Failed to refresh school data:', error);
+      console.error('Failed to refresh data:', error);
       return Promise.resolve();
     }
   };
 
   const handleGroupCreated = async () => {
     setShowGroupModal(false);
-    await fetchAllSchools();
+    await fetchAllData();
   };
 
-  const handleAssignPenPals = async (school1Id: string, school2Id: string) => {
+  const getStudentCount = (unit: MatchableUnit): number => {
+    if (isGroup(unit)) {
+      return unit.studentCounts.total;
+    } else {
+      return unit.studentCounts?.ready || 0;
+    }
+  };
+
+  const unitHasPenPalAssignments = (unit: MatchableUnit): boolean => {
+    return unit.penPalAssignments?.hasAssignments || false;
+  };
+
+  const isUnitReady = (unit: MatchableUnit): boolean => {
+    if (isGroup(unit)) {
+      return unit.isReadyForMatching && unit.penPalPreferences.meetsRequirement;
+    } else {
+      const validStatuses = ['READY', 'MATCHED'];
+      return validStatuses.includes(unit.status) && 
+             (unit.penPalPreferences?.meetsRequirement ?? true);
+    }
+  };
+
+  const handleAssignPenPals = async (unit1: MatchableUnit, unit2: MatchableUnit) => {
     try {
+      const body: any = {};
+      
+      if (isSchool(unit1)) {
+        body.school1Id = unit1.id;
+      } else {
+        body.group1Id = unit1.id;
+      }
+      
+      if (isSchool(unit2)) {
+        body.school2Id = unit2.id;
+      } else {
+        body.group2Id = unit2.id;
+      }
+
       const response = await fetch('/api/admin/assign-penpals', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          school1Id, 
-          school2Id 
-        })
+        body: JSON.stringify(body)
       });
 
       const data = await response.json();
@@ -172,7 +191,7 @@ export default function AdminDashboard() {
         throw new Error(data.error || 'Failed to assign pen pals');
       }
 
-      fetchAllSchools();
+      fetchAllData();
       
     } catch (err: any) {
       console.error('Error assigning pen pals:', err);
@@ -180,50 +199,45 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleUnmatchSchools = async (schoolId: string, school1Name: string, school2Name: string) => {
+  const handleUnmatchUnits = async (unit1: MatchableUnit, unit2: MatchableUnit) => {
     try {
+      let unmatchId: string;
+      
+      if (isSchool(unit1)) {
+        unmatchId = unit1.id;
+      } else if (isSchool(unit2)) {
+        unmatchId = unit2.id;
+      } else {
+        alert('Group unmatching not yet implemented');
+        return;
+      }
+
       const response = await fetch(`/api/admin/unmatch-schools?t=${Date.now()}&r=${Math.random()}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ schoolId })
+        body: JSON.stringify({ schoolId: unmatchId })
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to unmatch schools');
+        throw new Error(error.error || 'Failed to unmatch');
       }
 
-      await fetchAllSchools();
+      await fetchAllData();
     } catch (error) {
-      console.error('Error unmatching schools:', error);
-      alert(error instanceof Error ? error.message : 'Failed to unmatch schools');
+      console.error('Error unmatching:', error);
+      alert(error instanceof Error ? error.message : 'Failed to unmatch');
     }
   };
 
-  // Helper function to check if both schools are ready for pen pal assignment
-  const areBothSchoolsReady = (school1: School, school2: School): boolean => {
-    const validStatuses = ['READY', 'MATCHED'];
-    return validStatuses.includes(school1.status) && validStatuses.includes(school2.status);
-  };
-
-  // Helper function to check if school pair has pen pal assignments (using new data structure)
-  const getPairPenPalStatus = (school1: School, school2: School): boolean => {
-    // Use the new penPalAssignments data from the API response
-    return school1.penPalAssignments?.hasAssignments || school2.penPalAssignments?.hasAssignments || false;
-  };
-
-  // Matching workflow functions
-  const handlePinSchool = (school: School) => {
-    if (pinnedSchool && pinnedSchool.id === school.id) {
-      // Unpin if clicking the same school
-      setPinnedSchool(null);
+  const handlePinUnit = (unit: MatchableUnit) => {
+    if (pinnedUnit && pinnedUnit.id === unit.id) {
+      setPinnedUnit(null);
       setShowFilters(false);
       setFiltersApplied(false);
     } else {
-      // Pin a new school and show filters
-      setPinnedSchool(school);
+      setPinnedUnit(unit);
       setShowFilters(true);
-      // Clear any existing filters
       setFilters({
         schoolSearch: '',
         teacherSearch: '',
@@ -237,14 +251,17 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleMatchRequest = (school: School) => {
-    if (!pinnedSchool) return;
+  const handleMatchRequest = (unit: MatchableUnit) => {
+    if (!pinnedUnit) return;
     
-    setSelectedMatch(school);
+    setSelectedMatch(unit);
     
-    // Check if same region for warning
-    if (pinnedSchool.region === school.region) {
-      setShowWarning(true);
+    if (isSchool(pinnedUnit) && isSchool(unit)) {
+      if (pinnedUnit.region === unit.region) {
+        setShowWarning(true);
+      } else {
+        setShowWarning(false);
+      }
     } else {
       setShowWarning(false);
     }
@@ -254,67 +271,54 @@ export default function AdminDashboard() {
   };
 
   const confirmMatch = async () => {
-    if (!pinnedSchool || !selectedMatch) return;
+    if (!pinnedUnit || !selectedMatch) return;
 
     try {
+      const body: any = {};
+      
+      if (isSchool(pinnedUnit)) {
+        body.school1Id = pinnedUnit.id;
+      } else {
+        body.group1Id = pinnedUnit.id;
+      }
+      
+      if (isSchool(selectedMatch)) {
+        body.school2Id = selectedMatch.id;
+      } else {
+        body.group2Id = selectedMatch.id;
+      }
+
       const response = await fetch('/api/admin/match-schools', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          school1Id: pinnedSchool.id,
-          school2Id: selectedMatch.id
-        }),
+        body: JSON.stringify(body),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to match schools');
+        throw new Error(errorData.error || 'Failed to match units');
       }
 
       setIsMatched(true);
       
     } catch (err) {
-      console.error('Error matching schools:', err);
-      alert(`Error matching schools: ${err instanceof Error ? err.message : 'Please try again.'}`);
+      console.error('Error matching units:', err);
+      alert(`Error matching: ${err instanceof Error ? err.message : 'Please try again.'}`);
     }
   };
 
   const handleAssignPenPalsFromDialog = async () => {
-    if (!pinnedSchool || !selectedMatch) return;
-
-    try {
-      const response = await fetch('/api/admin/assign-penpals', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          school1Id: pinnedSchool.id,
-          school2Id: selectedMatch.id
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to assign pen pals');
-      }
-
-      // Refresh data and close dialog
-      await handleSchoolsUpdate();
-      
-      setTimeout(() => {
-        setShowConfirmDialog(false);
-        setSelectedMatch(null);
-        setShowWarning(false);
-        setIsMatched(false);
-      }, 1000);
-      
-    } catch (err) {
-      console.error('Error assigning pen pals:', err);
-      alert(`Error assigning pen pals: ${err instanceof Error ? err.message : 'Please try again.'}`);
-    }
+    if (!pinnedUnit || !selectedMatch) return;
+    await handleAssignPenPals(pinnedUnit, selectedMatch);
+    
+    setTimeout(() => {
+      setShowConfirmDialog(false);
+      setSelectedMatch(null);
+      setShowWarning(false);
+      setIsMatched(false);
+    }, 1000);
   };
 
   const cancelMatch = () => {
@@ -332,50 +336,60 @@ export default function AdminDashboard() {
     setIsMatched(false);
   };
 
-  // Filter handling
   const handleFiltersChange = (newFilters: Filters) => {
     setFilters(newFilters);
   };
 
   const handleApplyFilters = () => {
-    // Context-aware filtering: when pinned (matching mode) use unmatched schools only, 
-    // when not pinned (general search) use all schools
-    let filtered = pinnedSchool 
-      ? schools.filter(school => !school.matchedWithSchoolId)
-      : schools;
+    const unmatchedSchools = schools.filter(school => 
+      !school.schoolGroupId && !school.matchedWithSchoolId
+    );
+    
+    const unmatchedGroups = groups.filter(group => 
+      !group.matchedWithGroupId
+    );
+    
+    let allUnmatched: MatchableUnit[] = [...unmatchedSchools, ...unmatchedGroups];
 
-    // Apply filters (same logic as MatchingWorkflow)
     if (filters.schoolSearch && filters.schoolSearch.trim()) {
       const searchTerm = filters.schoolSearch.toLowerCase().trim();
-      console.log('Searching for:', searchTerm);
-      console.log('Before filter:', filtered.length, 'schools');
       
-      filtered = filtered.filter(school => {
-        const schoolNameMatch = school.schoolName?.toLowerCase().includes(searchTerm);
-        const teacherNameMatch = school.teacherName?.toLowerCase().includes(searchTerm);
-        const teacherEmailMatch = school.teacherEmail?.toLowerCase().includes(searchTerm);
-        
-        console.log(`School: ${school.schoolName}, Name match: ${schoolNameMatch}, Teacher match: ${teacherNameMatch}, Email match: ${teacherEmailMatch}`);
-        
-        return schoolNameMatch || teacherNameMatch || teacherEmailMatch;
+      allUnmatched = allUnmatched.filter(unit => {
+        if (isSchool(unit)) {
+          const schoolNameMatch = unit.schoolName?.toLowerCase().includes(searchTerm);
+          const teacherNameMatch = unit.teacherName?.toLowerCase().includes(searchTerm);
+          const teacherEmailMatch = unit.teacherEmail?.toLowerCase().includes(searchTerm);
+          return schoolNameMatch || teacherNameMatch || teacherEmailMatch;
+        } else {
+          const groupNameMatch = unit.name.toLowerCase().includes(searchTerm);
+          const schoolsMatch = unit.schools.some(school =>
+            school.schoolName.toLowerCase().includes(searchTerm) ||
+            school.teacherName.toLowerCase().includes(searchTerm)
+          );
+          return groupNameMatch || schoolsMatch;
+        }
       });
-      
-      console.log('After filter:', filtered.length, 'schools');
     }
 
     if (filters.regions.length > 0) {
-      filtered = filtered.filter(school => {
-        const schoolRegion = String(school.region).toUpperCase();
-        return filters.regions.some(filterRegion => 
-          String(filterRegion).toUpperCase() === schoolRegion
-        );
+      allUnmatched = allUnmatched.filter(unit => {
+        if (isSchool(unit)) {
+          const schoolRegion = String(unit.region).toUpperCase();
+          return filters.regions.some(filterRegion => 
+            String(filterRegion).toUpperCase() === schoolRegion
+          );
+        }
+        return true;
       });
     }
 
     if (filters.statuses.length > 0) {
-      filtered = filtered.filter(school => 
-        filters.statuses.includes(school.status)
-      );
+      allUnmatched = allUnmatched.filter(unit => {
+        if (isSchool(unit)) {
+          return filters.statuses.includes(unit.status);
+        }
+        return true;
+      });
     }
 
     if (filters.classSizes.length > 0) {
@@ -388,8 +402,8 @@ export default function AdminDashboard() {
         { label: 'Over 50', min: 51, max: 999 }
       ];
       
-      filtered = filtered.filter(school => {
-        const studentCount = school.studentCounts?.ready || 0;
+      allUnmatched = allUnmatched.filter(unit => {
+        const studentCount = getStudentCount(unit);
         return filters.classSizes.some(bucket => {
           const bucketData = classSizeBuckets.find(b => b.label === bucket);
           return bucketData && studentCount >= bucketData.min && studentCount <= bucketData.max;
@@ -398,16 +412,26 @@ export default function AdminDashboard() {
     }
 
     if (filters.startDate) {
-      filtered = filtered.filter(school => school.startMonth === filters.startDate);
+      allUnmatched = allUnmatched.filter(unit => {
+        if (isSchool(unit)) {
+          return unit.startMonth === filters.startDate;
+        }
+        return true;
+      });
     }
 
     if (filters.grades.length > 0) {
-      filtered = filtered.filter(school => 
-        filters.grades.some(grade => school.gradeLevel.includes(grade.replace('Grade ', '')))
-      );
+      allUnmatched = allUnmatched.filter(unit => {
+        if (isSchool(unit)) {
+          return filters.grades.some(grade => 
+            unit.gradeLevel.includes(grade.replace('Grade ', ''))
+          );
+        }
+        return true;
+      });
     }
 
-    setFilteredSchools(filtered);
+    setFilteredUnits(allUnmatched);
     setFiltersApplied(true);
   };
 
@@ -423,43 +447,91 @@ export default function AdminDashboard() {
     };
     setFilters(clearedFilters);
     setFiltersApplied(false);
-    setFilteredSchools([]);
+    setFilteredUnits([]);
   };
 
-  // Organize schools by workflow stage using new pen pal data structure
-  const organizeSchoolsByWorkflow = () => {
-    const unmatched: School[] = [];
-    const matchedPairs: SchoolPair[] = [];
+  const organizeUnitsByWorkflow = () => {
+    const unmatched: MatchableUnit[] = [];
+    const matchedPairs: MatchedPair[] = [];
     
-    const processed = new Set<string>();
+    const processedSchools = new Set<string>();
+    const processedGroups = new Set<string>();
 
     schools.forEach(school => {
-      if (processed.has(school.id)) return;
+      if (processedSchools.has(school.id) || school.schoolGroupId) return;
 
       if (!school.matchedWithSchoolId) {
         unmatched.push(school);
       } else {
         const matchedSchoolFull = schools.find(s => s.id === school.matchedWithSchoolId);
-        if (matchedSchoolFull && !processed.has(matchedSchoolFull.id)) {
-          // Use new pen pal assignment data from API
-          const hasStudentPairings = getPairPenPalStatus(school, matchedSchoolFull);
-          const bothSchoolsReady = areBothSchoolsReady(school, matchedSchoolFull);
+        
+        if (matchedSchoolFull && !processedSchools.has(matchedSchoolFull.id)) {
+          const hasStudentPairings = unitHasPenPalAssignments(school) || unitHasPenPalAssignments(matchedSchoolFull);
+          const bothUnitsReady = isUnitReady(school) && isUnitReady(matchedSchoolFull);
 
           matchedPairs.push({
-            school1: school,
-            school2: matchedSchoolFull,
+            unit1: school,
+            unit2: matchedSchoolFull,
             hasStudentPairings,
-            bothSchoolsReady
+            bothUnitsReady,
+            matchType: 'school-school'
           });
 
-          processed.add(school.id);
-          processed.add(matchedSchoolFull.id);
+          processedSchools.add(school.id);
+          processedSchools.add(matchedSchoolFull.id);
         }
       }
     });
 
-    const awaitingReadiness = matchedPairs.filter(pair => !pair.bothSchoolsReady);
-    const readyForPairing = matchedPairs.filter(pair => pair.bothSchoolsReady && !pair.hasStudentPairings);
+    groups.forEach(group => {
+      if (processedGroups.has(group.id)) return;
+
+      if (!group.matchedWithGroupId) {
+        unmatched.push(group);
+      } else {
+        if (group.matchedWithGroupId.startsWith('school:')) {
+          const schoolId = group.matchedWithGroupId.replace('school:', '');
+          const matchedSchool = schools.find(s => s.id === schoolId);
+          
+          if (matchedSchool && !processedSchools.has(matchedSchool.id)) {
+            const hasStudentPairings = unitHasPenPalAssignments(group) || unitHasPenPalAssignments(matchedSchool);
+            const bothUnitsReady = isUnitReady(group) && isUnitReady(matchedSchool);
+
+            matchedPairs.push({
+              unit1: group,
+              unit2: matchedSchool,
+              hasStudentPairings,
+              bothUnitsReady,
+              matchType: 'group-school'
+            });
+
+            processedGroups.add(group.id);
+            processedSchools.add(matchedSchool.id);
+          }
+        } else {
+          const matchedGroup = groups.find(g => g.id === group.matchedWithGroupId);
+          
+          if (matchedGroup && !processedGroups.has(matchedGroup.id)) {
+            const hasStudentPairings = unitHasPenPalAssignments(group) || unitHasPenPalAssignments(matchedGroup);
+            const bothUnitsReady = isUnitReady(group) && isUnitReady(matchedGroup);
+
+            matchedPairs.push({
+              unit1: group,
+              unit2: matchedGroup,
+              hasStudentPairings,
+              bothUnitsReady,
+              matchType: 'group-group'
+            });
+
+            processedGroups.add(group.id);
+            processedGroups.add(matchedGroup.id);
+          }
+        }
+      }
+    });
+
+    const awaitingReadiness = matchedPairs.filter(pair => !pair.bothUnitsReady);
+    const readyForPairing = matchedPairs.filter(pair => pair.bothUnitsReady && !pair.hasStudentPairings);
     const completePairs = matchedPairs.filter(pair => pair.hasStudentPairings);
 
     return {
@@ -481,16 +553,13 @@ export default function AdminDashboard() {
     );
   }
 
-  const { unmatched, awaitingReadiness, readyForPairing, completePairs } = organizeSchoolsByWorkflow();
+  const { unmatched, awaitingReadiness, readyForPairing, completePairs } = organizeUnitsByWorkflow();
   
-  // Get schools to display (filtered or unmatched, excluding pinned school)
-  let unmatchedToShow = filtersApplied ? filteredSchools : unmatched;
-  // Remove pinned school from the list
-  if (pinnedSchool) {
-    unmatchedToShow = unmatchedToShow.filter(school => school.id !== pinnedSchool.id);
+  let unmatchedToShow = filtersApplied ? filteredUnits : unmatched;
+  if (pinnedUnit) {
+    unmatchedToShow = unmatchedToShow.filter(unit => unit.id !== pinnedUnit.id);
   }
 
-  // Get schools available for grouping (not already in a group)
   const availableForGrouping = schools.filter(school => !school.schoolGroupId);
 
   return (
@@ -533,11 +602,9 @@ export default function AdminDashboard() {
             <button 
               onClick={() => {
                 if (showFilters) {
-                  // When hiding filters, also clear them
                   handleClearFilters();
                   setShowFilters(false);
                 } else {
-                  // When showing filters, just show them
                   setShowFilters(true);
                 }
               }}
@@ -552,14 +619,13 @@ export default function AdminDashboard() {
         {error && (
           <div className="alert alert-error" style={{ marginBottom: '2rem' }}>
             <strong>Error:</strong> {error}
-            <button onClick={fetchAllSchools} style={{ marginLeft: '1rem', padding: '0.25rem 0.5rem' }}>
+            <button onClick={fetchAllData} style={{ marginLeft: '1rem', padding: '0.25rem 0.5rem' }}>
               Retry
             </button>
           </div>
         )}
 
-        {/* Pinned School Display */}
-        {pinnedSchool && (
+        {pinnedUnit && (
           <div style={{ 
             position: 'sticky',
             top: 0,
@@ -570,19 +636,27 @@ export default function AdminDashboard() {
             borderBottom: '2px solid #e5e7eb'
           }}>
             <h3 style={{ marginBottom: '1rem', color: '#1976d2', marginTop: 0 }}>
-              📌 Pinned School - Select a match below
+              Pinned {isGroup(pinnedUnit) ? 'Group' : 'School'} - Select a match below
             </h3>
-            <SchoolCard
-              school={pinnedSchool}
-              isPinned={true}
-              onPin={() => handlePinSchool(pinnedSchool)}
-              showActions={true}
-              onUpdate={handleSchoolsUpdate}
-            />
+            {isSchool(pinnedUnit) ? (
+              <SchoolCard
+                school={pinnedUnit}
+                isPinned={true}
+                onPin={() => handlePinUnit(pinnedUnit)}
+                showActions={true}
+                onUpdate={handleSchoolsUpdate}
+              />
+            ) : (
+              <GroupCard
+                group={pinnedUnit}
+                isPinned={true}
+                onPin={() => handlePinUnit(pinnedUnit)}
+                showActions={true}
+              />
+            )}
           </div>
         )}
 
-        {/* Filter Bar */}
         {showFilters && (
           <div style={{ marginBottom: '2rem' }}>
             <FilterBar 
@@ -590,15 +664,14 @@ export default function AdminDashboard() {
               onFiltersChange={handleFiltersChange}
               onApplyFilters={handleApplyFilters}
               onClearFilters={handleClearFilters}
-              pinnedSchoolRegion={pinnedSchool?.region}
+              pinnedSchoolRegion={isSchool(pinnedUnit) ? pinnedUnit.region : undefined}
             />
           </div>
         )}
 
-        {/* Section 1: Schools Available for Matching */}
         <section style={{ marginBottom: '3rem' }}>
           <h2 className="text-teacher-name" style={{ marginBottom: '1rem', fontSize: '16px' }}>
-            Schools Available for Matching ({unmatchedToShow.length})
+            Schools & Groups Available for Matching ({unmatchedToShow.length})
           </h2>
           {unmatchedToShow.length === 0 ? (
             <div style={{ 
@@ -606,42 +679,52 @@ export default function AdminDashboard() {
               textAlign: 'center', padding: '2rem', color: '#6c757d'
             }}>
               {filtersApplied 
-                ? 'No schools match the current filters. Try adjusting your search criteria.'
-                : 'All schools have been matched. New schools will appear here when added.'
+                ? 'No schools or groups match the current filters. Try adjusting your search criteria.'
+                : 'All schools and groups have been matched. New ones will appear here when added.'
               }
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {unmatchedToShow.map(school => (
-                <SchoolCard 
-                  key={`${school.id}-${Date.now()}`}
-                  school={school} 
-                  showActions={true}
-                  isPinned={pinnedSchool?.id === school.id}
-                  showMatchIcon={!!pinnedSchool && pinnedSchool.id !== school.id}
-                  onPin={() => handlePinSchool(school)}
-                  onMatch={() => handleMatchRequest(school)}
-                  onUpdate={handleSchoolsUpdate}
-                />
+              {unmatchedToShow.map(unit => (
+                isSchool(unit) ? (
+                  <SchoolCard 
+                    key={`school-${unit.id}`}
+                    school={unit} 
+                    showActions={true}
+                    isPinned={pinnedUnit?.id === unit.id}
+                    showMatchIcon={!!pinnedUnit && pinnedUnit.id !== unit.id}
+                    onPin={() => handlePinUnit(unit)}
+                    onMatch={() => handleMatchRequest(unit)}
+                    onUpdate={handleSchoolsUpdate}
+                  />
+                ) : (
+                  <GroupCard
+                    key={`group-${unit.id}`}
+                    group={unit}
+                    showActions={true}
+                    isPinned={pinnedUnit?.id === unit.id}
+                    showMatchIcon={!!pinnedUnit && pinnedUnit.id !== unit.id}
+                    onPin={() => handlePinUnit(unit)}
+                    onMatch={() => handleMatchRequest(unit)}
+                  />
+                )
               ))}
             </div>
           )}
         </section>
 
-        {/* Only show other sections when not filtering */}
         {!filtersApplied && (
           <>
-            {/* Section 2: Matched Schools Awaiting Student Readiness */}
             <section style={{ marginBottom: '3rem' }}>
               <h2 className="text-teacher-name" style={{ marginBottom: '1rem', fontSize: '16px' }}>
-                Matched Schools Awaiting Student Readiness ({awaitingReadiness.length})
+                Matched Pairs Awaiting Student Readiness ({awaitingReadiness.length})
               </h2>
               {awaitingReadiness.length === 0 ? (
                 <div style={{ 
                   background: '#fff', border: '1px solid #e0e6ed', borderRadius: '12px',
                   textAlign: 'center', padding: '2rem', color: '#6c757d'
                 }}>
-                  No matched schools are waiting for student data collection.
+                  No matched pairs are waiting for student data collection.
                 </div>
               ) : (
                 <div>
@@ -649,15 +732,14 @@ export default function AdminDashboard() {
                     <SchoolPairDisplay 
                       key={`awaiting-${index}`} 
                       pair={pair} 
-                      onAssignPenPals={handleAssignPenPals}
-                      onUnmatch={handleUnmatchSchools}
+                      onAssignPenPals={() => handleAssignPenPals(pair.unit1, pair.unit2)}
+                      onUnmatch={() => handleUnmatchUnits(pair.unit1, pair.unit2)}
                     />
                   ))}
                 </div>
               )}
             </section>
 
-            {/* Section 3: Matched Schools Ready for Pen Pal Assignment */}
             <section style={{ marginBottom: '3rem' }}>
               <h2 className="text-teacher-name" style={{ marginBottom: '1rem', fontSize: '16px' }}>
                 Ready for Pen Pal Assignment ({readyForPairing.length})
@@ -667,7 +749,7 @@ export default function AdminDashboard() {
                   background: '#fff', border: '1px solid #e0e6ed', borderRadius: '12px',
                   textAlign: 'center', padding: '2rem', color: '#6c757d'
                 }}>
-                  No school pairs are ready for pen pal assignment.
+                  No pairs are ready for pen pal assignment.
                 </div>
               ) : (
                 <div>
@@ -676,15 +758,14 @@ export default function AdminDashboard() {
                       key={`ready-${index}`} 
                       pair={pair} 
                       showAssignButton={true} 
-                      onAssignPenPals={handleAssignPenPals}
-                      onUnmatch={handleUnmatchSchools}
+                      onAssignPenPals={() => handleAssignPenPals(pair.unit1, pair.unit2)}
+                      onUnmatch={() => handleUnmatchUnits(pair.unit1, pair.unit2)}
                     />
                   ))}
                 </div>
               )}
             </section>
 
-            {/* Section 4: Complete Pairs with Assigned Pen Pals */}
             <section style={{ marginBottom: '3rem' }}>
               <h2 className="text-teacher-name" style={{ marginBottom: '1rem', fontSize: '16px' }}>
                 Complete Pairs with Assigned Pen Pals ({completePairs.length})
@@ -694,7 +775,7 @@ export default function AdminDashboard() {
                   background: '#fff', border: '1px solid #e0e6ed', borderRadius: '12px',
                   textAlign: 'center', padding: '2rem', color: '#6c757d'
                 }}>
-                  No school pairs have completed pen pal assignments yet.
+                  No pairs have completed pen pal assignments yet.
                 </div>
               ) : (
                 <div>
@@ -702,8 +783,8 @@ export default function AdminDashboard() {
                     <SchoolPairDisplay 
                       key={`complete-${index}`} 
                       pair={pair} 
-                      onAssignPenPals={handleAssignPenPals}
-                      onUnmatch={handleUnmatchSchools}
+                      onAssignPenPals={() => handleAssignPenPals(pair.unit1, pair.unit2)}
+                      onUnmatch={() => handleUnmatchUnits(pair.unit1, pair.unit2)}
                     />
                   ))}
                 </div>
@@ -712,7 +793,6 @@ export default function AdminDashboard() {
           </>
         )}
 
-        {/* Link to testing page - small, unobtrusive */}
         <div style={{ textAlign: 'center', marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid #e9ecef' }}>
           <Link 
             href="/admin/testing" 
@@ -732,10 +812,12 @@ export default function AdminDashboard() {
 
       </main>
 
-      {showConfirmDialog && pinnedSchool && selectedMatch && (
+      {showConfirmDialog && pinnedUnit && selectedMatch && (
         <ConfirmationDialog
-          pinnedSchool={pinnedSchool}
-          selectedMatch={selectedMatch}
+          pinnedSchool={isSchool(pinnedUnit) ? pinnedUnit : null}
+          selectedMatch={isSchool(selectedMatch) ? selectedMatch : null}
+          pinnedGroup={isGroup(pinnedUnit) ? pinnedUnit : null}
+          selectedGroup={isGroup(selectedMatch) ? selectedMatch : null}
           showWarning={showWarning}
           isMatched={isMatched}
           onConfirm={confirmMatch}
