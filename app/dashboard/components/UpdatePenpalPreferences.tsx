@@ -122,24 +122,21 @@ export default function UpdatePenpalPreferences({
         maxWidth: '700px',
         width: '90%',
         maxHeight: '80vh',
-        overflow: 'auto',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
-        margin: '2rem'
+        overflow: 'auto'
       }}>
         <h3 style={{ 
-          color: '#333', 
-          marginBottom: '1rem', 
-          fontSize: '1.3rem',
-          fontWeight: '400'
+          fontSize: '1.2rem',
+          fontWeight: '400',
+          color: '#333',
+          marginBottom: '1rem'
         }}>
           Update Pen Pal Preferences
         </h3>
         
         <p style={{ 
-          color: '#6c757d', 
-          marginBottom: '1.5rem', 
-          lineHeight: '1.6',
-          fontSize: '0.95rem'
+          color: '#495057',
+          marginBottom: '1.5rem',
+          lineHeight: '1.6'
         }}>
           Because your class is small ({classSize} students), at least <strong>{requiredCount} students</strong> must be set to 'more than one pen pal' to ensure fair matching. Currently <strong>{currentCount}</strong> {currentCount === 1 ? 'student is' : 'students are'} set. Please select {additionalNeeded > 0 ? `at least ${additionalNeeded} more` : 'students below'}.
         </p>
@@ -147,16 +144,16 @@ export default function UpdatePenpalPreferences({
         {/* Progress indicator */}
         <div style={{
           padding: '0.75rem',
-          backgroundColor: canProceed ? '#d4edda' : '#fff3cd',
-          border: `1px solid ${canProceed ? '#c3e6cb' : '#ffeaa7'}`,
+          backgroundColor: canProceed ? '#d4edda' : '#f8f9fa',
+          border: `1px solid ${canProceed ? '#c3e6cb' : '#dee2e6'}`,
           borderRadius: '6px',
           marginBottom: '1.5rem',
-          textAlign: 'center',
-          fontWeight: '500',
-          fontSize: '0.95rem'
+          textAlign: 'center'
         }}>
-          {selectedCount} of {requiredCount} required selected
-          {canProceed && ' ✓'}
+          <span style={{ fontWeight: '500' }}>
+            {selectedCount} of {requiredCount} required selected
+            {canProceed && ' ✓'}
+          </span>
         </div>
 
         {/* Student list */}
@@ -193,7 +190,7 @@ export default function UpdatePenpalPreferences({
                   type="checkbox"
                   checked={isSelected}
                   disabled={isLocked}
-                  onChange={() => {}} // Handled by div onClick
+                  readOnly
                   style={{
                     marginRight: '1rem',
                     width: '18px',
@@ -202,7 +199,7 @@ export default function UpdatePenpalPreferences({
                   }}
                 />
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: '400', color: '#333', fontSize: '0.95rem' }}>
+                  <div style={{ color: '#333' }}>
                     {student.firstName} {student.lastInitial}.
                   </div>
                   <div style={{ fontSize: '0.85rem', color: '#6c757d' }}>
@@ -216,12 +213,11 @@ export default function UpdatePenpalPreferences({
         </div>
 
         {/* Action buttons */}
-        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
           <button 
             onClick={onCancel}
             className="btn"
             disabled={isUpdating}
-            style={{ fontSize: '14px' }}
           >
             Cancel
           </button>
@@ -231,11 +227,10 @@ export default function UpdatePenpalPreferences({
             disabled={!canProceed || isUpdating}
             style={{
               backgroundColor: canProceed && !isUpdating ? '#28a745' : 'white',
-              color: canProceed && !isUpdating ? 'white' : '#999',
+              color: canProceed && !isUpdating ? 'white' : '#555',
               borderColor: canProceed && !isUpdating ? '#28a745' : '#ddd',
               cursor: canProceed && !isUpdating ? 'pointer' : 'not-allowed',
-              opacity: canProceed && !isUpdating ? 1 : 0.6,
-              fontSize: '14px'
+              opacity: canProceed && !isUpdating ? 1 : 0.6
             }}
           >
             {isUpdating ? (
