@@ -13,6 +13,7 @@ import MatchingSection from './components/MatchingSection';
 import ReadyStudents from './components/ReadyStudents';
 import ConfirmationDialog from './components/ConfirmationDialog';
 import UpdatePenpalPreferences from './components/UpdatePenpalPreferences';
+import GroupMembershipCard from './components/GroupMembershipCard';
 
 interface Student {
   id: string;
@@ -23,7 +24,7 @@ interface Student {
   otherInterests: string;
   hasInterests: boolean;
   status: 'ready' | 'needs-info' | 'matched';
-  penpalPreference: 'ONE' | 'MULTIPLE';  // <- No longer optional
+  penpalPreference: 'ONE' | 'MULTIPLE';
 }
 
 interface SchoolData {
@@ -60,6 +61,16 @@ interface SchoolData {
     schoolState?: string;
     expectedClassSize: number;
     region: string;
+  };
+  schoolGroup?: {
+    id: string;
+    name: string;
+    schools: Array<{
+      id: string;
+      schoolName: string;
+      teacherName: string;
+      students: any[];
+    }>;
   };
 }
 
@@ -149,7 +160,7 @@ function TeacherDashboardContent() {
 
   // Session-based authentication and school lookup
   useEffect(() => {
-    if (status === 'loading') return; // Still loading session
+    if (status === 'loading') return;
 
     if (status === 'unauthenticated') {
       router.push('/login');
@@ -171,14 +182,12 @@ function TeacherDashboardContent() {
 
       if (!response.ok) {
         if (response.status === 404) {
-          // No school found - redirect to registration
           router.push('/register-school');
           return;
         }
         throw new Error(data.error || 'Failed to load school data');
       }
 
-      // Transform the response to include matched school information
       const transformedSchoolData: SchoolData = {
         id: data.school.id,
         schoolName: data.school.schoolName,
@@ -197,6 +206,7 @@ function TeacherDashboardContent() {
         gradeLevel: data.school.gradeLevel,
         teacherPhone: data.school.teacherPhone,
         specialConsiderations: data.school.specialConsiderations,
+        schoolGroup: data.school.schoolGroup,
         matchedSchool: data.school.matchedWithSchool ? {
           id: data.school.matchedWithSchool.id,
           schoolName: data.school.matchedWithSchool.schoolName,
@@ -220,10 +230,8 @@ function TeacherDashboardContent() {
 
   const fetchStudentData = async (schoolId: string, schoolDataParam?: SchoolData) => {
     try {
-      // Use passed school data or fall back to state
       const sourceSchoolData = schoolDataParam || schoolData;
       
-      // Transform students data to match our Student interface
       const transformedStudents: Student[] = sourceSchoolData?.students?.map((student: any) => ({
         id: student.id,
         firstName: student.firstName,
@@ -233,11 +241,11 @@ function TeacherDashboardContent() {
         otherInterests: student.otherInterests || '',
         hasInterests: student.profileCompleted || false,
         status: student.profileCompleted ? 'ready' : 'needs-info',
-        penpalPreference: student.penpalPreference || 'ONE'  // <- Already have this, good!
+        penpalPreference: student.penpalPreference || 'ONE'
       })) || [];
 
       setStudents(transformedStudents);
-      setIsLoading(false); // Stop loading once students are processed
+      setIsLoading(false);
     } catch (err: any) {
       console.error('Error processing student data:', err);
       setIsLoading(false);
@@ -247,24 +255,20 @@ function TeacherDashboardContent() {
   const studentsWithInterests = students.filter(s => s.hasInterests);
   const totalStudents = students.length;
   
-  // Check if school profile is incomplete
   const isProfileIncomplete = schoolData?.schoolState === 'TBD' || 
                               schoolData?.gradeLevel === 'TBD' || 
                               schoolData?.startMonth === 'TBD' ||
                               schoolData?.expectedClassSize === 0;
   
-  // Simplified ready logic - all students have complete profiles
   const allActiveStudentsComplete = totalStudents > 0;
   const readyForMatching = schoolData?.status === 'READY';
   const penPalsAssigned = schoolData?.studentStats?.hasPenpalAssignments || false;
 
   const handleMatchingRequested = () => {
-    // Update local state to reflect matching request
     setSchoolData(prev => prev ? { ...prev, status: 'READY' } : null);
   };
 
   const handleSchoolUpdated = () => {
-    // Refresh school data after profile completion
     if (session?.user?.email) {
       fetchSchoolByEmail(session.user.email);
     }
@@ -279,7 +283,6 @@ function TeacherDashboardContent() {
   const handlePenpalPreferenceUpdateComplete = async () => {
     setShowPenpalPreferenceUpdate(false);
     
-    // Now proceed with setting school to READY status
     try {
       const response = await fetch('/api/schools/request-matching', {
         method: 'POST',
@@ -299,8 +302,6 @@ function TeacherDashboardContent() {
       }
 
       console.log('Request pairing successful after preference update:', data);
-      
-      // Refresh the page to show updated status
       window.location.reload();
       
     } catch (err: any) {
@@ -346,7 +347,6 @@ function TeacherDashboardContent() {
       setStudents(updatedStudents);
       setConfirmDialog({ show: false, studentName: '', studentId: '' });
 
-      // If no students remain and status is READY, reset to COLLECTING
       if (updatedStudents.length === 0 && schoolData?.status === 'READY') {
         await fetch('/api/schools/reset-status', {
           method: 'POST',
@@ -447,6 +447,20 @@ function TeacherDashboardContent() {
           isProfileIncomplete={isProfileIncomplete}
         />
 
+        {/* Group Membership Card */}
+        {schoolData.schoolGroup && (
+          <GroupMembershipCard
+            groupName={schoolData.schoolGroup.name}
+            schools={schoolData.schoolGroup.schools.map(school => ({
+              id: school.id,
+              schoolName: school.schoolName,
+              teacherName: school.teacherName,
+              studentCount: school.students.filter((s: any) => s.isActive).length
+            }))}
+            currentSchoolId={schoolData.id}
+          />
+        )}
+
         <StudentMetricsGrid 
           schoolData={schoolData}
           totalStudents={totalStudents}
@@ -481,7 +495,6 @@ function TeacherDashboardContent() {
           onCancel={cancelRemoveStudent}
         />
 
-        {/* Pen Pal Preference Update Modal */}
         {showPenpalPreferenceUpdate && (
           <UpdatePenpalPreferences
             students={students}
@@ -493,7 +506,6 @@ function TeacherDashboardContent() {
           />
         )}
 
-        {/* No students message */}
         {totalStudents === 0 && (
           <div className="card" style={{ textAlign: 'center', padding: '3rem', marginBottom: '2rem' }}>
             <h3 style={{ 
