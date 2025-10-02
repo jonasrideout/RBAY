@@ -118,21 +118,29 @@ export default function UpdatePenpalPreferences({
       justifyContent: 'center',
       zIndex: 1000
     }}>
-      <div style={{
-        backgroundColor: 'white',
-        padding: '2rem',
-        borderRadius: '8px',
+      <div className="card" style={{
         maxWidth: '700px',
         width: '90%',
         maxHeight: '80vh',
         overflow: 'auto',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+        margin: '2rem'
       }}>
-        <h3 style={{ color: '#495057', marginBottom: '1rem', fontSize: '1.3rem' }}>
+        <h3 style={{ 
+          color: '#333', 
+          marginBottom: '1rem', 
+          fontSize: '1.3rem',
+          fontWeight: '400'
+        }}>
           Update Pen Pal Preferences
         </h3>
         
-        <p style={{ color: '#6c757d', marginBottom: '1.5rem', lineHeight: '1.6' }}>
+        <p style={{ 
+          color: '#6c757d', 
+          marginBottom: '1.5rem', 
+          lineHeight: '1.6',
+          fontSize: '0.95rem'
+        }}>
           Because your class is small ({classSize} students), at least <strong>{requiredCount} students</strong> must be set to 'more than one pen pal' to ensure fair matching. Currently <strong>{currentCount}</strong> {currentCount === 1 ? 'student is' : 'students are'} set. Please select {additionalNeeded > 0 ? `at least ${additionalNeeded} more` : 'students below'}.
         </p>
 
@@ -144,7 +152,8 @@ export default function UpdatePenpalPreferences({
           borderRadius: '6px',
           marginBottom: '1.5rem',
           textAlign: 'center',
-          fontWeight: '500'
+          fontWeight: '500',
+          fontSize: '0.95rem'
         }}>
           {selectedCount} of {requiredCount} required selected
           {canProceed && ' ✓'}
@@ -175,7 +184,7 @@ export default function UpdatePenpalPreferences({
                   border: '1px solid #dee2e6',
                   borderRadius: '6px',
                   cursor: isLocked ? 'not-allowed' : 'pointer',
-                  backgroundColor: isSelected ? '#e7f3ff' : 'white',
+                  backgroundColor: isSelected ? '#f8f9fa' : 'white',
                   opacity: isLocked ? 0.7 : 1,
                   transition: 'all 0.2s'
                 }}
@@ -193,7 +202,7 @@ export default function UpdatePenpalPreferences({
                   }}
                 />
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: '500', color: '#333' }}>
+                  <div style={{ fontWeight: '400', color: '#333', fontSize: '0.95rem' }}>
                     {student.firstName} {student.lastInitial}.
                   </div>
                   <div style={{ fontSize: '0.85rem', color: '#6c757d' }}>
@@ -207,11 +216,12 @@ export default function UpdatePenpalPreferences({
         </div>
 
         {/* Action buttons */}
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
           <button 
             onClick={onCancel}
             className="btn"
             disabled={isUpdating}
+            style={{ fontSize: '14px' }}
           >
             Cancel
           </button>
@@ -220,11 +230,12 @@ export default function UpdatePenpalPreferences({
             className="btn"
             disabled={!canProceed || isUpdating}
             style={{
-              backgroundColor: canProceed && !isUpdating ? '#28a745' : '#f8f9fa',
+              backgroundColor: canProceed && !isUpdating ? '#28a745' : 'white',
               color: canProceed && !isUpdating ? 'white' : '#999',
-              borderColor: canProceed && !isUpdating ? '#28a745' : '#e0e0e0',
+              borderColor: canProceed && !isUpdating ? '#28a745' : '#ddd',
               cursor: canProceed && !isUpdating ? 'pointer' : 'not-allowed',
-              opacity: canProceed && !isUpdating ? 1 : 0.6
+              opacity: canProceed && !isUpdating ? 1 : 0.6,
+              fontSize: '14px'
             }}
           >
             {isUpdating ? (
