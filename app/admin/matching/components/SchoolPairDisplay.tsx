@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from 'react';
+import UnmatchConfirmDialog from './UnmatchConfirmDialog';
 
 interface School {
   id: string;
@@ -48,6 +49,7 @@ export default function SchoolPairDisplay({
   const [copyButtonText2, setCopyButtonText2] = useState('Copy URL');
   const [emailCopyText1, setEmailCopyText1] = useState('✉');
   const [emailCopyText2, setEmailCopyText2] = useState('✉');
+  const [showUnmatchModal, setShowUnmatchModal] = useState(false);
 
   const getDashboardUrl = (schoolId: string) => {
     const adminDashboardPath = `/admin/school-dashboard?schoolId=${schoolId}`;
@@ -101,7 +103,11 @@ export default function SchoolPairDisplay({
       alert('Cannot unmatch schools after pen pals have been assigned');
       return;
     }
-    
+    setShowUnmatchModal(true);
+  };
+
+  const handleConfirmUnmatch = () => {
+    setShowUnmatchModal(false);
     if (onUnmatch) {
       onUnmatch(pair.school1.id, pair.school1.schoolName, pair.school2.schoolName);
     }
@@ -349,75 +355,88 @@ export default function SchoolPairDisplay({
   );
 
   return (
-    <div style={{
-      background: 'white',
-      border: '1px solid #e0e0e0',
-      borderRadius: '8px',
-      padding: '20px',
-      marginBottom: '16px',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-      borderLeft: '3px solid #28a745'
-    }}>
-      
-      {/* Compact School Pair Container - Same width as single school */}
+    <>
       <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 20px 1fr',
-        gap: '12px',
-        alignItems: 'start'
+        background: 'white',
+        border: '1px solid #e0e0e0',
+        borderRadius: '8px',
+        padding: '20px',
+        marginBottom: '16px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+        borderLeft: '3px solid #28a745'
       }}>
         
-        {/* School 1 - Compact */}
-        {renderCompactSchoolCard(pair.school1, true)}
-        
-        {/* Link Icon */}
-        {renderLinkIcon()}
-        
-        {/* School 2 - Compact */}
-        {renderCompactSchoolCard(pair.school2, false)}
-        
-      </div>
-
-      {/* Action Buttons Row - spans full width below the pair */}
-      {(showAssignButton || pair.hasStudentPairings) && (
+        {/* Compact School Pair Container - Same width as single school */}
         <div style={{
-          display: 'flex',
-          justifyContent: 'center',
+          display: 'grid',
+          gridTemplateColumns: '1fr 20px 1fr',
           gap: '12px',
-          marginTop: '16px',
-          paddingTop: '16px',
-          borderTop: '1px solid #f0f0f0'
+          alignItems: 'start'
         }}>
           
-          {showAssignButton && onAssignPenPals && !pair.hasStudentPairings && (
-            <button
-              onClick={() => onAssignPenPals(pair.school1.id, pair.school2.id)}
-              className="btn btn-primary"
-              style={{ minWidth: '140px', fontSize: '12px' }}
-            >
-              Assign Pen Pals
-            </button>
-          )}
-
-          {pair.hasStudentPairings && (
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              color: '#28a745',
-              fontWeight: '500',
-              fontSize: '12px'
-            }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-              Pen Pals Assigned
-            </div>
-          )}
+          {/* School 1 - Compact */}
+          {renderCompactSchoolCard(pair.school1, true)}
+          
+          {/* Link Icon */}
+          {renderLinkIcon()}
+          
+          {/* School 2 - Compact */}
+          {renderCompactSchoolCard(pair.school2, false)}
           
         </div>
-      )}
 
-    </div>
+        {/* Action Buttons Row - spans full width below the pair */}
+        {(showAssignButton || pair.hasStudentPairings) && (
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '12px',
+            marginTop: '16px',
+            paddingTop: '16px',
+            borderTop: '1px solid #f0f0f0'
+          }}>
+            
+            {showAssignButton && onAssignPenPals && !pair.hasStudentPairings && (
+              <button
+                onClick={() => onAssignPenPals(pair.school1.id, pair.school2.id)}
+                className="btn btn-primary"
+                style={{ minWidth: '140px', fontSize: '12px' }}
+              >
+                Assign Pen Pals
+              </button>
+            )}
+
+            {pair.hasStudentPairings && (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                color: '#28a745',
+                fontWeight: '500',
+                fontSize: '12px'
+              }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
+                Pen Pals Assigned
+              </div>
+            )}
+            
+          </div>
+        )}
+
+      </div>
+
+      {showUnmatchModal && (
+        <UnmatchConfirmDialog
+          school1Name={pair.school1.schoolName}
+          school2Name={pair.school2.schoolName}
+          school1Region={pair.school1.region}
+          school2Region={pair.school2.region}
+          onConfirm={handleConfirmUnmatch}
+          onCancel={() => setShowUnmatchModal(false)}
+        />
+      )}
+    </>
   );
 }
