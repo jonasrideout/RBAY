@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
         schools: {
           include: {
             students: {
-              where: { status: 'ACTIVE' }
+              where: { isActive: true }
             }
           }
         }
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
         schools: {
           include: {
             students: {
-              where: { status: 'ACTIVE' }
+              where: { isActive: true }
             }
           }
         }
