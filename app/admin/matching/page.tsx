@@ -664,7 +664,7 @@ export default function AdminDashboard() {
               onFiltersChange={handleFiltersChange}
               onApplyFilters={handleApplyFilters}
               onClearFilters={handleClearFilters}
-              pinnedSchoolRegion={isSchool(pinnedUnit) ? pinnedUnit.region : undefined}
+              pinnedSchoolRegion={pinnedUnit && isSchool(pinnedUnit) ? pinnedUnit.region : undefined}
             />
           </div>
         )}
