@@ -20,6 +20,27 @@ enum PenpalPreference {
   MULTIPLE
 }
 
+model SchoolGroup {
+  id        String   @id @default(cuid())
+  name      String   // e.g., "Washington Elementary 4th Grade Combined"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relationships
+  schools   School[]
+  
+  // Matching happens at GROUP level
+  status            SchoolStatus @default(COLLECTING)
+  readyForMatching  Boolean      @default(false)
+  
+  // When matched with another group or individual school
+  matchedWithGroupId String?     @unique
+  matchedWithGroup   SchoolGroup? @relation("GroupPairing", fields: [matchedWithGroupId], references: [id])
+  pairedGroup        SchoolGroup? @relation("GroupPairing")
+  
+  @@map("school_groups")
+}
+
 model School {
   id                   String        @id @default(cuid())
   schoolName           String
@@ -39,6 +60,10 @@ model School {
   region               String
   isActive             Boolean       @default(true)
   
+  // Group membership (NEW)
+  schoolGroupId        String?
+  schoolGroup          SchoolGroup?  @relation(fields: [schoolGroupId], references: [id])
+  
   // One-to-one school pairing
   matchedWithSchoolId  String?       @unique
   matchedWithSchool    School?       @relation("SchoolPairing", fields: [matchedWithSchoolId], references: [id])
@@ -54,7 +79,7 @@ model School {
   pairedWithSchools    SchoolPairing[] @relation("School2Pairings")
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
-
+  
   @@map("schools")
 }
 
@@ -76,7 +101,7 @@ model Student {
   penpalOf          StudentPenpal[]  @relation("PenpalOf")
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
-
+  
   @@map("students")
 }
 
@@ -87,7 +112,7 @@ model SchoolPairing {
   school1   School   @relation("School1Pairings", fields: [school1Id], references: [id], onDelete: Cascade)
   school2   School   @relation("School2Pairings", fields: [school2Id], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
-
+  
   @@unique([school1Id, school2Id])
   @@map("school_pairings")
 }
@@ -99,7 +124,7 @@ model StudentPenpal {
   student   Student  @relation("StudentConnections", fields: [studentId], references: [id], onDelete: Cascade)
   penpal    Student  @relation("PenpalOf", fields: [penpalId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
-
+  
   @@unique([studentId, penpalId])
   @@map("student_penpals")
 }
