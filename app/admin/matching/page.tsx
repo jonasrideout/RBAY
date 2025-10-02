@@ -9,6 +9,7 @@ import FilterBar from './components/FilterBar';
 import ConfirmationDialog from './components/ConfirmationDialog';
 import SchoolCard from './components/SchoolCard';
 import SchoolPairDisplay from './components/SchoolPairDisplay';
+import CreateGroupModal from './components/CreateGroupModal';
 import { School, StatusCounts, Filters } from './types';
 
 interface SchoolPair {
@@ -38,6 +39,9 @@ export default function AdminDashboard() {
   const [selectedMatch, setSelectedMatch] = useState<School | null>(null);
   const [showWarning, setShowWarning] = useState(false);
   const [isMatched, setIsMatched] = useState(false);
+  
+  // Group modal state
+  const [showGroupModal, setShowGroupModal] = useState(false);
   
   // Filter state
   const [filters, setFilters] = useState<Filters>({
@@ -142,6 +146,11 @@ export default function AdminDashboard() {
       console.error('Failed to refresh school data:', error);
       return Promise.resolve();
     }
+  };
+
+  const handleGroupCreated = async () => {
+    setShowGroupModal(false);
+    await fetchAllSchools();
   };
 
   const handleAssignPenPals = async (school1Id: string, school2Id: string) => {
@@ -481,6 +490,9 @@ export default function AdminDashboard() {
     unmatchedToShow = unmatchedToShow.filter(school => school.id !== pinnedSchool.id);
   }
 
+  // Get schools available for grouping (not already in a group)
+  const availableForGrouping = schools.filter(school => !school.schoolGroupId);
+
   return (
     <div className="page">
       <Header 
@@ -509,6 +521,14 @@ export default function AdminDashboard() {
             <Link href="/register-school?admin=true" className="btn btn-primary">
               Add School
             </Link>
+            
+            <button 
+              onClick={() => setShowGroupModal(true)}
+              className="btn btn-primary"
+              style={{ minWidth: '130px' }}
+            >
+              Create Group
+            </button>
             
             <button 
               onClick={() => {
@@ -722,6 +742,14 @@ export default function AdminDashboard() {
           onCancel={cancelMatch}
           onAssignPenPals={handleAssignPenPalsFromDialog}
           onClose={handleCloseAfterMatch}
+        />
+      )}
+
+      {showGroupModal && (
+        <CreateGroupModal
+          availableSchools={availableForGrouping}
+          onClose={() => setShowGroupModal(false)}
+          onGroupCreated={handleGroupCreated}
         />
       )}
 
