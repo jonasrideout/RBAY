@@ -172,12 +172,6 @@ export default function AdminDashboard() {
   };
 
   const handleUnmatchSchools = async (schoolId: string, school1Name: string, school2Name: string) => {
-    if (!window.confirm(
-      `Are you sure you want to unmatch ${school1Name} from ${school2Name}?\n\nBoth schools will no longer be matched together.`
-    )) {
-      return;
-    }
-
     try {
       const response = await fetch(`/api/admin/unmatch-schools?t=${Date.now()}&r=${Math.random()}`, {
         method: 'POST',
