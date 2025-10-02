@@ -2,15 +2,15 @@
 export interface School {
   id: string;
   schoolName: string;
-  teacherName: string; // UPDATED: Single field instead of separate first/last
+  teacherName: string;
   teacherEmail: string;
-  dashboardToken: string; // ADDED: For token-based dashboard access
+  dashboardToken: string;
   schoolAddress?: string;
   schoolCity?: string;
   schoolState: string;
   schoolZip?: string;
   region: string;
-  gradeLevel: string; // UPDATED: String format instead of array
+  gradeLevel: string;
   expectedClassSize: number;
   startMonth: string;
   letterFrequency?: string;
@@ -20,12 +20,12 @@ export interface School {
   updatedAt: Date;
   matchedWithSchoolId?: string;
   matchedSchool?: School;
+  schoolGroupId?: string;  // NEW: For school group membership
   studentCounts?: {
     expected: number;
     registered: number;
     ready: number;
   };
-  // NEW: Added pen pal assignment data
   penPalAssignments?: {
     hasAssignments: boolean;
     studentsWithPenPals: number;
@@ -33,7 +33,6 @@ export interface School {
     allStudentsAssigned: boolean;
     assignmentPercentage: number;
   };
-  // NEW: Added student stats for unmatch logic
   studentStats?: {
     hasPenpalAssignments: boolean;
   };
@@ -53,7 +52,7 @@ export interface Filters {
   schoolSearch?: string;
   teacherSearch?: string;
   regions: string[];
-  statuses: string[];  // NEW: Added status filter
+  statuses: string[];
   classSizes: string[];
   grades: string[];
   startDate?: string;
