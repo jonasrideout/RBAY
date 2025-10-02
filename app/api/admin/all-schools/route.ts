@@ -1,6 +1,7 @@
 // /app/api/admin/all-schools/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
@@ -89,6 +90,7 @@ export async function GET() {
         lettersSent: school.lettersSent,
         lettersReceived: school.lettersReceived,
         matchedWithSchoolId: school.matchedWithSchoolId,
+        schoolGroupId: school.schoolGroupId, // NEW: Include group membership
         matchedSchool: school.matchedWithSchool,
         // Include full student data (without pen pal details for privacy)
         students: school.students.map(student => ({
@@ -136,14 +138,14 @@ export async function GET() {
     console.log('All-schools returning data - schools:', transformedSchools.length);
     
     const response = NextResponse.json({
-  schools: transformedSchools,
-  statusCounts: completeStatusCounts,
-  totalSchools: transformedSchools.length
-});
+      schools: transformedSchools,
+      statusCounts: completeStatusCounts,
+      totalSchools: transformedSchools.length
+    });
 
-response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
-response.headers.set('Pragma', 'no-cache');
-response.headers.set('Expires', '0');
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
     return response;
   } catch (error) {
     console.error('All-schools error:', error);
