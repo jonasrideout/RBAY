@@ -1,40 +1,16 @@
-// app/admin/matching/components/SchoolPairDisplay.tsx
 "use client";
 
 import { useState } from 'react';
 import UnmatchConfirmDialog from './UnmatchConfirmDialog';
-
-interface School {
-  id: string;
-  schoolName: string;
-  teacherName: string;
-  teacherEmail: string;
-  gradeLevel: string;
-  region: string;
-  startMonth: string;
-  status: string;
-  specialConsiderations?: string;
-  studentCounts?: {
-    expected: number;
-    registered: number;
-    ready: number;
-  };
-}
-
-interface SchoolPair {
-  school1: School;
-  school2: School;
-  hasStudentPairings: boolean;
-  bothSchoolsReady: boolean;
-}
+import { MatchedPair, isSchool, isGroup, School, SchoolGroup } from '../types';
 
 interface SchoolPairDisplayProps {
-  pair: SchoolPair;
+  pair: MatchedPair;
   showAssignButton?: boolean;
   showPenPalListButtons?: boolean;
-  onAssignPenPals?: (school1Id: string, school2Id: string) => void;
+  onAssignPenPals?: () => void;
   onViewPenPals?: (schoolId: string) => void;
-  onUnmatch?: (schoolId: string, school1Name: string, school2Name: string) => void;
+  onUnmatch?: () => void;
 }
 
 export default function SchoolPairDisplay({ 
@@ -65,11 +41,11 @@ export default function SchoolPairDisplay({
     window.open(url, '_blank');
   };
 
-  const copyDashboardUrl = async (schoolId: string, isSchool1: boolean) => {
+  const copyDashboardUrl = async (schoolId: string, isFirst: boolean) => {
     const url = getDashboardUrl(schoolId);
     try {
       await navigator.clipboard.writeText(url);
-      if (isSchool1) {
+      if (isFirst) {
         setCopyButtonText1('Copied');
         setTimeout(() => setCopyButtonText1('Copy URL'), 2000);
       } else {
@@ -82,10 +58,10 @@ export default function SchoolPairDisplay({
     }
   };
 
-  const copyEmailAddress = async (email: string, isSchool1: boolean) => {
+  const copyEmailAddress = async (email: string, isFirst: boolean) => {
     try {
       await navigator.clipboard.writeText(email);
-      if (isSchool1) {
+      if (isFirst) {
         setEmailCopyText1('✓');
         setTimeout(() => setEmailCopyText1('✉'), 1500);
       } else {
@@ -100,7 +76,7 @@ export default function SchoolPairDisplay({
 
   const handleUnmatchClick = () => {
     if (pair.hasStudentPairings) {
-      alert('Cannot unmatch schools after pen pals have been assigned');
+      alert('Cannot unmatch after pen pals have been assigned');
       return;
     }
     setShowUnmatchModal(true);
@@ -109,13 +85,21 @@ export default function SchoolPairDisplay({
   const handleConfirmUnmatch = () => {
     setShowUnmatchModal(false);
     if (onUnmatch) {
-      onUnmatch(pair.school1.id, pair.school1.schoolName, pair.school2.schoolName);
+      onUnmatch();
     }
   };
 
-  const renderCompactSchoolCard = (school: School, isSchool1: boolean) => {
-    const copyButtonText = isSchool1 ? copyButtonText1 : copyButtonText2;
-    const emailCopyText = isSchool1 ? emailCopyText1 : emailCopyText2;
+  const getUnitName = (unit: School | SchoolGroup): string => {
+    return isSchool(unit) ? unit.schoolName : unit.name;
+  };
+
+  const getUnitRegion = (unit: School | SchoolGroup): string => {
+    return isSchool(unit) ? unit.region : 'Multiple';
+  };
+
+  const renderCompactSchoolCard = (school: School, isFirst: boolean) => {
+    const copyButtonText = isFirst ? copyButtonText1 : copyButtonText2;
+    const emailCopyText = isFirst ? emailCopyText1 : emailCopyText2;
 
     return (
       <div style={{
@@ -157,7 +141,7 @@ export default function SchoolPairDisplay({
             }}>
               <span>{school.teacherName}</span>
               <button
-                onClick={() => copyEmailAddress(school.teacherEmail, isSchool1)}
+                onClick={() => copyEmailAddress(school.teacherEmail, isFirst)}
                 className="btn-icon"
                 style={{
                   fontSize: '16px',
@@ -200,7 +184,7 @@ export default function SchoolPairDisplay({
             </button>
 
             <button
-              onClick={() => copyDashboardUrl(school.id, isSchool1)}
+              onClick={() => copyDashboardUrl(school.id, isFirst)}
               style={{
                 background: 'white',
                 border: '1px solid #ddd',
@@ -217,27 +201,6 @@ export default function SchoolPairDisplay({
             >
               {copyButtonText === 'Copy URL' ? 'Copy URL' : 'Copied'}
             </button>
-
-            {showPenPalListButtons && onViewPenPals && (
-              <button
-                onClick={() => onViewPenPals(school.id)}
-                style={{
-                  background: 'white',
-                  border: '1px solid #ddd',
-                  borderRadius: '3px',
-                  color: '#555',
-                  fontSize: '11px',
-                  fontWeight: '400',
-                  cursor: 'pointer',
-                  padding: '4px 8px',
-                  textAlign: 'center',
-                  minWidth: '90px'
-                }}
-                title="View pen pal list for this school"
-              >
-                View Pen Pals
-              </button>
-            )}
 
             {pair.hasStudentPairings && (
               <button
@@ -320,6 +283,92 @@ export default function SchoolPairDisplay({
     );
   };
 
+  const renderCompactGroupCard = (group: SchoolGroup) => {
+    return (
+      <div style={{
+        background: 'white',
+        border: '1px solid #e0e0e0',
+        borderRadius: '6px',
+        padding: '12px',
+        fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        fontWeight: '300'
+      }}>
+        
+        {/* Header with Group Name */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          marginBottom: '8px'
+        }}>
+          <h4 style={{
+            margin: 0,
+            fontSize: '16px',
+            fontWeight: '300',
+            color: '#111',
+            lineHeight: '1.2'
+          }}>
+            {group.name}
+          </h4>
+          <div style={{
+            display: 'inline-block',
+            padding: '2px 6px',
+            backgroundColor: '#e8f5e9',
+            border: '1px solid #4caf50',
+            borderRadius: '3px',
+            fontSize: '10px',
+            color: '#2e7d32',
+            fontWeight: 400
+          }}>
+            GROUP
+          </div>
+        </div>
+
+        {/* Schools in group */}
+        <div style={{ marginBottom: '8px' }}>
+          {group.schools.map((school, idx) => (
+            <div key={school.id} style={{
+              fontSize: '11px',
+              color: '#555',
+              fontWeight: '300',
+              marginLeft: '8px',
+              marginBottom: '2px'
+            }}>
+              • {school.schoolName} ({school.teacherName}) - {school.studentCount} students
+            </div>
+          ))}
+        </div>
+
+        {/* Data row */}
+        <div style={{
+          display: 'flex',
+          gap: '16px',
+          fontSize: '11px',
+          fontWeight: '300'
+        }}>
+          <div>
+            <span style={{ color: '#999', fontSize: '10px' }}>Total Students </span>
+            <span style={{ color: '#333', fontWeight: '300' }}>{group.studentCounts.total}</span>
+          </div>
+          
+          <div>
+            <span style={{ color: '#999', fontSize: '10px' }}>Ready </span>
+            <span style={{ color: '#333', fontWeight: '300' }}>{group.studentCounts.ready}</span>
+          </div>
+
+          {pair.hasStudentPairings && (
+            <div>
+              <span style={{ color: '#999', fontSize: '10px' }}>Assigned </span>
+              <span style={{ color: '#333', fontWeight: '300' }}>
+                {group.penPalAssignments.assignmentPercentage}%
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   const renderLinkIcon = () => (
     <div style={{
       display: 'flex',
@@ -344,7 +393,7 @@ export default function SchoolPairDisplay({
           opacity: pair.hasStudentPairings ? 0.3 : 1,
           padding: 0
         }}
-        title={pair.hasStudentPairings ? 'Cannot unmatch after pen pals assigned' : 'Click to unmatch these schools'}
+        title={pair.hasStudentPairings ? 'Cannot unmatch after pen pals assigned' : 'Click to unmatch'}
       >
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
@@ -363,10 +412,24 @@ export default function SchoolPairDisplay({
         padding: '20px',
         marginBottom: '16px',
         boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-        borderLeft: '3px solid #28a745'
+        borderLeft: `3px solid ${pair.matchType === 'group-group' ? '#4caf50' : pair.matchType === 'group-school' ? '#ff9800' : '#28a745'}`
       }}>
         
-        {/* Compact School Pair Container - Same width as single school */}
+        {/* Match Type Indicator */}
+        <div style={{
+          fontSize: '10px',
+          color: '#999',
+          marginBottom: '8px',
+          fontWeight: '300',
+          textTransform: 'uppercase',
+          letterSpacing: '0.5px'
+        }}>
+          {pair.matchType === 'group-group' ? 'Group ↔ Group' : 
+           pair.matchType === 'group-school' ? 'Group ↔ School' : 
+           'School ↔ School'}
+        </div>
+
+        {/* Pair Container */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: '1fr 20px 1fr',
@@ -374,18 +437,24 @@ export default function SchoolPairDisplay({
           alignItems: 'start'
         }}>
           
-          {/* School 1 - Compact */}
-          {renderCompactSchoolCard(pair.school1, true)}
+          {/* Unit 1 */}
+          {isSchool(pair.unit1) ? 
+            renderCompactSchoolCard(pair.unit1, true) : 
+            renderCompactGroupCard(pair.unit1)
+          }
           
           {/* Link Icon */}
           {renderLinkIcon()}
           
-          {/* School 2 - Compact */}
-          {renderCompactSchoolCard(pair.school2, false)}
+          {/* Unit 2 */}
+          {isSchool(pair.unit2) ? 
+            renderCompactSchoolCard(pair.unit2, false) : 
+            renderCompactGroupCard(pair.unit2)
+          }
           
         </div>
 
-        {/* Action Buttons Row - spans full width below the pair */}
+        {/* Action Buttons Row */}
         {(showAssignButton || pair.hasStudentPairings) && (
           <div style={{
             display: 'flex',
@@ -398,7 +467,7 @@ export default function SchoolPairDisplay({
             
             {showAssignButton && onAssignPenPals && !pair.hasStudentPairings && (
               <button
-                onClick={() => onAssignPenPals(pair.school1.id, pair.school2.id)}
+                onClick={onAssignPenPals}
                 className="btn btn-primary"
                 style={{ minWidth: '140px', fontSize: '12px' }}
               >
@@ -429,10 +498,10 @@ export default function SchoolPairDisplay({
 
       {showUnmatchModal && (
         <UnmatchConfirmDialog
-          school1Name={pair.school1.schoolName}
-          school2Name={pair.school2.schoolName}
-          school1Region={pair.school1.region}
-          school2Region={pair.school2.region}
+          school1Name={getUnitName(pair.unit1)}
+          school2Name={getUnitName(pair.unit2)}
+          school1Region={getUnitRegion(pair.unit1)}
+          school2Region={getUnitRegion(pair.unit2)}
           onConfirm={handleConfirmUnmatch}
           onCancel={() => setShowUnmatchModal(false)}
         />
