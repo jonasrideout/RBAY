@@ -23,7 +23,7 @@ interface Student {
   otherInterests: string;
   hasInterests: boolean;
   status: 'ready' | 'needs-info' | 'matched';
-  penpalPreference?: 'ONE' | 'MULTIPLE';
+  penpalPreference: 'ONE' | 'MULTIPLE';  // <- No longer optional
 }
 
 interface SchoolData {
@@ -233,7 +233,7 @@ function TeacherDashboardContent() {
         otherInterests: student.otherInterests || '',
         hasInterests: student.profileCompleted || false,
         status: student.profileCompleted ? 'ready' : 'needs-info',
-        penpalPreference: student.penpalPreference || 'ONE'
+        penpalPreference: student.penpalPreference || 'ONE'  // <- Already have this, good!
       })) || [];
 
       setStudents(transformedStudents);
