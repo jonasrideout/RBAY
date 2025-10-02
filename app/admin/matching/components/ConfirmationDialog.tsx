@@ -1,21 +1,24 @@
-// app/admin/matching/components/ConfirmationDialog.tsx
 "use client";
-import { School } from '../types';
+import { School, SchoolGroup, isSchool } from '../types';
 
 interface ConfirmationDialogProps {
-  pinnedSchool: School;
-  selectedMatch: School;
+  pinnedSchool?: School | null;
+  selectedMatch?: School | null;
+  pinnedGroup?: SchoolGroup | null;
+  selectedGroup?: SchoolGroup | null;
   showWarning: boolean;
   isMatched?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
   onAssignPenPals?: () => void;
-  onClose?: () => void; // NEW: Add onClose prop for post-match workflow
+  onClose?: () => void;
 }
 
 export default function ConfirmationDialog({
   pinnedSchool,
   selectedMatch,
+  pinnedGroup,
+  selectedGroup,
   showWarning,
   isMatched = false,
   onConfirm,
@@ -23,13 +26,50 @@ export default function ConfirmationDialog({
   onAssignPenPals,
   onClose
 }: ConfirmationDialogProps) {
-  // Check if both schools are READY status
-  const bothSchoolsReady = pinnedSchool.status === 'READY' && selectedMatch.status === 'READY';
+  // Determine which units we're working with
+  const unit1 = pinnedSchool || pinnedGroup;
+  const unit2 = selectedMatch || selectedGroup;
+
+  if (!unit1 || !unit2) return null;
+
+  // Check if both units are ready for pen pal assignment
+  const isUnit1Ready = pinnedSchool 
+    ? pinnedSchool.status === 'READY' 
+    : pinnedGroup?.isReadyForMatching || false;
   
-  // The "Assign Pen Pals" button should only be clickable if:
-  // 1. Schools are matched (isMatched = true) AND
-  // 2. Both schools have READY status
-  const canAssignPenPals = isMatched && bothSchoolsReady;
+  const isUnit2Ready = selectedMatch 
+    ? selectedMatch.status === 'READY' 
+    : selectedGroup?.isReadyForMatching || false;
+  
+  const bothUnitsReady = isUnit1Ready && isUnit2Ready;
+  const canAssignPenPals = isMatched && bothUnitsReady;
+
+  // Get display info for each unit
+  const getUnitInfo = (school?: School | null, group?: SchoolGroup | null) => {
+    if (school) {
+      return {
+        name: school.schoolName,
+        type: 'School',
+        details: `${school.region} | ${school.studentCounts?.ready || 0} students | Starts ${school.startMonth}`,
+        status: school.status,
+        isReady: school.status === 'READY'
+      };
+    } else if (group) {
+      return {
+        name: group.name,
+        type: 'Group',
+        details: `${group.schools.length} schools | ${group.studentCounts.total} total students`,
+        status: group.isReadyForMatching ? 'READY' : 'COLLECTING',
+        isReady: group.isReadyForMatching
+      };
+    }
+    return null;
+  };
+
+  const unit1Info = getUnitInfo(pinnedSchool, pinnedGroup);
+  const unit2Info = getUnitInfo(selectedMatch, selectedGroup);
+
+  if (!unit1Info || !unit2Info) return null;
 
   return (
     <div style={{
@@ -53,10 +93,10 @@ export default function ConfirmationDialog({
         boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
       }}>
         <h3 style={{ margin: '0 0 20px 0', color: '#333' }}>
-          {isMatched ? 'Schools Matched Successfully!' : 'Confirm School Match'}
+          {isMatched ? 'Match Successful!' : 'Confirm Match'}
         </h3>
         
-        {showWarning && !isMatched && (
+        {showWarning && !isMatched && pinnedSchool && selectedMatch && (
           <div style={{
             backgroundColor: '#fff3cd',
             border: '1px solid #ffeaa7',
@@ -65,7 +105,7 @@ export default function ConfirmationDialog({
             marginBottom: '15px',
             color: '#856404'
           }}>
-            ⚠️ Warning: Both schools are in the same region ({pinnedSchool.region}). 
+            Warning: Both schools are in the same region ({pinnedSchool.region}). 
             Cross-regional matches are preferred for this program.
           </div>
         )}
@@ -78,12 +118,33 @@ export default function ConfirmationDialog({
             borderRadius: '4px',
             border: isMatched ? '1px solid #4caf50' : 'none'
           }}>
-            <strong>{pinnedSchool.schoolName}</strong><br />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+              <strong>{unit1Info.name}</strong>
+              {unit1Info.type === 'Group' && (
+                <span style={{
+                  display: 'inline-block',
+                  padding: '2px 6px',
+                  backgroundColor: '#e8f5e9',
+                  border: '1px solid #4caf50',
+                  borderRadius: '3px',
+                  fontSize: '10px',
+                  color: '#2e7d32',
+                  fontWeight: 400
+                }}>
+                  GROUP
+                </span>
+              )}
+            </div>
             <span style={{ fontSize: '14px', color: '#666' }}>
-              {pinnedSchool.region} | {pinnedSchool.studentCounts?.ready || 0} students | Starts {pinnedSchool.startMonth}
+              {unit1Info.details}
             </span>
-            <div style={{ fontSize: '12px', color: pinnedSchool.status === 'READY' ? '#4caf50' : '#ff9800', fontWeight: '500', marginTop: '4px' }}>
-              Status: {pinnedSchool.status}
+            <div style={{ 
+              fontSize: '12px', 
+              color: unit1Info.isReady ? '#4caf50' : '#ff9800', 
+              fontWeight: '500', 
+              marginTop: '4px' 
+            }}>
+              Status: {unit1Info.status}
             </div>
           </div>
           
@@ -97,18 +158,38 @@ export default function ConfirmationDialog({
             borderRadius: '4px',
             border: isMatched ? '1px solid #4caf50' : 'none'
           }}>
-            <strong>{selectedMatch.schoolName}</strong><br />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+              <strong>{unit2Info.name}</strong>
+              {unit2Info.type === 'Group' && (
+                <span style={{
+                  display: 'inline-block',
+                  padding: '2px 6px',
+                  backgroundColor: '#e8f5e9',
+                  border: '1px solid #4caf50',
+                  borderRadius: '3px',
+                  fontSize: '10px',
+                  color: '#2e7d32',
+                  fontWeight: 400
+                }}>
+                  GROUP
+                </span>
+              )}
+            </div>
             <span style={{ fontSize: '14px', color: '#666' }}>
-              {selectedMatch.region} | {selectedMatch.studentCounts?.ready || 0} students | Starts {selectedMatch.startMonth}
+              {unit2Info.details}
             </span>
-            <div style={{ fontSize: '12px', color: selectedMatch.status === 'READY' ? '#4caf50' : '#ff9800', fontWeight: '500', marginTop: '4px' }}>
-              Status: {selectedMatch.status}
+            <div style={{ 
+              fontSize: '12px', 
+              color: unit2Info.isReady ? '#4caf50' : '#ff9800', 
+              fontWeight: '500', 
+              marginTop: '4px' 
+            }}>
+              Status: {unit2Info.status}
             </div>
           </div>
         </div>
         
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-          {/* UPDATED: Show Cancel before match, Close after match */}
           {!isMatched ? (
             <button
               onClick={onCancel}
@@ -139,7 +220,6 @@ export default function ConfirmationDialog({
             </button>
           )}
           
-          {/* UPDATED: Button text with exclamation point */}
           <button
             onClick={onConfirm}
             disabled={isMatched}
@@ -170,9 +250,9 @@ export default function ConfirmationDialog({
             }}
             title={
               !isMatched 
-                ? "Match schools first" 
-                : !bothSchoolsReady 
-                  ? "Both schools must be READY status" 
+                ? "Match first" 
+                : !bothUnitsReady 
+                  ? "Both units must be ready" 
                   : "Assign pen pals between students"
             }
           >
@@ -180,8 +260,7 @@ export default function ConfirmationDialog({
           </button>
         </div>
         
-        {/* Yellow warning moved to bottom */}
-        {isMatched && !bothSchoolsReady && (
+        {isMatched && !bothUnitsReady && (
           <div style={{
             backgroundColor: '#fff3cd',
             border: '1px solid #ffeaa7',
@@ -190,7 +269,7 @@ export default function ConfirmationDialog({
             marginTop: '15px',
             color: '#856404'
           }}>
-            ℹ️ Both schools must complete data collection (READY status) before pen pals can be assigned.
+            Both units must complete data collection (READY status) before pen pals can be assigned.
           </div>
         )}
       </div>
