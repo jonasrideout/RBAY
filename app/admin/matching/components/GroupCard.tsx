@@ -81,7 +81,7 @@ export default function GroupCard({
 
         {group.schools.map((school) => (
           <div key={school.id} style={{ marginBottom: '8px' }}>
-            <div style={{ fontSize: '13px', color: '#333', lineHeight: '1.4' }}>
+            <div style={{ fontSize: '11px', color: '#333', lineHeight: '1.4' }}>
               • {school.schoolName} ({school.teacherName}) - {school.studentCount} students
             </div>
             {school.specialConsiderations && (
