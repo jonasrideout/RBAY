@@ -1,5 +1,4 @@
 import { SchoolGroup } from '../types';
-import Link from 'next/link';
 
 interface GroupCardProps {
   group: SchoolGroup;
@@ -18,158 +17,167 @@ export default function GroupCard({
   onPin,
   onMatch
 }: GroupCardProps) {
-  const totalStudents = group.studentCounts.total;
-  const readyStudents = group.studentCounts.ready;
-  const schoolCount = group.schools.length;
+  const renderIcon = (type: 'pin' | 'lock') => {
+    if (type === 'pin') {
+      return (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <path d="M9 9a3 3 0 1 1 6 0c0 2-3 3-3 3s-3-1-3-3"/>
+          <path d="M12 12v9"/>
+        </svg>
+      );
+    } else {
+      return (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+        </svg>
+      );
+    }
+  };
 
   return (
-    <div 
-      className="card"
-      style={{
-        background: isPinned ? '#e3f2fd' : '#fff',
-        border: isPinned ? '2px solid #1976d2' : '1px solid #e0e6ed',
-        borderRadius: '12px',
-        padding: '1.5rem',
-        marginBottom: '1rem'
-      }}
-    >
-      <div className="grid-school-card">
-        {/* Column 1: Group Info */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <h3 className="text-school-name" style={{ margin: 0, fontSize: '18px' }}>
-              {group.name}
-            </h3>
-            <div style={{
-              display: 'inline-block',
-              padding: '4px 8px',
-              backgroundColor: '#e8f5e9',
-              border: '1px solid #4caf50',
-              borderRadius: '4px',
-              fontSize: '11px',
-              color: '#2e7d32',
-              fontWeight: 400
-            }}>
-              GROUP
+    <div className={`card-school grid-school-card ${isPinned ? 'card-school-pinned' : ''}`}>
+      
+      {/* Column 1: Group Information */}
+      <div className="school-info-column">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+          <h3 className="text-school-name" style={{ margin: 0 }}>
+            {group.name}
+          </h3>
+          <span style={{
+            display: 'inline-block',
+            padding: '3px 8px',
+            backgroundColor: '#e8f5e9',
+            border: '1px solid #81c784',
+            borderRadius: '4px',
+            fontSize: '11px',
+            fontWeight: '500',
+            color: '#2e7d32',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px'
+          }}>
+            GROUP
+          </span>
+        </div>
+
+        <div className="text-meta-info" style={{ marginBottom: '10px' }}>
+          Grades {(() => {
+            // Extract unique grade levels from all schools in group
+            const grades = new Set<string>();
+            group.schools.forEach(s => {
+              // Parse grade strings like "3,4,5" or "3" or "4, 5"
+              const schoolGrades = s.gradeLevel?.split(',').map(g => g.trim()) || [];
+              schoolGrades.forEach(g => grades.add(g));
+            });
+            return Array.from(grades).sort((a, b) => {
+              // Sort numerically if possible
+              const numA = parseInt(a);
+              const numB = parseInt(b);
+              if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+              return a.localeCompare(b);
+            }).join(', ');
+          })()}
+        </div>
+
+        {group.schools.map((school) => (
+          <div key={school.id} style={{ marginBottom: '8px' }}>
+            <div style={{ fontSize: '13px', color: '#333', lineHeight: '1.4' }}>
+              • {school.schoolName} ({school.teacherName}) - {school.studentCount} students
             </div>
-          </div>
-          
-          <div className="text-meta-info">
-            {schoolCount} school{schoolCount !== 1 ? 's' : ''} in group
-          </div>
-          
-          {/* List schools in group */}
-          <div style={{ marginTop: '0.5rem' }}>
-            {group.schools.map((school, idx) => (
-              <div key={school.id} className="text-meta-info" style={{ fontSize: '11px', marginLeft: '0.5rem' }}>
-                • {school.schoolName} ({school.teacherName}) - {school.studentCount} students
+            {school.specialConsiderations && (
+              <div style={{
+                fontSize: '12px',
+                fontStyle: 'italic',
+                color: '#6c757d',
+                marginLeft: '12px',
+                marginTop: '2px'
+              }}>
+                {school.specialConsiderations}
               </div>
-            ))}
+            )}
           </div>
+        ))}
+      </div>
+
+      {/* Column 2: Empty spacer */}
+      <div></div>
+
+      {/* Column 3: Data Grid */}
+      <div className="grid-data-2x2">
+        <div className="data-cell" style={{ gridColumn: '1', gridRow: '1' }}>
+          <span className="text-data-label">Total</span>
+          <span className="text-data-value">{group.studentCounts.total}</span>
         </div>
-
-        {/* Column 2: Spacer */}
-        <div />
-
-        {/* Column 3: Combined Data Grid */}
-        <div className="grid-data-2x2">
-          <div className="data-cell" style={{ gridColumn: '1', gridRow: '1' }}>
-            <span className="text-data-label">Total Students</span>
-            <span className="text-data-value">{totalStudents}</span>
-          </div>
-          
-          <div className="data-cell" style={{ gridColumn: '3', gridRow: '1' }}>
-            <span className="text-data-label">Ready</span>
-            <span className="text-data-value">{readyStudents}</span>
-          </div>
-          
-          <div className="data-cell" style={{ gridColumn: '1', gridRow: '2' }}>
-            <span className="text-data-label">Pen Pal Pref</span>
+        
+        <div className="data-cell" style={{ gridColumn: '3', gridRow: '1' }}>
+          <span className="text-data-label">Ready</span>
+          <span className="text-data-value">{group.studentCounts.ready}</span>
+        </div>
+        
+        <div className="data-cell" style={{ gridColumn: '1', gridRow: '2' }}>
+          <span className="text-data-label">Pen Pal Pref</span>
+          <span className="text-data-value">
+            {group.penPalPreferences.studentsWithMultiple}/{group.penPalPreferences.requiredMultiple}
+            {group.penPalPreferences.meetsRequirement ? ' ✓' : ''}
+          </span>
+        </div>
+        
+        {group.penPalAssignments.hasAssignments && (
+          <div className="data-cell" style={{ gridColumn: '3', gridRow: '2' }}>
+            <span className="text-data-label">Assigned</span>
             <span className="text-data-value">
-              {group.penPalPreferences.studentsWithMultiple}/{group.penPalPreferences.requiredMultiple}
-              {group.penPalPreferences.meetsRequirement ? ' ✓' : ' ✗'}
+              {group.penPalAssignments.assignmentPercentage}%
             </span>
-          </div>
-          
-          {group.penPalAssignments.hasAssignments && (
-            <div className="data-cell" style={{ gridColumn: '3', gridRow: '2' }}>
-              <span className="text-data-label">Assigned</span>
-              <span className="text-data-value">
-                {group.penPalAssignments.assignmentPercentage}%
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* Column 4: Flex spacer */}
-        <div />
-
-        {/* Column 5: Status/Actions */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-end' }}>
-          {group.matchedWithGroupId && (
-            <div style={{
-              padding: '6px 12px',
-              backgroundColor: '#fff3cd',
-              border: '1px solid #ffc107',
-              borderRadius: '6px',
-              fontSize: '12px',
-              color: '#856404',
-              fontWeight: 400
-            }}>
-              MATCHED
-            </div>
-          )}
-          
-          {group.isReadyForMatching && !group.matchedWithGroupId && (
-            <div style={{
-              padding: '6px 12px',
-              backgroundColor: '#d4edda',
-              border: '1px solid #28a745',
-              borderRadius: '6px',
-              fontSize: '12px',
-              color: '#155724',
-              fontWeight: 400
-            }}>
-              READY TO MATCH
-            </div>
-          )}
-        </div>
-
-        {/* Column 6: Action Buttons */}
-        {showActions && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            {onPin && (
-              <button
-                onClick={onPin}
-                className="btn btn-secondary"
-                style={{
-                  fontSize: '13px',
-                  padding: '0.5rem 1rem',
-                  backgroundColor: isPinned ? '#1976d2' : '#6c757d',
-                  color: 'white',
-                  minWidth: '100px'
-                }}
-              >
-                {isPinned ? 'Unpin' : 'Pin'}
-              </button>
-            )}
-            
-            {showMatchIcon && onMatch && (
-              <button
-                onClick={onMatch}
-                className="btn btn-primary"
-                style={{
-                  fontSize: '13px',
-                  padding: '0.5rem 1rem',
-                  minWidth: '100px'
-                }}
-              >
-                Match →
-              </button>
-            )}
           </div>
         )}
       </div>
+
+      {/* Column 4: Spacer (takes remaining space) */}
+      <div></div>
+
+      {/* Column 5: Action Buttons */}
+      <div className="action-buttons-column">
+        <button
+          className="btn-school-action"
+          title="Group dashboard (coming soon)"
+          disabled={true}
+          style={{ opacity: 0.5, cursor: 'not-allowed' }}
+        >
+          Open Dashboard
+        </button>
+
+        <button
+          className="btn-school-action"
+          title="Not available for groups"
+          disabled={true}
+          style={{ opacity: 0.5, cursor: 'not-allowed' }}
+        >
+          Copy URL
+        </button>
+      </div>
+
+      {/* Column 6: Pin Icon */}
+      {showActions && (onPin || onMatch) && (
+        <div className="flex items-center">
+          {showMatchIcon ? (
+            <button
+              onClick={onMatch}
+              className="btn-icon-link"
+              title="Link with pinned group"
+            >
+              {renderIcon('lock')}
+            </button>
+          ) : (
+            <button
+              onClick={onPin}
+              className={`btn-icon-pin ${isPinned ? 'btn-icon-pin-active' : ''}`}
+              title={isPinned ? "Unpin group" : "Pin group"}
+            >
+              {renderIcon('pin')}
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
