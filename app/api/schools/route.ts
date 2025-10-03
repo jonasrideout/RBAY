@@ -305,19 +305,7 @@ export async function GET(request: NextRequest) {
             penpalOf: true
           }
         },
-        matchedWithSchool: {
-          select: {
-            id: true,
-            schoolName: true,
-            teacherName: true,
-            teacherEmail: true,
-            schoolCity: true,
-            schoolState: true,
-            expectedClassSize: true,
-            region: true
-          }
-        },
-        // NEW: Include school group information
+        // Include school group information
         schoolGroup: {
           include: {
             schools: {
@@ -339,6 +327,25 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Manually fetch matched school/group name if needed
+    let matchedSchoolName = undefined;
+    if (school.matchedWithSchoolId) {
+      if (school.matchedWithSchoolId.startsWith('group:')) {
+        const groupId = school.matchedWithSchoolId.replace('group:', '');
+        const group = await prisma.schoolGroup.findUnique({
+          where: { id: groupId },
+          select: { name: true }
+        });
+        matchedSchoolName = group?.name;
+      } else {
+        const matchedSchool = await prisma.school.findUnique({
+          where: { id: school.matchedWithSchoolId },
+          select: { schoolName: true }
+        });
+        matchedSchoolName = matchedSchool?.schoolName;
+      }
+    }
+
     // Calculate student statistics
     const studentStats = {
       expected: school.expectedClassSize || 0,
@@ -355,6 +362,7 @@ export async function GET(request: NextRequest) {
       success: true,
       school: {
         ...school,
+        matchedSchoolName,
         studentStats: {
           ...studentStats,
           studentsWithPenpals: studentsWithPenpals.length,
