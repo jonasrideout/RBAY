@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-
 const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
@@ -8,34 +7,49 @@ export async function GET(request: NextRequest) {
     // Get schoolId from query parameters
     const { searchParams } = new URL(request.url);
     const schoolId = searchParams.get('schoolId');
-
+    
     if (!schoolId) {
       return NextResponse.json(
         { error: 'School ID is required' },
         { status: 400 }
       );
     }
-
+    
     // Fetch school data with students
     const school = await prisma.school.findUnique({
       where: { id: schoolId },
       include: {
-        students: true,
-        matchedWithSchool: {
-          select: {
-            schoolName: true
-          }
-        }
+        students: true
       }
     });
-
+    
     if (!school) {
       return NextResponse.json(
         { error: 'School not found' },
         { status: 404 }
       );
     }
-
+    
+    // Manually fetch matched school name if needed
+    let matchedSchoolName = undefined;
+    if (school.matchedWithSchoolId) {
+      // Check if it's a regular school ID or a "group:xxx" marker
+      if (school.matchedWithSchoolId.startsWith('group:')) {
+        const groupId = school.matchedWithSchoolId.replace('group:', '');
+        const group = await prisma.schoolGroup.findUnique({
+          where: { id: groupId },
+          select: { name: true }
+        });
+        matchedSchoolName = group?.name;
+      } else {
+        const matchedSchool = await prisma.school.findUnique({
+          where: { id: school.matchedWithSchoolId },
+          select: { schoolName: true }
+        });
+        matchedSchoolName = matchedSchool?.schoolName;
+      }
+    }
+    
     // Transform the data to match the dashboard expected format
     // Using exact schema field names from prisma/schema.prisma
     const dashboardData = {
@@ -49,7 +63,7 @@ export async function GET(request: NextRequest) {
       startMonth: school.startMonth,
       dashboardToken: school.dashboardToken,
       matchedWithSchoolId: school.matchedWithSchoolId,
-      matchedSchoolName: school.matchedWithSchool?.schoolName,
+      matchedSchoolName: matchedSchoolName,
       students: school.students.map(student => ({
         id: student.id,
         firstName: student.firstName,
@@ -64,9 +78,9 @@ export async function GET(request: NextRequest) {
                 ? 'ready' : 'needs-info'
       }))
     };
-
+    
     return NextResponse.json(dashboardData);
-
+    
   } catch (error) {
     console.error('Error fetching school data:', error);
     return NextResponse.json(
