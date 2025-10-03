@@ -61,16 +61,13 @@ export default function GroupCard({
         </div>
 
         <div className="text-meta-info" style={{ marginBottom: '10px' }}>
-          Grades {(() => {
-            // Extract unique grade levels from all schools in group
+         Grades {(() => {
             const grades = new Set<string>();
             group.schools.forEach(s => {
-              // Parse grade strings like "3,4,5" or "3" or "4, 5"
               const schoolGrades = s.gradeLevel?.split(',').map(g => g.trim()) || [];
               schoolGrades.forEach(g => grades.add(g));
             });
             return Array.from(grades).sort((a, b) => {
-              // Sort numerically if possible
               const numA = parseInt(a);
               const numB = parseInt(b);
               if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
