@@ -102,31 +102,31 @@ export default function GroupCard({
       {/* Column 3: Data Grid */}
       <div className="grid-data-2x2">
         <div className="data-cell" style={{ gridColumn: '1', gridRow: '1' }}>
-          <span className="text-data-label">Total</span>
-          <span className="text-data-value">{group.studentCounts.total}</span>
+          <span className="text-data-label">Region</span>
+          <span className="text-data-value-caps">{group.schools[0]?.region || 'N/A'}</span>
         </div>
         
         <div className="data-cell" style={{ gridColumn: '3', gridRow: '1' }}>
-          <span className="text-data-label">Ready</span>
-          <span className="text-data-value">{group.studentCounts.ready}</span>
+          <span className="text-data-label">Start Date</span>
+          <span className="text-data-value-caps">{group.schools[0]?.startMonth || 'N/A'}</span>
         </div>
         
-        <div className="data-cell" style={{ gridColumn: '1', gridRow: '2' }}>
-          <span className="text-data-label">Pen Pal Pref</span>
+        <div className="data-cell" style={{ gridColumn: '4', gridRow: '1' }}>
+          <span className="text-data-label">Status</span>
           <span className="text-data-value">
-            {group.penPalPreferences.studentsWithMultiple}/{group.penPalPreferences.requiredMultiple}
-            {group.penPalPreferences.meetsRequirement ? ' ✓' : ''}
+            {group.schools.every(s => s.status === 'READY') ? 'READY' : 'COLLECTING'}
           </span>
         </div>
         
-        {group.penPalAssignments.hasAssignments && (
-          <div className="data-cell" style={{ gridColumn: '3', gridRow: '2' }}>
-            <span className="text-data-label">Assigned</span>
-            <span className="text-data-value">
-              {group.penPalAssignments.assignmentPercentage}%
-            </span>
-          </div>
-        )}
+        <div className="data-cell" style={{ gridColumn: '1', gridRow: '2' }}>
+          <span className="text-data-label">Expected</span>
+          <span className="text-data-value">{group.schools.reduce((sum, s) => sum + s.expectedClassSize, 0)}</span>
+        </div>
+        
+        <div className="data-cell" style={{ gridColumn: '3', gridRow: '2' }}>
+          <span className="text-data-label">Registered</span>
+          <span className="text-data-value">{group.studentCounts.total}</span>
+        </div>
       </div>
 
       {/* Column 4: Spacer (takes remaining space) */}
