@@ -62,9 +62,9 @@ export async function GET() {
                 id: true,
                 schoolName: true,
                 teacherName: true,
-                gradeLevel: true, // ADDED
-                specialConsiderations: true, // ADDED
-                students: { // ADDED to get student count
+                gradeLevel: true,
+                specialConsiderations: true,
+                students: {
                   where: { isActive: true },
                   select: { id: true }
                 }
@@ -82,7 +82,16 @@ export async function GET() {
     const groups = await prisma.schoolGroup.findMany({
       include: {
         schools: {
-          include: {
+          select: {
+            id: true,
+            schoolName: true,
+            teacherName: true,
+            gradeLevel: true,
+            specialConsiderations: true,
+            region: true,
+            startMonth: true,
+            status: true,
+            expectedClassSize: true,
             students: {
               where: { isActive: true },
               select: {
@@ -165,9 +174,9 @@ export async function GET() {
             id: s.id,
             schoolName: s.schoolName,
             teacherName: s.teacherName,
-            gradeLevel: s.gradeLevel, // ADDED
-            specialConsiderations: s.specialConsiderations, // ADDED
-            studentCount: s.students.length // ADDED
+            gradeLevel: s.gradeLevel,
+            specialConsiderations: s.specialConsiderations,
+            studentCount: s.students.length
           }))
         } : undefined,
         students: school.students.map(student => ({
@@ -241,6 +250,12 @@ export async function GET() {
           id: school.id,
           schoolName: school.schoolName,
           teacherName: school.teacherName,
+          gradeLevel: school.gradeLevel,
+          specialConsiderations: school.specialConsiderations,
+          region: school.region,
+          startMonth: school.startMonth,
+          status: school.status,
+          expectedClassSize: school.expectedClassSize,
           studentCount: school.students.length
         })),
         studentCounts: {
