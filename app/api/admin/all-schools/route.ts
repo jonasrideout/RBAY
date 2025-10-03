@@ -110,12 +110,6 @@ export async function GET() {
               }
             }
           }
-        },
-        matchedWithGroup: {
-          select: {
-            id: true,
-            name: true
-          }
         }
       },
       orderBy: {
@@ -211,8 +205,28 @@ export async function GET() {
       };
     });
     
+    // Helper function to fetch matched group or school data
+    async function getMatchedUnit(matchedWithGroupId: string | null) {
+      if (!matchedWithGroupId) return null;
+      
+      if (matchedWithGroupId.startsWith('school:')) {
+        const schoolId = matchedWithGroupId.replace('school:', '');
+        const school = await prisma.school.findUnique({
+          where: { id: schoolId },
+          select: { id: true, schoolName: true }
+        });
+        return school ? { id: school.id, name: school.schoolName } : null;
+      } else {
+        const group = await prisma.schoolGroup.findUnique({
+          where: { id: matchedWithGroupId },
+          select: { id: true, name: true }
+        });
+        return group;
+      }
+    }
+    
     // Transform groups with aggregated data
-    const transformedGroups = groups.map(group => {
+    const transformedGroupsPromises = groups.map(async (group) => {
       // Aggregate all students from all schools in the group
       const allStudents = group.schools.flatMap(school => school.students);
       
@@ -240,12 +254,15 @@ export async function GET() {
         ['COLLECTING', 'READY'].includes(school.status)
       );
       
+      // Fetch matched unit data
+      const matchedWithGroup = await getMatchedUnit(group.matchedWithGroupId);
+      
       return {
         id: group.id,
         name: group.name,
         type: 'group' as const,
         matchedWithGroupId: group.matchedWithGroupId,
-        matchedWithGroup: group.matchedWithGroup,
+        matchedWithGroup: matchedWithGroup,
         schools: group.schools.map(school => ({
           id: school.id,
           schoolName: school.schoolName,
@@ -277,6 +294,8 @@ export async function GET() {
         isReadyForMatching: allSchoolsReady && totalStudents > 0
       };
     });
+    
+    const transformedGroups = await Promise.all(transformedGroupsPromises);
     
     // Calculate status counts
     const statusCounts = transformedSchools.reduce((acc, school) => {
