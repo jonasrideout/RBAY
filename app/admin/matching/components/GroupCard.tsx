@@ -17,6 +17,29 @@ export default function GroupCard({
   onPin,
   onMatch
 }: GroupCardProps) {
+  const handleCopyEmail = async (email: string) => {
+    try {
+      await navigator.clipboard.writeText(email);
+    } catch (err) {
+      console.error('Failed to copy email:', err);
+    }
+  };
+
+  // Aggregate unique grades
+  const aggregatedGrades = (() => {
+    const grades = new Set<string>();
+    group.schools.forEach(s => {
+      const schoolGrades = s.gradeLevel?.split(',').map(g => g.trim()) || [];
+      schoolGrades.forEach(g => grades.add(g));
+    });
+    return Array.from(grades).sort((a, b) => {
+      const numA = parseInt(a);
+      const numB = parseInt(b);
+      if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+      return a.localeCompare(b);
+    }).join(',');
+  })();
+
   const renderIcon = (type: 'pin' | 'lock') => {
     if (type === 'pin') {
       return (
@@ -34,25 +57,6 @@ export default function GroupCard({
       );
     }
   };
-
-  const handleCopyEmail = (email: string) => {
-    navigator.clipboard.writeText(email);
-  };
-
-  // Aggregate unique grades
-  const aggregatedGrades = (() => {
-    const grades = new Set<string>();
-    group.schools.forEach(s => {
-      const schoolGrades = s.gradeLevel?.split(',').map(g => g.trim()) || [];
-      schoolGrades.forEach(g => grades.add(g));
-    });
-    return Array.from(grades).sort((a, b) => {
-      const numA = parseInt(a);
-      const numB = parseInt(b);
-      if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
-      return a.localeCompare(b);
-    }).join(',');
-  })();
 
   return (
     <div className={`card-school grid-school-card ${isPinned ? 'card-school-pinned' : ''}`}>
@@ -79,27 +83,16 @@ export default function GroupCard({
           </span>
         </div>
 
-        {/* Teachers list */}
+        {/* Teachers list - one per line */}
         {group.schools.map((school, index) => (
-          <div key={school.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: index < group.schools.length - 1 ? '4px' : '10px' }}>
-            <span className="text-teacher-name">{school.schoolName} | {school.teacherName}</span>
+          <div key={school.id} className="teacher-info" style={{ marginBottom: index < group.schools.length - 1 ? '4px' : '6px' }}>
+            <span>{school.schoolName} | {school.teacherName}</span>
             <button
-              onClick={() => handleCopyEmail(school.teacherName)} 
-              className="btn-icon-copy"
+              onClick={() => handleCopyEmail(school.teacherName)}
+              className="btn-icon btn-icon-email"
               title="Copy email address"
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                padding: '2px',
-                display: 'inline-flex',
-                alignItems: 'center'
-              }}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
-                <rect x="8" y="8" width="14" height="14" rx="2" ry="2"/>
-              </svg>
+              ✉
             </button>
           </div>
         ))}
@@ -107,32 +100,42 @@ export default function GroupCard({
         <div className="text-meta-info">
           Grades {aggregatedGrades}
         </div>
+
+        {/* Special considerations below */}
+        {group.schools.filter(s => s.specialConsiderations).map(school => (
+          <div key={school.id} className="special-considerations" style={{ marginTop: '8px' }}>
+            <strong>{school.schoolName}:</strong> {school.specialConsiderations}
+          </div>
+        ))}
       </div>
 
       {/* Column 2: Empty spacer */}
       <div></div>
 
-      {/* Column 3: Single Row Data Grid */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <div style={{ display: 'flex', gap: '20px' }}>
-          <div className="data-cell">
+      {/* Column 3: Data Grid - matches SchoolCard exactly */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+        {/* Single row with Region, Start, Ready */}
+        <div style={{ display: 'flex', gap: '32px', marginBottom: '8px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span className="text-data-label">Region</span>
             <span className="text-data-value-caps">{group.schools[0]?.region || 'N/A'}</span>
           </div>
           
-          <div className="data-cell">
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span className="text-data-label">Start</span>
             <span className="text-data-value-caps">{group.schools[0]?.startMonth || 'N/A'}</span>
           </div>
           
-          <div className="data-cell">
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span className="text-data-label">Ready</span>
             <span className="text-data-value">{group.studentCounts.ready}</span>
           </div>
         </div>
 
-        <div className="text-meta-info" style={{ marginTop: '4px' }}>
-          Status <span style={{ textTransform: 'uppercase', fontWeight: '400', color: '#495057' }}>
+        {/* Status on separate line */}
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <span className="text-data-label">Status</span>
+          <span className="text-data-value">
             {group.schools.every(s => s.status === 'READY') ? 'READY' : 'COLLECTING'}
           </span>
         </div>
@@ -169,7 +172,7 @@ export default function GroupCard({
             <button
               onClick={onMatch}
               className="btn-icon-link"
-              title="Link with pinned group"
+              title="Link with pinned unit"
             >
               {renderIcon('lock')}
             </button>
@@ -182,17 +185,6 @@ export default function GroupCard({
               {renderIcon('pin')}
             </button>
           )}
-        </div>
-      )}
-
-      {/* Special Considerations - Below card */}
-      {group.schools.some(s => s.specialConsiderations) && (
-        <div style={{ gridColumn: '1 / -1', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #e9ecef' }}>
-          {group.schools.filter(s => s.specialConsiderations).map(school => (
-            <div key={school.id} style={{ fontSize: '13px', fontStyle: 'italic', color: '#6c757d', marginBottom: '6px' }}>
-              <strong>{school.schoolName}:</strong> {school.specialConsiderations}
-            </div>
-          ))}
         </div>
       )}
     </div>
