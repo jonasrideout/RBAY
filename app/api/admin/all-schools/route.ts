@@ -25,8 +25,7 @@ export async function GET() {
             profileCompleted: true,
             parentConsent: true,
             createdAt: true,
-            penpalPreference: true, // NEW: Include pen pal preference
-            // Include pen pal connections to check assignment status
+            penpalPreference: true,
             penpalConnections: {
               select: {
                 id: true,
@@ -53,7 +52,7 @@ export async function GET() {
             region: true
           }
         },
-        schoolGroup: { // NEW: Include group data
+        schoolGroup: {
           select: {
             id: true,
             name: true,
@@ -62,7 +61,13 @@ export async function GET() {
               select: {
                 id: true,
                 schoolName: true,
-                teacherName: true
+                teacherName: true,
+                gradeLevel: true, // ADDED
+                specialConsiderations: true, // ADDED
+                students: { // ADDED to get student count
+                  where: { isActive: true },
+                  select: { id: true }
+                }
               }
             }
           }
@@ -73,7 +78,7 @@ export async function GET() {
       }
     });
     
-    // NEW: Get all school groups with their schools
+    // Get all school groups with their schools
     const groups = await prisma.schoolGroup.findMany({
       include: {
         schools: {
@@ -152,8 +157,19 @@ export async function GET() {
         matchedWithSchoolId: school.matchedWithSchoolId,
         schoolGroupId: school.schoolGroupId,
         matchedSchool: school.matchedWithSchool,
-        schoolGroup: school.schoolGroup, // NEW: Include full group data
-        // Include full student data (without pen pal details for privacy)
+        schoolGroup: school.schoolGroup ? {
+          id: school.schoolGroup.id,
+          name: school.schoolGroup.name,
+          matchedWithGroupId: school.schoolGroup.matchedWithGroupId,
+          schools: school.schoolGroup.schools.map(s => ({
+            id: s.id,
+            schoolName: s.schoolName,
+            teacherName: s.teacherName,
+            gradeLevel: s.gradeLevel, // ADDED
+            specialConsiderations: s.specialConsiderations, // ADDED
+            studentCount: s.students.length // ADDED
+          }))
+        } : undefined,
         students: school.students.map(student => ({
           id: student.id,
           firstName: student.firstName,
@@ -171,7 +187,6 @@ export async function GET() {
           registered: school.students.length,
           ready: school.students.filter(s => s.profileCompleted).length
         },
-        // Pen pal assignment data
         penPalAssignments: {
           hasAssignments: hasPenPalAssignments,
           studentsWithPenPals: studentsWithAssignments,
@@ -179,7 +194,6 @@ export async function GET() {
           allStudentsAssigned: allStudentsAssigned,
           assignmentPercentage: totalStudents > 0 ? Math.round((studentsWithAssignments / totalStudents) * 100) : 0
         },
-        // NEW: Pen pal preference data
         penPalPreferences: {
           studentsWithMultiple: studentsWithMultiple,
           requiredMultiple: requiredMultiple,
@@ -188,7 +202,7 @@ export async function GET() {
       };
     });
     
-    // NEW: Transform groups with aggregated data
+    // Transform groups with aggregated data
     const transformedGroups = groups.map(group => {
       // Aggregate all students from all schools in the group
       const allStudents = group.schools.flatMap(school => school.students);
@@ -220,7 +234,7 @@ export async function GET() {
       return {
         id: group.id,
         name: group.name,
-        type: 'group' as const, // NEW: Type discriminator
+        type: 'group' as const,
         matchedWithGroupId: group.matchedWithGroupId,
         matchedWithGroup: group.matchedWithGroup,
         schools: group.schools.map(school => ({
@@ -268,10 +282,10 @@ export async function GET() {
     
     const response = NextResponse.json({
       schools: transformedSchools,
-      groups: transformedGroups, // NEW: Include groups
+      groups: transformedGroups,
       statusCounts: completeStatusCounts,
       totalSchools: transformedSchools.length,
-      totalGroups: transformedGroups.length // NEW
+      totalGroups: transformedGroups.length
     });
 
     response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
