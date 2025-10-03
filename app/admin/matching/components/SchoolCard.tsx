@@ -136,7 +136,7 @@ export default function SchoolCard({
         
         {/* Column 1: School Information */}
         <div className="school-info-column">
-          {isGrouped ? (
+          {isGrouped && school.schoolGroup ? (
             // GROUPED SCHOOL LAYOUT
             <>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
