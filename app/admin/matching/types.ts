@@ -69,9 +69,13 @@ export interface SchoolGroup {
     id: string;
     schoolName: string;
     teacherName: string;
-    studentCount: number;
     gradeLevel: string;
     specialConsiderations?: string;
+    region: string;
+    startMonth: string;
+    status: string;
+    expectedClassSize: number;
+    studentCount: number;
   }[];
   studentCounts: {
     total: number;
