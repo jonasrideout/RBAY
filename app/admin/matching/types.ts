@@ -1,5 +1,4 @@
 // /app/admin/matching/types.ts
-
 export interface School {
   id: string;
   schoolName: string;
@@ -22,7 +21,19 @@ export interface School {
   matchedWithSchoolId?: string;
   matchedSchool?: School;
   schoolGroupId?: string;
-  schoolGroup?: SchoolGroup; // NEW: Full group data when school is in a group
+  schoolGroup?: {
+    id: string;
+    name: string;
+    matchedWithGroupId?: string;
+    schools: {
+      id: string;
+      schoolName: string;
+      teacherName: string;
+      gradeLevel: string; // ADDED
+      specialConsiderations?: string; // ADDED
+      studentCount: number; // ADDED
+    }[];
+  };
   studentCounts?: {
     expected: number;
     registered: number;
@@ -35,7 +46,7 @@ export interface School {
     allStudentsAssigned: boolean;
     assignmentPercentage: number;
   };
-  penPalPreferences?: { // NEW
+  penPalPreferences?: {
     studentsWithMultiple: number;
     requiredMultiple: number;
     meetsRequirement: boolean;
@@ -45,7 +56,6 @@ export interface School {
   };
 }
 
-// NEW: School Group interface
 export interface SchoolGroup {
   id: string;
   name: string;
@@ -80,10 +90,8 @@ export interface SchoolGroup {
   isReadyForMatching: boolean;
 }
 
-// NEW: Union type for matchable units
 export type MatchableUnit = School | SchoolGroup;
 
-// NEW: Type guard functions
 export function isSchool(unit: MatchableUnit): unit is School {
   return !('type' in unit) || unit.type !== 'group';
 }
@@ -112,7 +120,6 @@ export interface Filters {
   startDate?: string;
 }
 
-// NEW: Interface for matched pairs (can be school-school, group-group, or group-school)
 export interface MatchedPair {
   unit1: MatchableUnit;
   unit2: MatchableUnit;
