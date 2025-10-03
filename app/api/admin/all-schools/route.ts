@@ -10,7 +10,7 @@ export async function GET() {
     console.log('All-schools using DATABASE_URL:', process.env.DATABASE_URL?.substring(0, 50) + '...');
     console.log('All-schools starting query...');
     
-    // Get all schools with their matched school data, students, and pen pal assignments
+    // Get all schools with their students and pen pal assignments
     const schools = await prisma.school.findMany({
       include: {
         students: {
@@ -38,18 +38,6 @@ export async function GET() {
                 studentId: true
               }
             }
-          }
-        },
-        matchedWithSchool: {
-          select: {
-            id: true,
-            schoolName: true,
-            teacherName: true,
-            teacherEmail: true,
-            schoolCity: true,
-            schoolState: true,
-            expectedClassSize: true,
-            region: true
           }
         },
         schoolGroup: {
@@ -159,7 +147,7 @@ export async function GET() {
         lettersReceived: school.lettersReceived,
         matchedWithSchoolId: school.matchedWithSchoolId,
         schoolGroupId: school.schoolGroupId,
-        matchedSchool: school.matchedWithSchool,
+        matchedSchool: undefined, // Will be fetched manually if needed (can contain "group:xxx" marker)
         schoolGroup: school.schoolGroup ? {
           id: school.schoolGroup.id,
           name: school.schoolGroup.name,
