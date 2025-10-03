@@ -344,7 +344,8 @@ export default function SchoolPairDisplay({
           display: 'flex',
           gap: '16px',
           fontSize: '11px',
-          fontWeight: '300'
+          fontWeight: '300',
+          marginBottom: '6px'
         }}>
           <div>
             <span style={{ color: '#999', fontSize: '10px' }}>Total Students </span>
@@ -355,15 +356,18 @@ export default function SchoolPairDisplay({
             <span style={{ color: '#999', fontSize: '10px' }}>Ready </span>
             <span style={{ color: '#333', fontWeight: '300' }}>{group.studentCounts.ready}</span>
           </div>
+        </div>
 
-          {pair.hasStudentPairings && (
-            <div>
-              <span style={{ color: '#999', fontSize: '10px' }}>Assigned </span>
-              <span style={{ color: '#333', fontWeight: '300' }}>
-                {group.penPalAssignments.assignmentPercentage}%
-              </span>
-            </div>
-          )}
+        {/* Status on separate row */}
+        <div style={{
+          fontSize: '11px',
+          fontWeight: '300'
+        }}>
+          <span style={{ color: '#999', fontSize: '10px' }}>Status </span>
+          <span style={{ color: '#333', fontWeight: '300' }}>
+            {pair.hasStudentPairings ? 'MATCHED + PAIRED' : 
+             group.schools.every(s => s.status === 'READY') ? 'READY' : 'COLLECTING'}
+          </span>
         </div>
       </div>
     );
