@@ -284,6 +284,21 @@ export default function SchoolPairDisplay({
   };
 
   const renderCompactGroupCard = (group: SchoolGroup) => {
+    // Aggregate unique grades
+    const aggregatedGrades = (() => {
+      const grades = new Set<string>();
+      group.schools.forEach(s => {
+        const schoolGrades = s.gradeLevel?.split(',').map(g => g.trim()) || [];
+        schoolGrades.forEach(g => grades.add(g));
+      });
+      return Array.from(grades).sort((a, b) => {
+        const numA = parseInt(a);
+        const numB = parseInt(b);
+        if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+        return a.localeCompare(b);
+      }).join(',');
+    })();
+
     return (
       <div style={{
         background: 'white',
@@ -324,22 +339,43 @@ export default function SchoolPairDisplay({
           </div>
         </div>
 
-        {/* Schools in group */}
-        <div style={{ marginBottom: '8px' }}>
-          {group.schools.map((school, idx) => (
-            <div key={school.id} style={{
-              fontSize: '11px',
-              color: '#555',
-              fontWeight: '300',
-              marginLeft: '8px',
-              marginBottom: '2px'
-            }}>
-              • {school.schoolName} ({school.teacherName}) - {school.studentCount} students
-            </div>
-          ))}
+        {/* Teachers list - one per line */}
+        {group.schools.map((school, idx) => (
+          <div key={school.id} style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            fontSize: '12px',
+            fontWeight: '300',
+            color: '#555',
+            marginBottom: idx < group.schools.length - 1 ? '4px' : '8px'
+          }}>
+            <span>{school.schoolName} | {school.teacherName}</span>
+            <button
+              onClick={() => copyEmailAddress(school.teacherName, true)}
+              className="btn-icon"
+              style={{
+                fontSize: '16px',
+                color: '#666',
+                fontWeight: '300'
+              }}
+              title="Copy email address"
+            >
+              ✉
+            </button>
+          </div>
+        ))}
+
+        {/* Grades */}
+        <div style={{
+          fontSize: '11px',
+          color: '#888',
+          marginBottom: '8px'
+        }}>
+          Grades {aggregatedGrades}
         </div>
 
-        {/* Data row */}
+        {/* Data in single horizontal row */}
         <div style={{
           display: 'flex',
           gap: '16px',
@@ -348,8 +384,13 @@ export default function SchoolPairDisplay({
           marginBottom: '6px'
         }}>
           <div>
-            <span style={{ color: '#999', fontSize: '10px' }}>Total Students </span>
-            <span style={{ color: '#333', fontWeight: '300' }}>{group.studentCounts.total}</span>
+            <span style={{ color: '#999', fontSize: '10px' }}>Region </span>
+            <span style={{ color: '#333', fontWeight: '300' }}>{group.schools[0]?.region.toUpperCase() || 'N/A'}</span>
+          </div>
+          
+          <div>
+            <span style={{ color: '#999', fontSize: '10px' }}>Start </span>
+            <span style={{ color: '#333', fontWeight: '300' }}>{group.schools[0]?.startMonth.toUpperCase() || 'N/A'}</span>
           </div>
           
           <div>
@@ -361,7 +402,8 @@ export default function SchoolPairDisplay({
         {/* Status on separate row */}
         <div style={{
           fontSize: '11px',
-          fontWeight: '300'
+          fontWeight: '300',
+          marginBottom: '8px'
         }}>
           <span style={{ color: '#999', fontSize: '10px' }}>Status </span>
           <span style={{ color: '#333', fontWeight: '300' }}>
@@ -369,6 +411,22 @@ export default function SchoolPairDisplay({
              group.schools.every(s => s.status === 'READY') ? 'READY' : 'COLLECTING'}
           </span>
         </div>
+
+        {/* Special considerations below */}
+        {group.schools.filter(s => s.specialConsiderations).map(school => (
+          <div key={school.id} style={{
+            color: '#777',
+            fontSize: '10px',
+            fontStyle: 'italic',
+            fontWeight: '300',
+            marginTop: '6px',
+            paddingTop: '6px',
+            borderTop: '1px solid #f0f0f0',
+            lineHeight: '1.3'
+          }}>
+            <strong>{school.schoolName}:</strong> {school.specialConsiderations}
+          </div>
+        ))}
       </div>
     );
   };
