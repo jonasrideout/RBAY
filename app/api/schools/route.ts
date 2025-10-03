@@ -302,7 +302,8 @@ export async function GET(request: NextRequest) {
             parentConsent: true,
             createdAt: true,
             penpalConnections: true,
-            penpalOf: true
+            penpalOf: true,
+            penpalPreference: true
           }
         },
         // Include school group information
@@ -327,22 +328,30 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Manually fetch matched school/group name if needed
-    let matchedSchoolName = undefined;
+    // Manually fetch matched school data if needed
+    let matchedWithSchool = undefined;
     if (school.matchedWithSchoolId) {
+      // Check if it's a cross-type match (group marker)
       if (school.matchedWithSchoolId.startsWith('group:')) {
-        const groupId = school.matchedWithSchoolId.replace('group:', '');
-        const group = await prisma.schoolGroup.findUnique({
-          where: { id: groupId },
-          select: { name: true }
-        });
-        matchedSchoolName = group?.name;
+        // This school is matched with a group - don't show matched school box
+        // (Groups are handled separately via schoolGroup relationship)
+        matchedWithSchool = undefined;
       } else {
+        // Regular school-to-school match - fetch the full matched school data
         const matchedSchool = await prisma.school.findUnique({
           where: { id: school.matchedWithSchoolId },
-          select: { schoolName: true }
+          select: {
+            id: true,
+            schoolName: true,
+            teacherName: true,
+            teacherEmail: true,
+            schoolCity: true,
+            schoolState: true,
+            expectedClassSize: true,
+            region: true
+          }
         });
-        matchedSchoolName = matchedSchool?.schoolName;
+        matchedWithSchool = matchedSchool;
       }
     }
 
@@ -362,7 +371,7 @@ export async function GET(request: NextRequest) {
       success: true,
       school: {
         ...school,
-        matchedSchoolName,
+        matchedWithSchool,
         studentStats: {
           ...studentStats,
           studentsWithPenpals: studentsWithPenpals.length,
