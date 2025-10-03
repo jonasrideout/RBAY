@@ -17,29 +17,6 @@ export default function GroupCard({
   onPin,
   onMatch
 }: GroupCardProps) {
-  const handleCopyEmail = async (email: string) => {
-    try {
-      await navigator.clipboard.writeText(email);
-    } catch (err) {
-      console.error('Failed to copy email:', err);
-    }
-  };
-
-  // Aggregate unique grades
-  const aggregatedGrades = (() => {
-    const grades = new Set<string>();
-    group.schools.forEach(s => {
-      const schoolGrades = s.gradeLevel?.split(',').map(g => g.trim()) || [];
-      schoolGrades.forEach(g => grades.add(g));
-    });
-    return Array.from(grades).sort((a, b) => {
-      const numA = parseInt(a);
-      const numB = parseInt(b);
-      if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
-      return a.localeCompare(b);
-    }).join(',');
-  })();
-
   const renderIcon = (type: 'pin' | 'lock') => {
     if (type === 'pin') {
       return (
@@ -83,28 +60,38 @@ export default function GroupCard({
           </span>
         </div>
 
-        {/* Teachers list - one per line */}
-        {group.schools.map((school, index) => (
-          <div key={school.id} className="teacher-info" style={{ marginBottom: index < group.schools.length - 1 ? '4px' : '6px' }}>
-            <span>{school.schoolName} | {school.teacherName}</span>
-            <button
-              onClick={() => handleCopyEmail(school.teacherName)}
-              className="btn-icon btn-icon-email"
-              title="Copy email address"
-            >
-              ✉
-            </button>
-          </div>
-        ))}
-
-        <div className="text-meta-info">
-          Grades {aggregatedGrades}
+        <div className="text-meta-info" style={{ marginBottom: '10px' }}>
+         Grades {(() => {
+            const grades = new Set<string>();
+            group.schools.forEach(s => {
+              const schoolGrades = s.gradeLevel?.split(',').map(g => g.trim()) || [];
+              schoolGrades.forEach(g => grades.add(g));
+            });
+            return Array.from(grades).sort((a, b) => {
+              const numA = parseInt(a);
+              const numB = parseInt(b);
+              if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+              return a.localeCompare(b);
+            }).join(', ');
+          })()}
         </div>
 
-        {/* Special considerations below */}
-        {group.schools.filter(s => s.specialConsiderations).map(school => (
-          <div key={school.id} className="special-considerations" style={{ marginTop: '8px' }}>
-            <strong>{school.schoolName}:</strong> {school.specialConsiderations}
+        {group.schools.map((school) => (
+          <div key={school.id} style={{ marginBottom: '8px' }}>
+            <div style={{ fontSize: '11px', color: '#333', lineHeight: '1.4' }}>
+              • {school.schoolName} ({school.teacherName}) - {school.studentCount} students
+            </div>
+            {school.specialConsiderations && (
+              <div style={{
+                fontSize: '12px',
+                fontStyle: 'italic',
+                color: '#6c757d',
+                marginLeft: '12px',
+                marginTop: '2px'
+              }}>
+                {school.specialConsiderations}
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -112,28 +99,34 @@ export default function GroupCard({
       {/* Column 2: Empty spacer */}
       <div></div>
 
-      {/* Column 3: Data Grid - matches SchoolCard exactly */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
-        {/* Single row with Region, Start, Ready */}
-        <div style={{ display: 'flex', gap: '32px', marginBottom: '8px' }}>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span className="text-data-label">Region</span>
-            <span className="text-data-value-caps">{group.schools[0]?.region || 'N/A'}</span>
-          </div>
-          
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span className="text-data-label">Start</span>
-            <span className="text-data-value-caps">{group.schools[0]?.startMonth || 'N/A'}</span>
-          </div>
-          
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span className="text-data-label">Ready</span>
-            <span className="text-data-value">{group.studentCounts.ready}</span>
-          </div>
+      {/* Column 3: Data Grid */}
+      <div className="grid-data-2x2">
+        <div className="data-cell" style={{ gridColumn: '1', gridRow: '1' }}>
+          <span className="text-data-label">Region</span>
+          <span className="text-data-value-caps">{group.schools[0]?.region || 'N/A'}</span>
+        </div>
+        
+        <div className="data-cell" style={{ gridColumn: '3', gridRow: '1' }}>
+          <span className="text-data-label">Start Date</span>
+          <span className="text-data-value-caps">{group.schools[0]?.startMonth || 'N/A'}</span>
+        </div>
+        
+        <div className="data-cell" style={{ gridColumn: '4', gridRow: '1' }}>
+          <span className="text-data-label">Ready</span>
+          <span className="text-data-value">{group.studentCounts.ready}</span>
+        </div>
+        
+        <div className="data-cell" style={{ gridColumn: '1', gridRow: '2' }}>
+          <span className="text-data-label">Expected</span>
+          <span className="text-data-value">{group.schools.reduce((sum, s) => sum + s.expectedClassSize, 0)}</span>
+        </div>
+        
+        <div className="data-cell" style={{ gridColumn: '3', gridRow: '2' }}>
+          <span className="text-data-label">Registered</span>
+          <span className="text-data-value">{group.studentCounts.total}</span>
         </div>
 
-        {/* Status on separate line */}
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div className="data-cell" style={{ gridColumn: '4', gridRow: '2' }}>
           <span className="text-data-label">Status</span>
           <span className="text-data-value">
             {group.schools.every(s => s.status === 'READY') ? 'READY' : 'COLLECTING'}
@@ -172,7 +165,7 @@ export default function GroupCard({
             <button
               onClick={onMatch}
               className="btn-icon-link"
-              title="Link with pinned unit"
+              title="Link with pinned group"
             >
               {renderIcon('lock')}
             </button>
