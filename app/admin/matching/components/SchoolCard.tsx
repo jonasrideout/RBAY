@@ -28,9 +28,6 @@ export default function SchoolCard({
   const [showUnmatchModal, setShowUnmatchModal] = useState(false);
   const [isUnmatching, setIsUnmatching] = useState(false);
 
-  // Check if this school is part of a group
-  const isGrouped = !!(school.schoolGroupId && school.schoolGroup);
-
   const getDashboardUrl = () => {
     const adminDashboardPath = `/admin/school-dashboard?schoolId=${school.id}`;
     if (typeof window !== 'undefined') {
@@ -41,20 +38,11 @@ export default function SchoolCard({
   };
 
   const openDashboard = () => {
-    if (isGrouped) {
-      // TODO: Open group dashboard view (side-by-side schools)
-      // For now, do nothing
-      return;
-    }
     const url = getDashboardUrl();
     window.open(url, '_blank');
   };
 
   const copyDashboardUrl = async () => {
-    if (isGrouped) {
-      // Disabled for grouped schools (no single URL)
-      return;
-    }
     const url = getDashboardUrl();
     try {
       await navigator.clipboard.writeText(url);
@@ -136,95 +124,29 @@ export default function SchoolCard({
         
         {/* Column 1: School Information */}
         <div className="school-info-column">
-          {isGrouped && school.schoolGroup ? (
-            // GROUPED SCHOOL LAYOUT
-            <>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                <h3 className="text-school-name" style={{ margin: 0 }}>
-                  {school.schoolGroup.name}
-                </h3>
-                <span style={{
-                  display: 'inline-block',
-                  padding: '3px 8px',
-                  backgroundColor: '#e8f5e9',
-                  border: '1px solid #81c784',
-                  borderRadius: '4px',
-                  fontSize: '11px',
-                  fontWeight: '500',
-                  color: '#2e7d32',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
-                }}>
-                  GROUP
-                </span>
-              </div>
+          <h3 className="text-school-name">
+            {school.schoolName}
+          </h3>
+          
+          <div className="teacher-info">
+            <span>{school.teacherName}</span>
+            <button
+              onClick={copyEmailAddress}
+              className="btn-icon btn-icon-email"
+              title={`Copy email: ${school.teacherEmail}`}
+            >
+              {emailCopyText}
+            </button>
+          </div>
+          
+          <div className="text-meta-info">
+            Grades {school.gradeLevel}
+          </div>
 
-              <div className="text-meta-info" style={{ marginBottom: '10px' }}>
-                Grades {(() => {
-                  // Extract unique grade levels from all schools in group
-                  const grades = new Set<string>();
-                  school.schoolGroup.schools.forEach(s => {
-                    // Parse grade strings like "3,4,5" or "3" or "4, 5"
-                    const schoolGrades = s.gradeLevel?.split(',').map(g => g.trim()) || [];
-                    schoolGrades.forEach(g => grades.add(g));
-                  });
-                  return Array.from(grades).sort((a, b) => {
-                    // Sort numerically if possible
-                    const numA = parseInt(a);
-                    const numB = parseInt(b);
-                    if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
-                    return a.localeCompare(b);
-                  }).join(', ');
-                })()}
-              </div>
-
-              {school.schoolGroup.schools.map((groupSchool) => (
-                <div key={groupSchool.id} style={{ marginBottom: '8px' }}>
-                  <div style={{ fontSize: '13px', color: '#333', lineHeight: '1.4' }}>
-                    • {groupSchool.schoolName} ({groupSchool.teacherName}) - {groupSchool.studentCount} students
-                  </div>
-                  {groupSchool.specialConsiderations && (
-                    <div style={{
-                      fontSize: '12px',
-                      fontStyle: 'italic',
-                      color: '#6c757d',
-                      marginLeft: '12px',
-                      marginTop: '2px'
-                    }}>
-                      {groupSchool.specialConsiderations}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </>
-          ) : (
-            // INDIVIDUAL SCHOOL LAYOUT
-            <>
-              <h3 className="text-school-name">
-                {school.schoolName}
-              </h3>
-              
-              <div className="teacher-info">
-                <span>{school.teacherName}</span>
-                <button
-                  onClick={copyEmailAddress}
-                  className="btn-icon btn-icon-email"
-                  title={`Copy email: ${school.teacherEmail}`}
-                >
-                  {emailCopyText}
-                </button>
-              </div>
-              
-              <div className="text-meta-info">
-                Grades {school.gradeLevel}
-              </div>
-
-              {school.specialConsiderations && (
-                <div className="special-considerations">
-                  {school.specialConsiderations}
-                </div>
-              )}
-            </>
+          {school.specialConsiderations && (
+            <div className="special-considerations">
+              {school.specialConsiderations}
+            </div>
           )}
         </div>
 
@@ -267,9 +189,7 @@ export default function SchoolCard({
           <button
             onClick={openDashboard}
             className="btn-school-action"
-            title={isGrouped ? "Group dashboard (coming soon)" : "Open school dashboard in new tab"}
-            disabled={isGrouped}
-            style={isGrouped ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+            title="Open school dashboard in new tab"
           >
             Open Dashboard
           </button>
@@ -277,9 +197,7 @@ export default function SchoolCard({
           <button
             onClick={copyDashboardUrl}
             className="btn-school-action"
-            title={isGrouped ? "Not available for groups" : "Copy school dashboard URL to clipboard"}
-            disabled={isGrouped}
-            style={isGrouped ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+            title="Copy school dashboard URL to clipboard"
           >
             {copyButtonText}
           </button>
