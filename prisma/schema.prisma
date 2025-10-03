@@ -22,7 +22,7 @@ enum PenpalPreference {
 
 model SchoolGroup {
   id        String   @id @default(cuid())
-  name      String   // e.g., "Washington Elementary 4th Grade Combined"
+  name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
@@ -34,9 +34,8 @@ model SchoolGroup {
   readyForMatching  Boolean      @default(false)
   
   // When matched with another group or individual school
+  // Can contain either a valid SchoolGroup ID OR a marker like "school:xxx"
   matchedWithGroupId String?     @unique
-  matchedWithGroup   SchoolGroup? @relation("GroupPairing", fields: [matchedWithGroupId], references: [id])
-  pairedGroup        SchoolGroup? @relation("GroupPairing")
   
   @@map("school_groups")
 }
@@ -60,7 +59,7 @@ model School {
   region               String
   isActive             Boolean       @default(true)
   
-  // Group membership (NEW)
+  // Group membership
   schoolGroupId        String?
   schoolGroup          SchoolGroup?  @relation(fields: [schoolGroupId], references: [id])
   
@@ -86,12 +85,11 @@ model School {
 model Student {
   id                String           @id @default(cuid())
   firstName         String
-  lastInitial       String           // Changed from lastName for privacy
+  lastInitial       String
   grade             String
   interests         String[]
   otherInterests    String?
-  // Removed parentName, parentEmail, parentPhone for privacy
-  parentConsent     Boolean          @default(false)  // Keep for legal compliance
+  parentConsent     Boolean          @default(false)
   penpalPreference  PenpalPreference @default(ONE)
   isActive          Boolean          @default(true)
   profileCompleted  Boolean          @default(false)
