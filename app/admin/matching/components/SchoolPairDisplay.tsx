@@ -474,22 +474,8 @@ export default function SchoolPairDisplay({
         padding: '20px',
         marginBottom: '16px',
         boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-        borderLeft: `3px solid ${pair.matchType === 'group-group' ? '#4caf50' : pair.matchType === 'group-school' ? '#ff9800' : '#28a745'}`
+        borderLeft: '3px solid #28a745'
       }}>
-        
-        {/* Match Type Indicator */}
-        <div style={{
-          fontSize: '10px',
-          color: '#999',
-          marginBottom: '8px',
-          fontWeight: '300',
-          textTransform: 'uppercase',
-          letterSpacing: '0.5px'
-        }}>
-          {pair.matchType === 'group-group' ? 'Group ↔ Group' : 
-           pair.matchType === 'group-school' ? 'Group ↔ School' : 
-           'School ↔ School'}
-        </div>
 
         {/* Pair Container */}
         <div style={{
