@@ -29,7 +29,7 @@ export default function SchoolCard({
   const [isUnmatching, setIsUnmatching] = useState(false);
 
   // Check if this school is part of a group
-  const isGrouped = school.schoolGroupId && school.schoolGroup;
+  const isGrouped = !!(school.schoolGroupId && school.schoolGroup);
 
   const getDashboardUrl = () => {
     const adminDashboardPath = `/admin/school-dashboard?schoolId=${school.id}`;
