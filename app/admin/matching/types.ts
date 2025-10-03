@@ -70,6 +70,8 @@ export interface SchoolGroup {
     schoolName: string;
     teacherName: string;
     studentCount: number;
+    gradeLevel: string;
+    specialConsiderations?: string;
   }[];
   studentCounts: {
     total: number;
