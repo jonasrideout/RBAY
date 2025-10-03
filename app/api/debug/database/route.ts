@@ -12,12 +12,6 @@ export async function GET(request: NextRequest) {
         teacherEmail: true,
         status: true,
         matchedWithSchoolId: true,
-        matchedWithSchool: {
-          select: {
-            schoolName: true,
-            teacherEmail: true
-          }
-        },
         students: {
           select: {
             id: true,
@@ -30,6 +24,30 @@ export async function GET(request: NextRequest) {
         schoolName: 'asc'
       }
     });
+
+    // Manually fetch matched school names
+    const schoolsWithMatches = await Promise.all(
+      schools.map(async (school) => {
+        let matchedSchoolName = null;
+        if (school.matchedWithSchoolId) {
+          if (school.matchedWithSchoolId.startsWith('group:')) {
+            const groupId = school.matchedWithSchoolId.replace('group:', '');
+            const group = await prisma.schoolGroup.findUnique({
+              where: { id: groupId },
+              select: { name: true }
+            });
+            matchedSchoolName = group?.name || null;
+          } else {
+            const matchedSchool = await prisma.school.findUnique({
+              where: { id: school.matchedWithSchoolId },
+              select: { schoolName: true }
+            });
+            matchedSchoolName = matchedSchool?.schoolName || null;
+          }
+        }
+        return { ...school, matchedSchoolName };
+      })
+    );
 
     // Get all school pairings
     const schoolPairings = await prisma.schoolPairing.findMany({
@@ -76,9 +94,9 @@ export async function GET(request: NextRequest) {
     });
 
     // Count totals
-    const totalSchools = schools.length;
-    const matchedSchools = schools.filter(s => s.matchedWithSchoolId !== null).length;
-    const readySchools = schools.filter(s => s.status === 'READY').length;
+    const totalSchools = schoolsWithMatches.length;
+    const matchedSchools = schoolsWithMatches.filter(s => s.matchedWithSchoolId !== null).length;
+    const readySchools = schoolsWithMatches.filter(s => s.status === 'READY').length;
 
     return NextResponse.json({
       summary: {
@@ -88,13 +106,13 @@ export async function GET(request: NextRequest) {
         totalSchoolPairings: schoolPairings.length,
         totalStudentPairings: studentPairings.length
       },
-      schools: schools.map(school => ({
+      schools: schoolsWithMatches.map(school => ({
         id: school.id,
         name: school.schoolName,
         teacher: school.teacherEmail,
         status: school.status,
         matchedWithId: school.matchedWithSchoolId,
-        matchedWithName: school.matchedWithSchool?.schoolName || null,
+        matchedWithName: school.matchedSchoolName,
         studentCount: school.students.length,
         readyStudents: school.students.filter(s => s.profileCompleted).length,
         isMatched: school.matchedWithSchoolId !== null
