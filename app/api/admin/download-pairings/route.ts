@@ -1,3 +1,4 @@
+// app/api/admin/download-pairings/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
@@ -24,9 +25,11 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch school with students and their pen pal assignments
+    // Also check if this school is part of a group
     const school = await prisma.school.findUnique({
       where: { id: schoolId },
       include: {
+        schoolGroup: true, // NEW: Include group information
         students: {
           where: { isActive: true },
           include: {
@@ -69,7 +72,7 @@ export async function GET(request: NextRequest) {
       student.penpalConnections.forEach(connection => {
         if (connection.penpal) {
           allPenpals.push({
-            name: `${connection.penpal.firstName} ${connection.penpal.lastInitial}.`,  // Changed to "Sarah J." format
+            name: `${connection.penpal.firstName} ${connection.penpal.lastInitial}.`,
             grade: connection.penpal.grade,
             school: connection.penpal.school?.schoolName,
             interests: connection.penpal.interests,
@@ -82,7 +85,7 @@ export async function GET(request: NextRequest) {
       student.penpalOf.forEach(connection => {
         if (connection.student) {
           allPenpals.push({
-            name: `${connection.student.firstName} ${connection.student.lastInitial}.`,  // Changed to "Sarah J." format
+            name: `${connection.student.firstName} ${connection.student.lastInitial}.`,
             grade: connection.student.grade,
             school: connection.student.school?.schoolName,
             interests: connection.student.interests,
@@ -98,7 +101,7 @@ export async function GET(request: NextRequest) {
 
       return {
         student: {
-          name: `${student.firstName} ${student.lastInitial}.`,  // Changed to "Sarah J." format
+          name: `${student.firstName} ${student.lastInitial}.`,
           grade: student.grade,
           interests: student.interests,
           otherInterests: student.otherInterests,
@@ -109,17 +112,52 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    // Get partner school name from the pen pal data for the header
-    const partnerSchoolName = studentsWithPenpals
-      .find(student => student.penpals.length > 0)
-      ?.penpals[0]?.school;
+    // Determine partner school name(s)
+    let partnerSchoolName: string;
+    
+    if (school.schoolGroupId) {
+      // NEW: School is part of a group
+      // Get all OTHER schools in the same group (excluding this school)
+      const groupSchools = await prisma.school.findMany({
+        where: {
+          schoolGroupId: school.schoolGroupId,
+          id: { not: schoolId }
+        },
+        select: {
+          schoolName: true
+        }
+      });
+      
+      // Build partner name from other schools in group + pen pal schools
+      const groupPartnerNames = groupSchools.map(s => s.schoolName);
+      
+      // Get pen pal schools (schools from outside the group)
+      const penpalSchoolName = studentsWithPenpals
+        .find(student => student.penpals.length > 0)
+        ?.penpals[0]?.school;
+      
+      if (penpalSchoolName && !groupPartnerNames.includes(penpalSchoolName)) {
+        // Partner is outside the group
+        partnerSchoolName = penpalSchoolName;
+      } else if (groupPartnerNames.length > 0) {
+        // Partner is other schools in the group
+        partnerSchoolName = groupPartnerNames.join(' + ');
+      } else {
+        partnerSchoolName = 'Partner School';
+      }
+    } else {
+      // School is NOT part of a group - use original logic
+      partnerSchoolName = studentsWithPenpals
+        .find(student => student.penpals.length > 0)
+        ?.penpals[0]?.school || 'Partner School';
+    }
 
     return NextResponse.json({
       school: {
         name: school.schoolName,
-        teacher: school.teacherName,  // Fixed: use single teacherName field
+        teacher: school.teacherName,
         email: school.teacherEmail,
-        partnerSchool: partnerSchoolName || 'Partner School'
+        partnerSchool: partnerSchoolName
       },
       pairings: studentsWithPenpals,
       summary: {
@@ -129,7 +167,7 @@ export async function GET(request: NextRequest) {
         totalPenpalConnections: studentsWithPenpals.reduce((sum, s) => sum + s.penpalCount, 0),
         averagePenpalsPerStudent: studentsWithPenpals.length > 0 
           ? (studentsWithPenpals.reduce((sum, s) => sum + s.penpalCount, 0) / studentsWithPenpals.length).toFixed(1)
-          : 0
+          : '0'
       },
       generatedAt: new Date().toISOString()
     }, {
