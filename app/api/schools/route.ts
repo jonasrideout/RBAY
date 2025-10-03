@@ -328,14 +328,51 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Manually fetch matched school data if needed
+    // Manually fetch matched school or group data if needed
     let matchedWithSchool = undefined;
     if (school.matchedWithSchoolId) {
       // Check if it's a cross-type match (group marker)
       if (school.matchedWithSchoolId.startsWith('group:')) {
-        // This school is matched with a group - don't show matched school box
-        // (Groups are handled separately via schoolGroup relationship)
-        matchedWithSchool = undefined;
+        // This school is matched with a group - fetch group data
+        const groupId = school.matchedWithSchoolId.replace('group:', '');
+        const matchedGroup = await prisma.schoolGroup.findUnique({
+          where: { id: groupId },
+          include: {
+            schools: {
+              select: {
+                id: true,
+                schoolName: true,
+                teacherName: true,
+                teacherEmail: true,
+                schoolCity: true,
+                schoolState: true,
+                expectedClassSize: true,
+                region: true
+              }
+            }
+          }
+        });
+        
+        if (matchedGroup) {
+          // Format group data to look like a "super school" for display purposes
+          // Aggregate data from all schools in the group
+          const totalExpectedClassSize = matchedGroup.schools.reduce(
+            (sum, s) => sum + s.expectedClassSize, 0
+          );
+          
+          matchedWithSchool = {
+            id: matchedGroup.id,
+            schoolName: matchedGroup.name, // Group name
+            teacherName: matchedGroup.schools.map(s => s.teacherName).join(', '),
+            teacherEmail: matchedGroup.schools.map(s => s.teacherEmail).join(', '),
+            schoolCity: matchedGroup.schools[0]?.schoolCity || '',
+            schoolState: matchedGroup.schools[0]?.schoolState || '',
+            expectedClassSize: totalExpectedClassSize,
+            region: matchedGroup.schools[0]?.region || '',
+            isGroup: true,
+            schools: matchedGroup.schools // Include full school list for group
+          };
+        }
       } else {
         // Regular school-to-school match - fetch the full matched school data
         const matchedSchool = await prisma.school.findUnique({
@@ -351,7 +388,13 @@ export async function GET(request: NextRequest) {
             region: true
           }
         });
-        matchedWithSchool = matchedSchool;
+        
+        if (matchedSchool) {
+          matchedWithSchool = {
+            ...matchedSchool,
+            isGroup: false
+          };
+        }
       }
     }
 
