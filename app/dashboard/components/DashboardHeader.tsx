@@ -23,6 +23,16 @@ interface SchoolData {
     studentsWithPenpals: number;
     hasPenpalAssignments: boolean;
   };
+  schoolGroup?: {
+    id: string;
+    name: string;
+    schools: Array<{
+      id: string;
+      schoolName: string;
+      teacherName: string;
+      students: any[];
+    }>;
+  };
 }
 
 interface DashboardHeaderProps {
@@ -79,43 +89,72 @@ export default function DashboardHeader({
   };
 
   const handleRequestPairingClick = async () => {
-    // Calculate if pen pal preference updates are needed
-    const classSize = schoolData.students.length;
-    const formulaRequired = Math.ceil((30 - classSize) / 2);
-    const maxPossible = Math.floor(classSize * 0.8);
-    const requiredMultiplePenpals = Math.min(formulaRequired, maxPossible);
+    // Determine if this school is part of a group
+    const isInGroup = !!schoolData.schoolGroup;
     
-    if (requiredMultiplePenpals > 0) {
-      // Need to check how many students currently have MULTIPLE preference
-      try {
-        const response = await fetch(`/api/students?teacherEmail=${encodeURIComponent(schoolData.teacherEmail)}`);
-        const data = await response.json();
+    let totalStudentsInGroup: number;
+    let thisSchoolStudentCount: number;
+    let totalGroupRequired: number;
+    let currentMultipleAcrossGroup: number;
+    
+    if (isInGroup) {
+      // GROUPED SCHOOL: Use combined student counts from all schools in group
+      const allGroupStudents = schoolData.schoolGroup!.schools.flatMap(school => school.students);
+      totalStudentsInGroup = allGroupStudents.length;
+      thisSchoolStudentCount = schoolData.students.length;
+      
+      // Calculate total requirement based on combined class size
+      const formulaRequired = Math.ceil((30 - totalStudentsInGroup) / 2);
+      const maxPossible = Math.floor(totalStudentsInGroup * 0.8);
+      totalGroupRequired = Math.min(formulaRequired, maxPossible);
+      
+      // Count MULTIPLE students across all schools in group
+      currentMultipleAcrossGroup = allGroupStudents.filter(
+        (s: any) => s.penpalPreference === 'MULTIPLE'
+      ).length;
+      
+    } else {
+      // INDIVIDUAL SCHOOL: Use only this school's students
+      totalStudentsInGroup = schoolData.students.length;
+      thisSchoolStudentCount = schoolData.students.length;
+      
+      const formulaRequired = Math.ceil((30 - totalStudentsInGroup) / 2);
+      const maxPossible = Math.floor(totalStudentsInGroup * 0.8);
+      totalGroupRequired = Math.min(formulaRequired, maxPossible);
+      
+      currentMultipleAcrossGroup = schoolData.students.filter(
+        (s: any) => s.penpalPreference === 'MULTIPLE'
+      ).length;
+    }
+    
+    if (totalGroupRequired > 0) {
+      // Calculate shortfall
+      const shortfall = totalGroupRequired - currentMultipleAcrossGroup;
+      
+      if (shortfall > 0) {
+        // Calculate this school's proportional share of the shortfall
+        const thisSchoolRequired = Math.ceil(shortfall * (thisSchoolStudentCount / totalStudentsInGroup));
         
-        if (!response.ok) {
-          throw new Error('Failed to fetch student data');
-        }
-        
-        const currentMultipleCount = data.students.filter(
+        // Count how many students in THIS school already have MULTIPLE
+        const thisSchoolCurrentMultiple = schoolData.students.filter(
           (s: any) => s.penpalPreference === 'MULTIPLE'
         ).length;
         
-        if (currentMultipleCount < requiredMultiplePenpals) {
-          // Not enough students set to MULTIPLE - trigger the update UI
+        // Check if this school needs to add more MULTIPLE students
+        if (thisSchoolCurrentMultiple < thisSchoolRequired) {
+          // Not enough students in THIS school set to MULTIPLE - trigger the update UI
           if (onPenpalPreferenceCheckNeeded) {
-            onPenpalPreferenceCheckNeeded(requiredMultiplePenpals, currentMultipleCount);
+            onPenpalPreferenceCheckNeeded(thisSchoolRequired, thisSchoolCurrentMultiple);
           }
           return; // Don't proceed with pairing yet
         }
-        
-        // Enough students have MULTIPLE - proceed with confirmation
-        setShowConfirmation(true);
-        
-      } catch (err) {
-        console.error('Error checking pen pal preferences:', err);
-        alert('Error checking student preferences. Please try again.');
       }
+      
+      // Either shortfall is 0 or this school has enough MULTIPLE students - proceed with confirmation
+      setShowConfirmation(true);
+      
     } else {
-      // Class is large enough - proceed directly to confirmation
+      // Combined class is large enough - proceed directly to confirmation
       setShowConfirmation(true);
     }
   };
