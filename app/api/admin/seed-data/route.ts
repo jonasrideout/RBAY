@@ -197,8 +197,8 @@ export async function POST(request: NextRequest) {
       const shuffledInterests = [...interestOptions].sort(() => 0.5 - Math.random());
       const interests = shuffledInterests.slice(0, numInterests);
       
-      // 25% MULTIPLE preference, 75% ONE preference (realistic distribution)
-      const penpalPreference = Math.random() < 0.25 ? "MULTIPLE" : "ONE";
+      // All students start with ONE preference for testing
+      const penpalPreference = "ONE";
       
       // 30% chance of having otherInterests
       const otherInterests = otherInterestsOptions[Math.floor(Math.random() * otherInterestsOptions.length)];
