@@ -152,8 +152,9 @@ export default function AdminDashboard() {
   };
 
   const isUnitReady = (unit: MatchableUnit): boolean => {
-    if (isGroup(unit)) {
-      return unit.isReadyForMatching && unit.penPalPreferences.meetsRequirement;
+  if (isGroup(unit)) {
+    const allSchoolsReady = unit.schools.every(school => school.status === 'READY');
+    return allSchoolsReady && unit.penPalPreferences.meetsRequirement;
     } else {
       const validStatuses = ['READY', 'MATCHED'];
       return validStatuses.includes(unit.status) && 
