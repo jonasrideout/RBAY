@@ -1,4 +1,3 @@
-// /app/admin/matching/components/SchoolPairDisplay.tsx
 "use client";
 
 import { useState } from 'react';
@@ -27,6 +26,8 @@ export default function SchoolPairDisplay({
   const [emailCopyText1, setEmailCopyText1] = useState('✉');
   const [emailCopyText2, setEmailCopyText2] = useState('✉');
   const [showUnmatchModal, setShowUnmatchModal] = useState(false);
+  const [sendingEmails, setSendingEmails] = useState(false);
+  const [emailsSent, setEmailsSent] = useState(false);
 
   const getDashboardUrl = (schoolId: string) => {
     const adminDashboardPath = `/admin/school-dashboard?schoolId=${schoolId}`;
@@ -89,6 +90,60 @@ export default function SchoolPairDisplay({
       onUnmatch();
     }
   };
+
+  const handleSendEmails = async () => {
+    setSendingEmails(true);
+    
+    try {
+      const response = await fetch('/api/admin/send-penpal-emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          unit1Id: pair.unit1.id,
+          unit2Id: pair.unit2.id,
+          matchType: pair.matchType
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setEmailsSent(true);
+        alert(`Pen pal assignment emails sent successfully to all teachers!`);
+      } else {
+        alert(`Error sending emails: ${data.message || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error sending emails:', error);
+      alert('Failed to send pen pal assignment emails');
+    } finally {
+      setSendingEmails(false);
+    }
+  };
+
+  // Check if emails have already been sent (from database)
+  const checkEmailsSent = () => {
+    const schools: any[] = [];
+    
+    if (isSchool(pair.unit1)) {
+      schools.push(pair.unit1);
+    } else {
+      schools.push(...pair.unit1.schools);
+    }
+    
+    if (isSchool(pair.unit2)) {
+      schools.push(pair.unit2);
+    } else {
+      schools.push(...pair.unit2.schools);
+    }
+    
+    // Check if ANY school has notificationEmailsSent = true
+    return schools.some((school: any) => school.notificationEmailsSent === true);
+  };
+
+  const alreadySent = checkEmailsSent();
 
   const getUnitName = (unit: School | SchoolGroup): string => {
     return isSchool(unit) ? unit.schoolName : unit.name;
@@ -539,7 +594,8 @@ export default function SchoolPairDisplay({
           <div style={{
             display: 'flex',
             justifyContent: 'center',
-            gap: '12px',
+            alignItems: 'center',
+            gap: '16px',
             marginTop: '16px',
             paddingTop: '16px',
             borderTop: '1px solid #f0f0f0'
@@ -556,19 +612,59 @@ export default function SchoolPairDisplay({
             )}
 
             {pair.hasStudentPairings && (
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                color: '#28a745',
-                fontWeight: '500',
-                fontSize: '12px'
-              }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M20 6L9 17l-5-5"/>
-                </svg>
-                Pen Pals Assigned
-              </div>
+              <>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  color: '#28a745',
+                  fontWeight: '500',
+                  fontSize: '12px'
+                }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M20 6L9 17l-5-5"/>
+                  </svg>
+                  Pen Pals Assigned
+                </div>
+
+                <button
+                  onClick={handleSendEmails}
+                  disabled={sendingEmails || emailsSent || alreadySent}
+                  style={{
+                    background: (emailsSent || alreadySent) ? '#28a745' : 'white',
+                    border: (emailsSent || alreadySent) ? '1px solid #28a745' : '1px solid #2c5aa0',
+                    borderRadius: '3px',
+                    color: (emailsSent || alreadySent) ? 'white' : '#2c5aa0',
+                    fontSize: '12px',
+                    fontWeight: '500',
+                    cursor: (sendingEmails || emailsSent || alreadySent) ? 'not-allowed' : 'pointer',
+                    padding: '8px 16px',
+                    textAlign: 'center',
+                    minWidth: '180px',
+                    opacity: (sendingEmails || emailsSent || alreadySent) ? 0.8 : 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  {sendingEmails ? (
+                    <>
+                      <span className="loading" style={{ width: '12px', height: '12px', borderWidth: '2px' }} />
+                      Sending...
+                    </>
+                  ) : (emailsSent || alreadySent) ? (
+                    <>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                      </svg>
+                      Emails Sent
+                    </>
+                  ) : (
+                    'Send Pen Pal Assignments'
+                  )}
+                </button>
+              </>
             )}
             
           </div>
