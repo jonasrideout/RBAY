@@ -31,6 +31,15 @@ interface SchoolData {
     schoolState?: string;
     expectedClassSize: number;
     region: string;
+    isGroup?: boolean;
+    schools?: any[];
+  };
+  studentStats?: {
+    expected: number;
+    registered: number;
+    ready: number;
+    studentsWithPenpals: number;
+    hasPenpalAssignments: boolean;
   };
 }
 
@@ -58,14 +67,15 @@ export default function MatchingStatusCard({
                       schoolData.startMonth === 'TBD' ||
                       schoolData.expectedClassSize === 0;
 
-  // Check if school is already matched
+  // Check if school is matched with another school/group
   const isMatched = schoolData?.matchedWithSchoolId != null;
   
-  // Use status field for ready state
+  // Check status
   const readyForPairing = schoolData?.status === 'READY';
+  const penPalsPaired = schoolData?.status === 'MATCHED';
   
-  // Show completion prompt if incomplete, otherwise show card ONLY when status is READY
-  const shouldShowCard = isIncomplete || readyForPairing;
+  // Show card in three scenarios: incomplete profile, READY status, or MATCHED status
+  const shouldShowCard = isIncomplete || readyForPairing || penPalsPaired;
   
   if (!shouldShowCard) {
     return null;
@@ -77,6 +87,31 @@ export default function MatchingStatusCard({
       onSchoolUpdated();
     } else {
       window.location.reload();
+    }
+  };
+
+  const handleDownloadPenPals = async () => {
+    try {
+      const response = await fetch(`/api/admin/download-pairings?schoolId=${schoolData.id}`);
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Create and download the file
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${schoolData.schoolName}_pen_pal_assignments.json`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } else {
+        throw new Error('Failed to download pen pal assignments');
+      }
+    } catch (error) {
+      console.error('Error downloading pen pals:', error);
+      alert('Error downloading pen pal assignments. Please try again.');
     }
   };
 
@@ -123,7 +158,43 @@ export default function MatchingStatusCard({
     );
   }
 
-  // Show regular matching status card ONLY when status is READY
+  // Show Pen Pals Paired card when status is MATCHED
+  if (penPalsPaired) {
+    return (
+      <div className="card" style={{ marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+          <div style={{ flex: '1', minWidth: '300px' }}>
+            <h3 style={{ 
+              color: '#1f2937', 
+              marginBottom: '1rem', 
+              fontSize: '1.4rem',
+              fontWeight: '400',
+              margin: 0
+            }}>
+              Pen Pals Paired
+            </h3>
+            <p className="text-meta-info" style={{ marginBottom: '1rem' }}>
+              Your students have been paired with pen pals! Download the list below to see who is paired with whom.
+            </p>
+            <button 
+              onClick={handleDownloadPenPals}
+              className="btn"
+              style={{ 
+                padding: '0.75rem 1.5rem',
+                backgroundColor: '#28a745',
+                color: 'white',
+                borderColor: '#28a745'
+              }}
+            >
+              Download Pen Pal List
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show Ready for Pen Pals card when status is READY (waiting for pairing)
   return (
     <div className="card" style={{ marginBottom: '2rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
