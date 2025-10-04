@@ -330,7 +330,76 @@ export async function GET(request: NextRequest) {
 
     // Manually fetch matched school or group data if needed
     let matchedWithSchool = undefined;
-    if (school.matchedWithSchoolId) {
+    
+    // First check if this school's GROUP is matched (takes priority)
+    if (school.schoolGroup?.matchedWithGroupId) {
+      const groupMatchId = school.schoolGroup.matchedWithGroupId;
+      
+      if (groupMatchId.startsWith('school:')) {
+        // Group is matched with a school
+        const matchedSchoolId = groupMatchId.replace('school:', '');
+        const matchedSchool = await prisma.school.findUnique({
+          where: { id: matchedSchoolId },
+          select: {
+            id: true,
+            schoolName: true,
+            teacherName: true,
+            teacherEmail: true,
+            schoolCity: true,
+            schoolState: true,
+            expectedClassSize: true,
+            region: true
+          }
+        });
+        
+        if (matchedSchool) {
+          matchedWithSchool = {
+            ...matchedSchool,
+            isGroup: false
+          };
+        }
+      } else {
+        // Group is matched with another group
+        const matchedGroup = await prisma.schoolGroup.findUnique({
+          where: { id: groupMatchId },
+          include: {
+            schools: {
+              select: {
+                id: true,
+                schoolName: true,
+                teacherName: true,
+                teacherEmail: true,
+                schoolCity: true,
+                schoolState: true,
+                expectedClassSize: true,
+                region: true
+              }
+            }
+          }
+        });
+        
+        if (matchedGroup) {
+          const totalExpectedClassSize = matchedGroup.schools.reduce(
+            (sum, s) => sum + s.expectedClassSize, 0
+          );
+          
+          matchedWithSchool = {
+            id: matchedGroup.id,
+            schoolName: matchedGroup.name,
+            teacherName: matchedGroup.schools.map(s => s.teacherName).join(', '),
+            teacherEmail: matchedGroup.schools.map(s => s.teacherEmail).join(', '),
+            schoolCity: matchedGroup.schools[0]?.schoolCity || '',
+            schoolState: matchedGroup.schools[0]?.schoolState || '',
+            expectedClassSize: totalExpectedClassSize,
+            region: matchedGroup.schools[0]?.region || '',
+            isGroup: true,
+            schools: matchedGroup.schools
+          };
+        }
+      }
+    }
+    // If school is not in a group, check if the school itself is matched
+    else if (school.matchedWithSchoolId) {
       // Check if it's a cross-type match (group marker)
       if (school.matchedWithSchoolId.startsWith('group:')) {
         // This school is matched with a group - fetch group data
