@@ -91,7 +91,7 @@ export default function MatchingStatusCard({
   };
 
   const handleViewPenPals = () => {
-    window.open(`/admin/pen-pal-list?schoolId=${schoolData.id}`, '_blank');
+    window.open(`/teacher/pen-pal-list?schoolId=${schoolData.id}`, '_blank');
   };
 
   // Show completion prompt if school data is incomplete
