@@ -466,7 +466,7 @@ function TeacherDashboardContent() {
           totalStudents={totalStudents}
           studentsWithInterests={studentsWithInterests}
           matchedSchool={schoolData.matchedSchool}
-          isMatched={schoolData?.matchedWithSchoolId != null}
+          isMatched={schoolData?.matchedWithSchoolId != null || schoolData?.matchedSchool != null}
         />
 
         <MatchingSection 
