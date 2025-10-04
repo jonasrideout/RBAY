@@ -90,29 +90,8 @@ export default function MatchingStatusCard({
     }
   };
 
-  const handleDownloadPenPals = async () => {
-    try {
-      const response = await fetch(`/api/admin/download-pairings?schoolId=${schoolData.id}`);
-      if (response.ok) {
-        const data = await response.json();
-        
-        // Create and download the file
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${schoolData.schoolName}_pen_pal_assignments.json`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-      } else {
-        throw new Error('Failed to download pen pal assignments');
-      }
-    } catch (error) {
-      console.error('Error downloading pen pals:', error);
-      alert('Error downloading pen pal assignments. Please try again.');
-    }
+  const handleViewPenPals = () => {
+    window.open(`/admin/pen-pal-list?schoolId=${schoolData.id}`, '_blank');
   };
 
   // Show completion prompt if school data is incomplete
@@ -174,16 +153,16 @@ export default function MatchingStatusCard({
               Pen Pals Paired
             </h3>
             <p className="text-meta-info" style={{ marginBottom: '1rem' }}>
-              Your students have been paired with pen pals! Download the list below to see who is paired with whom.
+              Your students have been paired with pen pals! View the list below to see who is paired with whom.
             </p>
             <button 
-              onClick={handleDownloadPenPals}
+              onClick={handleViewPenPals}
               className="btn"
               style={{ 
                 padding: '0.75rem 1.5rem'
               }}
             >
-              Download Pen Pal List
+              View Pen Pal List
             </button>
           </div>
         </div>
