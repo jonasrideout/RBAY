@@ -180,10 +180,7 @@ export default function MatchingStatusCard({
               onClick={handleDownloadPenPals}
               className="btn"
               style={{ 
-                padding: '0.75rem 1.5rem',
-                backgroundColor: '#28a745',
-                color: 'white',
-                borderColor: '#28a745'
+                padding: '0.75rem 1.5rem'
               }}
             >
               Download Pen Pal List
