@@ -8,6 +8,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('SEED DATA VERSION: 2.0 - WITH MULTIPLE PREFERENCES');
     console.log('Seed-data using DATABASE_URL:', process.env.DATABASE_URL?.substring(0, 50) + '...');
     console.log('Starting enhanced seed data creation...');
     console.log('Seed-data using DATABASE_URL_DIRECT:', process.env.DATABASE_URL_DIRECT?.substring(0, 50) + '...');
@@ -187,8 +188,8 @@ export async function POST(request: NextRequest) {
     const lastInitials = ["W", "R", "K", "C", "T", "D", "G", "B", "J", "L", "M", "Ta", "P", "Mi", "Co", "Tu", "A", "Mo", "An", "Wh", "H", "Cl", "Le", "Wa", "Ha", "Y", "Ki", "Wr", "Lo", "Hi", "Gr", "Ba", "N", "Ca", "Ro", "Ph", "E", "Tur", "Pa", "Col"];
 
     // Helper function to generate realistic student data with complete profiles
-    const generateStudent = (schoolId: string, index: number, teacherEmail: string) => {
-      const firstName = firstNames[index % firstNames.length];
+    const generateStudent = (schoolId: string, index: number, nameOffset: number, teacherEmail: string) => {
+      const firstName = firstNames[(index + nameOffset) % firstNames.length];
       const lastInitial = lastInitials[Math.floor(Math.random() * lastInitials.length)];
       const grade = gradeOptions[Math.floor(Math.random() * gradeOptions.length)];
       
@@ -222,49 +223,49 @@ export async function POST(request: NextRequest) {
     // Create Lincoln Elementary students (10 students - all complete)
     console.log('Creating Lincoln Elementary students...');
     for (let i = 0; i < 10; i++) {
-      const studentData = generateStudent(lincolnSchool.id, i, "jonas.rideout@gmail.com");
+      const studentData = generateStudent(lincolnSchool.id, i, 0, "jonas.rideout@gmail.com");
       await prisma.student.create({ data: studentData });
     }
 
     // Create Pacific students (20 students - all complete)
     console.log('Creating Pacific Elementary students...');
     for (let i = 0; i < 20; i++) {
-      const studentData = generateStudent(pacificSchool.id, i + 10, "sarah.johnson@pacific.edu");
+      const studentData = generateStudent(pacificSchool.id, i, 10, "sarah.johnson@pacific.edu");
       await prisma.student.create({ data: studentData });
     }
 
     // Create Northeast students (23 students - all complete)
     console.log('Creating Northeast Academy students...');
     for (let i = 0; i < 23; i++) {
-      const studentData = generateStudent(northeastSchool.id, i + 30, "michael.chen@northeast.edu");
+      const studentData = generateStudent(northeastSchool.id, i, 30, "michael.chen@northeast.edu");
       await prisma.student.create({ data: studentData });
     }
 
     // Create Southwest students (30 students - all complete)
     console.log('Creating Desert View Elementary students...');
     for (let i = 0; i < 30; i++) {
-      const studentData = generateStudent(southwestSchool.id, i + 53, "maria.rodriguez@desertview.edu");
+      const studentData = generateStudent(southwestSchool.id, i, 53, "maria.rodriguez@desertview.edu");
       await prisma.student.create({ data: studentData });
     }
 
     // Create Midwest students (23 students - all complete)
     console.log('Creating Prairie View Middle School students...');
     for (let i = 0; i < 23; i++) {
-      const studentData = generateStudent(midwestSchool.id, i + 83, "jennifer.williams@prairieview.edu");
+      const studentData = generateStudent(midwestSchool.id, i, 83, "jennifer.williams@prairieview.edu");
       await prisma.student.create({ data: studentData });
     }
 
     // Create Southeast students (20 students - all complete)
     console.log('Creating Magnolia Elementary students...');
     for (let i = 0; i < 20; i++) {
-      const studentData = generateStudent(southeastSchool.id, i + 106, "robert.davis@magnolia.edu");
+      const studentData = generateStudent(southeastSchool.id, i, 106, "robert.davis@magnolia.edu");
       await prisma.student.create({ data: studentData });
     }
 
     // Create Mountain View students (12 students - all complete)
     console.log('Creating Mountain View Elementary students...');
     for (let i = 0; i < 12; i++) {
-      const studentData = generateStudent(mountainViewSchool.id, i + 126, "rightbackatyou13@gmail.com");
+      const studentData = generateStudent(mountainViewSchool.id, i, 126, "rightbackatyou13@gmail.com");
       await prisma.student.create({ data: studentData });
     }
 
