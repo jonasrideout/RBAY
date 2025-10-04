@@ -530,26 +530,7 @@ export default function AdminDashboard() {
         }
       }
     });
-    console.log('=== DEBUG INFO ===');
-matchedPairs.forEach((pair, idx) => {
-  console.log(`Pair ${idx}:`, {
-    unit1Name: isGroup(pair.unit1) ? pair.unit1.name : pair.unit1.schoolName,
-    unit1Ready: isUnitReady(pair.unit1),
-    unit2Name: isGroup(pair.unit2) ? pair.unit2.name : pair.unit2.schoolName,
-    unit2Ready: isUnitReady(pair.unit2),
-    bothUnitsReady: pair.bothUnitsReady,
-    hasStudentPairings: pair.hasStudentPairings
-  });
-  
-  if (isGroup(pair.unit1)) {
-    console.log('  Group 1 schools:', pair.unit1.schools.map(s => ({ name: s.schoolName, status: s.status })));
-    console.log('  Group 1 penPalPrefs:', pair.unit1.penPalPreferences);
-  }
-  if (isGroup(pair.unit2)) {
-    console.log('  Group 2 schools:', pair.unit2.schools.map(s => ({ name: s.schoolName, status: s.status })));
-    console.log('  Group 2 penPalPrefs:', pair.unit2.penPalPreferences);
-  }
-});
+    
     const awaitingReadiness = matchedPairs.filter(pair => !pair.bothUnitsReady);
     const readyForPairing = matchedPairs.filter(pair => pair.bothUnitsReady && !pair.hasStudentPairings);
     const completePairs = matchedPairs.filter(pair => pair.hasStudentPairings);
