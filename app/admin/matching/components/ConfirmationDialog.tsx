@@ -47,6 +47,8 @@ const isUnit2Ready = selectedMatch
     : false;
 
 const bothUnitsReady = isUnit1Ready && isUnit2Ready;
+const canAssignPenPals = isMatched && bothUnitsReady;
+  
 
   // Get display info for each unit
  // Get display info for each unit
