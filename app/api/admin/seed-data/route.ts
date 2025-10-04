@@ -187,7 +187,7 @@ export async function POST(request: NextRequest) {
     const lastInitials = ["W", "R", "K", "C", "T", "D", "G", "B", "J", "L", "M", "Ta", "P", "Mi", "Co", "Tu", "A", "Mo", "An", "Wh", "H", "Cl", "Le", "Wa", "Ha", "Y", "Ki", "Wr", "Lo", "Hi", "Gr", "Ba", "N", "Ca", "Ro", "Ph", "E", "Tur", "Pa", "Col"];
 
     // Helper function to generate realistic student data with complete profiles
-    const generateStudent = (schoolId: string, index: number) => {
+    const generateStudent = (schoolId: string, index: number, teacherEmail: string) => {
       const firstName = firstNames[index % firstNames.length];
       const lastInitial = lastInitials[Math.floor(Math.random() * lastInitials.length)];
       const grade = gradeOptions[Math.floor(Math.random() * gradeOptions.length)];
@@ -197,11 +197,10 @@ export async function POST(request: NextRequest) {
       const shuffledInterests = [...interestOptions].sort(() => 0.5 - Math.random());
       const interests = shuffledInterests.slice(0, numInterests);
       
-     // Determine penpal preference based on teacher email
-    // Test accounts (jonas.rideout and rightbackatyou13) keep all students as ONE
-    // Other accounts get ~8 students with MULTIPLE to meet requirements
-    const isTestAccount = schoolId === lincolnSchool.id || schoolId === mountainViewSchool.id;
-    const penpalPreference = (isTestAccount || index >= 8) ? "ONE" : "MULTIPLE";
+      // Test accounts keep all students as ONE to force pen pal preference workflow
+      // Other accounts get first 8 students with MULTIPLE to automatically meet requirements
+      const isTestAccount = teacherEmail === "jonas.rideout@gmail.com" || teacherEmail === "rightbackatyou13@gmail.com";
+      const penpalPreference = (isTestAccount || index >= 8) ? "ONE" : "MULTIPLE";
       
       // 30% chance of having otherInterests
       const otherInterests = otherInterestsOptions[Math.floor(Math.random() * otherInterestsOptions.length)];
@@ -223,49 +222,49 @@ export async function POST(request: NextRequest) {
     // Create Lincoln Elementary students (10 students - all complete)
     console.log('Creating Lincoln Elementary students...');
     for (let i = 0; i < 10; i++) {
-      const studentData = generateStudent(lincolnSchool.id, i);
+      const studentData = generateStudent(lincolnSchool.id, i, "jonas.rideout@gmail.com");
       await prisma.student.create({ data: studentData });
     }
 
     // Create Pacific students (20 students - all complete)
     console.log('Creating Pacific Elementary students...');
     for (let i = 0; i < 20; i++) {
-      const studentData = generateStudent(pacificSchool.id, i + 10);
+      const studentData = generateStudent(pacificSchool.id, i + 10, "sarah.johnson@pacific.edu");
       await prisma.student.create({ data: studentData });
     }
 
     // Create Northeast students (23 students - all complete)
     console.log('Creating Northeast Academy students...');
     for (let i = 0; i < 23; i++) {
-      const studentData = generateStudent(northeastSchool.id, i + 30);
+      const studentData = generateStudent(northeastSchool.id, i + 30, "michael.chen@northeast.edu");
       await prisma.student.create({ data: studentData });
     }
 
     // Create Southwest students (30 students - all complete)
     console.log('Creating Desert View Elementary students...');
     for (let i = 0; i < 30; i++) {
-      const studentData = generateStudent(southwestSchool.id, i + 53);
+      const studentData = generateStudent(southwestSchool.id, i + 53, "maria.rodriguez@desertview.edu");
       await prisma.student.create({ data: studentData });
     }
 
     // Create Midwest students (23 students - all complete)
     console.log('Creating Prairie View Middle School students...');
     for (let i = 0; i < 23; i++) {
-      const studentData = generateStudent(midwestSchool.id, i + 83);
+      const studentData = generateStudent(midwestSchool.id, i + 83, "jennifer.williams@prairieview.edu");
       await prisma.student.create({ data: studentData });
     }
 
     // Create Southeast students (20 students - all complete)
     console.log('Creating Magnolia Elementary students...');
     for (let i = 0; i < 20; i++) {
-      const studentData = generateStudent(southeastSchool.id, i + 106);
+      const studentData = generateStudent(southeastSchool.id, i + 106, "robert.davis@magnolia.edu");
       await prisma.student.create({ data: studentData });
     }
 
     // Create Mountain View students (12 students - all complete)
     console.log('Creating Mountain View Elementary students...');
     for (let i = 0; i < 12; i++) {
-      const studentData = generateStudent(mountainViewSchool.id, i + 126);
+      const studentData = generateStudent(mountainViewSchool.id, i + 126, "rightbackatyou13@gmail.com");
       await prisma.student.create({ data: studentData });
     }
 
@@ -319,13 +318,13 @@ export async function POST(request: NextRequest) {
       },
       schools: 7,
       schoolDetails: {
-        lincolnElementary: { students: 10, status: "COLLECTING", complete: 10 },
-        pacificElementary: { students: 20, status: "READY", complete: 20 },
-        northeastAcademy: { students: 23, status: "READY", complete: 23 },
-        desertViewElementary: { students: 30, status: "COLLECTING", complete: 30 },
-        prairieViewMiddle: { students: 23, status: "COLLECTING", complete: 23 },
-        magnoliaElementary: { students: 20, status: "COLLECTING", complete: 20 },
-        mountainViewElementary: { students: 12, status: "COLLECTING", complete: 12 }
+        lincolnElementary: { students: 10, status: "COLLECTING", complete: 10, multiplePreference: 0 },
+        pacificElementary: { students: 20, status: "READY", complete: 20, multiplePreference: 8 },
+        northeastAcademy: { students: 23, status: "READY", complete: 23, multiplePreference: 8 },
+        desertViewElementary: { students: 30, status: "COLLECTING", complete: 30, multiplePreference: 8 },
+        prairieViewMiddle: { students: 23, status: "COLLECTING", complete: 23, multiplePreference: 8 },
+        magnoliaElementary: { students: 20, status: "COLLECTING", complete: 20, multiplePreference: 8 },
+        mountainViewElementary: { students: 12, status: "COLLECTING", complete: 12, multiplePreference: 0 }
       },
       totalStudents,
       dashboardTokens: createdSchools.map(school => ({
@@ -340,11 +339,14 @@ export async function POST(request: NextRequest) {
         "All students have interests (1-3 from predefined list)",
         "All students have valid grades (3, 4, or 5)",
         "All students have parent consent",
+        "Test accounts (jonas.rideout, rightbackatyou13): All students ONE preference",
+        "Other accounts: First 8 students MULTIPLE preference to meet requirements",
         "No incomplete students in seed data"
       ],
       testScenarios: [
-        "Lincoln Elementary: 10 students, COLLECTING status (jonas.rideout@gmail.com)",
-        "Two schools READY for matching (Pacific + Northeast)",
+        "Lincoln Elementary: 10 students, COLLECTING status, all ONE preference (jonas.rideout@gmail.com)",
+        "Mountain View: 12 students, COLLECTING status, all ONE preference (rightbackatyou13@gmail.com)",
+        "Two schools READY for matching with 8 MULTIPLE students each (Pacific + Northeast)",
         "Five schools COLLECTING information (Lincoln, Southwest, Midwest, Southeast, Mountain)",
         "Various student counts: 10, 20, 23, 30, 23, 20, 12",
         "All students registered = all students ready",
