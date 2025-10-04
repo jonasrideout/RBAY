@@ -29,9 +29,9 @@ export interface School {
       id: string;
       schoolName: string;
       teacherName: string;
-      gradeLevel: string; // ADDED
-      specialConsiderations?: string; // ADDED
-      studentCount: number; // ADDED
+      gradeLevel: string;
+      specialConsiderations?: string;
+      studentCount: number;
     }[];
   };
   studentCounts?: {
@@ -69,6 +69,7 @@ export interface SchoolGroup {
     id: string;
     schoolName: string;
     teacherName: string;
+    teacherEmail: string;
     gradeLevel: string;
     specialConsiderations?: string;
     region: string;
