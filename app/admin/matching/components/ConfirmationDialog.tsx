@@ -32,39 +32,46 @@ export default function ConfirmationDialog({
 
   if (!unit1 || !unit2) return null;
 
-  // Check if both units are ready for pen pal assignment
-  const isUnit1Ready = pinnedSchool 
-    ? pinnedSchool.status === 'READY' 
-    : pinnedGroup?.isReadyForMatching || false;
-  
-  const isUnit2Ready = selectedMatch 
-    ? selectedMatch.status === 'READY' 
-    : selectedGroup?.isReadyForMatching || false;
-  
-  const bothUnitsReady = isUnit1Ready && isUnit2Ready;
-  const canAssignPenPals = isMatched && bothUnitsReady;
+ // Check if both units are ready for pen pal assignment
+// For groups, ALL schools in the group must be READY
+const isUnit1Ready = pinnedSchool 
+  ? pinnedSchool.status === 'READY' 
+  : pinnedGroup 
+    ? pinnedGroup.schools.every(school => school.status === 'READY')
+    : false;
+
+const isUnit2Ready = selectedMatch 
+  ? selectedMatch.status === 'READY' 
+  : selectedGroup
+    ? selectedGroup.schools.every(school => school.status === 'READY')
+    : false;
+
+const bothUnitsReady = isUnit1Ready && isUnit2Ready;
 
   // Get display info for each unit
-  const getUnitInfo = (school?: School | null, group?: SchoolGroup | null) => {
-    if (school) {
-      return {
-        name: school.schoolName,
-        type: 'School',
-        details: `${school.region} | ${school.studentCounts?.ready || 0} students | Starts ${school.startMonth}`,
-        status: school.status,
-        isReady: school.status === 'READY'
-      };
-    } else if (group) {
-      return {
-        name: group.name,
-        type: 'Group',
-        details: `${group.schools.length} schools | ${group.studentCounts.total} total students`,
-        status: group.isReadyForMatching ? 'READY' : 'COLLECTING',
-        isReady: group.isReadyForMatching
-      };
-    }
-    return null;
-  };
+ // Get display info for each unit
+const getUnitInfo = (school?: School | null, group?: SchoolGroup | null) => {
+  if (school) {
+    return {
+      name: school.schoolName,
+      type: 'School',
+      details: `${school.region} | ${school.studentCounts?.ready || 0} students | Starts ${school.startMonth}`,
+      status: school.status,
+      isReady: school.status === 'READY'
+    };
+  } else if (group) {
+    // For groups, check if ALL schools are READY
+    const allSchoolsReady = group.schools.every(school => school.status === 'READY');
+    return {
+      name: group.name,
+      type: 'Group',
+      details: `${group.schools.length} schools | ${group.studentCounts.total} total students`,
+      status: allSchoolsReady ? 'READY' : 'COLLECTING',
+      isReady: allSchoolsReady
+    };
+  }
+  return null;
+};
 
   const unit1Info = getUnitInfo(pinnedSchool, pinnedGroup);
   const unit2Info = getUnitInfo(selectedMatch, selectedGroup);
