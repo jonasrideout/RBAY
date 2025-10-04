@@ -64,8 +64,9 @@ model School {
   schoolGroup          SchoolGroup?  @relation(fields: [schoolGroupId], references: [id])
   
   // One-to-one school pairing
- // Can contain either a valid School ID OR a marker like "group:xxx" for cross-type matches
+  // Can contain either a valid School ID OR a marker like "group:xxx" for cross-type matches
   matchedWithSchoolId  String?       @unique
+  notificationEmailsSent Boolean     @default(false)
   
   // Future letter tracking fields (optional for now)
   letterFrequency      String?
