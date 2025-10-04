@@ -1,3 +1,4 @@
+// /app/admin/matching/components/SchoolPairDisplay.tsx
 "use client";
 
 import { useState } from 'react';
@@ -339,30 +340,61 @@ export default function SchoolPairDisplay({
           </div>
         </div>
 
-        {/* Teachers list - one per line */}
+        {/* Teachers list - one per line with download button */}
         {group.schools.map((school, idx) => (
           <div key={school.id} style={{
             display: 'flex',
             alignItems: 'center',
+            justifyContent: 'space-between',
             gap: '6px',
             fontSize: '12px',
             fontWeight: '300',
             color: '#555',
             marginBottom: idx < group.schools.length - 1 ? '4px' : '8px'
           }}>
-            <span>{school.schoolName} | {school.teacherName}</span>
-            <button
-              onClick={() => copyEmailAddress(school.teacherName, true)}
-              className="btn-icon"
-              style={{
-                fontSize: '16px',
-                color: '#666',
-                fontWeight: '300'
-              }}
-              title="Copy email address"
-            >
-              ✉
-            </button>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}>
+              <span>{school.schoolName} | {school.teacherName}</span>
+              <button
+                onClick={() => copyEmailAddress(school.teacherEmail, true)}
+                className="btn-icon"
+                style={{
+                  fontSize: '16px',
+                  color: '#666',
+                  fontWeight: '300'
+                }}
+                title={`Copy email: ${school.teacherEmail}`}
+              >
+                ✉
+              </button>
+            </div>
+            
+            {pair.hasStudentPairings && (
+              <button
+                onClick={() => {
+                  const penPalListUrl = `/admin/pen-pal-list?schoolId=${school.id}`;
+                  window.open(penPalListUrl, '_blank');
+                }}
+                style={{
+                  background: 'white',
+                  border: '1px solid #28a745',
+                  borderRadius: '3px',
+                  color: '#28a745',
+                  fontSize: '11px',
+                  fontWeight: '400',
+                  cursor: 'pointer',
+                  padding: '4px 8px',
+                  textAlign: 'center',
+                  minWidth: '90px'
+                }}
+                title="Download pen pal assignments for this school"
+              >
+                Download List
+              </button>
+            )}
           </div>
         ))}
 
