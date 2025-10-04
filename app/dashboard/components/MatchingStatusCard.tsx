@@ -64,8 +64,8 @@ export default function MatchingStatusCard({
   // Use status field for ready state
   const readyForPairing = schoolData?.status === 'READY';
   
-  // Show completion prompt if incomplete, otherwise show normal matching status
-  const shouldShowCard = isIncomplete || readyForPairing || (isMatched && !readOnly && !isAdminView);
+  // Show completion prompt if incomplete, otherwise show card ONLY when status is READY
+  const shouldShowCard = isIncomplete || readyForPairing;
   
   if (!shouldShowCard) {
     return null;
@@ -123,7 +123,7 @@ export default function MatchingStatusCard({
     );
   }
 
-  // Show regular matching status card for complete school profiles
+  // Show regular matching status card ONLY when status is READY
   return (
     <div className="card" style={{ marginBottom: '2rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
