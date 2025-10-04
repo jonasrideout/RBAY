@@ -2,6 +2,7 @@
 import { Resend } from 'resend';
 import WelcomeEmail from '@/app/components/emails/WelcomeEmail';
 import MagicLinkEmail from '@/app/components/emails/MagicLinkEmail';
+import PenPalAssignmentEmail from '@/app/components/emails/PenPalAssignmentEmail';
 import { PrismaClient } from '@prisma/client';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -11,7 +12,7 @@ export interface SendWelcomeEmailParams {
   teacherEmail: string;
   schoolName: string;
   dashboardToken: string;
-  isAdminCreated?: boolean; // New optional parameter
+  isAdminCreated?: boolean;
 }
 
 export interface SendMagicLinkEmailParams {
@@ -19,17 +20,24 @@ export interface SendMagicLinkEmailParams {
   magicLinkUrl: string;
 }
 
+export interface SendPenPalAssignmentEmailParams {
+  teacherName: string;
+  teacherEmail: string;
+  schoolName: string;
+  partnerSchoolNames: string[];
+  dashboardToken: string;
+}
+
 export async function sendWelcomeEmail({
   teacherName,
   teacherEmail,
   schoolName,
   dashboardToken,
-  isAdminCreated = false // Default to false for backward compatibility
+  isAdminCreated = false
 }: SendWelcomeEmailParams): Promise<{ success: boolean; error?: string }> {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nextjs-boilerplate-beta-three-49.vercel.app';
     
-    // Determine subject based on context
     const subject = isAdminCreated
       ? `Welcome to Right Back at You - Complete Your School Profile`
       : `Welcome to Right Back at You - ${schoolName}`;
@@ -43,7 +51,7 @@ export async function sendWelcomeEmail({
         schoolName,
         dashboardUrl: `${baseUrl}/dashboard?token=${dashboardToken}`,
         studentRegistrationUrl: `${baseUrl}/register-student?token=${dashboardToken}`,
-        isAdminCreated // Pass the context to the email template
+        isAdminCreated
       }),
     });
 
@@ -67,16 +75,13 @@ export async function sendMagicLinkEmail({
   try {
     const prisma = new PrismaClient();
     
-    // Check if school exists for this teacher
     const school = await prisma.school.findUnique({
       where: {
         teacherEmail: teacherEmail
       }
     });
-
     await prisma.$disconnect();
 
-    // Determine email type and content
     const isNewUser = !school;
     const teacherName = school?.teacherName || '';
     
@@ -106,5 +111,41 @@ export async function sendMagicLinkEmail({
   } catch (error: any) {
     console.error('Magic link email error:', error);
     return { success: false, error: error.message || 'Failed to send magic link email' };
+  }
+}
+
+export async function sendPenPalAssignmentEmail({
+  teacherName,
+  teacherEmail,
+  schoolName,
+  partnerSchoolNames,
+  dashboardToken
+}: SendPenPalAssignmentEmailParams): Promise<{ success: boolean; error?: string }> {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://penpal.carolynmackler.com';
+    const penPalListUrl = `${baseUrl}/teacher/pen-pal-list?token=${dashboardToken}`;
+    
+    const { data, error } = await resend.emails.send({
+      from: 'Right Back at You <noreply@carolynmackler.com>',
+      to: [teacherEmail],
+      subject: 'Your Pen Pal Assignments Are Ready!',
+      react: PenPalAssignmentEmail({
+        teacherName,
+        schoolName,
+        partnerSchoolNames,
+        penPalListUrl
+      }),
+    });
+
+    if (error) {
+      console.error('Resend error:', error);
+      return { success: false, error: error.message };
+    }
+
+    console.log('Pen pal assignment email sent successfully:', data);
+    return { success: true };
+  } catch (error: any) {
+    console.error('Pen pal assignment email error:', error);
+    return { success: false, error: error.message || 'Failed to send pen pal assignment email' };
   }
 }
