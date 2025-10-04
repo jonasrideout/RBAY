@@ -197,8 +197,11 @@ export async function POST(request: NextRequest) {
       const shuffledInterests = [...interestOptions].sort(() => 0.5 - Math.random());
       const interests = shuffledInterests.slice(0, numInterests);
       
-      // All students start with ONE preference for testing
-      const penpalPreference = "ONE";
+     // Determine penpal preference based on teacher email
+    // Test accounts (jonas.rideout and rightbackatyou13) keep all students as ONE
+    // Other accounts get ~8 students with MULTIPLE to meet requirements
+    const isTestAccount = schoolId === lincolnSchool.id || schoolId === mountainViewSchool.id;
+    const penpalPreference = (isTestAccount || index >= 8) ? "ONE" : "MULTIPLE";
       
       // 30% chance of having otherInterests
       const otherInterests = otherInterestsOptions[Math.floor(Math.random() * otherInterestsOptions.length)];
