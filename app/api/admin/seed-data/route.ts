@@ -12,6 +12,27 @@ export async function POST(request: NextRequest) {
     console.log('Starting enhanced seed data creation...');
     console.log('Seed-data using DATABASE_URL_DIRECT:', process.env.DATABASE_URL_DIRECT?.substring(0, 50) + '...');
 
+    // Create Lincoln Elementary - 10 students (COLLECTING status)
+    const lincolnSchool = await prisma.school.create({
+      data: {
+        schoolName: "Lincoln Elementary",
+        teacherName: "Jonas Rideout",
+        teacherEmail: "jonas.rideout@gmail.com",
+        teacherPhone: "(914) 555-0707",
+        schoolAddress: "100 School Street",
+        schoolCity: "Yonkers",
+        schoolState: "NY",
+        schoolZip: "10701",
+        gradeLevel: "3",
+        expectedClassSize: 10,
+        startMonth: "As soon as possible",
+        specialConsiderations: null,
+        status: "COLLECTING",
+        region: "Northeast",
+        isActive: true
+      }
+    });
+
     // Create Pacific School - 20 students (READY status)
     const pacificSchool = await prisma.school.create({
       data: {
@@ -196,49 +217,56 @@ export async function POST(request: NextRequest) {
       };
     };
 
+    // Create Lincoln Elementary students (10 students - all complete)
+    console.log('Creating Lincoln Elementary students...');
+    for (let i = 0; i < 10; i++) {
+      const studentData = generateStudent(lincolnSchool.id, i);
+      await prisma.student.create({ data: studentData });
+    }
+
     // Create Pacific students (20 students - all complete)
     console.log('Creating Pacific Elementary students...');
     for (let i = 0; i < 20; i++) {
-      const studentData = generateStudent(pacificSchool.id, i);
+      const studentData = generateStudent(pacificSchool.id, i + 10);
       await prisma.student.create({ data: studentData });
     }
 
     // Create Northeast students (23 students - all complete)
     console.log('Creating Northeast Academy students...');
     for (let i = 0; i < 23; i++) {
-      const studentData = generateStudent(northeastSchool.id, i + 20);
+      const studentData = generateStudent(northeastSchool.id, i + 30);
       await prisma.student.create({ data: studentData });
     }
 
     // Create Southwest students (30 students - all complete)
     console.log('Creating Desert View Elementary students...');
     for (let i = 0; i < 30; i++) {
-      const studentData = generateStudent(southwestSchool.id, i + 43);
+      const studentData = generateStudent(southwestSchool.id, i + 53);
       await prisma.student.create({ data: studentData });
     }
 
     // Create Midwest students (23 students - all complete)
     console.log('Creating Prairie View Middle School students...');
     for (let i = 0; i < 23; i++) {
-      const studentData = generateStudent(midwestSchool.id, i + 73);
+      const studentData = generateStudent(midwestSchool.id, i + 83);
       await prisma.student.create({ data: studentData });
     }
 
     // Create Southeast students (20 students - all complete)
     console.log('Creating Magnolia Elementary students...');
     for (let i = 0; i < 20; i++) {
-      const studentData = generateStudent(southeastSchool.id, i + 96);
+      const studentData = generateStudent(southeastSchool.id, i + 106);
       await prisma.student.create({ data: studentData });
     }
 
     // Create Mountain View students (12 students - all complete)
     console.log('Creating Mountain View Elementary students...');
     for (let i = 0; i < 12; i++) {
-      const studentData = generateStudent(mountainViewSchool.id, i + 116);
+      const studentData = generateStudent(mountainViewSchool.id, i + 126);
       await prisma.student.create({ data: studentData });
     }
 
-    const totalStudents = 20 + 23 + 30 + 23 + 20 + 12;
+    const totalStudents = 10 + 20 + 23 + 30 + 23 + 20 + 12;
 
     // === VERIFICATION SECTION ===
     console.log('=== VERIFICATION ===');
@@ -254,13 +282,14 @@ export async function POST(request: NextRequest) {
     console.log('Total students in database after seed:', studentCount);
     
     console.log('Enhanced seed data creation completed successfully');
-    console.log(`Created ${totalStudents} students across 6 schools with complete profiles`);
+    console.log(`Created ${totalStudents} students across 7 schools with complete profiles`);
 
     // Get the created schools with their tokens for the response
     const createdSchools = await prisma.school.findMany({
       where: {
         teacherEmail: {
           in: [
+            "jonas.rideout@gmail.com",
             "sarah.johnson@pacific.edu",
             "michael.chen@northeast.edu", 
             "maria.rodriguez@desertview.edu",
@@ -285,8 +314,9 @@ export async function POST(request: NextRequest) {
         studentsInDatabase: studentCount,
         schoolsFound: schoolNames
       },
-      schools: 6,
+      schools: 7,
       schoolDetails: {
+        lincolnElementary: { students: 10, status: "COLLECTING", complete: 10 },
         pacificElementary: { students: 20, status: "READY", complete: 20 },
         northeastAcademy: { students: 23, status: "READY", complete: 23 },
         desertViewElementary: { students: 30, status: "COLLECTING", complete: 30 },
@@ -310,9 +340,10 @@ export async function POST(request: NextRequest) {
         "No incomplete students in seed data"
       ],
       testScenarios: [
+        "Lincoln Elementary: 10 students, COLLECTING status (jonas.rideout@gmail.com)",
         "Two schools READY for matching (Pacific + Northeast)",
-        "Four schools COLLECTING information (Southwest, Midwest, Southeast, Mountain)",
-        "Various student counts: 20, 23, 30, 23, 20, 12",
+        "Five schools COLLECTING information (Lincoln, Southwest, Midwest, Southeast, Mountain)",
+        "Various student counts: 10, 20, 23, 30, 23, 20, 12",
         "All students registered = all students ready",
         "Simplified metrics: registered count = ready count"
       ]
