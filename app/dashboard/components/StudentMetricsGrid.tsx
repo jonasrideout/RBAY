@@ -36,6 +36,7 @@ interface MatchedSchool {
   schoolState?: string;
   expectedClassSize: number;
   region: string;
+  communicationPlatforms?: any;
 }
 
 interface StudentMetricsGridProps {
@@ -69,6 +70,15 @@ export default function StudentMetricsGrid({
     return '—';
   };
 
+  // Format communication platforms for matched school
+  const formatCommunicationPlatforms = () => {
+    if (!matchedSchool?.communicationPlatforms || !Array.isArray(matchedSchool.communicationPlatforms) || matchedSchool.communicationPlatforms.length === 0) {
+      return null;
+    }
+    
+    return matchedSchool.communicationPlatforms.join(' | ');
+  };
+
   const copyTeacherEmail = async () => {
     if (!matchedSchool?.teacherEmail) return;
 
@@ -81,6 +91,8 @@ export default function StudentMetricsGrid({
       prompt('Copy this email:', matchedSchool.teacherEmail);
     }
   };
+
+  const communicationPlatformsDisplay = formatCommunicationPlatforms();
   
   return (
     <div style={{ 
@@ -188,9 +200,19 @@ export default function StudentMetricsGrid({
               {emailCopyText}
             </button>
           </div>
-          <div className="text-data-label">
+          <div className="text-data-label" style={{ marginBottom: communicationPlatformsDisplay ? '0.5rem' : '0' }}>
             {matchedSchool.expectedClassSize || 0} students
           </div>
+          {communicationPlatformsDisplay && (
+            <div style={{ 
+              fontSize: '11px', 
+              fontWeight: '300', 
+              color: '#666',
+              marginTop: '0.5rem'
+            }}>
+              {communicationPlatformsDisplay}
+            </div>
+          )}
         </div>
       )}
 
