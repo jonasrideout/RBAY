@@ -16,6 +16,7 @@ interface SchoolData {
   students: any[];
   matchedWithSchoolId?: string;
   matchedSchoolName?: string;
+  communicationPlatforms?: any;
   studentStats?: {
     expected: number;
     registered: number;
@@ -66,14 +67,16 @@ export default function DashboardHeader({
   // Get pen pal assignment status from school data
   const penPalsAssigned = schoolData?.studentStats?.hasPenpalAssignments || false;
   
-  // TEMPORARY DEBUG - Remove after fixing
-  console.log('=== DASHBOARD HEADER DEBUG ===');
-  console.log('schoolData:', schoolData);
-  console.log('penPalsAssigned:', penPalsAssigned);
-  console.log('hasPairingRequested:', hasPairingRequested);
-  console.log('status:', schoolData?.status);
-  console.log('studentStats:', schoolData?.studentStats);
-  console.log('==============================');
+  // Format communication platforms for display
+  const formatCommunicationPlatforms = () => {
+    if (!schoolData.communicationPlatforms || !Array.isArray(schoolData.communicationPlatforms) || schoolData.communicationPlatforms.length === 0) {
+      return null;
+    }
+    
+    return schoolData.communicationPlatforms.join(' | ');
+  };
+  
+  const communicationPlatformsDisplay = formatCommunicationPlatforms();
   
   const generateStudentLink = () => {
     if (typeof window !== 'undefined' && schoolData.dashboardToken) {
@@ -210,9 +213,19 @@ export default function DashboardHeader({
           <h1 className="text-school-name" style={{ marginBottom: '0.5rem', fontSize: '1.8rem' }}>
             {schoolData.schoolName}
           </h1>
-          <p className="text-school-name" style={{ margin: 0 }}>
+          <p className="text-school-name" style={{ margin: 0, marginBottom: '0.25rem' }}>
             {schoolData.teacherName}
           </p>
+          {communicationPlatformsDisplay && (
+            <p style={{ 
+              margin: 0, 
+              fontSize: '11px', 
+              fontWeight: '300', 
+              color: '#666' 
+            }}>
+              {communicationPlatformsDisplay}
+            </p>
+          )}
         </div>
         
         {adminBackButton && (
