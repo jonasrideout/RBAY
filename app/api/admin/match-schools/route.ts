@@ -193,7 +193,7 @@ async function matchGroupWithSchool(groupId: string, schoolId: string) {
     }),
     prisma.school.update({
       where: { id: schoolId },
-      data: { matchedWithSchoolId: `group:${groupId}` }
+      data: { matchedWithSchoolId: null }
     })
   ]);
   
