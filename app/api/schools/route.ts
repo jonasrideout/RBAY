@@ -23,6 +23,8 @@ export async function POST(request: NextRequest) {
       expectedClassSize,
       startMonth,
       specialConsiderations,
+      communicationPlatforms,
+      mailingAddress,
       isAdminFlow,
       isEmailVerified
     } = body;
@@ -37,9 +39,17 @@ export async function POST(request: NextRequest) {
       }
     } else {
       if (!teacherName || !teacherEmail || !schoolName || 
-          !schoolState || !gradeLevel || !expectedClassSize || !startMonth) {
+          !schoolState || !gradeLevel || !expectedClassSize || !startMonth || !mailingAddress) {
         return NextResponse.json(
           { error: 'Missing required fields' },
+          { status: 400 }
+        );
+      }
+      
+      // Validate communication platforms in non-admin mode
+      if (!communicationPlatforms || communicationPlatforms.length === 0) {
+        return NextResponse.json(
+          { error: 'At least one communication platform is required' },
           { status: 400 }
         );
       }
@@ -98,7 +108,9 @@ export async function POST(request: NextRequest) {
         expectedClassSize: expectedClassSize ? parseInt(expectedClassSize) : 0,
         startMonth: startMonth || 'TBD',
         status: 'COLLECTING',
-        specialConsiderations: specialConsiderations || null
+        specialConsiderations: specialConsiderations || null,
+        communicationPlatforms: communicationPlatforms || null,
+        mailingAddress: mailingAddress || null
       }
     });
 
@@ -199,7 +211,8 @@ export async function PUT(request: NextRequest) {
       gradeLevel,
       expectedClassSize,
       startMonth,
-      specialConsiderations
+      specialConsiderations,
+      mailingAddress
     } = body;
 
     if (!schoolId) {
@@ -209,9 +222,9 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    if (!schoolState || !gradeLevel || !expectedClassSize || !startMonth) {
+    if (!schoolState || !gradeLevel || !expectedClassSize || !startMonth || !mailingAddress) {
       return NextResponse.json(
-        { error: 'Missing required fields: State, Grade Level, Expected Class Size, and Start Month are required' },
+        { error: 'Missing required fields: State, Grade Level, Expected Class Size, Start Month, and Mailing Address are required' },
         { status: 400 }
       );
     }
@@ -242,7 +255,8 @@ export async function PUT(request: NextRequest) {
         gradeLevel,
         expectedClassSize: parseInt(expectedClassSize),
         startMonth,
-        specialConsiderations: specialConsiderations || null
+        specialConsiderations: specialConsiderations || null,
+        mailingAddress: mailingAddress || null
       }
     });
 
@@ -348,7 +362,8 @@ export async function GET(request: NextRequest) {
             schoolCity: true,
             schoolState: true,
             expectedClassSize: true,
-            region: true
+            region: true,
+            mailingAddress: true
           }
         });
         
@@ -372,7 +387,8 @@ export async function GET(request: NextRequest) {
                 schoolCity: true,
                 schoolState: true,
                 expectedClassSize: true,
-                region: true
+                region: true,
+                mailingAddress: true
               }
             }
           }
@@ -416,7 +432,8 @@ export async function GET(request: NextRequest) {
                 schoolCity: true,
                 schoolState: true,
                 expectedClassSize: true,
-                region: true
+                region: true,
+                mailingAddress: true
               }
             }
           }
@@ -454,7 +471,8 @@ export async function GET(request: NextRequest) {
             schoolCity: true,
             schoolState: true,
             expectedClassSize: true,
-            region: true
+            region: true,
+            mailingAddress: true
           }
         });
         
