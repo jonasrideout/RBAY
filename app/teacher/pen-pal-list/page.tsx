@@ -18,6 +18,7 @@ interface Penpal {
   name: string;
   grade: string;
   school: string;
+  teacherName?: string;
   interests: string[];
   otherInterests: string | null;
 }
@@ -46,6 +47,20 @@ interface PenPalData {
     averagePenpalsPerStudent: string;
   };
   generatedAt: string;
+}
+
+// Group students by their pen pal's teacher
+interface TeacherGroup {
+  teacherName: string;
+  schoolName: string;
+  consolidatedStudents: {
+    studentName: string;
+    studentInterests: string;
+    penpals: {
+      name: string;
+      interests: string;
+    }[];
+  }[];
 }
 
 function PenPalListContent() {
@@ -111,6 +126,78 @@ function PenPalListContent() {
     return parts.length > 0 ? parts.join(', ') : 'No interests listed';
   };
 
+  // Organize students by teacher, consolidate duplicates, and sort
+  const organizeByTeacher = (): TeacherGroup[] => {
+    if (!data) return [];
+
+    const teacherMap = new Map<string, {
+      teacherName: string;
+      schoolName: string;
+      students: {
+        studentName: string;
+        studentInterests: string;
+        penpalName: string;
+        penpalInterests: string;
+      }[];
+    }>();
+
+    data.pairings.forEach(pairing => {
+      pairing.penpals.forEach(penpal => {
+        const key = `${penpal.teacherName || 'Unknown Teacher'}_${penpal.school}`;
+        
+        if (!teacherMap.has(key)) {
+          teacherMap.set(key, {
+            teacherName: penpal.teacherName || 'Unknown Teacher',
+            schoolName: penpal.school,
+            students: []
+          });
+        }
+
+        teacherMap.get(key)!.students.push({
+          studentName: pairing.student.name,
+          studentInterests: formatInterests(pairing.student.interests, pairing.student.otherInterests),
+          penpalName: penpal.name,
+          penpalInterests: formatInterests(penpal.interests, penpal.otherInterests)
+        });
+      });
+    });
+
+    // Convert to array and consolidate + sort students
+    return Array.from(teacherMap.values()).map(group => {
+      // Group students by name
+      const studentMap = new Map<string, {
+        studentName: string;
+        studentInterests: string;
+        penpals: { name: string; interests: string }[];
+      }>();
+
+      group.students.forEach(student => {
+        if (!studentMap.has(student.studentName)) {
+          studentMap.set(student.studentName, {
+            studentName: student.studentName,
+            studentInterests: student.studentInterests,
+            penpals: []
+          });
+        }
+        studentMap.get(student.studentName)!.penpals.push({
+          name: student.penpalName,
+          interests: student.penpalInterests
+        });
+      });
+
+      // Convert to array and sort by first name
+      const consolidatedStudents = Array.from(studentMap.values()).sort((a, b) => {
+        return a.studentName.localeCompare(b.studentName);
+      });
+
+      return {
+        teacherName: group.teacherName,
+        schoolName: group.schoolName,
+        consolidatedStudents
+      };
+    });
+  };
+
   if (status === 'loading' || isLoading) {
     return (
       <div className="page">
@@ -147,6 +234,8 @@ function PenPalListContent() {
       </div>
     );
   }
+
+  const teacherGroups = organizeByTeacher();
 
   return (
     <div className="page">
@@ -208,20 +297,12 @@ function PenPalListContent() {
             <div>
               <h1 style={{ 
                 color: '#4285f4', 
-                fontSize: '1.5rem', 
+                fontSize: '1.25rem', 
                 fontWeight: '600',
                 margin: '0 0 0.5rem 0'
               }}>
-                THE RIGHT BACK AT YOU
+                THE RIGHT BACK AT YOU PROJECT
               </h1>
-              <h2 style={{ 
-                color: '#4285f4', 
-                fontSize: '1.25rem', 
-                fontWeight: '600',
-                margin: 0
-              }}>
-                PROJECT
-              </h2>
             </div>
             <div>
               <img 
@@ -232,81 +313,85 @@ function PenPalListContent() {
             </div>
           </div>
 
-          {/* School and partner information */}
+          {/* Title */}
           <div style={{ marginBottom: '2rem' }}>
             <h2 style={{ 
-              fontSize: '1.4rem', 
-              fontWeight: '600',
-              margin: '0 0 1rem 0',
-              color: '#1a365d'
+              fontSize: '1.3rem', 
+              fontWeight: '300',
+              margin: '0 0 0.5rem 0',
+              color: '#1a365d',
+              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
             }}>
-              {data.school.name}{data.school.partnerSchool ? ` and ${data.school.partnerSchool}` : ' and Partner School'}
+              Pen Pals - {data.school.name}{data.school.partnerSchool ? ` and ${data.school.partnerSchool}` : ' and Partner School'}
             </h2>
-            
-            <h3 style={{ 
-              fontSize: '1.1rem', 
-              fontWeight: '500',
-              margin: '0 0 1.5rem 0',
-              color: '#4a5568'
-            }}>
-              {data.school.teacher}'s Class
-            </h3>
           </div>
 
-          {/* Student listings */}
-          <div style={{ lineHeight: '1.6' }}>
-            {data.pairings.map((pairing, index) => (
-              <div key={index} style={{ marginBottom: '1.5rem' }}>
-                {/* Student info with combined interests */}
-                <div style={{ marginBottom: '0.5rem' }}>
-                  <strong>{pairing.student.name}</strong>: {formatInterests(pairing.student.interests, pairing.student.otherInterests)}
+          {/* Student listings organized by teacher */}
+          {teacherGroups.map((group, groupIndex) => (
+            <div key={groupIndex} style={{ marginBottom: '3rem' }}>
+              {/* Section header */}
+              <h3 style={{
+                fontSize: '1.1rem',
+                fontWeight: '300',
+                margin: '0 0 1.5rem 0',
+                color: '#2c5aa0',
+                fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+              }}>
+                Students paired with {group.teacherName}, {group.schoolName}
+              </h3>
+
+              {/* Students in this group */}
+              {group.consolidatedStudents.map((student, studentIndex) => (
+                <div key={studentIndex}>
+                  {/* Cut line with scissors on right */}
+                  <div style={{
+                    borderTop: '2px dashed #ccc',
+                    position: 'relative',
+                    marginBottom: '1rem'
+                  }}>
+                    <span style={{
+                      position: 'absolute',
+                      right: '0',
+                      top: '-12px',
+                      fontSize: '1.2rem'
+                    }}>
+                      ✂️
+                    </span>
+                  </div>
+
+                  {/* Student entry with padding */}
+                  <div style={{
+                    paddingTop: '0.75rem',
+                    paddingBottom: '1.25rem',
+                    paddingLeft: '0.5rem',
+                    paddingRight: '0.5rem',
+                    fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    fontWeight: '300',
+                    lineHeight: '1.6'
+                  }}>
+                    <div style={{ marginBottom: '0.5rem' }}>
+                      {student.studentName}  Interests: {student.studentInterests}
+                    </div>
+                    <div style={{
+                      marginLeft: '1rem',
+                      color: '#4a5568'
+                    }}>
+                      {student.penpals.map((penpal, penpalIndex) => (
+                        <div key={penpalIndex} style={{ marginBottom: penpalIndex < student.penpals.length - 1 ? '0.5rem' : '0' }}>
+                          <div style={{ marginBottom: '0.25rem' }}>
+                            → Matched with {penpal.name} - {group.teacherName}'s class
+                          </div>
+                          <div style={{ marginLeft: '1rem' }}>
+                            Interests: {penpal.interests}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                
-                {/* Multiple pen pal matches */}
-                {pairing.penpals.length > 0 ? (
-                  <div style={{ 
-                    marginLeft: '1rem',
-                    paddingLeft: '1rem',
-                    borderLeft: '2px solid #e0e6ed'
-                  }}>
-                    {pairing.penpals.map((penpal, penpalIndex) => (
-                      <div key={penpalIndex} style={{ color: '#4a5568', marginBottom: '0.25rem' }}>
-                        ● <strong>Matched with {penpal.name}</strong>: {formatInterests(penpal.interests, penpal.otherInterests)}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div style={{ 
-                    marginLeft: '1rem',
-                    color: '#dc3545',
-                    fontStyle: 'italic'
-                  }}>
-                    ● No pen pal assigned yet
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-
-          {/* Summary information */}
-          {data.summary && (
-            <div style={{ 
-              marginTop: '2rem',
-              padding: '1rem',
-              backgroundColor: '#f8f9fa',
-              borderRadius: '6px',
-              border: '1px solid #e0e6ed',
-              fontSize: '0.9rem',
-              color: '#4a5568'
-            }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
-                <div><strong>Total Students:</strong> {data.summary.totalStudents}</div>
-                <div><strong>Students with Pen Pals:</strong> {data.summary.studentsWithPenpals}</div>
-                <div><strong>Total Connections:</strong> {data.summary.totalPenpalConnections}</div>
-                <div><strong>Average per Student:</strong> {data.summary.averagePenpalsPerStudent}</div>
-              </div>
+              ))}
             </div>
-          )}
+          ))}
 
           {/* Footer info */}
           <div style={{ 
@@ -315,7 +400,9 @@ function PenPalListContent() {
             borderTop: '1px solid #e0e6ed',
             fontSize: '0.9rem',
             color: '#718096',
-            textAlign: 'center'
+            textAlign: 'center',
+            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            fontWeight: '300'
           }}>
             <p>Generated on {new Date(data.generatedAt).toLocaleDateString()}</p>
             <p>The Right Back at You Project by Carolyn Mackler</p>
