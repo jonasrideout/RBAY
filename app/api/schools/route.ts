@@ -1,3 +1,10 @@
+// /app/api/schools/route.ts
+
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { sendWelcomeEmail } from '@/lib/email';
+import { createTeacherSession, setSessionCookie } from '@/lib/magicLink';
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
