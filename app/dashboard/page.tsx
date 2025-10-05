@@ -207,6 +207,7 @@ function TeacherDashboardContent() {
         teacherPhone: data.school.teacherPhone,
         specialConsiderations: data.school.specialConsiderations,
         schoolGroup: data.school.schoolGroup,
+        studentStats: data.school.studentStats,
         matchedSchool: data.school.matchedWithSchool ? {
           id: data.school.matchedWithSchool.id,
           schoolName: data.school.matchedWithSchool.schoolName,
