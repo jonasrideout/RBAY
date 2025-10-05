@@ -66,6 +66,15 @@ export default function DashboardHeader({
   // Get pen pal assignment status from school data
   const penPalsAssigned = schoolData?.studentStats?.hasPenpalAssignments || false;
   
+  // TEMPORARY DEBUG - Remove after fixing
+  console.log('=== DASHBOARD HEADER DEBUG ===');
+  console.log('schoolData:', schoolData);
+  console.log('penPalsAssigned:', penPalsAssigned);
+  console.log('hasPairingRequested:', hasPairingRequested);
+  console.log('status:', schoolData?.status);
+  console.log('studentStats:', schoolData?.studentStats);
+  console.log('==============================');
+  
   const generateStudentLink = () => {
     if (typeof window !== 'undefined' && schoolData.dashboardToken) {
       return `${window.location.origin}/register-student?token=${schoolData.dashboardToken}`;
