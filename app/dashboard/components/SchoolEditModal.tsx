@@ -19,6 +19,8 @@ interface SchoolData {
   startMonth?: string;
   programStartMonth?: string;
   specialConsiderations?: string;
+  communicationPlatforms?: any;
+  mailingAddress?: string;
 }
 
 interface SchoolEditModalProps {
@@ -51,7 +53,10 @@ export default function SchoolEditModal({
     programStartMonth: schoolData.startMonth || schoolData.programStartMonth || '',
     specialConsiderations: schoolData.specialConsiderations || '',
     programAgreement: true, // Not needed for edit mode
-    parentNotification: true // Default value for edit mode
+    parentNotification: true, // Default value for edit mode
+    communicationPlatforms: [],
+    communicationPlatformsOther: '',
+    mailingAddress: schoolData.mailingAddress || ''
   });
 
   const handleUpdateFormData = (field: keyof SchoolFormData, value: any) => {
@@ -91,7 +96,7 @@ export default function SchoolEditModal({
     try {
       // Validate required fields
       if (!formData.schoolState || !formData.gradeLevels.length || 
-          !formData.classSize || !formData.programStartMonth) {
+          !formData.classSize || !formData.programStartMonth || !formData.mailingAddress) {
         throw new Error('Please fill in all required fields');
       }
 
@@ -111,6 +116,7 @@ export default function SchoolEditModal({
           startMonth: formData.programStartMonth,
           teacherPhone: formData.teacherPhone || null,
           specialConsiderations: formData.specialConsiderations || null,
+          mailingAddress: formData.mailingAddress,
           region: region
         })
       });
