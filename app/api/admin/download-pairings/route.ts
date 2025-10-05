@@ -8,6 +8,7 @@ interface PenpalData {
   name: string;
   grade: string;
   school: string | undefined;
+  teacherName: string | undefined;
   interests: string[];
   otherInterests: string | null;
 }
@@ -29,7 +30,7 @@ export async function GET(request: NextRequest) {
     const school = await prisma.school.findUnique({
       where: { id: schoolId },
       include: {
-        schoolGroup: true, // NEW: Include group information
+        schoolGroup: true,
         students: {
           where: { isActive: true },
           include: {
@@ -75,6 +76,7 @@ export async function GET(request: NextRequest) {
             name: `${connection.penpal.firstName} ${connection.penpal.lastInitial}.`,
             grade: connection.penpal.grade,
             school: connection.penpal.school?.schoolName,
+            teacherName: connection.penpal.school?.teacherName,
             interests: connection.penpal.interests,
             otherInterests: connection.penpal.otherInterests
           });
@@ -88,6 +90,7 @@ export async function GET(request: NextRequest) {
             name: `${connection.student.firstName} ${connection.student.lastInitial}.`,
             grade: connection.student.grade,
             school: connection.student.school?.schoolName,
+            teacherName: connection.student.school?.teacherName,
             interests: connection.student.interests,
             otherInterests: connection.student.otherInterests
           });
@@ -116,7 +119,7 @@ export async function GET(request: NextRequest) {
     let partnerSchoolName: string;
     
     if (school.schoolGroupId) {
-      // NEW: School is part of a group
+      // School is part of a group
       // Get all OTHER schools in the same group (excluding this school)
       const groupSchools = await prisma.school.findMany({
         where: {
