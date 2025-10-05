@@ -459,27 +459,27 @@ export default function AdminDashboard() {
     const processedGroups = new Set<string>();
 
     schools.forEach(school => {
-      if (processedSchools.has(school.id) || school.schoolGroupId) return;
+  if (processedSchools.has(school.id) || school.schoolGroupId) return;
 
-      if (!school.matchedWithSchoolId) {
-        unmatched.push(school);
-      } else {
-        const matchedSchoolFull = schools.find(s => s.id === school.matchedWithSchoolId);
-        
-        if (matchedSchoolFull && !processedSchools.has(matchedSchoolFull.id)) {
-          const hasStudentPairings = unitHasPenPalAssignments(school) || unitHasPenPalAssignments(matchedSchoolFull);
-          const bothUnitsReady = isUnitReady(school) && isUnitReady(matchedSchoolFull);
+  if (!school.matchedWithSchoolId) {
+    unmatched.push(school);
+  } else {
+    const matchedSchoolFull = schools.find(s => s.id === school.matchedWithSchoolId);
+    
+    if (matchedSchoolFull && !processedSchools.has(matchedSchoolFull.id)) {
+      const hasStudentPairings = unitHasPenPalAssignments(school) && unitHasPenPalAssignments(matchedSchoolFull);
+      const bothUnitsReady = isUnitReady(school) && isUnitReady(matchedSchoolFull);
 
-          matchedPairs.push({
-            unit1: school,
-            unit2: matchedSchoolFull,
-            hasStudentPairings,
-            bothUnitsReady,
-            matchType: 'school-school'
-          });
+      matchedPairs.push({
+        unit1: school,
+        unit2: matchedSchoolFull,
+        hasStudentPairings,
+        bothUnitsReady,
+        matchType: 'school-school'
+      });
 
-          processedSchools.add(school.id);
-          processedSchools.add(matchedSchoolFull.id);
+      processedSchools.add(school.id);
+      processedSchools.add(matchedSchoolFull.id);
         }
       }
     });
@@ -495,7 +495,7 @@ export default function AdminDashboard() {
           const matchedSchool = schools.find(s => s.id === schoolId);
           
           if (matchedSchool && !processedSchools.has(matchedSchool.id)) {
-            const hasStudentPairings = unitHasPenPalAssignments(group) || unitHasPenPalAssignments(matchedSchool);
+            const hasStudentPairings = unitHasPenPalAssignments(group) && unitHasPenPalAssignments(matchedSchool);
             const bothUnitsReady = isUnitReady(group) && isUnitReady(matchedSchool);
 
             matchedPairs.push({
@@ -513,7 +513,7 @@ export default function AdminDashboard() {
           const matchedGroup = groups.find(g => g.id === group.matchedWithGroupId);
           
           if (matchedGroup && !processedGroups.has(matchedGroup.id)) {
-            const hasStudentPairings = unitHasPenPalAssignments(group) || unitHasPenPalAssignments(matchedGroup);
+            const hasStudentPairings = unitHasPenPalAssignments(group) && unitHasPenPalAssignments(matchedGroup);
             const bothUnitsReady = isUnitReady(group) && isUnitReady(matchedGroup);
 
             matchedPairs.push({
