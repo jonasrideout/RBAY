@@ -322,7 +322,12 @@ function PenPalListContent() {
                       marginLeft: '1rem',
                       color: '#4a5568'
                     }}>
-                      Matched with {student.penpalName}  Interests: {student.penpalInterests}
+                      <div style={{ marginBottom: '0.25rem' }}>
+                        → Matched with {student.penpalName} - {group.teacherName}'s class
+                      </div>
+                      <div style={{ marginLeft: '1rem' }}>
+                        Interests: {student.penpalInterests}
+                      </div>
                     </div>
                   </div>
                 </div>
