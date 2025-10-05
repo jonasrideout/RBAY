@@ -287,66 +287,38 @@ export default function DashboardHeader({
                 Download Pen Pals
               </Link>
 
-              {!penPalsAssigned ? (
-                hasPairingRequested ? (
-                  <button 
-                    className="btn" 
-                    disabled={true}
-                    style={{
-                      backgroundColor: '#f8f9fa',
-                      color: '#999',
-                      border: '1px solid #e0e0e0',
-                      cursor: 'not-allowed',
-                      opacity: 0.6,
-                      fontSize: '13px'
-                    }}
-                    title="Waiting for pen pal assignments"
-                  >
-                    Pending Pen Pals
-                  </button>
+              <button 
+                className="btn" 
+                disabled={penPalsAssigned || hasPairingRequested || isRequestingMatching || !allActiveStudentsComplete || schoolData.students.length === 0}
+                onClick={handleRequestPairingClick}
+                style={{
+                  cursor: (penPalsAssigned || hasPairingRequested || isRequestingMatching || !allActiveStudentsComplete || schoolData.students.length === 0) ? 'not-allowed' : 'pointer',
+                  opacity: (penPalsAssigned || hasPairingRequested || isRequestingMatching || !allActiveStudentsComplete || schoolData.students.length === 0) ? 0.6 : 1,
+                  fontSize: '13px'
+                }}
+                title={
+                  penPalsAssigned
+                    ? "Pen pals already assigned"
+                    : hasPairingRequested
+                    ? "Waiting for pen pal assignments"
+                    : schoolData.students.length === 0
+                    ? "Need students first"
+                    : !allActiveStudentsComplete
+                    ? "Complete all student profiles first"
+                    : "Indicate readiness to pair pen pals"
+                }
+              >
+                {isRequestingMatching ? (
+                  <>
+                    <span className="loading"></span>
+                    <span style={{ marginLeft: '0.25rem' }}>Requesting...</span>
+                  </>
+                ) : hasPairingRequested && !penPalsAssigned ? (
+                  'Pending Pen Pals'
                 ) : (
-                  <button 
-                    className="btn" 
-                    disabled={isRequestingMatching || !allActiveStudentsComplete || schoolData.students.length === 0}
-                    onClick={handleRequestPairingClick}
-                    style={{
-                      cursor: (isRequestingMatching || !allActiveStudentsComplete || schoolData.students.length === 0) ? 'not-allowed' : 'pointer',
-                      opacity: (isRequestingMatching || !allActiveStudentsComplete || schoolData.students.length === 0) ? 0.6 : 1,
-                      fontSize: '13px'
-                    }}
-                    title={
-                      schoolData.students.length === 0
-                        ? "Need students first"
-                        : !allActiveStudentsComplete
-                        ? "Complete all student profiles first"
-                        : "Indicate readiness to pair pen pals"
-                    }
-                  >
-                    {isRequestingMatching ? (
-                      <>
-                        <span className="loading"></span>
-                        <span style={{ marginLeft: '0.25rem' }}>Requesting...</span>
-                      </>
-                    ) : 'Ready to Pair Pen Pals'}
-                  </button>
-                )
-              ) : (
-                <button 
-                  className="btn" 
-                  disabled={true}
-                  style={{
-                    backgroundColor: '#f8f9fa',
-                    color: '#999',
-                    border: '1px solid #e0e0e0',
-                    cursor: 'not-allowed',
-                    opacity: 0.6,
-                    fontSize: '13px'
-                  }}
-                  title="Pen pals already assigned"
-                >
-                  Ready to Pair Pen Pals
-                </button>
-              )}
+                  'Ready to Pair Pen Pals'
+                )}
+              </button>
             </div>
           </div>
         )}
