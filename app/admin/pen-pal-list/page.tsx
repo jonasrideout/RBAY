@@ -335,28 +335,6 @@ function PenPalListContent() {
             </div>
           ))}
 
-          {/* Summary information */}
-          {data.summary && (
-            <div style={{ 
-              marginTop: '2rem',
-              padding: '1rem',
-              backgroundColor: '#f8f9fa',
-              borderRadius: '6px',
-              border: '1px solid #e0e6ed',
-              fontSize: '0.9rem',
-              color: '#4a5568',
-              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-              fontWeight: '300'
-            }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
-                <div>Total Students: {data.summary.totalStudents}</div>
-                <div>Students with Pen Pals: {data.summary.studentsWithPenpals}</div>
-                <div>Total Connections: {data.summary.totalPenpalConnections}</div>
-                <div>Average per Student: {data.summary.averagePenpalsPerStudent}</div>
-              </div>
-            </div>
-          )}
-
           {/* Footer info */}
           <div style={{ 
             marginTop: '3rem',
