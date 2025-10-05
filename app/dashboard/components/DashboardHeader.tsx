@@ -78,18 +78,15 @@ export default function DashboardHeader({
       await navigator.clipboard.writeText(generateStudentLink());
       setCopyStatus('copied');
       
-      // Reset back to normal after 2 seconds
       setTimeout(() => {
         setCopyStatus('idle');
       }, 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
-      // Fallback - could show an error state if needed
     }
   };
 
   const handleRequestPairingClick = async () => {
-    // Determine if this school is part of a group
     const isInGroup = !!schoolData.schoolGroup;
     
     let totalStudentsInGroup: number;
@@ -98,23 +95,19 @@ export default function DashboardHeader({
     let currentMultipleAcrossGroup: number;
     
     if (isInGroup) {
-      // GROUPED SCHOOL: Use combined student counts from all schools in group
       const allGroupStudents = schoolData.schoolGroup!.schools.flatMap(school => school.students);
       totalStudentsInGroup = allGroupStudents.length;
       thisSchoolStudentCount = schoolData.students.length;
       
-      // Calculate total requirement based on combined class size
       const formulaRequired = Math.ceil((30 - totalStudentsInGroup) / 2);
       const maxPossible = Math.floor(totalStudentsInGroup * 0.8);
       totalGroupRequired = Math.min(formulaRequired, maxPossible);
       
-      // Count MULTIPLE students across all schools in group
       currentMultipleAcrossGroup = allGroupStudents.filter(
         (s: any) => s.penpalPreference === 'MULTIPLE'
       ).length;
       
     } else {
-      // INDIVIDUAL SCHOOL: Use only this school's students
       totalStudentsInGroup = schoolData.students.length;
       thisSchoolStudentCount = schoolData.students.length;
       
@@ -128,33 +121,26 @@ export default function DashboardHeader({
     }
     
     if (totalGroupRequired > 0) {
-      // Calculate shortfall
       const shortfall = totalGroupRequired - currentMultipleAcrossGroup;
       
       if (shortfall > 0) {
-        // Calculate this school's proportional share of the shortfall
         const thisSchoolRequired = Math.ceil(shortfall * (thisSchoolStudentCount / totalStudentsInGroup));
         
-        // Count how many students in THIS school already have MULTIPLE
         const thisSchoolCurrentMultiple = schoolData.students.filter(
           (s: any) => s.penpalPreference === 'MULTIPLE'
         ).length;
         
-        // Check if this school needs to add more MULTIPLE students
         if (thisSchoolCurrentMultiple < thisSchoolRequired) {
-          // Not enough students in THIS school set to MULTIPLE - trigger the update UI
           if (onPenpalPreferenceCheckNeeded) {
             onPenpalPreferenceCheckNeeded(thisSchoolRequired, thisSchoolCurrentMultiple);
           }
-          return; // Don't proceed with pairing yet
+          return;
         }
       }
       
-      // Either shortfall is 0 or this school has enough MULTIPLE students - proceed with confirmation
       setShowConfirmation(true);
       
     } else {
-      // Combined class is large enough - proceed directly to confirmation
       setShowConfirmation(true);
     }
   };
@@ -187,7 +173,6 @@ export default function DashboardHeader({
         onMatchingRequested();
       }
       
-      // Force a page refresh if the callback doesn't update the UI
       setTimeout(() => {
         window.location.reload();
       }, 1000);
@@ -202,33 +187,6 @@ export default function DashboardHeader({
 
   const handleCancelPairing = () => {
     setShowConfirmation(false);
-  };
-
-  const handleDownloadPenPals = async () => {
-    if (!penPalsAssigned) return;
-    
-    try {
-      const response = await fetch(`/api/admin/download-pairings?schoolId=${schoolData.id}`);
-      if (response.ok) {
-        const data = await response.json();
-        
-        // Create and download the file
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${schoolData.schoolName}_pen_pal_assignments.json`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-      } else {
-        throw new Error('Failed to download pen pal assignments');
-      }
-    } catch (error) {
-      console.error('Error downloading pen pals:', error);
-      alert('Error downloading pen pal assignments. Please try again.');
-    }
   };
   
   return (
@@ -248,7 +206,6 @@ export default function DashboardHeader({
           </p>
         </div>
         
-        {/* Show admin back button in admin view */}
         {adminBackButton && (
           <div>
             <Link 
@@ -260,7 +217,6 @@ export default function DashboardHeader({
           </div>
         )}
         
-        {/* Show all action buttons in teacher view */}
         {!readOnly && !adminBackButton && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '440px' }}>
             
@@ -269,13 +225,15 @@ export default function DashboardHeader({
               <button 
                 onClick={handleCopyLink}
                 className="btn"
-                disabled={isProfileIncomplete}
+                disabled={isProfileIncomplete || penPalsAssigned}
                 style={{ 
                   backgroundColor: copyStatus === 'copied' ? '#28a745' : 'white',
                   color: copyStatus === 'copied' ? 'white' : '#555',
                   border: copyStatus === 'copied' ? '1px solid #28a745' : '1px solid #ddd',
                   transition: 'all 0.3s ease',
-                  fontSize: '13px'
+                  fontSize: '13px',
+                  opacity: (isProfileIncomplete || penPalsAssigned) ? 0.6 : 1,
+                  cursor: (isProfileIncomplete || penPalsAssigned) ? 'not-allowed' : 'pointer'
                 }}
               >
                 {copyStatus === 'copied' ? (
@@ -289,49 +247,48 @@ export default function DashboardHeader({
               </button>
 
               <Link 
-                href={isProfileIncomplete ? '#' : `/register-student?token=${schoolData.dashboardToken}`}
+                href={(isProfileIncomplete || penPalsAssigned) ? '#' : `/register-student?token=${schoolData.dashboardToken}`}
                 className="btn"
-                onClick={(e) => { if (isProfileIncomplete) e.preventDefault(); }}
+                onClick={(e) => { if (isProfileIncomplete || penPalsAssigned) e.preventDefault(); }}
                 style={{
                   fontSize: '13px',
                   textDecoration: 'none',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  opacity: isProfileIncomplete ? 0.6 : 1,
-                  cursor: isProfileIncomplete ? 'not-allowed' : 'pointer',
-                  pointerEvents: isProfileIncomplete ? 'none' : 'auto'
+                  opacity: (isProfileIncomplete || penPalsAssigned) ? 0.6 : 1,
+                  cursor: (isProfileIncomplete || penPalsAssigned) ? 'not-allowed' : 'pointer',
+                  pointerEvents: (isProfileIncomplete || penPalsAssigned) ? 'none' : 'auto'
                 }}
-                title="Add new student"
+                title={penPalsAssigned ? "Cannot add students after pen pals are assigned" : "Add new student"}
               >
                 Add New Student
               </Link>
             </div>
 
-            {/* Bottom row - Download and Ready to Pair Pen Pals/Download Pen Pals */}
+            {/* Bottom row - Download Pen Pals and Ready to Pair Pen Pals */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-              <button 
+              <Link
+                href={penPalsAssigned ? `/teacher/pen-pal-list?schoolId=${schoolData.id}` : '#'}
                 className="btn"
-                disabled={schoolData.students.length === 0}
-                onClick={() => {
-                  if (schoolData.students.length > 0 && schoolData?.dashboardToken) {
-                    window.open(`/dashboard/print?token=${schoolData.dashboardToken}`, '_blank');
-                  }
-                }}
+                onClick={(e) => { if (!penPalsAssigned) e.preventDefault(); }}
                 style={{
-                  opacity: schoolData.students.length === 0 ? 0.6 : 1,
-                  cursor: schoolData.students.length === 0 ? 'not-allowed' : 'pointer',
-                  fontSize: '13px'
+                  fontSize: '13px',
+                  textDecoration: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  opacity: penPalsAssigned ? 1 : 0.6,
+                  cursor: penPalsAssigned ? 'pointer' : 'not-allowed',
+                  pointerEvents: penPalsAssigned ? 'auto' : 'none'
                 }}
-                title={schoolData.students.length === 0 ? "Need students first" : "Download student information"}
+                title={penPalsAssigned ? "View and download pen pal assignments" : "Pen pals not assigned yet"}
               >
-                Download Student Info
-              </button>
+                Download Pen Pals
+              </Link>
 
-              {/* Conditional button: Ready to Pair Pen Pals OR Pending Pen Pals OR Download Pen Pals */}
               {!penPalsAssigned ? (
                 hasPairingRequested ? (
-                  // Pending Pen Pals Button - show when pairing requested but no pen pals assigned yet
                   <button 
                     className="btn" 
                     disabled={true}
@@ -348,7 +305,6 @@ export default function DashboardHeader({
                     Pending Pen Pals
                   </button>
                 ) : (
-                  // Ready to Pair Pen Pals Button - show when not requested yet
                   <button 
                     className="btn" 
                     disabled={isRequestingMatching || !allActiveStudentsComplete || schoolData.students.length === 0}
@@ -375,16 +331,20 @@ export default function DashboardHeader({
                   </button>
                 )
               ) : (
-                // Download Pen Pals Button - show when pen pals are assigned
                 <button 
                   className="btn" 
-                  onClick={handleDownloadPenPals}
+                  disabled={true}
                   style={{
+                    backgroundColor: '#f8f9fa',
+                    color: '#999',
+                    border: '1px solid #e0e0e0',
+                    cursor: 'not-allowed',
+                    opacity: 0.6,
                     fontSize: '13px'
                   }}
-                  title="Download pen pal assignments"
+                  title="Pen pals already assigned"
                 >
-                  Download Pen Pals
+                  Ready to Pair Pen Pals
                 </button>
               )}
             </div>
@@ -392,7 +352,6 @@ export default function DashboardHeader({
         )}
       </div>
 
-      {/* Confirmation Dialog */}
       {showConfirmation && (
         <div style={{
           position: 'fixed',
