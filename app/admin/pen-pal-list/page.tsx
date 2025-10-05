@@ -247,16 +247,8 @@ function PenPalListContent() {
                 fontWeight: '600',
                 margin: '0 0 0.5rem 0'
               }}>
-                THE RIGHT BACK AT YOU
+                THE RIGHT BACK AT YOU PROJECT
               </h1>
-              <h2 style={{ 
-                color: '#4285f4', 
-                fontSize: '1rem', 
-                fontWeight: '600',
-                margin: 0
-              }}>
-                PROJECT
-              </h2>
             </div>
             <div>
               <img 
