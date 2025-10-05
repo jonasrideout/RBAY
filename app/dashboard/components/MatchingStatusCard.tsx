@@ -22,6 +22,8 @@ interface SchoolData {
   gradeLevel?: string;
   teacherPhone?: string;
   specialConsiderations?: string;
+  mailingAddress?: string;
+  communicationPlatforms?: any;
   matchedSchool?: {
     id: string;
     schoolName: string;
@@ -65,7 +67,8 @@ export default function MatchingStatusCard({
   const isIncomplete = schoolData.schoolState === 'TBD' || 
                       schoolData.gradeLevel === 'TBD' || 
                       schoolData.startMonth === 'TBD' ||
-                      schoolData.expectedClassSize === 0;
+                      schoolData.expectedClassSize === 0 ||
+                      !schoolData.mailingAddress;
 
   // Check if school is matched with another school/group
   const isMatched = schoolData?.matchedWithSchoolId != null;
