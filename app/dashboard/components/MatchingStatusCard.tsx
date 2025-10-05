@@ -34,7 +34,13 @@ interface SchoolData {
     expectedClassSize: number;
     region: string;
     isGroup?: boolean;
-    schools?: any[];
+    mailingAddress?: string;
+    schools?: Array<{
+      id: string;
+      schoolName: string;
+      teacherName: string;
+      mailingAddress?: string;
+    }>;
   };
   studentStats?: {
     expected: number;
@@ -97,6 +103,67 @@ export default function MatchingStatusCard({
     window.open(`/teacher/pen-pal-list?schoolId=${schoolData.id}`, '_blank');
   };
 
+  // Render mailing addresses for matched schools
+  const renderMailingAddresses = () => {
+    if (!schoolData.matchedSchool) return null;
+
+    // If matched with a group, show all schools in the group
+    if (schoolData.matchedSchool.isGroup && schoolData.matchedSchool.schools) {
+      return (
+        <div style={{ marginTop: '1rem' }}>
+          {schoolData.matchedSchool.schools.map((school, index) => (
+            <div key={school.id} style={{ marginBottom: index < schoolData.matchedSchool!.schools!.length - 1 ? '1rem' : '0' }}>
+              <div style={{ 
+                fontSize: '14px', 
+                fontWeight: '400', 
+                color: '#333',
+                marginBottom: '0.25rem'
+              }}>
+                {school.schoolName}
+              </div>
+              {school.mailingAddress && (
+                <div style={{ 
+                  fontSize: '13px', 
+                  fontWeight: '300', 
+                  color: '#666',
+                  whiteSpace: 'pre-line'
+                }}>
+                  {school.mailingAddress}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // Single matched school
+    if (schoolData.matchedSchool.mailingAddress) {
+      return (
+        <div style={{ marginTop: '1rem' }}>
+          <div style={{ 
+            fontSize: '14px', 
+            fontWeight: '400', 
+            color: '#333',
+            marginBottom: '0.25rem'
+          }}>
+            {schoolData.matchedSchool.schoolName}
+          </div>
+          <div style={{ 
+            fontSize: '13px', 
+            fontWeight: '300', 
+            color: '#666',
+            whiteSpace: 'pre-line'
+          }}>
+            {schoolData.matchedSchool.mailingAddress}
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
   // Show completion prompt if school data is incomplete
   if (isIncomplete) {
     return (
@@ -144,7 +211,7 @@ export default function MatchingStatusCard({
   if (penPalsPaired) {
     return (
       <div className="card" style={{ marginBottom: '2rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '2rem' }}>
           <div style={{ flex: '1', minWidth: '300px' }}>
             <h3 style={{ 
               color: '#1f2937', 
@@ -167,6 +234,21 @@ export default function MatchingStatusCard({
             >
               View Pen Pal List
             </button>
+          </div>
+          
+          {/* Mailing addresses on the right side */}
+          <div style={{ flex: '0 0 auto', minWidth: '250px' }}>
+            <div style={{ 
+              fontSize: '12px', 
+              fontWeight: '400', 
+              color: '#999',
+              marginBottom: '0.5rem',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px'
+            }}>
+              Mailing Address{schoolData.matchedSchool?.isGroup ? 'es' : ''}
+            </div>
+            {renderMailingAddresses()}
           </div>
         </div>
       </div>
