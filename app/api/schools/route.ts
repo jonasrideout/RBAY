@@ -1,287 +1,3 @@
-// /app/api/schools/route.ts
-
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { sendWelcomeEmail } from '@/lib/email';
-import { createTeacherSession, setSessionCookie } from '@/lib/magicLink';
-
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    
-    const {
-      teacherName,
-      teacherEmail,
-      teacherPhone,
-      schoolName,
-      schoolAddress,
-      schoolCity,
-      schoolState,
-      schoolZip,
-      region,
-      gradeLevel,
-      expectedClassSize,
-      startMonth,
-      specialConsiderations,
-      communicationPlatforms,
-      mailingAddress,
-      isAdminFlow,
-      isEmailVerified
-    } = body;
-
-    // Conditional validation based on admin context
-    if (isAdminFlow) {
-      if (!teacherName || !teacherEmail || !schoolName) {
-        return NextResponse.json(
-          { error: 'Missing required fields: Teacher Name, Teacher Email, and School Name are required' },
-          { status: 400 }
-        );
-      }
-    } else {
-      if (!teacherName || !teacherEmail || !schoolName || 
-          !schoolState || !gradeLevel || !expectedClassSize || !startMonth || !mailingAddress) {
-        return NextResponse.json(
-          { error: 'Missing required fields' },
-          { status: 400 }
-        );
-      }
-      
-      // Validate communication platforms in non-admin mode
-      if (!communicationPlatforms || communicationPlatforms.length === 0) {
-        return NextResponse.json(
-          { error: 'At least one communication platform is required' },
-          { status: 400 }
-        );
-      }
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(teacherEmail)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      );
-    }
-
-    // Validate state format only if provided
-    if (schoolState && schoolState.length !== 2) {
-      return NextResponse.json(
-        { error: 'Invalid state format' },
-        { status: 400 }
-      );
-    }
-
-    // Only validate region if state is provided
-    if (schoolState && !region) {
-      return NextResponse.json(
-        { error: 'Region is required when state is provided' },
-        { status: 400 }
-      );
-    }
-
-    // Check if school with this email already exists
-    const existingSchool = await prisma.school.findUnique({
-      where: { teacherEmail }
-    });
-
-    if (existingSchool) {
-      return NextResponse.json(
-        { error: 'A school with this teacher email already exists' },
-        { status: 409 }
-      );
-    }
-
-    // Create the school
-    const school = await prisma.school.create({
-      data: {
-        teacherName,
-        teacherEmail,
-        teacherPhone: teacherPhone || null,
-        schoolName,
-        schoolAddress: schoolAddress || null,
-        schoolCity: schoolCity || null,
-        schoolState: schoolState || 'TBD',
-        schoolZip: schoolZip || null,
-        region: region || 'TBD',
-        gradeLevel: gradeLevel || 'TBD',
-        expectedClassSize: expectedClassSize ? parseInt(expectedClassSize) : 0,
-        startMonth: startMonth || 'TBD',
-        status: 'COLLECTING',
-        specialConsiderations: specialConsiderations || null,
-        communicationPlatforms: communicationPlatforms || null,
-        mailingAddress: mailingAddress || null
-      }
-    });
-
-    // Send welcome email (non-blocking)
-    let emailSent = false;
-    let emailError = '';
-    
-    if (!isAdminFlow) {
-      try {
-        const emailResult = await sendWelcomeEmail({
-          teacherName,
-          teacherEmail,
-          schoolName,
-          dashboardToken: school.dashboardToken
-        });
-        
-        emailSent = emailResult.success;
-        if (!emailResult.success) {
-          emailError = emailResult.error || 'Unknown email error';
-          console.warn('Welcome email failed to send:', emailError);
-        }
-      } catch (error: any) {
-        console.warn('Welcome email sending failed:', error);
-        emailError = error.message || 'Email service unavailable';
-      }
-    }
-
-    // Generate links for admin response
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nextjs-boilerplate-beta-three-49.vercel.app';
-    const dashboardLink = `${baseUrl}/dashboard?token=${school.dashboardToken}`;
-    const registrationLink = `${baseUrl}/register-student`;
-
-    const responseData = {
-      success: true,
-      school: {
-        id: school.id,
-        teacherEmail: school.teacherEmail,
-        dashboardToken: school.dashboardToken,
-        schoolName: school.schoolName,
-        teacherName: school.teacherName,
-        schoolState: school.schoolState,
-        region: school.region,
-        status: school.status
-      },
-      emailSent,
-      emailError: emailSent ? undefined : emailError,
-      dashboardLink,
-      registrationLink
-    };
-
-    const response = NextResponse.json(responseData, { status: 201 });
-
-    // Create teacher session for email-verified users
-    if (isEmailVerified && !isAdminFlow) {
-      const teacherSession = createTeacherSession(teacherEmail);
-      setSessionCookie(response, teacherSession);
-      console.log('Created teacher session after school registration for:', teacherEmail);
-    }
-
-    return response;
-
-  } catch (error: any) {
-    console.error('School registration error:', error);
-    
-    if (error?.code === 'P2002') {
-      return NextResponse.json(
-        { error: 'A school with this teacher email already exists' },
-        { status: 409 }
-      );
-    }
-
-    if (error?.code === 'P2010' || error?.message?.includes('column')) {
-      return NextResponse.json(
-        { error: 'Database schema needs to be updated. Please contact support.' },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json(
-      { error: 'Failed to register school. Please try again.' },
-      { status: 500 }
-    );
-  }
-}
-
-export async function PUT(request: NextRequest) {
-  try {
-    const body = await request.json();
-    
-    const {
-      schoolId,
-      teacherPhone,
-      schoolAddress,
-      schoolCity,
-      schoolState,
-      schoolZip,
-      region,
-      gradeLevel,
-      expectedClassSize,
-      startMonth,
-      specialConsiderations,
-      mailingAddress
-    } = body;
-
-    if (!schoolId) {
-      return NextResponse.json(
-        { error: 'School ID is required for updates' },
-        { status: 400 }
-      );
-    }
-
-    if (!schoolState || !gradeLevel || !expectedClassSize || !startMonth || !mailingAddress) {
-      return NextResponse.json(
-        { error: 'Missing required fields: State, Grade Level, Expected Class Size, Start Month, and Mailing Address are required' },
-        { status: 400 }
-      );
-    }
-
-    if (schoolState.length !== 2) {
-      return NextResponse.json(
-        { error: 'Invalid state format' },
-        { status: 400 }
-      );
-    }
-
-    if (!region) {
-      return NextResponse.json(
-        { error: 'Region is required when state is provided' },
-        { status: 400 }
-      );
-    }
-
-    const updatedSchool = await prisma.school.update({
-      where: { id: schoolId },
-      data: {
-        teacherPhone: teacherPhone || null,
-        schoolAddress: schoolAddress || null,
-        schoolCity: schoolCity || null,
-        schoolState,
-        schoolZip: schoolZip || null,
-        region,
-        gradeLevel,
-        expectedClassSize: parseInt(expectedClassSize),
-        startMonth,
-        specialConsiderations: specialConsiderations || null,
-        mailingAddress: mailingAddress || null
-      }
-    });
-
-    return NextResponse.json({
-      success: true,
-      school: updatedSchool
-    });
-
-  } catch (error: any) {
-    console.error('School update error:', error);
-    
-    if (error?.code === 'P2025') {
-      return NextResponse.json(
-        { error: 'School not found' },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(
-      { error: 'Failed to update school information' },
-      { status: 500 }
-    );
-  }
-}
-
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -363,7 +79,8 @@ export async function GET(request: NextRequest) {
             schoolState: true,
             expectedClassSize: true,
             region: true,
-            mailingAddress: true
+            mailingAddress: true,
+            communicationPlatforms: true
           }
         });
         
@@ -388,7 +105,8 @@ export async function GET(request: NextRequest) {
                 schoolState: true,
                 expectedClassSize: true,
                 region: true,
-                mailingAddress: true
+                mailingAddress: true,
+                communicationPlatforms: true
               }
             }
           }
@@ -433,7 +151,8 @@ export async function GET(request: NextRequest) {
                 schoolState: true,
                 expectedClassSize: true,
                 region: true,
-                mailingAddress: true
+                mailingAddress: true,
+                communicationPlatforms: true
               }
             }
           }
@@ -472,7 +191,8 @@ export async function GET(request: NextRequest) {
             schoolState: true,
             expectedClassSize: true,
             region: true,
-            mailingAddress: true
+            mailingAddress: true,
+            communicationPlatforms: true
           }
         });
         
