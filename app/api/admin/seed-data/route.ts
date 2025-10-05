@@ -8,12 +8,12 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('SEED DATA VERSION: 2.0 - WITH MULTIPLE PREFERENCES');
+    console.log('SEED DATA VERSION: 2.1 - WITH COMMUNICATION PLATFORMS AND MAILING ADDRESSES');
     console.log('Seed-data using DATABASE_URL:', process.env.DATABASE_URL?.substring(0, 50) + '...');
     console.log('Starting enhanced seed data creation...');
     console.log('Seed-data using DATABASE_URL_DIRECT:', process.env.DATABASE_URL_DIRECT?.substring(0, 50) + '...');
 
-    // Create Lincoln Elementary - 10 students (COLLECTING status)
+    // Create Lincoln Elementary - 10 students (COLLECTING status) - NO communication platforms or mailing address
     const lincolnSchool = await prisma.school.create({
       data: {
         schoolName: "Lincoln Elementary",
@@ -51,7 +51,9 @@ export async function POST(request: NextRequest) {
         specialConsiderations: "We have several students learning English as a second language",
         status: "READY",
         region: "Pacific",
-        isActive: true
+        isActive: true,
+        communicationPlatforms: ["Zoom", "Google Meet", "Microsoft Teams"],
+        mailingAddress: "Sarah Johnson\nPacific Elementary\nSan Francisco, CA 94102"
       }
     });
 
@@ -72,7 +74,9 @@ export async function POST(request: NextRequest) {
         specialConsiderations: "Students are very excited about cross-country pen pal connections",
         status: "READY",
         region: "Northeast",
-        isActive: true
+        isActive: true,
+        communicationPlatforms: ["Zoom", "Google Meet"],
+        mailingAddress: "Michael Chen\nNortheast Academy\nBoston, MA 02101"
       }
     });
 
@@ -93,7 +97,9 @@ export async function POST(request: NextRequest) {
         specialConsiderations: "Mixed bilingual classroom with advanced writing focus",
         status: "COLLECTING",
         region: "Southwest",
-        isActive: true
+        isActive: true,
+        communicationPlatforms: ["Zoom", "Microsoft Teams", "Other: Skype"],
+        mailingAddress: "Maria Rodriguez\nDesert View Elementary\nPhoenix, AZ 85001"
       }
     });
 
@@ -114,7 +120,9 @@ export async function POST(request: NextRequest) {
         specialConsiderations: "Urban classroom with focus on cultural exchange",
         status: "COLLECTING",
         region: "Midwest",
-        isActive: true
+        isActive: true,
+        communicationPlatforms: ["Zoom", "Google Meet", "Microsoft Teams"],
+        mailingAddress: "Jennifer Williams\nPrairie View Middle School\nChicago, IL 60601"
       }
     });
 
@@ -135,11 +143,13 @@ export async function POST(request: NextRequest) {
         specialConsiderations: "Strong emphasis on creative writing and storytelling",
         status: "COLLECTING",
         region: "Southeast",
-        isActive: true
+        isActive: true,
+        communicationPlatforms: ["Zoom", "Google Meet"],
+        mailingAddress: "Robert Davis\nMagnolia Elementary\nAtlanta, GA 30301"
       }
     });
 
-    // Create Mountain View School - 12 students (COLLECTING status)
+    // Create Mountain View School - 12 students (COLLECTING status) - NO communication platforms or mailing address
     const mountainViewSchool = await prisma.school.create({
       data: {
         schoolName: "Mountain View Elementary",
@@ -311,7 +321,7 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({
-      message: 'Test data created successfully - all students have complete profiles',
+      message: 'Test data created successfully - all students have complete profiles, communication platforms and mailing addresses added',
       verification: {
         schoolsInDatabase: schoolCount,
         studentsInDatabase: studentCount,
@@ -319,13 +329,13 @@ export async function POST(request: NextRequest) {
       },
       schools: 7,
       schoolDetails: {
-        lincolnElementary: { students: 10, status: "COLLECTING", complete: 10, multiplePreference: 0 },
-        pacificElementary: { students: 20, status: "READY", complete: 20, multiplePreference: 8 },
-        northeastAcademy: { students: 23, status: "READY", complete: 23, multiplePreference: 8 },
-        desertViewElementary: { students: 30, status: "COLLECTING", complete: 30, multiplePreference: 8 },
-        prairieViewMiddle: { students: 23, status: "COLLECTING", complete: 23, multiplePreference: 8 },
-        magnoliaElementary: { students: 20, status: "COLLECTING", complete: 20, multiplePreference: 8 },
-        mountainViewElementary: { students: 12, status: "COLLECTING", complete: 12, multiplePreference: 0 }
+        lincolnElementary: { students: 10, status: "COLLECTING", complete: 10, multiplePreference: 0, hasCommPlatforms: false, hasMailingAddress: false },
+        pacificElementary: { students: 20, status: "READY", complete: 20, multiplePreference: 8, hasCommPlatforms: true, hasMailingAddress: true },
+        northeastAcademy: { students: 23, status: "READY", complete: 23, multiplePreference: 8, hasCommPlatforms: true, hasMailingAddress: true },
+        desertViewElementary: { students: 30, status: "COLLECTING", complete: 30, multiplePreference: 8, hasCommPlatforms: true, hasMailingAddress: true },
+        prairieViewMiddle: { students: 23, status: "COLLECTING", complete: 23, multiplePreference: 8, hasCommPlatforms: true, hasMailingAddress: true },
+        magnoliaElementary: { students: 20, status: "COLLECTING", complete: 20, multiplePreference: 8, hasCommPlatforms: true, hasMailingAddress: true },
+        mountainViewElementary: { students: 12, status: "COLLECTING", complete: 12, multiplePreference: 0, hasCommPlatforms: false, hasMailingAddress: false }
       },
       totalStudents,
       dashboardTokens: createdSchools.map(school => ({
@@ -340,13 +350,13 @@ export async function POST(request: NextRequest) {
         "All students have interests (1-3 from predefined list)",
         "All students have valid grades (3, 4, or 5)",
         "All students have parent consent",
-        "Test accounts (jonas.rideout, rightbackatyou13): All students ONE preference",
-        "Other accounts: First 8 students MULTIPLE preference to meet requirements",
+        "Test accounts (jonas.rideout, rightbackatyou13): All students ONE preference, NO communication platforms or mailing addresses",
+        "Other accounts: First 8 students MULTIPLE preference to meet requirements, WITH communication platforms and mailing addresses",
         "No incomplete students in seed data"
       ],
       testScenarios: [
-        "Lincoln Elementary: 10 students, COLLECTING status, all ONE preference (jonas.rideout@gmail.com)",
-        "Mountain View: 12 students, COLLECTING status, all ONE preference (rightbackatyou13@gmail.com)",
+        "Lincoln Elementary: 10 students, COLLECTING status, all ONE preference, NO comm platforms/address (jonas.rideout@gmail.com)",
+        "Mountain View: 12 students, COLLECTING status, all ONE preference, NO comm platforms/address (rightbackatyou13@gmail.com)",
         "Two schools READY for matching with 8 MULTIPLE students each (Pacific + Northeast)",
         "Five schools COLLECTING information (Lincoln, Southwest, Midwest, Southeast, Mountain)",
         "Various student counts: 10, 20, 23, 30, 23, 20, 12",
