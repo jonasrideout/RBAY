@@ -59,6 +59,10 @@ model School {
   region               String
   isActive             Boolean       @default(true)
   
+  // New fields for communications and mailing
+  communicationPlatforms Json?      // ["Zoom", "Google Meet", "Other: Skype"]
+  mailingAddress        String?     // Multi-line mailing address
+  
   // Group membership
   schoolGroupId        String?
   schoolGroup          SchoolGroup?  @relation(fields: [schoolGroupId], references: [id])
