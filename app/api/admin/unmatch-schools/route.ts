@@ -78,17 +78,11 @@ async function unmatchSchool(schoolId: string) {
   if (matchedWithSchoolId.startsWith('group:')) {
     const groupId = matchedWithSchoolId.replace('group:', '');
     
-    // Clear the match for both school and group
-    await prisma.$transaction([
-      prisma.school.update({
-        where: { id: schoolId },
-        data: { matchedWithSchoolId: null }
-      }),
-      prisma.schoolGroup.update({
-        where: { id: groupId },
-        data: { matchedWithGroupId: null }
-      })
-    ]);
+    // Clear the match for the group only (school's matchedWithSchoolId should already be null)
+    await prisma.schoolGroup.update({
+      where: { id: groupId },
+      data: { matchedWithGroupId: null }
+    });
   } else {
     // Matched with another school
     await prisma.$transaction([
@@ -159,19 +153,11 @@ async function unmatchGroup(groupId: string) {
 
   // Check if matched with a school (marker format)
   if (matchedWithGroupId.startsWith('school:')) {
-    const schoolId = matchedWithGroupId.replace('school:', '');
-    
-    // Clear the match for both group and school
-    await prisma.$transaction([
-      prisma.schoolGroup.update({
-        where: { id: groupId },
-        data: { matchedWithGroupId: null }
-      }),
-      prisma.school.update({
-        where: { id: schoolId },
-        data: { matchedWithSchoolId: null }
-      })
-    ]);
+    // Clear the match for the group only (school's matchedWithSchoolId should be null)
+    await prisma.schoolGroup.update({
+      where: { id: groupId },
+      data: { matchedWithGroupId: null }
+    });
   } else {
     // Matched with another group
     await prisma.$transaction([
