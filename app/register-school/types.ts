@@ -1,10 +1,9 @@
-// /app/register-school/types.ts
 export interface SchoolFormData {
   teacherName: string;
   teacherEmail: string;
   teacherPhone: string;
   schoolName: string;
-  schoolCity: string; // Changed from schoolAddress, now optional
+  schoolCity: string;
   schoolState: string;
   gradeLevels: string[];
   classSize: string;
@@ -12,4 +11,7 @@ export interface SchoolFormData {
   specialConsiderations: string;
   programAgreement: boolean;
   parentNotification: boolean;
+  communicationPlatforms: string[];
+  communicationPlatformsOther: string;
+  mailingAddress: string;
 }
