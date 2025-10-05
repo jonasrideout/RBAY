@@ -43,7 +43,10 @@ export default function RegisterSchoolClient({
     programStartMonth: '',
     specialConsiderations: '',
     programAgreement: false,
-    parentNotification: false
+    parentNotification: false,
+    communicationPlatforms: [],
+    communicationPlatformsOther: '',
+    mailingAddress: ''
   });
 
   // Pre-populate email from server-validated data
@@ -151,10 +154,10 @@ export default function RegisterSchoolClient({
         return;
       }
     } else {
-      // Regular mode validation - all original required fields
+      // Regular mode validation - all original required fields plus new ones
       const requiredFields = [
         'teacherName', 'teacherEmail', 'schoolName', 
-        'schoolState', 'classSize', 'programStartMonth'
+        'schoolState', 'classSize', 'programStartMonth', 'mailingAddress'
       ];
 
       for (const field of requiredFields) {
@@ -182,11 +185,34 @@ export default function RegisterSchoolClient({
         setIsLoading(false);
         return;
       }
+
+      // Validate communication platforms
+      if (formData.communicationPlatforms.length === 0) {
+        setError('Please select at least one communication platform');
+        setIsLoading(false);
+        return;
+      }
+
+      // If "Other" is selected, make sure they typed something
+      if (formData.communicationPlatforms.includes('Other') && !formData.communicationPlatformsOther.trim()) {
+        setError('Please specify the other communication platform');
+        setIsLoading(false);
+        return;
+      }
     }
 
     try {
       // Transform data to match API expectations
       const region = getRegionForState(formData.schoolState);
+      
+      // Build communication platforms array with "Other: xxx" format if needed
+      const communicationPlatformsFormatted = formData.communicationPlatforms.map(platform => {
+        if (platform === 'Other' && formData.communicationPlatformsOther) {
+          return `Other: ${formData.communicationPlatformsOther}`;
+        }
+        return platform;
+      }).filter(p => p !== 'Other'); // Remove standalone "Other" since we replaced it
+      
       const dataToSend = {
         teacherName: formData.teacherName,
         teacherEmail: formData.teacherEmail,
@@ -202,6 +228,8 @@ export default function RegisterSchoolClient({
         startMonth: formData.programStartMonth,
         specialConsiderations: formData.specialConsiderations,
         programAgreement: formData.programAgreement,
+        communicationPlatforms: communicationPlatformsFormatted,
+        mailingAddress: formData.mailingAddress,
         isAdminFlow: isAdminMode,
         isEmailVerified: isEmailVerified
       };
