@@ -76,7 +76,14 @@ export default function StudentMetricsGrid({
       return null;
     }
     
-    return matchedSchool.communicationPlatforms.join(' | ');
+    const shortened = matchedSchool.communicationPlatforms.map((platform: string) => {
+      if (platform === 'Google Meet') return 'Meet';
+      if (platform === 'Microsoft Teams') return 'Teams';
+      if (platform.startsWith('Other: ')) return platform.substring(7);
+      return platform;
+    });
+    
+    return shortened.join(' | ');
   };
 
   const copyTeacherEmail = async () => {
