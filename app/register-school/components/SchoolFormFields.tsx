@@ -54,14 +54,31 @@ export default function SchoolFormFields({
   isAdminMode = false,
   isEmailReadOnly = false
 }: SchoolFormFieldsProps) {
-  const [showOtherPlatform, setShowOtherPlatform] = useState(false);
-  const [communicationPlatforms, setCommunicationPlatforms] = useState<string[]>([]);
+ const [showOtherPlatform, setShowOtherPlatform] = useState(false);
+  const [communicationPlatforms, setCommunicationPlatforms] = useState<string[]>(formData.communicationPlatforms || []);
   const [otherPlatformText, setOtherPlatformText] = useState('');
 
   useEffect(() => {
     setShowOtherPlatform(communicationPlatforms.includes('Other'));
   }, [communicationPlatforms]);
 
+  useEffect(() => {
+    if (formData.communicationPlatforms) {
+      // Normalize platforms: convert "Other: xxx" to just "Other" for checkbox state
+      const normalized = formData.communicationPlatforms.map((p: string) => 
+        p.startsWith('Other: ') ? 'Other' : p
+      );
+      setCommunicationPlatforms(normalized);
+      
+      // Extract "Other" text if it exists
+      const otherPlatform = formData.communicationPlatforms.find((p: string) => p.startsWith('Other: '));
+      if (otherPlatform) {
+        const otherText = otherPlatform.substring(7);
+        setOtherPlatformText(otherText);
+      }
+    }
+  }, [formData.communicationPlatforms]);
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     
