@@ -217,6 +217,7 @@ function TeacherDashboardContent() {
           schoolState: data.school.matchedWithSchool.schoolState,
           expectedClassSize: data.school.matchedWithSchool.expectedClassSize,
           region: data.school.matchedWithSchool.region
+          communicationPlatforms: data.school.matchedWithSchool.communicationPlatforms
         } : undefined
       };
 
