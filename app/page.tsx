@@ -46,7 +46,7 @@ export default function Home() {
           <div className="card">
             <h2 className="text-center mb-3">About <em>Right Back at You</em></h2>
             <p style={{ fontSize: '1.1rem', textAlign: 'center', marginBottom: '1.5rem' }}>
-              A powerful middle-grade novel told through letters between Talia (Western Pennsylvania, 1987) and Mason (New York City, 2023) - two seventh graders who discover that bullying transcends time and geography. Luckily, so does friendship!
+              A powerful middle-grade novel by Carolyn Mackler told through letters between Talia (Western Pennsylvania, 1987) and Mason (New York City, 2023) - two seventh graders who discover that bullying transcends time and geography. Luckily, so does friendship!
             </p>
             <div className="grid grid-2">
               <div>
