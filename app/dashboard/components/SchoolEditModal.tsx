@@ -134,8 +134,7 @@ export default function SchoolEditModal({
         throw new Error(data.error || 'Failed to update school information');
       }
 
-      onSuccess();
-      onClose();
+      window.location.reload();
 
     } catch (error: any) {
       setError(error.message);
