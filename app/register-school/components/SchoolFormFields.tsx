@@ -85,10 +85,18 @@ export default function SchoolFormFields({
       // If unchecking "Other", also clear the other text
       if (platform === 'Other') {
         setOtherPlatformText('');
+        onUpdateFormData('communicationPlatformsOther', '');
       }
     }
 
     setCommunicationPlatforms(newPlatforms);
+    onUpdateFormData('communicationPlatforms', newPlatforms);
+  };
+
+  const handleOtherPlatformTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setOtherPlatformText(value);
+    onUpdateFormData('communicationPlatformsOther', value);
   };
 
   return (
@@ -175,7 +183,7 @@ export default function SchoolFormFields({
           onChange={handleChange}
           disabled={isLoading}
           rows={3}
-          placeholder="Jonas Rideout&#10;Lincoln Elementary&#10;Lincoln, NY 10013"
+          placeholder=""
           className="form-input"
           required={!isAdminMode}
           style={{ fontFamily: 'inherit', resize: 'vertical' }}
@@ -338,7 +346,7 @@ export default function SchoolFormFields({
             <input
               type="text"
               value={otherPlatformText}
-              onChange={(e) => setOtherPlatformText(e.target.value)}
+              onChange={handleOtherPlatformTextChange}
               disabled={isLoading}
               placeholder="Please specify"
               className="form-input"
