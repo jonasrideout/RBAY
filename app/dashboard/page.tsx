@@ -45,6 +45,8 @@ interface SchoolData {
   gradeLevel?: string;
   teacherPhone?: string;
   specialConsiderations?: string;
+  communicationPlatforms?: any;
+  mailingAddress?: string;
   studentStats?: {
     expected: number;
     registered: number;
