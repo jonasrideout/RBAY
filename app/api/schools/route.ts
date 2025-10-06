@@ -212,7 +212,8 @@ export async function PUT(request: NextRequest) {
       expectedClassSize,
       startMonth,
       specialConsiderations,
-      mailingAddress
+      mailingAddress,
+      communicationPlatforms
     } = body;
 
     if (!schoolId) {
@@ -256,7 +257,8 @@ export async function PUT(request: NextRequest) {
         expectedClassSize: parseInt(expectedClassSize),
         startMonth,
         specialConsiderations: specialConsiderations || null,
-        mailingAddress: mailingAddress || null
+        mailingAddress: mailingAddress || null,
+        communicationPlatforms: communicationPlatforms || null
       }
     });
 
