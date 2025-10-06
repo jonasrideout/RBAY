@@ -291,35 +291,37 @@ export default function DashboardHeader({
             {/* Bottom row - Download Pen Pals and Ready to Pair Pen Pals */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
               <Link
-                href={penPalsAssigned ? `/teacher/pen-pal-list?schoolId=${schoolData.id}` : '#'}
+                href={(isProfileIncomplete || !penPalsAssigned) ? '#' : `/teacher/pen-pal-list?schoolId=${schoolData.id}`}
                 className="btn"
-                onClick={(e) => { if (!penPalsAssigned) e.preventDefault(); }}
+                onClick={(e) => { if (isProfileIncomplete || !penPalsAssigned) e.preventDefault(); }}
                 style={{
                   fontSize: '13px',
                   textDecoration: 'none',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  opacity: penPalsAssigned ? 1 : 0.6,
-                  cursor: penPalsAssigned ? 'pointer' : 'not-allowed',
-                  pointerEvents: penPalsAssigned ? 'auto' : 'none'
+                  opacity: (isProfileIncomplete || !penPalsAssigned) ? 0.6 : 1,
+                  cursor: (isProfileIncomplete || !penPalsAssigned) ? 'not-allowed' : 'pointer',
+                  pointerEvents: (isProfileIncomplete || !penPalsAssigned) ? 'none' : 'auto'
                 }}
-                title={penPalsAssigned ? "View and download pen pal assignments" : "Pen pals not assigned yet"}
+                title={isProfileIncomplete ? "Complete your profile first" : penPalsAssigned ? "View and download pen pal assignments" : "Pen pals not assigned yet"}
               >
                 Download Pen Pals
               </Link>
 
               <button 
                 className="btn" 
-                disabled={penPalsAssigned || hasPairingRequested || isRequestingMatching || !allActiveStudentsComplete || schoolData.students.length === 0}
+                disabled={isProfileIncomplete || penPalsAssigned || hasPairingRequested || isRequestingMatching || !allActiveStudentsComplete || schoolData.students.length === 0}
                 onClick={handleRequestPairingClick}
                 style={{
-                  cursor: (penPalsAssigned || hasPairingRequested || isRequestingMatching || !allActiveStudentsComplete || schoolData.students.length === 0) ? 'not-allowed' : 'pointer',
-                  opacity: (penPalsAssigned || hasPairingRequested || isRequestingMatching || !allActiveStudentsComplete || schoolData.students.length === 0) ? 0.6 : 1,
+                  cursor: (isProfileIncomplete || penPalsAssigned || hasPairingRequested || isRequestingMatching || !allActiveStudentsComplete || schoolData.students.length === 0) ? 'not-allowed' : 'pointer',
+                  opacity: (isProfileIncomplete || penPalsAssigned || hasPairingRequested || isRequestingMatching || !allActiveStudentsComplete || schoolData.students.length === 0) ? 0.6 : 1,
                   fontSize: '13px'
                 }}
                 title={
-                  penPalsAssigned
+                  isProfileIncomplete
+                    ? "Complete your profile first"
+                    : penPalsAssigned
                     ? "Pen pals already assigned"
                     : hasPairingRequested
                     ? "Waiting for pen pal assignments"
