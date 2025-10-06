@@ -74,7 +74,8 @@ export default function MatchingStatusCard({
                       schoolData.gradeLevel === 'TBD' || 
                       schoolData.startMonth === 'TBD' ||
                       schoolData.expectedClassSize === 0 ||
-                      !schoolData.mailingAddress;
+                      !schoolData.mailingAddress ||
+                      !schoolData.communicationPlatforms;
 
   // Check if school is matched with another school/group
   const isMatched = schoolData?.matchedWithSchoolId != null;
