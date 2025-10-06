@@ -61,6 +61,7 @@ interface SchoolData {
     schoolState?: string;
     expectedClassSize: number;
     region: string;
+    communicationPlatforms?: any;
   };
   schoolGroup?: {
     id: string;
