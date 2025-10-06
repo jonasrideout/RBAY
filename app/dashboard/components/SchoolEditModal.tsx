@@ -52,9 +52,9 @@ export default function SchoolEditModal({
     classSize: schoolData.expectedClassSize?.toString() || '',
     programStartMonth: schoolData.startMonth || schoolData.programStartMonth || '',
     specialConsiderations: schoolData.specialConsiderations || '',
-    programAgreement: true, // Not needed for edit mode
-    parentNotification: true, // Default value for edit mode
-    communicationPlatforms: [],
+    programAgreement: true,
+    parentNotification: true,
+    communicationPlatforms: schoolData.communicationPlatforms || [],
     communicationPlatformsOther: '',
     mailingAddress: schoolData.mailingAddress || ''
   });
@@ -117,6 +117,13 @@ export default function SchoolEditModal({
           teacherPhone: formData.teacherPhone || null,
           specialConsiderations: formData.specialConsiderations || null,
           mailingAddress: formData.mailingAddress,
+          communicationPlatforms: formData.communicationPlatforms.length > 0 
+            ? formData.communicationPlatforms.map(p => 
+                p === 'Other' && formData.communicationPlatformsOther 
+                  ? `Other: ${formData.communicationPlatformsOther}` 
+                  : p
+              ).filter(p => p !== 'Other' || formData.communicationPlatformsOther)
+            : null,
           region: region
         })
       });
