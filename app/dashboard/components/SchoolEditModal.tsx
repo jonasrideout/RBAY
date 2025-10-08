@@ -167,14 +167,13 @@ export default function SchoolEditModal({
         maxWidth: '800px',
         width: '100%',
         maxHeight: '90vh',
-        overflowY: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
       }}>
         <div style={{ 
           padding: '2rem',
           borderBottom: '1px solid #e9ecef',
-          position: 'sticky',
-          top: 0,
           backgroundColor: 'white',
           borderRadius: '8px 8px 0 0'
         }}>
@@ -191,8 +190,8 @@ export default function SchoolEditModal({
           </p>
         </div>
         
-        <form onSubmit={handleSubmit}>
-          <div style={{ padding: '2rem' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+          <div style={{ padding: '2rem', overflowY: 'auto', flex: 1 }}>
             <SchoolFormFields
               formData={formData}
               isLoading={isLoading}
@@ -211,7 +210,7 @@ export default function SchoolEditModal({
             )}
           </div>
 
-          {/* Modal Actions */}
+          {/* Modal Actions - Now Sticky */}
           <div style={{ 
             padding: '1.5rem 2rem',
             borderTop: '1px solid #e9ecef',
