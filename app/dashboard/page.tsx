@@ -263,9 +263,12 @@ function TeacherDashboardContent() {
   const totalStudents = students.length;
   
   const isProfileIncomplete = schoolData?.schoolState === 'TBD' || 
-                              schoolData?.gradeLevel === 'TBD' || 
-                              schoolData?.startMonth === 'TBD' ||
-                              schoolData?.expectedClassSize === 0;
+                            schoolData?.gradeLevel === 'TBD' || 
+                            schoolData?.startMonth === 'TBD' ||
+                            schoolData?.expectedClassSize === 0 ||
+                            !schoolData?.mailingAddress ||
+                            !schoolData?.communicationPlatforms ||
+                            (Array.isArray(schoolData?.communicationPlatforms) && schoolData.communicationPlatforms.length === 0);
   
   const allActiveStudentsComplete = totalStudents > 0;
   const readyForMatching = schoolData?.status === 'READY';
