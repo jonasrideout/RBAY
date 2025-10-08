@@ -116,108 +116,130 @@ export default function UpdatePenpalPreferences({
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      zIndex: 1000
+      zIndex: 1000,
+      padding: '1rem'
     }}>
-      <div className="card" style={{
+      <div style={{
+        backgroundColor: 'white',
+        borderRadius: '8px',
         maxWidth: '700px',
         width: '90%',
         maxHeight: '80vh',
-        overflow: 'auto'
+        display: 'flex',
+        flexDirection: 'column',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
       }}>
-        <h3 style={{ 
-          fontSize: '1.2rem',
-          fontWeight: '400',
-          color: '#333',
-          marginBottom: '1rem'
-        }}>
-          Update Pen Pal Preferences
-        </h3>
-        
-        <p style={{ 
-          color: '#495057',
-          marginBottom: '1.5rem',
-          lineHeight: '1.6'
-        }}>
-          Because your class is small ({classSize} students), at least <strong>{requiredCount} students</strong> must be set to 'more than one pen pal' to ensure fair matching. Currently <strong>{currentCount}</strong> {currentCount === 1 ? 'student is' : 'students are'} set. Please select {additionalNeeded > 0 ? `at least ${additionalNeeded} more` : 'students below'}.
-        </p>
+        {/* Header */}
+        <div style={{ padding: '2rem', paddingBottom: '1rem' }}>
+          <h3 style={{ 
+            fontSize: '1.2rem',
+            fontWeight: '400',
+            color: '#333',
+            marginBottom: '1rem'
+          }}>
+            Update Pen Pal Preferences
+          </h3>
+          
+          <p style={{ 
+            color: '#495057',
+            marginBottom: '1.5rem',
+            lineHeight: '1.6'
+          }}>
+            Because your class is small ({classSize} students), at least <strong>{requiredCount} students</strong> must be set to 'more than one pen pal' to ensure fair matching. Currently <strong>{currentCount}</strong> {currentCount === 1 ? 'student is' : 'students are'} set. Please select {additionalNeeded > 0 ? `at least ${additionalNeeded} more` : 'students below'}.
+          </p>
 
-        {/* Progress indicator */}
-        <div style={{
-          padding: '0.75rem',
-          backgroundColor: canProceed ? '#d4edda' : '#f8f9fa',
-          border: `1px solid ${canProceed ? '#c3e6cb' : '#dee2e6'}`,
-          borderRadius: '6px',
-          marginBottom: '1.5rem',
-          textAlign: 'center'
-        }}>
-          <span style={{ fontWeight: '500' }}>
-            {selectedCount} of {requiredCount} required selected
-            {canProceed && ' ✓'}
-          </span>
+          {/* Progress indicator */}
+          <div style={{
+            padding: '0.75rem',
+            backgroundColor: canProceed ? '#d4edda' : '#f8f9fa',
+            border: `1px solid ${canProceed ? '#c3e6cb' : '#dee2e6'}`,
+            borderRadius: '6px',
+            textAlign: 'center'
+          }}>
+            <span style={{ fontWeight: '500' }}>
+              {selectedCount} of {requiredCount} required selected
+              {canProceed && ' ✓'}
+            </span>
+          </div>
         </div>
 
-        {/* Student list */}
+        {/* Student list - scrollable */}
         <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '0.5rem',
-          marginBottom: '1.5rem',
-          maxHeight: '300px',
+          flex: 1,
           overflowY: 'auto',
-          padding: '0.5rem'
+          padding: '0 2rem',
+          minHeight: 0
         }}>
-          {students.map(student => {
-            const isLocked = studentsWithMultiple.some(s => s.id === student.id);
-            const isSelected = selectedStudents.has(student.id);
-            
-            return (
-              <div
-                key={student.id}
-                onClick={() => handleToggleStudent(student.id)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: '0.75rem',
-                  border: '1px solid #dee2e6',
-                  borderRadius: '6px',
-                  cursor: isLocked ? 'not-allowed' : 'pointer',
-                  backgroundColor: isSelected ? '#f8f9fa' : 'white',
-                  opacity: isLocked ? 0.7 : 1,
-                  transition: 'all 0.2s'
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={isSelected}
-                  disabled={isLocked}
-                  readOnly
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.5rem',
+            paddingBottom: '1rem'
+          }}>
+            {students.map(student => {
+              const isLocked = studentsWithMultiple.some(s => s.id === student.id);
+              const isSelected = selectedStudents.has(student.id);
+              
+              return (
+                <div
+                  key={student.id}
+                  onClick={() => handleToggleStudent(student.id)}
                   style={{
-                    marginRight: '1rem',
-                    width: '18px',
-                    height: '18px',
-                    cursor: isLocked ? 'not-allowed' : 'pointer'
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '0.75rem',
+                    border: '1px solid #dee2e6',
+                    borderRadius: '6px',
+                    cursor: isLocked ? 'not-allowed' : 'pointer',
+                    backgroundColor: isSelected ? '#f8f9fa' : 'white',
+                    opacity: isLocked ? 0.7 : 1,
+                    transition: 'all 0.2s'
                   }}
-                />
-                <div style={{ flex: 1 }}>
-                  <div style={{ color: '#333' }}>
-                    {student.firstName} {student.lastInitial}.
-                  </div>
-                  <div style={{ fontSize: '0.85rem', color: '#6c757d' }}>
-                    Grade {student.grade}
-                    {isLocked && ' • Already set to multiple pen pals'}
+                >
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    disabled={isLocked}
+                    readOnly
+                    style={{
+                      marginRight: '1rem',
+                      width: '18px',
+                      height: '18px',
+                      cursor: isLocked ? 'not-allowed' : 'pointer'
+                    }}
+                  />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ color: '#333' }}>
+                      {student.firstName} {student.lastInitial}.
+                    </div>
+                    <div style={{ fontSize: '0.85rem', color: '#6c757d' }}>
+                      Grade {student.grade}
+                      {isLocked && ' • Already set to multiple pen pals'}
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
 
-        {/* Action buttons */}
-        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+        {/* Action buttons - sticky at bottom */}
+        <div style={{ 
+          padding: '1.5rem 2rem',
+          borderTop: '1px solid #e9ecef',
+          display: 'flex', 
+          gap: '8px', 
+          justifyContent: 'flex-end',
+          backgroundColor: '#f8f9fa',
+          borderRadius: '0 0 8px 8px'
+        }}>
           <button 
             onClick={onCancel}
             className="btn"
             disabled={isUpdating}
+            style={{
+              padding: '0.75rem 1.5rem'
+            }}
           >
             Cancel
           </button>
@@ -226,6 +248,7 @@ export default function UpdatePenpalPreferences({
             className="btn"
             disabled={!canProceed || isUpdating}
             style={{
+              padding: '0.75rem 1.5rem',
               backgroundColor: canProceed && !isUpdating ? '#28a745' : 'white',
               color: canProceed && !isUpdating ? 'white' : '#555',
               borderColor: canProceed && !isUpdating ? '#28a745' : '#ddd',
