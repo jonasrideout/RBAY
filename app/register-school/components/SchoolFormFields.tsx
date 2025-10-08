@@ -136,6 +136,44 @@ export default function SchoolFormFields({
         />
       </div>
 
+      {/* City and State - MOVED HERE */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+        <div>
+          <label htmlFor="schoolCity" className="form-label">
+            City
+          </label>
+          <input
+            type="text"
+            id="schoolCity"
+            name="schoolCity"
+            value={formData.schoolCity}
+            onChange={handleChange}
+            disabled={isLoading}
+            className="form-input"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="schoolState" className="form-label">
+            State {!isAdminMode && '*'}
+          </label>
+          <select
+            id="schoolState"
+            name="schoolState"
+            value={formData.schoolState}
+            onChange={handleChange}
+            disabled={isLoading}
+            className="form-input"
+            required={!isAdminMode}
+          >
+            <option value="">Select State</option>
+            {STATES.map(state => (
+              <option key={state} value={state}>{state}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
       {/* Teacher Name */}
       <div style={{ marginBottom: '1.5rem' }}>
         <label htmlFor="teacherName" className="form-label">
@@ -188,10 +226,10 @@ export default function SchoolFormFields({
         />
       </div>
 
-      {/* Mailing Address */}
+      {/* Mailing Address - UPDATED LABEL */}
       <div style={{ marginBottom: '1.5rem' }}>
         <label htmlFor="mailingAddress" className="form-label">
-          Mailing address for receiving pen pal letters {!isAdminMode && '*'}
+          Complete mailing address, including city, state, and zip, where pen pal letters should be mailed {!isAdminMode && '*'}
         </label>
         <textarea
           id="mailingAddress"
@@ -205,44 +243,6 @@ export default function SchoolFormFields({
           required={!isAdminMode}
           style={{ fontFamily: 'inherit', resize: 'vertical' }}
         />
-      </div>
-
-      {/* City and State */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
-        <div>
-          <label htmlFor="schoolCity" className="form-label">
-            City
-          </label>
-          <input
-            type="text"
-            id="schoolCity"
-            name="schoolCity"
-            value={formData.schoolCity}
-            onChange={handleChange}
-            disabled={isLoading}
-            className="form-input"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="schoolState" className="form-label">
-            State {!isAdminMode && '*'}
-          </label>
-          <select
-            id="schoolState"
-            name="schoolState"
-            value={formData.schoolState}
-            onChange={handleChange}
-            disabled={isLoading}
-            className="form-input"
-            required={!isAdminMode}
-          >
-            <option value="">Select State</option>
-            {STATES.map(state => (
-              <option key={state} value={state}>{state}</option>
-            ))}
-          </select>
-        </div>
       </div>
 
       {/* Grade Levels */}
