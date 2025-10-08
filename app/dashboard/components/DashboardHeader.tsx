@@ -17,6 +17,16 @@ interface SchoolData {
   matchedWithSchoolId?: string;
   matchedSchoolName?: string;
   communicationPlatforms?: any;
+  matchedSchool?: {
+    id: string;
+    schoolName: string;
+    teacherName: string;
+    teacherEmail: string;
+    schoolCity?: string;
+    schoolState?: string;
+    expectedClassSize: number;
+    region: string;
+  };
   studentStats?: {
     expected: number;
     registered: number;
@@ -106,12 +116,20 @@ export default function DashboardHeader({
     let totalGroupRequired: number;
     let currentMultipleAcrossGroup: number;
     
+    // Determine the target class size to match against
+    let targetClassSize = 30; // Default to 30 if not matched
+    
+    if (schoolData.matchedWithSchoolId && schoolData.matchedSchool) {
+      // School is matched - use actual matched school/group size
+      targetClassSize = schoolData.matchedSchool.expectedClassSize;
+    }
+    
     if (isInGroup) {
       const allGroupStudents = schoolData.schoolGroup!.schools.flatMap(school => school.students);
       totalStudentsInGroup = allGroupStudents.length;
       thisSchoolStudentCount = schoolData.students.length;
       
-      const formulaRequired = Math.ceil((30 - totalStudentsInGroup) / 2);
+      const formulaRequired = Math.ceil((targetClassSize - totalStudentsInGroup) / 2);
       const maxPossible = Math.floor(totalStudentsInGroup * 0.8);
       totalGroupRequired = Math.min(formulaRequired, maxPossible);
       
@@ -123,7 +141,7 @@ export default function DashboardHeader({
       totalStudentsInGroup = schoolData.students.length;
       thisSchoolStudentCount = schoolData.students.length;
       
-      const formulaRequired = Math.ceil((30 - totalStudentsInGroup) / 2);
+      const formulaRequired = Math.ceil((targetClassSize - totalStudentsInGroup) / 2);
       const maxPossible = Math.floor(totalStudentsInGroup * 0.8);
       totalGroupRequired = Math.min(formulaRequired, maxPossible);
       
