@@ -85,8 +85,9 @@ export default function MatchingStatusCard({
   const readyForPairing = schoolData?.status === 'READY';
   const penPalsPaired = schoolData?.status === 'MATCHED';
   
-  // Show card in three scenarios: incomplete profile, READY status, or MATCHED status
-  const shouldShowCard = isIncomplete || readyForPairing || penPalsPaired;
+  // Show card in four scenarios: incomplete profile, COLLECTING with complete profile, READY status, or MATCHED status
+  const isCollectingWithCompleteProfile = !isIncomplete && !readyForPairing && !penPalsPaired;
+  const shouldShowCard = isIncomplete || isCollectingWithCompleteProfile || readyForPairing || penPalsPaired;
   
   if (!shouldShowCard) {
     return null;
@@ -251,6 +252,30 @@ export default function MatchingStatusCard({
               Mailing Address{schoolData.matchedSchool?.isGroup ? 'es' : ''}
             </div>
             {renderMailingAddresses()}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show Collecting Student Info card when profile is complete but not ready yet
+  if (isCollectingWithCompleteProfile) {
+    return (
+      <div className="card" style={{ marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+          <div style={{ flex: '1', minWidth: '300px' }}>
+            <h3 style={{ 
+              color: '#1f2937', 
+              marginBottom: '1rem', 
+              fontSize: '1.4rem',
+              fontWeight: '400',
+              margin: 0
+            }}>
+              Current Status: Collecting Student Info
+            </h3>
+            <p className="text-meta-info" style={{ marginBottom: '0' }}>
+              Share the Student Registration link with your students, or add them yourself with the "Add New Student" button. When all students have registered, click "Ready to Pair Pen Pals."
+            </p>
           </div>
         </div>
       </div>
