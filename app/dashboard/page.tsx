@@ -556,7 +556,7 @@ function TeacherDashboardContent() {
           isProfileIncomplete={isProfileIncomplete}
         />
 
-        {/* Group Membership Card */}
+        {/* Group Membership Card - positioned right after header */}
         {schoolData.schoolGroup && (
           <GroupMembershipCard
             groupName={schoolData.schoolGroup.name}
@@ -570,15 +570,7 @@ function TeacherDashboardContent() {
           />
         )}
 
-        <StudentMetricsGrid 
-          schoolData={schoolData}
-          totalStudents={totalStudents}
-          studentsWithInterests={studentsWithInterests}
-          matchedSchool={schoolData.matchedSchool}
-          isMatched={schoolData?.matchedWithSchoolId != null || schoolData?.matchedSchool != null}
-          readOnly={isAdminViewing}
-        />
-
+        {/* Status card - positioned after group card, before metrics */}
         <MatchingSection 
           schoolData={schoolData}
           allActiveStudentsComplete={allActiveStudentsComplete}
@@ -587,6 +579,15 @@ function TeacherDashboardContent() {
           onSchoolUpdated={handleSchoolUpdated}
           readOnly={isAdminViewing}
           isAdminView={isAdminViewing}
+        />
+
+        <StudentMetricsGrid 
+          schoolData={schoolData}
+          totalStudents={totalStudents}
+          studentsWithInterests={studentsWithInterests}
+          matchedSchool={schoolData.matchedSchool}
+          isMatched={schoolData?.matchedWithSchoolId != null || schoolData?.matchedSchool != null}
+          readOnly={isAdminViewing}
         />
 
         <ReadyStudents 
