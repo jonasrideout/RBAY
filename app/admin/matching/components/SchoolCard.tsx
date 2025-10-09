@@ -29,7 +29,7 @@ export default function SchoolCard({
   const [isUnmatching, setIsUnmatching] = useState(false);
 
   const getDashboardUrl = () => {
-    const adminDashboardPath = `/admin/school-dashboard?schoolId=${school.id}`;
+    const adminDashboardPath = `/dashboard?token=${school.dashboardToken}`;
     if (typeof window !== 'undefined') {
       const currentOrigin = window.location.origin;
       return `${currentOrigin}${adminDashboardPath}`;
