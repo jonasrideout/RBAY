@@ -4,25 +4,21 @@ import {
   Head,
   Heading,
   Html,
-  Link,
   Preview,
   Section,
   Text,
-  Button,
 } from '@react-email/components';
 
 interface PenPalAssignmentEmailProps {
   teacherName: string;
   schoolName: string;
   partnerSchoolNames: string[];
-  penPalListUrl: string;
 }
 
 export default function PenPalAssignmentEmail({
   teacherName,
   schoolName,
   partnerSchoolNames,
-  penPalListUrl,
 }: PenPalAssignmentEmailProps) {
   const partnerText = partnerSchoolNames.length === 1 
     ? partnerSchoolNames[0]
@@ -31,7 +27,7 @@ export default function PenPalAssignmentEmail({
   return (
     <Html>
       <Head />
-      <Preview>Your pen pal assignments are ready to view!</Preview>
+      <Preview>Your pen pal assignments are ready!</Preview>
       <Body style={main}>
         <Container style={container}>
           <Heading style={h1}>Your Pen Pal Assignments Are Ready!</Heading>
@@ -45,21 +41,15 @@ export default function PenPalAssignmentEmail({
           </Text>
           
           <Text style={text}>
-            Click the button below to view your complete pen pal assignments and start the correspondence journey with your students.
-          </Text>
-          
-          <Section style={buttonContainer}>
-            <Button style={button} href={penPalListUrl}>
-              View Pen Pal Assignments
-            </Button>
-          </Section>
-          
-          <Text style={text}>
-            If the button doesn't work, you can copy and paste this link into your browser:
+            To view your pen pal assignments and download the list for your class, please log in to your dashboard at:
           </Text>
           
           <Text style={linkText}>
-            {penPalListUrl}
+            https://penpal.carolynmackler.com/login
+          </Text>
+          
+          <Text style={text}>
+            Once logged in, click the "Download Pen Pals" button to get your formatted list.
           </Text>
           
           <Text style={footer}>
@@ -99,24 +89,6 @@ const text = {
   lineHeight: '1.6',
   margin: '0 0 16px',
   fontWeight: '300',
-};
-
-const buttonContainer = {
-  margin: '32px 0',
-  textAlign: 'center' as const,
-};
-
-const button = {
-  backgroundColor: '#2c5aa0',
-  borderRadius: '4px',
-  color: '#ffffff',
-  fontSize: '16px',
-  fontWeight: '500',
-  textDecoration: 'none',
-  textAlign: 'center' as const,
-  display: 'inline-block',
-  padding: '14px 28px',
-  border: '2px solid #2c5aa0',
 };
 
 const linkText = {
