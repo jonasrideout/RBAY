@@ -25,69 +25,8 @@ export async function POST(request: NextRequest) {
       schoolName: string;
       teacherName: string;
       teacherEmail: string;
-      dashboardToken: string;
       partnerSchoolNames: string[];
     }> = [];
-
-    // Helper to get partner school names for a school
-    const getPartnerNames = async (schoolId: string, isInGroup: boolean, groupId?: string) => {
-      const names: string[] = [];
-      
-      if (matchType === 'school-school') {
-        // Simple case: just get the other school
-        const otherSchoolId = schoolId === unit1Id ? unit2Id : unit1Id;
-        const otherSchool = await prisma.school.findUnique({
-          where: { id: otherSchoolId },
-          select: { schoolName: true }
-        });
-        if (otherSchool) names.push(otherSchool.schoolName);
-      } else if (matchType === 'group-group') {
-        // Get all schools from the OTHER group
-        const thisSchool = await prisma.school.findUnique({
-          where: { id: schoolId },
-          select: { schoolGroupId: true }
-        });
-        
-        const otherGroupId = thisSchool?.schoolGroupId === unit1Id ? unit2Id : unit1Id;
-        const otherGroupSchools = await prisma.school.findMany({
-          where: { schoolGroupId: otherGroupId },
-          select: { schoolName: true }
-        });
-        names.push(...otherGroupSchools.map(s => s.schoolName));
-      } else if (matchType === 'group-school') {
-        // Determine if this school is in the group or is the standalone school
-        const thisSchool = await prisma.school.findUnique({
-          where: { id: schoolId },
-          select: { schoolGroupId: true }
-        });
-        
-        if (thisSchool?.schoolGroupId) {
-          // This school is in the group, partner is the standalone school
-          const standaloneSchoolId = unit1Id.startsWith('school:') ? unit1Id.replace('school:', '') : 
-                                      unit2Id.startsWith('school:') ? unit2Id.replace('school:', '') : null;
-          if (standaloneSchoolId) {
-            const standaloneSchool = await prisma.school.findUnique({
-              where: { id: standaloneSchoolId },
-              select: { schoolName: true }
-            });
-            if (standaloneSchool) names.push(standaloneSchool.schoolName);
-          }
-        } else {
-          // This is the standalone school, partners are all schools in the group
-          const groupId = unit1Id.startsWith('group:') ? unit1Id.replace('group:', '') : 
-                         unit2Id.startsWith('group:') ? unit2Id.replace('group:', '') : null;
-          if (groupId) {
-            const groupSchools = await prisma.school.findMany({
-              where: { schoolGroupId: groupId },
-              select: { schoolName: true }
-            });
-            names.push(...groupSchools.map(s => s.schoolName));
-          }
-        }
-      }
-      
-      return names;
-    };
 
     // Collect schools based on match type
     if (matchType === 'school-school') {
@@ -97,16 +36,21 @@ export async function POST(request: NextRequest) {
           id: true,
           schoolName: true,
           teacherName: true,
-          teacherEmail: true,
-          dashboardToken: true
+          teacherEmail: true
         }
       });
       
       for (const school of schools) {
-        const partnerNames = await getPartnerNames(school.id, false);
+        // Get the other school's name
+        const otherSchoolId = school.id === unit1Id ? unit2Id : unit1Id;
+        const otherSchool = await prisma.school.findUnique({
+          where: { id: otherSchoolId },
+          select: { schoolName: true }
+        });
+        
         schoolsToEmail.push({
           ...school,
-          partnerSchoolNames: partnerNames
+          partnerSchoolNames: otherSchool ? [otherSchool.schoolName] : []
         });
       }
     } else if (matchType === 'group-group') {
@@ -119,64 +63,104 @@ export async function POST(request: NextRequest) {
           schoolName: true,
           teacherName: true,
           teacherEmail: true,
-          dashboardToken: true
+          schoolGroupId: true
         }
       });
       
       for (const school of schools) {
-        const partnerNames = await getPartnerNames(school.id, true);
+        // Get all schools from the OTHER group
+        const otherGroupId = school.schoolGroupId === unit1Id ? unit2Id : unit1Id;
+        const otherGroupSchools = await prisma.school.findMany({
+          where: { schoolGroupId: otherGroupId },
+          select: { schoolName: true }
+        });
+        
         schoolsToEmail.push({
-          ...school,
-          partnerSchoolNames: partnerNames
+          id: school.id,
+          schoolName: school.schoolName,
+          teacherName: school.teacherName,
+          teacherEmail: school.teacherEmail,
+          partnerSchoolNames: otherGroupSchools.map(s => s.schoolName)
         });
       }
     } else if (matchType === 'group-school') {
-      // Get schools from both the group and the standalone school
-      const groupId = unit1Id.startsWith('group:') ? unit1Id.replace('group:', '') : 
-                     unit2Id.startsWith('group:') ? unit2Id.replace('group:', '') : null;
-      const schoolId = unit1Id.startsWith('school:') ? unit1Id.replace('school:', '') : 
-                      unit2Id.startsWith('school:') ? unit2Id.replace('school:', '') : null;
+      // Determine which unit is the group and which is the school
+      let groupId: string | null = null;
+      let standaloneSchoolId: string | null = null;
       
-      if (groupId) {
-        const groupSchools = await prisma.school.findMany({
-          where: { schoolGroupId: groupId },
-          select: {
-            id: true,
-            schoolName: true,
-            teacherName: true,
-            teacherEmail: true,
-            dashboardToken: true
-          }
-        });
-        
-        for (const school of groupSchools) {
-          const partnerNames = await getPartnerNames(school.id, true, groupId);
-          schoolsToEmail.push({
-            ...school,
-            partnerSchoolNames: partnerNames
-          });
+      if (!unit1Id.includes(':') && !unit2Id.includes(':')) {
+        // Old format: both are direct IDs, need to check which is which
+        const unit1 = await prisma.schoolGroup.findUnique({ where: { id: unit1Id } });
+        if (unit1) {
+          groupId = unit1Id;
+          standaloneSchoolId = unit2Id;
+        } else {
+          groupId = unit2Id;
+          standaloneSchoolId = unit1Id;
+        }
+      } else {
+        // New format: one has marker
+        if (unit1Id.startsWith('school:')) {
+          standaloneSchoolId = unit1Id.replace('school:', '');
+          groupId = unit2Id;
+        } else if (unit2Id.startsWith('school:')) {
+          standaloneSchoolId = unit2Id.replace('school:', '');
+          groupId = unit1Id;
+        } else if (unit1Id.startsWith('group:')) {
+          groupId = unit1Id.replace('group:', '');
+          standaloneSchoolId = unit2Id;
+        } else if (unit2Id.startsWith('group:')) {
+          groupId = unit2Id.replace('group:', '');
+          standaloneSchoolId = unit1Id;
         }
       }
       
-      if (schoolId) {
-        const standaloneSchool = await prisma.school.findUnique({
-          where: { id: schoolId },
-          select: {
-            id: true,
-            schoolName: true,
-            teacherName: true,
-            teacherEmail: true,
-            dashboardToken: true
-          }
-        });
-        
-        if (standaloneSchool) {
-          const partnerNames = await getPartnerNames(standaloneSchool.id, false);
+      if (!groupId || !standaloneSchoolId) {
+        throw new Error('Could not determine group and school IDs');
+      }
+      
+      // Get standalone school details
+      const standaloneSchool = await prisma.school.findUnique({
+        where: { id: standaloneSchoolId },
+        select: {
+          id: true,
+          schoolName: true,
+          teacherName: true,
+          teacherEmail: true
+        }
+      });
+      
+      // Get all schools from the group
+      const groupSchools = await prisma.school.findMany({
+        where: { schoolGroupId: groupId },
+        select: {
+          id: true,
+          schoolName: true,
+          teacherName: true,
+          teacherEmail: true
+        }
+      });
+      
+      // Add emails for all group schools (they see the standalone school name)
+      if (standaloneSchool) {
+        for (const groupSchool of groupSchools) {
           schoolsToEmail.push({
-            ...standaloneSchool,
-            partnerSchoolNames: partnerNames
+            id: groupSchool.id,
+            schoolName: groupSchool.schoolName,
+            teacherName: groupSchool.teacherName,
+            teacherEmail: groupSchool.teacherEmail,
+            partnerSchoolNames: [standaloneSchool.schoolName]
           });
         }
+        
+        // Add email for standalone school (they see all group school names)
+        schoolsToEmail.push({
+          id: standaloneSchool.id,
+          schoolName: standaloneSchool.schoolName,
+          teacherName: standaloneSchool.teacherName,
+          teacherEmail: standaloneSchool.teacherEmail,
+          partnerSchoolNames: groupSchools.map(s => s.schoolName)
+        });
       }
     }
 
@@ -188,7 +172,6 @@ export async function POST(request: NextRequest) {
           teacherEmail: school.teacherEmail,
           schoolName: school.schoolName,
           partnerSchoolNames: school.partnerSchoolNames,
-          dashboardToken: school.dashboardToken
         })
       )
     );
