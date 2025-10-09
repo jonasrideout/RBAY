@@ -1,6 +1,5 @@
 // /app/dashboard/components/MatchingSection.tsx
 "use client";
-
 import MatchingStatusCard from './MatchingStatusCard';
 
 interface SchoolData {
@@ -29,6 +28,8 @@ interface MatchingSectionProps {
   matchedSchoolTeacher?: string;
   matchedSchoolRegion?: string;
   onSchoolUpdated?: () => void;
+  readOnly?: boolean;
+  isAdminView?: boolean;
 }
 
 export default function MatchingSection({
@@ -36,21 +37,25 @@ export default function MatchingSection({
   allActiveStudentsComplete,
   matchedSchoolTeacher,
   matchedSchoolRegion,
-  onSchoolUpdated
+  onSchoolUpdated,
+  readOnly = false,
+  isAdminView = false
 }: MatchingSectionProps) {
   
   // Check if school is matched
   const isMatched = schoolData?.matchedWithSchoolId != null;
   const hasMatchedSchoolInfo = schoolData?.matchedSchoolName != null;
-
+  
   // Don't show MatchedSchoolDisplay anymore - info is now in the 5th metric box
   // Just show matching status card for all cases
-
+  
   // Show regular matching status card
   return (
     <MatchingStatusCard 
       schoolData={schoolData}
       allActiveStudentsComplete={allActiveStudentsComplete}
+      readOnly={readOnly}
+      isAdminView={isAdminView}
       onSchoolUpdated={onSchoolUpdated}
     />
   );
