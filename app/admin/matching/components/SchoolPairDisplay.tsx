@@ -29,8 +29,8 @@ export default function SchoolPairDisplay({
   const [sendingEmails, setSendingEmails] = useState(false);
   const [emailsSent, setEmailsSent] = useState(false);
 
-  const getDashboardUrl = (schoolId: string) => {
-    const adminDashboardPath = `/admin/school-dashboard?schoolId=${schoolId}`;
+  const getDashboardUrl = (school: School) => {
+    const adminDashboardPath = `/dashboard?token=${school.dashboardToken}`;
     if (typeof window !== 'undefined') {
       const currentOrigin = window.location.origin;
       return `${currentOrigin}${adminDashboardPath}`;
@@ -38,13 +38,13 @@ export default function SchoolPairDisplay({
     return adminDashboardPath;
   };
 
-  const openDashboard = (schoolId: string) => {
-    const url = getDashboardUrl(schoolId);
+  const openDashboard = (school: School) => {
+    const url = getDashboardUrl(school);
     window.open(url, '_blank');
   };
 
-  const copyDashboardUrl = async (schoolId: string, isFirst: boolean) => {
-    const url = getDashboardUrl(schoolId);
+  const copyDashboardUrl = async (school: School, isFirst: boolean) => {
+    const url = getDashboardUrl(school);
     try {
       await navigator.clipboard.writeText(url);
       if (isFirst) {
@@ -221,7 +221,7 @@ export default function SchoolPairDisplay({
             gap: '3px'
           }}>
             <button
-              onClick={() => openDashboard(school.id)}
+              onClick={() => openDashboard(school)}
               style={{
                 background: 'white',
                 border: '1px solid #ddd',
@@ -240,7 +240,7 @@ export default function SchoolPairDisplay({
             </button>
 
             <button
-              onClick={() => copyDashboardUrl(school.id, isFirst)}
+              onClick={() => copyDashboardUrl(school, isFirst)}
               style={{
                 background: 'white',
                 border: '1px solid #ddd',
