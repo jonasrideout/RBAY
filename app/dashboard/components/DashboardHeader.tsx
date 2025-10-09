@@ -25,6 +25,7 @@ interface SchoolData {
     schoolCity?: string;
     schoolState?: string;
     expectedClassSize: number;
+    actualStudentCount: number;
     region: string;
   };
   studentStats?: {
@@ -121,7 +122,7 @@ export default function DashboardHeader({
     
     if (schoolData.matchedWithSchoolId && schoolData.matchedSchool) {
       // School is matched - use actual matched school/group size
-      targetClassSize = schoolData.matchedSchool.expectedClassSize;
+      targetClassSize = schoolData.matchedSchool.actualStudentCount;
     }
     
     if (isInGroup) {
