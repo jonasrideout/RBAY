@@ -52,6 +52,7 @@ export async function GET() {
                 teacherName: true,
                 gradeLevel: true,
                 specialConsiderations: true,
+                notificationEmailsSent: true,
                 students: {
                   where: { isActive: true },
                   select: { id: true }
@@ -80,6 +81,7 @@ export async function GET() {
             startMonth: true,
             status: true,
             expectedClassSize: true,
+            notificationEmailsSent: true,
             students: {
               where: { isActive: true },
               select: {
@@ -147,6 +149,7 @@ export async function GET() {
         lettersReceived: school.lettersReceived,
         matchedWithSchoolId: school.matchedWithSchoolId,
         schoolGroupId: school.schoolGroupId,
+        notificationEmailsSent: school.notificationEmailsSent,
         matchedSchool: undefined, // Will be fetched manually if needed (can contain "group:xxx" marker)
         schoolGroup: school.schoolGroup ? {
           id: school.schoolGroup.id,
@@ -158,7 +161,8 @@ export async function GET() {
             teacherName: s.teacherName,
             gradeLevel: s.gradeLevel,
             specialConsiderations: s.specialConsiderations,
-            studentCount: s.students.length
+            studentCount: s.students.length,
+            notificationEmailsSent: s.notificationEmailsSent
           }))
         } : undefined,
         students: school.students.map(student => ({
@@ -261,7 +265,8 @@ export async function GET() {
           startMonth: school.startMonth,
           status: school.status,
           expectedClassSize: school.expectedClassSize,
-          studentCount: school.students.length
+          studentCount: school.students.length,
+          notificationEmailsSent: school.notificationEmailsSent
         })),
         studentCounts: {
           total: totalStudents,
