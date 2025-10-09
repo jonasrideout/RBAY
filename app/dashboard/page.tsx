@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Header from '../components/Header';
 import { useTeacherSession, useSessionWarning } from '@/lib/useTeacherSession';
@@ -141,11 +141,13 @@ function SessionWarningBanner() {
 function TeacherDashboardContent() {
   const { data: session, status } = useTeacherSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [students, setStudents] = useState<Student[]>([]);
   const [schoolData, setSchoolData] = useState<SchoolData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [expandedReadyStudents, setExpandedReadyStudents] = useState<Set<string>>(new Set());
+  const [isAdminViewing, setIsAdminViewing] = useState(false);
   
   // Removal mode state
   const [readyStudentsRemovalMode, setReadyStudentsRemovalMode] = useState(false);
@@ -162,10 +164,29 @@ function TeacherDashboardContent() {
     studentId: string;
   }>({ show: false, studentName: '', studentId: '' });
 
+  // Check if admin is viewing (has admin-session cookie)
+  const checkIsAdmin = () => {
+    if (typeof document !== 'undefined') {
+      return document.cookie.includes('admin-session=');
+    }
+    return false;
+  };
+
   // Session-based authentication and school lookup
   useEffect(() => {
     if (status === 'loading') return;
 
+    const tokenParam = searchParams?.get('token');
+    const isAdmin = checkIsAdmin();
+
+    // Admin viewing with token
+    if (isAdmin && tokenParam) {
+      setIsAdminViewing(true);
+      fetchSchoolByToken(tokenParam);
+      return;
+    }
+
+    // Regular teacher flow
     if (status === 'unauthenticated') {
       router.push('/login');
       return;
@@ -177,7 +198,61 @@ function TeacherDashboardContent() {
       setError('User email not found in session');
       setIsLoading(false);
     }
-  }, [session, status, router]);
+  }, [session, status, router, searchParams]);
+
+  const fetchSchoolByToken = async (token: string) => {
+    try {
+      const response = await fetch(`/api/schools?token=${encodeURIComponent(token)}`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to load school data');
+      }
+
+      const transformedSchoolData: SchoolData = {
+        id: data.school.id,
+        schoolName: data.school.schoolName,
+        teacherName: data.school.teacherName,
+        teacherEmail: data.school.teacherEmail,
+        dashboardToken: data.school.dashboardToken,
+        expectedClassSize: data.school.expectedClassSize,
+        startMonth: data.school.startMonth,
+        programStartMonth: data.school.programStartMonth,
+        status: data.school.status,
+        students: data.school.students,
+        matchedWithSchoolId: data.school.matchedWithSchoolId,
+        matchedSchoolName: data.school.matchedWithSchool?.schoolName || undefined,
+        schoolState: data.school.schoolState,
+        schoolCity: data.school.schoolCity,
+        gradeLevel: data.school.gradeLevel,
+        teacherPhone: data.school.teacherPhone,
+        specialConsiderations: data.school.specialConsiderations,
+        communicationPlatforms: data.school.communicationPlatforms,
+        mailingAddress: data.school.mailingAddress,
+        schoolGroup: data.school.schoolGroup,
+        studentStats: data.school.studentStats,
+        matchedSchool: data.school.matchedWithSchool ? {
+          id: data.school.matchedWithSchool.id,
+          schoolName: data.school.matchedWithSchool.schoolName,
+          teacherName: data.school.matchedWithSchool.teacherName,
+          teacherEmail: data.school.matchedWithSchool.teacherEmail,
+          schoolCity: data.school.matchedWithSchool.schoolCity,
+          schoolState: data.school.matchedWithSchool.schoolState,
+          expectedClassSize: data.school.matchedWithSchool.expectedClassSize,
+          actualStudentCount: data.school.matchedWithSchool.actualStudentCount,
+          region: data.school.matchedWithSchool.region,
+          communicationPlatforms: data.school.matchedWithSchool.communicationPlatforms
+        } : undefined
+      };
+
+      setSchoolData(transformedSchoolData);
+      fetchStudentData(data.school.id, transformedSchoolData);
+      
+    } catch (err: any) {
+      setError(err.message || 'Failed to load school data');
+      setIsLoading(false);
+    }
+  };
 
   const fetchSchoolByEmail = async (email: string) => {
     try {
@@ -400,7 +475,11 @@ function TeacherDashboardContent() {
   };
 
   const handleLogout = () => {
-    router.push('/api/auth/signout?callbackUrl=' + encodeURIComponent(window.location.origin));  
+    if (isAdminViewing) {
+      router.push('/admin/matching');
+    } else {
+      router.push('/api/auth/signout?callbackUrl=' + encodeURIComponent(window.location.origin));
+    }
   };
 
   if (isLoading) {
@@ -429,9 +508,15 @@ function TeacherDashboardContent() {
             <Link href="/" className="btn btn-primary" style={{ marginRight: '1rem' }}>
               Go Home
             </Link>
-            <Link href="/register-school" className="btn btn-primary">
-              Register School
-            </Link>
+            {isAdminViewing ? (
+              <Link href="/admin/matching" className="btn btn-primary">
+                Back to Admin Dashboard
+              </Link>
+            ) : (
+              <Link href="/register-school" className="btn btn-primary">
+                Register School
+              </Link>
+            )}
           </div>
         </main>
       </div>
@@ -448,11 +533,13 @@ function TeacherDashboardContent() {
 
       <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
         
-        <SessionWarningBanner />
+        {!isAdminViewing && <SessionWarningBanner />}
         
         <DashboardHeader 
           schoolData={schoolData} 
           dashboardToken={schoolData.dashboardToken}
+          readOnly={isAdminViewing}
+          adminBackButton={isAdminViewing}
           allActiveStudentsComplete={allActiveStudentsComplete}
           onMatchingRequested={handleMatchingRequested}
           onPenpalPreferenceCheckNeeded={handlePenpalPreferenceCheckNeeded}
@@ -479,6 +566,7 @@ function TeacherDashboardContent() {
           studentsWithInterests={studentsWithInterests}
           matchedSchool={schoolData.matchedSchool}
           isMatched={schoolData?.matchedWithSchoolId != null || schoolData?.matchedSchool != null}
+          readOnly={isAdminViewing}
         />
 
         <MatchingSection 
@@ -487,6 +575,8 @@ function TeacherDashboardContent() {
           matchedSchoolTeacher={schoolData.matchedSchool?.teacherName}
           matchedSchoolRegion={schoolData.matchedSchool?.region}
           onSchoolUpdated={handleSchoolUpdated}
+          readOnly={isAdminViewing}
+          isAdminView={isAdminViewing}
         />
 
         <ReadyStudents 
@@ -497,25 +587,30 @@ function TeacherDashboardContent() {
           onToggleRemovalMode={toggleReadyStudentsRemovalMode}
           onRemoveStudent={handleRemoveStudent}
           onToggleExpansion={toggleReadyStudentExpansion}
+          readOnly={isAdminViewing}
         />
 
-        <ConfirmationDialog 
-          show={confirmDialog.show}
-          studentName={confirmDialog.studentName}
-          studentId={confirmDialog.studentId}
-          onConfirm={confirmRemoveStudent}
-          onCancel={cancelRemoveStudent}
-        />
+        {!isAdminViewing && (
+          <>
+            <ConfirmationDialog 
+              show={confirmDialog.show}
+              studentName={confirmDialog.studentName}
+              studentId={confirmDialog.studentId}
+              onConfirm={confirmRemoveStudent}
+              onCancel={cancelRemoveStudent}
+            />
 
-        {showPenpalPreferenceUpdate && (
-          <UpdatePenpalPreferences
-            students={students}
-            requiredCount={penpalPreferenceRequired}
-            currentCount={penpalPreferenceCurrent}
-            classSize={totalStudents}
-            onComplete={handlePenpalPreferenceUpdateComplete}
-            onCancel={handlePenpalPreferenceUpdateCancel}
-          />
+            {showPenpalPreferenceUpdate && (
+              <UpdatePenpalPreferences
+                students={students}
+                requiredCount={penpalPreferenceRequired}
+                currentCount={penpalPreferenceCurrent}
+                classSize={totalStudents}
+                onComplete={handlePenpalPreferenceUpdateComplete}
+                onCancel={handlePenpalPreferenceUpdateCancel}
+              />
+            )}
+          </>
         )}
 
         {totalStudents === 0 && (
@@ -529,7 +624,10 @@ function TeacherDashboardContent() {
               No Students Registered Yet
             </h3>
             <p className="text-meta-info" style={{ marginBottom: '2rem' }}>
-              Use the "Copy Student Link" button above to share with your students, or click "Add New Student" to add them manually.
+              {isAdminViewing 
+                ? 'This school has not registered any students yet.'
+                : 'Use the "Copy Student Link" button above to share with your students, or click "Add New Student" to add them manually.'
+              }
             </p>
           </div>
         )}
@@ -538,7 +636,7 @@ function TeacherDashboardContent() {
 
       <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
         <div className="container text-center">
-          <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
+          <p>&copy; 2025 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature and letters.</p>
         </div>
       </footer>
     </div>
