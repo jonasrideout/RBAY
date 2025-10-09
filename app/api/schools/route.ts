@@ -366,13 +366,27 @@ export async function GET(request: NextRequest) {
             expectedClassSize: true,
             region: true,
             mailingAddress: true,
-            communicationPlatforms: true
+            communicationPlatforms: true,
+            students: {
+              where: { isActive: true },
+              select: { id: true }
+            }
           }
         });
         
         if (matchedSchool) {
           matchedWithSchool = {
-            ...matchedSchool,
+            id: matchedSchool.id,
+            schoolName: matchedSchool.schoolName,
+            teacherName: matchedSchool.teacherName,
+            teacherEmail: matchedSchool.teacherEmail,
+            schoolCity: matchedSchool.schoolCity,
+            schoolState: matchedSchool.schoolState,
+            expectedClassSize: matchedSchool.expectedClassSize,
+            actualStudentCount: matchedSchool.students.length,
+            region: matchedSchool.region,
+            mailingAddress: matchedSchool.mailingAddress,
+            communicationPlatforms: matchedSchool.communicationPlatforms,
             isGroup: false
           };
         }
@@ -392,7 +406,11 @@ export async function GET(request: NextRequest) {
                 expectedClassSize: true,
                 region: true,
                 mailingAddress: true,
-                communicationPlatforms: true
+                communicationPlatforms: true,
+                students: {
+                  where: { isActive: true },
+                  select: { id: true }
+                }
               }
             }
           }
@@ -401,6 +419,9 @@ export async function GET(request: NextRequest) {
         if (matchedGroup) {
           const totalExpectedClassSize = matchedGroup.schools.reduce(
             (sum, s) => sum + s.expectedClassSize, 0
+          );
+          const totalActualStudents = matchedGroup.schools.reduce(
+            (sum, s) => sum + s.students.length, 0
           );
           
           matchedWithSchool = {
@@ -411,9 +432,22 @@ export async function GET(request: NextRequest) {
             schoolCity: matchedGroup.schools[0]?.schoolCity || '',
             schoolState: matchedGroup.schools[0]?.schoolState || '',
             expectedClassSize: totalExpectedClassSize,
+            actualStudentCount: totalActualStudents,
             region: matchedGroup.schools[0]?.region || '',
             isGroup: true,
-            schools: matchedGroup.schools
+            schools: matchedGroup.schools.map(s => ({
+              id: s.id,
+              schoolName: s.schoolName,
+              teacherName: s.teacherName,
+              teacherEmail: s.teacherEmail,
+              schoolCity: s.schoolCity,
+              schoolState: s.schoolState,
+              expectedClassSize: s.expectedClassSize,
+              actualStudentCount: s.students.length,
+              region: s.region,
+              mailingAddress: s.mailingAddress,
+              communicationPlatforms: s.communicationPlatforms
+            }))
           };
         }
       }
@@ -438,7 +472,11 @@ export async function GET(request: NextRequest) {
                 expectedClassSize: true,
                 region: true,
                 mailingAddress: true,
-                communicationPlatforms: true
+                communicationPlatforms: true,
+                students: {
+                  where: { isActive: true },
+                  select: { id: true }
+                }
               }
             }
           }
@@ -450,6 +488,9 @@ export async function GET(request: NextRequest) {
           const totalExpectedClassSize = matchedGroup.schools.reduce(
             (sum, s) => sum + s.expectedClassSize, 0
           );
+          const totalActualStudents = matchedGroup.schools.reduce(
+            (sum, s) => sum + s.students.length, 0
+          );
           
           matchedWithSchool = {
             id: matchedGroup.id,
@@ -459,9 +500,22 @@ export async function GET(request: NextRequest) {
             schoolCity: matchedGroup.schools[0]?.schoolCity || '',
             schoolState: matchedGroup.schools[0]?.schoolState || '',
             expectedClassSize: totalExpectedClassSize,
+            actualStudentCount: totalActualStudents,
             region: matchedGroup.schools[0]?.region || '',
             isGroup: true,
-            schools: matchedGroup.schools // Include full school list for group
+            schools: matchedGroup.schools.map(s => ({
+              id: s.id,
+              schoolName: s.schoolName,
+              teacherName: s.teacherName,
+              teacherEmail: s.teacherEmail,
+              schoolCity: s.schoolCity,
+              schoolState: s.schoolState,
+              expectedClassSize: s.expectedClassSize,
+              actualStudentCount: s.students.length,
+              region: s.region,
+              mailingAddress: s.mailingAddress,
+              communicationPlatforms: s.communicationPlatforms
+            }))
           };
         }
       } else {
@@ -478,13 +532,27 @@ export async function GET(request: NextRequest) {
             expectedClassSize: true,
             region: true,
             mailingAddress: true,
-            communicationPlatforms: true
+            communicationPlatforms: true,
+            students: {
+              where: { isActive: true },
+              select: { id: true }
+            }
           }
         });
         
         if (matchedSchool) {
           matchedWithSchool = {
-            ...matchedSchool,
+            id: matchedSchool.id,
+            schoolName: matchedSchool.schoolName,
+            teacherName: matchedSchool.teacherName,
+            teacherEmail: matchedSchool.teacherEmail,
+            schoolCity: matchedSchool.schoolCity,
+            schoolState: matchedSchool.schoolState,
+            expectedClassSize: matchedSchool.expectedClassSize,
+            actualStudentCount: matchedSchool.students.length,
+            region: matchedSchool.region,
+            mailingAddress: matchedSchool.mailingAddress,
+            communicationPlatforms: matchedSchool.communicationPlatforms,
             isGroup: false
           };
         }
