@@ -65,6 +65,14 @@ interface SchoolData {
     actualStudentCount: number;
     region: string;
     communicationPlatforms?: any;
+    mailingAddress?: string;
+    isGroup?: boolean;
+    schools?: Array<{
+      id: string;
+      schoolName: string;
+      teacherName: string;
+      mailingAddress?: string;
+    }>;
   };
   schoolGroup?: {
     id: string;
@@ -251,7 +259,10 @@ function TeacherDashboardContent() {
           expectedClassSize: data.school.matchedWithSchool.expectedClassSize,
           actualStudentCount: data.school.matchedWithSchool.actualStudentCount,
           region: data.school.matchedWithSchool.region,
-          communicationPlatforms: data.school.matchedWithSchool.communicationPlatforms
+          communicationPlatforms: data.school.matchedWithSchool.communicationPlatforms,
+          mailingAddress: data.school.matchedWithSchool.mailingAddress,
+          isGroup: data.school.matchedWithSchool.isGroup,
+          schools: data.school.matchedWithSchool.schools
         } : undefined
       };
 
@@ -309,7 +320,10 @@ function TeacherDashboardContent() {
           expectedClassSize: data.school.matchedWithSchool.expectedClassSize,
           actualStudentCount: data.school.matchedWithSchool.actualStudentCount,
           region: data.school.matchedWithSchool.region,
-          communicationPlatforms: data.school.matchedWithSchool.communicationPlatforms
+          communicationPlatforms: data.school.matchedWithSchool.communicationPlatforms,
+          mailingAddress: data.school.matchedWithSchool.mailingAddress,
+          isGroup: data.school.matchedWithSchool.isGroup,
+          schools: data.school.matchedWithSchool.schools
         } : undefined
       };
 
