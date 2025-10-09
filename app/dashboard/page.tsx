@@ -174,19 +174,19 @@ function TeacherDashboardContent() {
 
   // Session-based authentication and school lookup
   useEffect(() => {
-    if (status === 'loading') return;
-
     const tokenParam = searchParams?.get('token');
     const isAdmin = checkIsAdmin();
 
-    // Admin viewing with token
+    // Admin viewing with token - handle this FIRST before checking teacher auth
     if (isAdmin && tokenParam) {
       setIsAdminViewing(true);
       fetchSchoolByToken(tokenParam);
       return;
     }
 
-    // Regular teacher flow
+    // Now check teacher authentication
+    if (status === 'loading') return;
+
     if (status === 'unauthenticated') {
       router.push('/login');
       return;
