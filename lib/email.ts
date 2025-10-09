@@ -25,7 +25,6 @@ export interface SendPenPalAssignmentEmailParams {
   teacherEmail: string;
   schoolName: string;
   partnerSchoolNames: string[];
-  dashboardToken: string;
 }
 
 export async function sendWelcomeEmail({
@@ -119,12 +118,8 @@ export async function sendPenPalAssignmentEmail({
   teacherEmail,
   schoolName,
   partnerSchoolNames,
-  dashboardToken
 }: SendPenPalAssignmentEmailParams): Promise<{ success: boolean; error?: string }> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://penpal.carolynmackler.com';
-    const penPalListUrl = `${baseUrl}/teacher/pen-pal-list?token=${dashboardToken}`;
-    
     const { data, error } = await resend.emails.send({
       from: 'Right Back at You <noreply@carolynmackler.com>',
       to: [teacherEmail],
@@ -133,7 +128,6 @@ export async function sendPenPalAssignmentEmail({
         teacherName,
         schoolName,
         partnerSchoolNames,
-        penPalListUrl
       }),
     });
 
