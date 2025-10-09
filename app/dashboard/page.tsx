@@ -62,6 +62,7 @@ interface SchoolData {
     schoolCity?: string;
     schoolState?: string;
     expectedClassSize: number;
+    actualStudentCount: number;
     region: string;
     communicationPlatforms?: any;
   };
