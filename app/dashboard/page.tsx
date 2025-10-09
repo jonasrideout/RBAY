@@ -171,7 +171,6 @@ function TeacherDashboardContent() {
         credentials: 'include'
       });
       const data = await response.json();
-      console.log('Check admin result:', data.isAdmin);
       return data.isAdmin;
     } catch (error) {
       console.error('Error checking admin status:', error);
@@ -184,23 +183,18 @@ function TeacherDashboardContent() {
       const tokenParam = searchParams?.get('token');
       const isAdmin = await checkIsAdmin();
 
-      console.log('Dashboard useEffect:', { tokenParam, isAdmin, status, hasSession: !!session });
 
       // Admin viewing with token - handle this FIRST before checking teacher auth
       if (isAdmin && tokenParam) {
-        console.log('ADMIN PATH: Setting admin viewing and fetching by token');
         setIsAdminViewing(true);
         fetchSchoolByToken(tokenParam);
         return;
       }
 
-      console.log('TEACHER PATH: Checking teacher auth');
-
       // Now check teacher authentication
       if (status === 'loading') return;
 
       if (status === 'unauthenticated') {
-        console.log('REDIRECTING to login');
         router.push('/login');
         return;
       }
