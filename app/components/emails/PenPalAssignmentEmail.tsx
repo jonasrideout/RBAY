@@ -7,6 +7,7 @@ import {
   Preview,
   Section,
   Text,
+  Button,
 } from '@react-email/components';
 
 interface PenPalAssignmentEmailProps {
@@ -41,12 +42,14 @@ export default function PenPalAssignmentEmail({
           </Text>
           
           <Text style={text}>
-            To view your pen pal assignments and download the list for your class, please log in to your dashboard at:
+            To view your pen pal assignments and download the list for your class, please log in to your dashboard.
           </Text>
           
-          <Text style={linkText}>
-            https://penpal.carolynmackler.com/login
-          </Text>
+          <Section style={buttonContainer}>
+            <Button style={button} href="https://penpal.carolynmackler.com/login">
+              View Dashboard
+            </Button>
+          </Section>
           
           <Text style={text}>
             Once logged in, click the "Download Pen Pals" button to get your formatted list.
@@ -91,12 +94,22 @@ const text = {
   fontWeight: '300',
 };
 
-const linkText = {
-  color: '#2c5aa0',
-  fontSize: '14px',
-  lineHeight: '1.6',
-  margin: '0 0 16px',
-  wordBreak: 'break-all' as const,
+const buttonContainer = {
+  margin: '32px 0',
+  textAlign: 'center' as const,
+};
+
+const button = {
+  backgroundColor: '#2c5aa0',
+  borderRadius: '4px',
+  color: '#ffffff',
+  fontSize: '16px',
+  fontWeight: '500',
+  textDecoration: 'none',
+  textAlign: 'center' as const,
+  display: 'inline-block',
+  padding: '14px 28px',
+  border: '2px solid #2c5aa0',
 };
 
 const footer = {
