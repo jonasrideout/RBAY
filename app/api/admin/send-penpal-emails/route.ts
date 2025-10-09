@@ -164,17 +164,23 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Send emails to all schools
-    const emailResults = await Promise.all(
-      schoolsToEmail.map(school =>
-        sendPenPalAssignmentEmail({
-          teacherName: school.teacherName,
-          teacherEmail: school.teacherEmail,
-          schoolName: school.schoolName,
-          partnerSchoolNames: school.partnerSchoolNames,
-        })
-      )
-    );
+    // Send emails to all schools (with rate limiting - 2 per second max)
+    const emailResults = [];
+    for (let i = 0; i < schoolsToEmail.length; i++) {
+      const school = schoolsToEmail[i];
+      const result = await sendPenPalAssignmentEmail({
+        teacherName: school.teacherName,
+        teacherEmail: school.teacherEmail,
+        schoolName: school.schoolName,
+        partnerSchoolNames: school.partnerSchoolNames,
+      });
+      emailResults.push(result);
+      
+      // Add 600ms delay between emails to stay under 2 requests/second rate limit
+      if (i < schoolsToEmail.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 600));
+      }
+    }
 
     // Check if all emails sent successfully
     const allSuccess = emailResults.every(result => result.success);
