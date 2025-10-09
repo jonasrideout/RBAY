@@ -167,7 +167,11 @@ function TeacherDashboardContent() {
   // Check if admin is viewing (has admin-session cookie)
   const checkIsAdmin = () => {
     if (typeof document !== 'undefined') {
-      return document.cookie.includes('admin-session=');
+      const cookies = document.cookie;
+      console.log('ALL COOKIES:', cookies);
+      const hasAdminCookie = cookies.includes('admin-session=');
+      console.log('Has admin-session cookie?', hasAdminCookie);
+      return hasAdminCookie;
     }
     return false;
   };
