@@ -347,21 +347,6 @@ export default function SchoolPairDisplay({
   };
 
   const renderCompactGroupCard = (group: SchoolGroup) => {
-    // Aggregate unique grades
-    const aggregatedGrades = (() => {
-      const grades = new Set<string>();
-      group.schools.forEach(s => {
-        const schoolGrades = s.gradeLevel?.split(',').map(g => g.trim()) || [];
-        schoolGrades.forEach(g => grades.add(g));
-      });
-      return Array.from(grades).sort((a, b) => {
-        const numA = parseInt(a);
-        const numB = parseInt(b);
-        if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
-        return a.localeCompare(b);
-      }).join(',');
-    })();
-
     return (
       <div style={{
         background: 'white',
@@ -468,15 +453,6 @@ export default function SchoolPairDisplay({
             )}
           </div>
         ))}
-
-        {/* Grades */}
-        <div style={{
-          fontSize: '11px',
-          color: '#888',
-          marginBottom: '8px'
-        }}>
-          Grades {aggregatedGrades}
-        </div>
 
         {/* Data in single horizontal row */}
         <div style={{
