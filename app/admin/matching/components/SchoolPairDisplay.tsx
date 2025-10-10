@@ -397,7 +397,7 @@ export default function SchoolPairDisplay({
             fontSize: '12px',
             fontWeight: '300',
             color: '#555',
-            marginBottom: idx < group.schools.length - 1 ? '12px' : '8px'
+            marginBottom: idx < group.schools.length - 1 ? '12px' : '16px'
           }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
