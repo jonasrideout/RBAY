@@ -20,6 +20,33 @@ interface SchoolData {
   gradeLevel?: string;
   teacherPhone?: string;
   specialConsiderations?: string;
+  mailingAddress?: string;
+  communicationPlatforms?: any;
+  matchedSchool?: {
+    id: string;
+    schoolName: string;
+    teacherName: string;
+    teacherEmail: string;
+    schoolCity?: string;
+    schoolState?: string;
+    expectedClassSize: number;
+    region: string;
+    isGroup?: boolean;
+    mailingAddress?: string;
+    schools?: Array<{
+      id: string;
+      schoolName: string;
+      teacherName: string;
+      mailingAddress?: string;
+    }>;
+  };
+  studentStats?: {
+    expected: number;
+    registered: number;
+    ready: number;
+    studentsWithPenpals: number;
+    hasPenpalAssignments: boolean;
+  };
 }
 
 interface MatchingSectionProps {
