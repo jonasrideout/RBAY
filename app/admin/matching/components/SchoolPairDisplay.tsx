@@ -219,8 +219,7 @@ export default function SchoolPairDisplay({
                 • Grades {school.gradeLevel}
               </span>
             </div>
-          </div>
-
+           </div>
           {/* Right side: Buttons stacked vertically */}
           <div style={{
             display: 'flex',
