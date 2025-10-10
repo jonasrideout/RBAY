@@ -291,7 +291,7 @@ export default function MatchingStatusCard({
           <div style={{ flex: '1', minWidth: '300px' }}>
             <h3 style={{ 
               color: '#1f2937', 
-              marginBottom: '1.2rem', 
+              marginBottom: '1rem', 
               fontSize: '1.4rem',
               fontWeight: '400',
             }}>
