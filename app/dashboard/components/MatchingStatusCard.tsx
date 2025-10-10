@@ -2,7 +2,6 @@
 "use client";
 
 import { useState } from 'react';
-import { Link, Plus, Check } from 'lucide-react';
 import SchoolEditModal from './SchoolEditModal';
 
 interface SchoolData {
