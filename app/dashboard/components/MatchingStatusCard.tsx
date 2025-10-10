@@ -160,44 +160,42 @@ export default function MatchingStatusCard({
     // Single matched school - moved to right column
     if (schoolData.matchedSchool.mailingAddress) {
       return (
-        <>
-          <div style={{ 
-            fontSize: '12px', 
-            fontWeight: '400', 
-            color: '#999',
-            marginBottom: '0.5rem',
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px'
-          }}>
-            Mailing Address
-          </div>
-          <div style={{ 
-            marginTop: '1rem',
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '0.5rem'
-          }}>
-            <div></div>
-            <div>
-              <div style={{ 
-                fontSize: '14px', 
-                fontWeight: '400', 
-                color: '#333',
-                marginBottom: '0.25rem'
-              }}>
-                {schoolData.matchedSchool.schoolName}
-              </div>
-              <div style={{ 
-                fontSize: '13px', 
-                fontWeight: '300', 
-                color: '#666',
-                whiteSpace: 'pre-line'
-              }}>
-                {schoolData.matchedSchool.mailingAddress}
-              </div>
+        <div style={{ 
+          marginTop: '1rem',
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '0.5rem'
+        }}>
+          <div></div>
+          <div>
+            <div style={{ 
+              fontSize: '12px', 
+              fontWeight: '400', 
+              color: '#999',
+              marginBottom: '0.5rem',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px'
+            }}>
+              Mailing Address
+            </div>
+            <div style={{ 
+              fontSize: '14px', 
+              fontWeight: '400', 
+              color: '#333',
+              marginBottom: '0.25rem'
+            }}>
+              {schoolData.matchedSchool.schoolName}
+            </div>
+            <div style={{ 
+              fontSize: '13px', 
+              fontWeight: '300', 
+              color: '#666',
+              whiteSpace: 'pre-line'
+            }}>
+              {schoolData.matchedSchool.mailingAddress}
             </div>
           </div>
-        </>
+        </div>
       );
     }
 
