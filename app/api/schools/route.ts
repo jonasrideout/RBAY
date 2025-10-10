@@ -452,7 +452,7 @@ export async function GET(request: NextRequest) {
         }
       }
     }
-    // If school is not in a group, check if the school itself is matched
+    // Second check: If school is not in a group, check if the school itself is matched
     else if (school.matchedWithSchoolId) {
       // Check if it's a cross-type match (group marker)
       if (school.matchedWithSchoolId.startsWith('group:')) {
@@ -556,6 +556,70 @@ export async function GET(request: NextRequest) {
             isGroup: false
           };
         }
+      }
+    }
+    // Third check: Is this standalone school matched WITH a group?
+    // (Group has matchedWithGroupId = "school:thisSchoolId")
+    else {
+      const matchedGroup = await prisma.schoolGroup.findFirst({
+        where: {
+          matchedWithGroupId: `school:${school.id}`
+        },
+        include: {
+          schools: {
+            select: {
+              id: true,
+              schoolName: true,
+              teacherName: true,
+              teacherEmail: true,
+              schoolCity: true,
+              schoolState: true,
+              expectedClassSize: true,
+              region: true,
+              mailingAddress: true,
+              communicationPlatforms: true,
+              students: {
+                where: { isActive: true },
+                select: { id: true }
+              }
+            }
+          }
+        }
+      });
+      
+      if (matchedGroup) {
+        const totalExpectedClassSize = matchedGroup.schools.reduce(
+          (sum, s) => sum + s.expectedClassSize, 0
+        );
+        const totalActualStudents = matchedGroup.schools.reduce(
+          (sum, s) => sum + s.students.length, 0
+        );
+        
+        matchedWithSchool = {
+          id: matchedGroup.id,
+          schoolName: matchedGroup.name,
+          teacherName: matchedGroup.schools.map(s => s.teacherName).join(', '),
+          teacherEmail: matchedGroup.schools.map(s => s.teacherEmail).join(', '),
+          schoolCity: matchedGroup.schools[0]?.schoolCity || '',
+          schoolState: matchedGroup.schools[0]?.schoolState || '',
+          expectedClassSize: totalExpectedClassSize,
+          actualStudentCount: totalActualStudents,
+          region: matchedGroup.schools[0]?.region || '',
+          isGroup: true,
+          schools: matchedGroup.schools.map(s => ({
+            id: s.id,
+            schoolName: s.schoolName,
+            teacherName: s.teacherName,
+            teacherEmail: s.teacherEmail,
+            schoolCity: s.schoolCity,
+            schoolState: s.schoolState,
+            expectedClassSize: s.expectedClassSize,
+            actualStudentCount: s.students.length,
+            region: s.region,
+            mailingAddress: s.mailingAddress,
+            communicationPlatforms: s.communicationPlatforms
+          }))
+        };
       }
     }
 
