@@ -14,7 +14,8 @@ interface UpdatePenpalPreferencesProps {
   students: Student[];
   requiredCount: number;
   currentCount: number;
-  classSize: number;
+  recommendedCount: number;
+  matchedSchoolName: string;
   onComplete: () => void;
   onCancel: () => void;
 }
@@ -23,7 +24,8 @@ export default function UpdatePenpalPreferences({
   students,
   requiredCount,
   currentCount,
-  classSize,
+  recommendedCount,
+  matchedSchoolName,
   onComplete,
   onCancel
 }: UpdatePenpalPreferencesProps) {
@@ -145,7 +147,7 @@ export default function UpdatePenpalPreferences({
             marginBottom: '1.5rem',
             lineHeight: '1.6'
           }}>
-            Because your class is small ({classSize} students), at least <strong>{requiredCount} students</strong> must be set to 'more than one pen pal' to ensure fair matching. Currently <strong>{currentCount}</strong> {currentCount === 1 ? 'student is' : 'students are'} set. Please select {additionalNeeded > 0 ? `at least ${additionalNeeded} more` : 'students below'}.
+            To ensure everyone at <strong>{matchedSchoolName}</strong> gets at least one pen pal, your class must have at least <strong>{requiredCount}</strong> {requiredCount === 1 ? 'student' : 'students'} set to receive more than one pen pal. We recommend you have <strong>{recommendedCount}</strong> to make sure no students have more than 2.
           </p>
 
           {/* Progress indicator */}
