@@ -108,16 +108,19 @@ export default function MatchingStatusCard({
 
   // Render mailing addresses for matched schools
   const renderMailingAddresses = () => {
-    console.log('matchedSchool:', schoolData.matchedSchool);
-    console.log('isGroup:', schoolData.matchedSchool?.isGroup);
     if (!schoolData.matchedSchool) return null;
 
     // If matched with a group, show all schools in the group
     if (schoolData.matchedSchool.isGroup && schoolData.matchedSchool.schools) {
       return (
-        <div style={{ marginTop: '1rem' }}>
+        <div style={{ 
+          marginTop: '1rem',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '1.5rem'
+        }}>
           {schoolData.matchedSchool.schools.map((school, index) => (
-            <div key={school.id} style={{ marginBottom: index < schoolData.matchedSchool!.schools!.length - 1 ? '1rem' : '0' }}>
+            <div key={school.id}>
               <div style={{ 
                 fontSize: '14px', 
                 fontWeight: '400', 
@@ -228,7 +231,7 @@ export default function MatchingStatusCard({
               Pen Pals Paired
             </h3>
             <p className="text-meta-info" style={{ marginBottom: '1rem' }}>
-              Your students have been paired with pen pals! View the list below to see who is paired with whom.
+              Your students have been paired with pen pals!
             </p>
             <button 
               onClick={handleViewPenPals}
