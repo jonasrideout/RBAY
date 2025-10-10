@@ -143,6 +143,7 @@ export async function GET() {
         expectedClassSize: school.expectedClassSize,
         startMonth: school.startMonth,
         specialConsiderations: school.specialConsiderations,
+        communicationPlatforms: school.communicationPlatforms,
         status: school.status,
         letterFrequency: school.letterFrequency,
         lettersSent: school.lettersSent,
