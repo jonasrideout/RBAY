@@ -100,6 +100,30 @@ export default function SchoolCard({
     }
   };
 
+  // Format communication platforms for display
+  const formatCommunicationPlatforms = () => {
+    if (!school.communicationPlatforms || !Array.isArray(school.communicationPlatforms) || school.communicationPlatforms.length === 0) {
+      return null;
+    }
+    
+    const shortNames: { [key: string]: string } = {
+      'Zoom': 'Zoom',
+      'Google Meet': 'Meet',
+      'Microsoft Teams': 'Teams'
+    };
+    
+    const formatted = school.communicationPlatforms.map(platform => {
+      // Check if it's an "Other: " platform
+      if (platform.startsWith('Other:')) {
+        return platform.replace('Other:', '').trim();
+      }
+      // Use short name if available, otherwise use full name
+      return shortNames[platform] || platform;
+    });
+    
+    return formatted.join(' | ');
+  };
+
   const renderIcon = (type: 'pin' | 'lock') => {
     if (type === 'pin') {
       return (
@@ -117,6 +141,8 @@ export default function SchoolCard({
       );
     }
   };
+
+  const communicationPlatformsDisplay = formatCommunicationPlatforms();
 
   return (
     <>
@@ -138,6 +164,12 @@ export default function SchoolCard({
               {emailCopyText}
             </button>
           </div>
+          
+          {communicationPlatformsDisplay && (
+            <div className="text-meta-info" style={{ marginTop: '4px' }}>
+              {communicationPlatformsDisplay}
+            </div>
+          )}
           
           <div className="text-meta-info">
             Grades {school.gradeLevel}
