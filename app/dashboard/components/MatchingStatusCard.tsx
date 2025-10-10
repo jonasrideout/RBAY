@@ -220,7 +220,7 @@ export default function MatchingStatusCard({
     return (
       <div className="card" style={{ marginBottom: '2rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '2rem' }}>
-          <div style={{ flex: '1', minWidth: '300px' }}>
+          <div style={{ flex: '0 0 auto', minWidth: '300px' }}>
             <h3 style={{ 
               color: '#1f2937', 
               marginBottom: '1rem', 
@@ -245,7 +245,7 @@ export default function MatchingStatusCard({
           </div>
           
           {/* Mailing addresses on the right side */}
-          <div style={{ flex: '0 0 auto', minWidth: '250px' }}>
+          <div style={{ flex: '1', minWidth: '250px' }}>
             <div style={{ 
               fontSize: '12px', 
               fontWeight: '400', 
