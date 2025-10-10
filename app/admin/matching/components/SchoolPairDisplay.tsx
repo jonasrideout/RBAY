@@ -208,6 +208,14 @@ export default function SchoolPairDisplay({
               >
                 {emailCopyText}
               </button>
+              {school.communicationPlatforms && Array.isArray(school.communicationPlatforms) && school.communicationPlatforms.length > 0 && (
+                <span style={{ color: '#888', fontSize: '11px' }}>
+                  • {school.communicationPlatforms.map(platform => {
+                    if (platform.startsWith('Other:')) return platform.replace('Other:', '').trim();
+                    return platform === 'Google Meet' ? 'Meet' : platform === 'Microsoft Teams' ? 'Teams' : platform;
+                  }).join(' | ')}
+                </span>
+              )}
               <span style={{ color: '#888', fontSize: '11px' }}>
                 • Grades {school.gradeLevel}
               </span>
