@@ -113,35 +113,46 @@ export default function MatchingStatusCard({
     // If matched with a group, show all schools in the group
     if (schoolData.matchedSchool.isGroup && schoolData.matchedSchool.schools) {
       return (
-        <div style={{ 
-          marginTop: '1rem',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '1rem',
-          justifyItems: 'end'
-        }}>
-          {schoolData.matchedSchool.schools.map((school, index) => (
-            <div key={school.id}>
-              <div style={{ 
-                fontSize: '14px', 
-                fontWeight: '400', 
-                color: '#333',
-                marginBottom: '0.25rem'
-              }}>
-                {school.schoolName}
-              </div>
-              {school.mailingAddress && (
+        <div style={{ marginTop: '1rem' }}>
+          <div style={{ 
+            fontSize: '12px', 
+            fontWeight: '400', 
+            color: '#999',
+            marginBottom: '0.5rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px'
+          }}>
+            Mailing Addresses
+          </div>
+          <div style={{ 
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '0.5rem',
+            justifyItems: 'end'
+          }}>
+            {schoolData.matchedSchool.schools.map((school, index) => (
+              <div key={school.id}>
                 <div style={{ 
-                  fontSize: '13px', 
-                  fontWeight: '300', 
-                  color: '#666',
-                  whiteSpace: 'pre-line'
+                  fontSize: '14px', 
+                  fontWeight: '400', 
+                  color: '#333',
+                  marginBottom: '0.25rem'
                 }}>
-                  {school.mailingAddress}
+                  {school.schoolName}
                 </div>
-              )}
-            </div>
-          ))}
+                {school.mailingAddress && (
+                  <div style={{ 
+                    fontSize: '13px', 
+                    fontWeight: '300', 
+                    color: '#666',
+                    whiteSpace: 'pre-line'
+                  }}>
+                    {school.mailingAddress}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       );
     }
@@ -150,6 +161,16 @@ export default function MatchingStatusCard({
     if (schoolData.matchedSchool.mailingAddress) {
       return (
         <div style={{ marginTop: '1rem' }}>
+          <div style={{ 
+            fontSize: '12px', 
+            fontWeight: '400', 
+            color: '#999',
+            marginBottom: '0.5rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px'
+          }}>
+            Mailing Address
+          </div>
           <div style={{ 
             fontSize: '14px', 
             fontWeight: '400', 
@@ -247,16 +268,6 @@ export default function MatchingStatusCard({
           
           {/* Mailing addresses on the right side */}
           <div style={{ flex: '1', minWidth: '250px' }}>
-            <div style={{ 
-              fontSize: '12px', 
-              fontWeight: '400', 
-              color: '#999',
-              marginBottom: '0.5rem',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px'
-            }}>
-              Mailing Address{schoolData.matchedSchool?.isGroup ? 'es' : ''}
-            </div>
             {renderMailingAddresses()}
           </div>
         </div>
