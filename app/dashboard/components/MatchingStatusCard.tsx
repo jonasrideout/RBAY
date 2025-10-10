@@ -113,26 +113,25 @@ export default function MatchingStatusCard({
     // If matched with a group, show all schools in the group
     if (schoolData.matchedSchool.isGroup && schoolData.matchedSchool.schools) {
       return (
-        <div style={{ marginTop: '1rem' }}>
+        <>
           <div style={{ 
             fontSize: '12px', 
             fontWeight: '400', 
             color: '#999',
             marginBottom: '0.5rem',
             textTransform: 'uppercase',
-            letterSpacing: '0.5px',
-            textAlign: 'right'
+            letterSpacing: '0.5px'
           }}>
             Mailing Addresses
           </div>
           <div style={{ 
+            marginTop: '1rem',
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '0.5rem',
-            justifyItems: 'end'
+            gap: '0.5rem'
           }}>
             {schoolData.matchedSchool.schools.map((school, index) => (
-              <div key={school.id} style={{ textAlign: 'right' }}>
+              <div key={school.id}>
                 <div style={{ 
                   fontSize: '14px', 
                   fontWeight: '400', 
@@ -154,32 +153,32 @@ export default function MatchingStatusCard({
               </div>
             ))}
           </div>
-        </div>
+        </>
       );
     }
 
     // Single matched school - moved to right column
     if (schoolData.matchedSchool.mailingAddress) {
       return (
-        <div style={{ marginTop: '1rem' }}>
+        <>
           <div style={{ 
             fontSize: '12px', 
             fontWeight: '400', 
             color: '#999',
             marginBottom: '0.5rem',
             textTransform: 'uppercase',
-            letterSpacing: '0.5px',
-            textAlign: 'right'
+            letterSpacing: '0.5px'
           }}>
             Mailing Address
           </div>
           <div style={{ 
+            marginTop: '1rem',
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
             gap: '0.5rem'
           }}>
             <div></div>
-            <div style={{ textAlign: 'right' }}>
+            <div>
               <div style={{ 
                 fontSize: '14px', 
                 fontWeight: '400', 
@@ -198,7 +197,7 @@ export default function MatchingStatusCard({
               </div>
             </div>
           </div>
-        </div>
+        </>
       );
     }
 
