@@ -79,6 +79,7 @@ export interface SchoolGroup {
     status: string;
     expectedClassSize: number;
     studentCount: number;
+    communicationPlatforms?: any;
   }[];
   studentCounts: {
     total: number;
