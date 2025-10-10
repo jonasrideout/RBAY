@@ -120,7 +120,8 @@ export default function MatchingStatusCard({
             color: '#999',
             marginBottom: '0.5rem',
             textTransform: 'uppercase',
-            letterSpacing: '0.5px'
+            letterSpacing: '0.5px',
+            textAlign: 'right'
           }}>
             Mailing Addresses
           </div>
@@ -131,7 +132,7 @@ export default function MatchingStatusCard({
             justifyItems: 'end'
           }}>
             {schoolData.matchedSchool.schools.map((school, index) => (
-              <div key={school.id}>
+              <div key={school.id} style={{ textAlign: 'right' }}>
                 <div style={{ 
                   fontSize: '14px', 
                   fontWeight: '400', 
@@ -157,7 +158,7 @@ export default function MatchingStatusCard({
       );
     }
 
-    // Single matched school
+    // Single matched school - moved to right column
     if (schoolData.matchedSchool.mailingAddress) {
       return (
         <div style={{ marginTop: '1rem' }}>
@@ -167,25 +168,35 @@ export default function MatchingStatusCard({
             color: '#999',
             marginBottom: '0.5rem',
             textTransform: 'uppercase',
-            letterSpacing: '0.5px'
+            letterSpacing: '0.5px',
+            textAlign: 'right'
           }}>
             Mailing Address
           </div>
           <div style={{ 
-            fontSize: '14px', 
-            fontWeight: '400', 
-            color: '#333',
-            marginBottom: '0.25rem'
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '0.5rem'
           }}>
-            {schoolData.matchedSchool.schoolName}
-          </div>
-          <div style={{ 
-            fontSize: '13px', 
-            fontWeight: '300', 
-            color: '#666',
-            whiteSpace: 'pre-line'
-          }}>
-            {schoolData.matchedSchool.mailingAddress}
+            <div></div>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ 
+                fontSize: '14px', 
+                fontWeight: '400', 
+                color: '#333',
+                marginBottom: '0.25rem'
+              }}>
+                {schoolData.matchedSchool.schoolName}
+              </div>
+              <div style={{ 
+                fontSize: '13px', 
+                fontWeight: '300', 
+                color: '#666',
+                whiteSpace: 'pre-line'
+              }}>
+                {schoolData.matchedSchool.mailingAddress}
+              </div>
+            </div>
           </div>
         </div>
       );
