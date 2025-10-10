@@ -164,6 +164,8 @@ function TeacherDashboardContent() {
   const [showPenpalPreferenceUpdate, setShowPenpalPreferenceUpdate] = useState(false);
   const [penpalPreferenceRequired, setPenpalPreferenceRequired] = useState(0);
   const [penpalPreferenceCurrent, setPenpalPreferenceCurrent] = useState(0);
+  const [penpalPreferenceRecommended, setPenpalPreferenceRecommended] = useState(0);
+  const [matchedSchoolNameForModal, setMatchedSchoolNameForModal] = useState('');
   
   // Confirmation dialog state
   const [confirmDialog, setConfirmDialog] = useState<{
@@ -385,9 +387,11 @@ function TeacherDashboardContent() {
     }
   };
 
-  const handlePenpalPreferenceCheckNeeded = (required: number, current: number) => {
+  const handlePenpalPreferenceCheckNeeded = (required: number, current: number, recommended: number, matchedSchoolName: string) => {
     setPenpalPreferenceRequired(required);
     setPenpalPreferenceCurrent(current);
+    setPenpalPreferenceRecommended(recommended);
+    setMatchedSchoolNameForModal(matchedSchoolName);
     setShowPenpalPreferenceUpdate(true);
   };
 
@@ -630,7 +634,8 @@ function TeacherDashboardContent() {
                 students={students}
                 requiredCount={penpalPreferenceRequired}
                 currentCount={penpalPreferenceCurrent}
-                classSize={totalStudents}
+                recommendedCount={penpalPreferenceRecommended}
+                matchedSchoolName={matchedSchoolNameForModal}
                 onComplete={handlePenpalPreferenceUpdateComplete}
                 onCancel={handlePenpalPreferenceUpdateCancel}
               />
