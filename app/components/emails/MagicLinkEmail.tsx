@@ -1,5 +1,16 @@
 // /app/components/emails/MagicLinkEmail.tsx
-import { Html, Head, Body, Container, Text, Link, Button } from '@react-email/components';
+import {
+  Body,
+  Container,
+  Head,
+  Heading,
+  Html,
+  Preview,
+  Section,
+  Text,
+  Button,
+  Link,
+} from '@react-email/components';
 
 interface MagicLinkEmailProps {
   teacherEmail: string;
@@ -17,267 +28,198 @@ export default function MagicLinkEmail({
   return (
     <Html>
       <Head />
-      <Body style={bodyStyle}>
-        <Container style={containerStyle}>
-          {/* Header */}
-          <div style={headerStyle}>
-            <Text style={titleStyle}>Right Back at You</Text>
-            <Text style={subtitleStyle}>Building empathy and connection through literature</Text>
-          </div>
-
-          {/* Main Content */}
-          <div style={contentStyle}>
-            {isNewUser ? (
-              // New User Email Content
-              <>
-                <Text style={greetingStyle}>Hello!</Text>
-                
-                <Text style={paragraphStyle}>
-                  Thank you for your interest in the Right Back at You pen pal program! 
-                  We're excited to help you connect your students with pen pals from distant 
-                  schools through our literature-based program.
-                </Text>
-
-                <Text style={paragraphStyle}>
-                  To get started, please click the link below to verify your email address:
-                </Text>
-
-                <div style={buttonContainerStyle}>
-                  <Button href={magicLinkUrl} style={buttonStyle}>
-                    Verify Email & Get Started
-                  </Button>
-                </div>
-
-                <Text style={paragraphStyle}>
-                  After verification, you'll be guided through a simple school registration 
-                  process where you can:
-                </Text>
-
-                <ul style={listStyle}>
-                  <li style={listItemStyle}>Register your school and classroom details</li>
-                  <li style={listItemStyle}>Set up your teacher dashboard</li>
-                  <li style={listItemStyle}>Begin adding students to the program</li>
-                </ul>
-
-                <div style={warningBoxStyle}>
-                  <Text style={warningTextStyle}>
-                    <strong>⏰ Important:</strong> This verification link will expire in 30 minutes for security.
-                  </Text>
-                </div>
-
-                <Text style={paragraphStyle}>
-                  Welcome to our community of educators building empathy and connection through literature!
-                </Text>
-              </>
-            ) : (
-              // Existing Teacher Email Content
-              <>
-                <Text style={greetingStyle}>Hello{teacherName ? ` ${teacherName}` : ''}!</Text>
-                
-                <Text style={paragraphStyle}>
-                  Here's your secure login link to access your Right Back at You teacher dashboard:
-                </Text>
-
-                <div style={buttonContainerStyle}>
-                  <Button href={magicLinkUrl} style={buttonStyle}>
-                    Access Your Dashboard
-                  </Button>
-                </div>
-
-                <Text style={paragraphStyle}>
-                  Once logged in, you can:
-                </Text>
-
-                <ul style={listStyle}>
-                  <li style={listItemStyle}>Manage your students and their profiles</li>
-                  <li style={listItemStyle}>View your school's matching status</li>
-                  <li style={listItemStyle}>Access program resources and updates</li>
-                </ul>
-
-                <div style={warningBoxStyle}>
-                  <Text style={warningTextStyle}>
-                    <strong>⏰ Important:</strong> This login link will expire in 30 minutes for your security.
-                  </Text>
-                </div>
-
-                <Text style={paragraphStyle}>
-                  If you didn't request this login link, you can safely ignore this email.
-                </Text>
-              </>
-            )}
-
-            {/* Alternative Link */}
-            <div style={altLinkStyle}>
-              <Text style={altLinkTextStyle}>
-                If the button doesn't work, copy and paste this link into your browser:
+      <Preview>
+        {isNewUser 
+          ? 'Verify your email to get started with Right Back at You'
+          : 'Your login link for Right Back at You'
+        }
+      </Preview>
+      <Body style={main}>
+        <Container style={container}>
+          <Heading style={h1}>
+            {isNewUser 
+              ? 'Verify Your Email Address'
+              : 'Your Login Link'
+            }
+          </Heading>
+          
+          <Text style={text}>
+            Hi{teacherName ? ` ${teacherName}` : ''}!
+          </Text>
+          
+          {isNewUser ? (
+            // New User Email Content
+            <>
+              <Text style={text}>
+                Thank you for your interest in the Right Back at You pen pal program! We're excited to help you connect your students with pen pals from distant schools through our literature-based program.
               </Text>
-              <Link href={magicLinkUrl} style={linkTextStyle}>
-                {magicLinkUrl}
-              </Link>
-            </div>
-          </div>
 
-          {/* Footer */}
-          <div style={footerStyle}>
-            <Text style={footerTextStyle}>
-              This email was sent to: {teacherEmail}
+              <Text style={text}>
+                To get started, please click the link below to verify your email address:
+              </Text>
+
+              <Section style={buttonContainer}>
+                <Button style={button} href={magicLinkUrl}>
+                  Verify Email & Get Started
+                </Button>
+              </Section>
+
+              <Text style={text}>
+                After verification, you'll be guided through a simple school registration process where you can:
+              </Text>
+
+              <Text style={text}>
+                • Register your school and classroom details<br />
+                • Set up your teacher dashboard<br />
+                • Begin adding students to the program
+              </Text>
+
+              <Text style={warningText}>
+                ⏰ Important: This verification link will expire in 30 minutes for security.
+              </Text>
+
+              <Text style={text}>
+                Welcome to our community of educators building empathy and connection through literature!
+              </Text>
+            </>
+          ) : (
+            // Existing Teacher Email Content
+            <>
+              <Text style={text}>
+                Here's your secure login link to access your Right Back at You teacher dashboard:
+              </Text>
+
+              <Section style={buttonContainer}>
+                <Button style={button} href={magicLinkUrl}>
+                  Access Your Dashboard
+                </Button>
+              </Section>
+
+              <Text style={text}>
+                Once logged in, you can:
+              </Text>
+
+              <Text style={text}>
+                • Manage your students and their profiles<br />
+                • View your school's matching status<br />
+                • Access program resources and updates
+              </Text>
+
+              <Text style={warningText}>
+                ⏰ Important: This login link will expire in 30 minutes for your security.
+              </Text>
+
+              <Text style={text}>
+                If you didn't request this login link, you can safely ignore this email.
+              </Text>
+            </>
+          )}
+
+          <Section style={altLinkSection}>
+            <Text style={altLinkText}>
+              If the button doesn't work, copy and paste this link into your browser:
             </Text>
-            <Text style={footerTextStyle}>
-              The Right Back at You Project by Carolyn Mackler
-            </Text>
-            <Text style={footerSmallTextStyle}>
-              If you didn't request this email, you can safely ignore it.
-            </Text>
-          </div>
+            <Link href={magicLinkUrl} style={linkText}>
+              {magicLinkUrl}
+            </Link>
+          </Section>
+
+          <Text style={footer}>
+            This email was sent to: {teacherEmail}<br />
+            <br />
+            Right Back at You
+          </Text>
         </Container>
       </Body>
     </Html>
   );
 }
 
-// Styling using your CSS color scheme and typography
-const bodyStyle = {
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+const main = {
   backgroundColor: '#f8f9fa',
-  color: '#333',
-  lineHeight: '1.6',
-  margin: 0,
-  padding: '20px 0',
+  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif',
 };
 
-const containerStyle = {
-  maxWidth: '600px',
+const container = {
+  backgroundColor: '#ffffff',
   margin: '0 auto',
-  backgroundColor: 'white',
+  padding: '40px 20px',
+  maxWidth: '600px',
   borderRadius: '8px',
-  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-  overflow: 'hidden',
 };
 
-const headerStyle = {
-  textAlign: 'center' as const,
-  padding: '30px 30px 20px 30px',
-  backgroundColor: 'white',
-  borderBottom: '1px solid #e9ecef',
-};
-
-const titleStyle = {
-  fontSize: '28px',
-  fontWeight: '700',
+const h1 = {
   color: '#2c5aa0',
-  margin: '0',
-  marginBottom: '8px',
+  fontSize: '24px',
+  fontWeight: '600',
+  lineHeight: '1.3',
+  margin: '0 0 20px',
 };
 
-const subtitleStyle = {
-  fontSize: '14px',
+const text = {
+  color: '#333333',
+  fontSize: '16px',
+  lineHeight: '1.6',
+  margin: '0 0 16px',
   fontWeight: '300',
-  color: '#666',
-  margin: '0',
 };
 
-const contentStyle = {
-  padding: '30px',
-};
-
-const greetingStyle = {
-  fontSize: '18px',
-  fontWeight: '400',
-  color: '#333',
-  margin: '0 0 20px 0',
-};
-
-const paragraphStyle = {
-  fontSize: '16px',
-  fontWeight: '400',
-  color: '#333',
-  lineHeight: '1.6',
-  margin: '0 0 16px 0',
-};
-
-const buttonContainerStyle = {
+const buttonContainer = {
+  margin: '32px 0',
   textAlign: 'center' as const,
-  margin: '30px 0',
 };
 
-const buttonStyle = {
+const button = {
   backgroundColor: '#2c5aa0',
-  color: 'white',
-  padding: '15px 30px',
-  borderRadius: '6px',
-  textDecoration: 'none',
+  borderRadius: '4px',
+  color: '#ffffff',
+  fontSize: '16px',
   fontWeight: '500',
-  fontSize: '16px',
-  border: 'none',
-  cursor: 'pointer',
+  textDecoration: 'none',
+  textAlign: 'center' as const,
+  display: 'inline-block',
+  padding: '14px 28px',
+  border: '2px solid #2c5aa0',
 };
 
-const listStyle = {
-  paddingLeft: '20px',
-  margin: '16px 0',
-};
-
-const listItemStyle = {
-  fontSize: '16px',
-  fontWeight: '400',
-  color: '#333',
+const warningText = {
+  color: '#856404',
+  fontSize: '14px',
   lineHeight: '1.6',
-  marginBottom: '8px',
-};
-
-const warningBoxStyle = {
+  margin: '20px 0 16px',
+  fontWeight: '300',
   backgroundColor: '#fff3cd',
   border: '1px solid #ffeaa7',
-  borderRadius: '6px',
-  padding: '16px',
-  margin: '20px 0',
+  borderRadius: '4px',
+  padding: '12px 16px',
 };
 
-const warningTextStyle = {
-  fontSize: '14px',
-  fontWeight: '400',
-  color: '#856404',
-  margin: '0',
-  lineHeight: '1.5',
-};
-
-const altLinkStyle = {
-  marginTop: '30px',
+const altLinkSection = {
+  marginTop: '32px',
   paddingTop: '20px',
   borderTop: '1px solid #e9ecef',
 };
 
-const altLinkTextStyle = {
+const altLinkText = {
+  color: '#666666',
   fontSize: '12px',
+  lineHeight: '1.6',
+  margin: '0 0 8px',
   fontWeight: '300',
-  color: '#666',
-  margin: '0 0 8px 0',
 };
 
-const linkTextStyle = {
-  fontSize: '12px',
+const linkText = {
   color: '#2c5aa0',
+  fontSize: '12px',
   wordBreak: 'break-all' as const,
   textDecoration: 'underline',
+  fontWeight: '300',
 };
 
-const footerStyle = {
-  textAlign: 'center' as const,
-  padding: '20px 30px',
-  backgroundColor: '#f8f9fa',
-  borderTop: '1px solid #e9ecef',
-};
-
-const footerTextStyle = {
+const footer = {
+  color: '#666666',
   fontSize: '14px',
+  lineHeight: '1.6',
+  margin: '32px 0 0',
   fontWeight: '300',
-  color: '#666',
-  margin: '0 0 8px 0',
-};
-
-const footerSmallTextStyle = {
-  fontSize: '12px',
-  fontWeight: '300',
-  color: '#999',
-  margin: '16px 0 0 0',
 };
