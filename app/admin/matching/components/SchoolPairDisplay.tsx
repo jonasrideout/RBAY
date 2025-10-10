@@ -438,6 +438,9 @@ export default function SchoolPairDisplay({
                   }).join(' | ')}
                 </div>
               )}
+              <div style={{ color: '#888', fontSize: '11px', marginTop: '2px' }}>
+                Grades {school.gradeLevel}
+              </div>
             </div>
             
             {pair.hasStudentPairings && (
