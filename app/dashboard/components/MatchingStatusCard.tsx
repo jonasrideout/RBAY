@@ -295,7 +295,7 @@ export default function MatchingStatusCard({
               fontSize: '1.4rem',
               fontWeight: '400',
             }}>
-              Current Status: Collecting Student Info
+              Collecting Student Info
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
