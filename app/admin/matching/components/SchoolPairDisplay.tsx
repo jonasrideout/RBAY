@@ -194,32 +194,33 @@ export default function SchoolPairDisplay({
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span>{school.teacherName}</span>
-              <button
-                onClick={() => copyEmailAddress(school.teacherEmail, isFirst)}
-                className="btn-icon"
-                style={{
-                  fontSize: '16px',
-                  color: '#666',
-                  fontWeight: '300'
-                }}
-                title={`Copy email: ${school.teacherEmail}`}
-              >
-                {emailCopyText}
-              </button>
+                <button
+                  onClick={() => copyEmailAddress(school.teacherEmail, isFirst)}
+                  className="btn-icon"
+                  style={{
+                    fontSize: '16px',
+                    color: '#666',
+                    fontWeight: '300'
+                  }}
+                  title={`Copy email: ${school.teacherEmail}`}
+                >
+                  {emailCopyText}
+                </button>
               </div>
               {school.communicationPlatforms && Array.isArray(school.communicationPlatforms) && school.communicationPlatforms.length > 0 && (
-               <div style={{ color: '#888', fontSize: '11px', marginTop: '2px' }}>
-                  • {school.communicationPlatforms.map(platform => {
+                <div style={{ color: '#888', fontSize: '11px', marginTop: '2px' }}>
+                  {school.communicationPlatforms.map(platform => {
                     if (platform.startsWith('Other:')) return platform.replace('Other:', '').trim();
                     return platform === 'Google Meet' ? 'Meet' : platform === 'Microsoft Teams' ? 'Teams' : platform;
                   }).join(' | ')}
                 </div>
               )}
-              <span style={{ color: '#888', fontSize: '11px' }}>
+              <div style={{ color: '#888', fontSize: '11px' }}>
                 • Grades {school.gradeLevel}
-              </span>
+              </div>
             </div>
-           </div>
+          </div>
+
           {/* Right side: Buttons stacked vertically */}
           <div style={{
             display: 'flex',
@@ -413,36 +414,31 @@ export default function SchoolPairDisplay({
             color: '#555',
             marginBottom: idx < group.schools.length - 1 ? '4px' : '8px'
           }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span>{school.schoolName} | {school.teacherName}</span>
-              <button
-                onClick={() => copyEmailAddress(school.teacherEmail, true)}
-                className="btn-icon"
-                style={{
-                  fontSize: '16px',
-                  color: '#666',
-                  fontWeight: '300'
-                }}
-                title={`Copy email: ${school.teacherEmail}`}
-              >
-                ✉
-              </button>
-                </div>
-                {school.communicationPlatforms && Array.isArray(school.communicationPlatforms) && school.communicationPlatforms.length > 0 && (
-                  <div style={{ color: '#888', fontSize: '11px', marginTop: '2px' }}>
-                    {school.communicationPlatforms.map(platform => {
-                      if (platform.startsWith('Other:')) return platform.replace('Other:', '').trim();
-                      return platform === 'Google Meet' ? 'Meet' : platform === 'Microsoft Teams' ? 'Teams' : platform;
-                    }).join(' | ')}
-                  </div>
-                )}
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span>{school.schoolName} | {school.teacherName}</span>
+                <button
+                  onClick={() => copyEmailAddress(school.teacherEmail, true)}
+                  className="btn-icon"
+                  style={{
+                    fontSize: '16px',
+                    color: '#666',
+                    fontWeight: '300'
+                  }}
+                  title={`Copy email: ${school.teacherEmail}`}
+                >
+                  ✉
+                </button>
               </div>
+              {school.communicationPlatforms && Array.isArray(school.communicationPlatforms) && school.communicationPlatforms.length > 0 && (
+                <div style={{ color: '#888', fontSize: '11px', marginTop: '2px' }}>
+                  {school.communicationPlatforms.map(platform => {
+                    if (platform.startsWith('Other:')) return platform.replace('Other:', '').trim();
+                    return platform === 'Google Meet' ? 'Meet' : platform === 'Microsoft Teams' ? 'Teams' : platform;
+                  }).join(' | ')}
+                </div>
+              )}
+            </div>
             
             {pair.hasStudentPairings && (
               <button
