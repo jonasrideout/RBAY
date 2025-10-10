@@ -341,7 +341,6 @@ export default function SchoolPairDisplay({
             {school.specialConsiderations}
           </div>
         )}
-       </div>
       </div>
     );
   };
