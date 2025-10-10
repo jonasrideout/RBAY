@@ -297,7 +297,7 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
 
         <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
           <div className="container text-center">
-            <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
+            <p>&copy; 2025 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
           </div>
         </footer>
       </div>
