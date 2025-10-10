@@ -333,7 +333,7 @@ export default function DashboardHeader({
                   alignItems: 'center',
                   justifyContent: 'center',
                   opacity: (isProfileIncomplete || !penPalsAssigned) ? 0.6 : 1,
-                  cursor: (isProfileIncomplete || !penPalsAssents) ? 'not-allowed' : 'pointer',
+                  cursor: (isProfileIncomplete || !penPalsAssigned) ? 'not-allowed' : 'pointer',
                   pointerEvents: (isProfileIncomplete || !penPalsAssigned) ? 'none' : 'auto'
                 }}
                 title={isProfileIncomplete ? "Complete your profile first" : penPalsAssigned ? "View and download pen pal assignments" : "Pen pals not assigned yet"}
