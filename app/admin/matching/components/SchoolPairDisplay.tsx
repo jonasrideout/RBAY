@@ -216,7 +216,7 @@ export default function SchoolPairDisplay({
                 </div>
               )}
               <div style={{ color: '#888', fontSize: '11px' }}>
-                • Grades {school.gradeLevel}
+                Grades {school.gradeLevel}
               </div>
             </div>
           </div>
