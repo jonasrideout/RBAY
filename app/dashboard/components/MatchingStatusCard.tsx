@@ -300,19 +300,43 @@ export default function MatchingStatusCard({
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <Link size={18} color="#999" style={{ flexShrink: 0 }} />
+                <span style={{ 
+                  color: '#999', 
+                  fontSize: '18px', 
+                  flexShrink: 0,
+                  width: '18px',
+                  textAlign: 'center'
+                }}>
+                  🔗
+                </span>
                 <span className="text-meta-info" style={{ margin: 0 }}>
                   Copy the Student Link and share that with your class so they can register
                 </span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <Plus size={18} color="#999" style={{ flexShrink: 0 }} />
+                <span style={{ 
+                  color: '#999', 
+                  fontSize: '18px', 
+                  flexShrink: 0,
+                  width: '18px',
+                  textAlign: 'center'
+                }}>
+                  ➕
+                </span>
                 <span className="text-meta-info" style={{ margin: 0 }}>
                   Click Add New Student to register kids yourself
                 </span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <Check size={18} color="#999" style={{ flexShrink: 0 }} />
+                <span style={{ 
+                  color: '#999', 
+                  fontSize: '18px', 
+                  flexShrink: 0,
+                  width: '18px',
+                  textAlign: 'center'
+                }}>
+                  ✓
+                </span>
                 <span className="text-meta-info" style={{ margin: 0 }}>
                   Click Ready to Pair Pen Pals when all kids have registered
                 </span>
