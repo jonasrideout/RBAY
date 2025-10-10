@@ -16,6 +16,7 @@ export interface School {
   letterFrequency?: string;
   status: 'COLLECTING' | 'READY' | 'MATCHED' | 'CORRESPONDING' | 'DONE';
   specialConsiderations?: string;
+  communicationPlatforms?: any;
   createdAt: Date;
   updatedAt: Date;
   matchedWithSchoolId?: string;
