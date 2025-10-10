@@ -166,7 +166,7 @@ export default function SchoolCard({
           </div>
           
           {communicationPlatformsDisplay && (
-            <div className="text-meta-info" style={{ marginTop: '4px' }}>
+            <div className="text-meta-info" style={{ marginTop: '2px' }}>
               {communicationPlatformsDisplay}
             </div>
           )}
