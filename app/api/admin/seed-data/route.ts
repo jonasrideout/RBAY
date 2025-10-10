@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('SEED DATA VERSION: 2.1 - WITH COMMUNICATION PLATFORMS AND MAILING ADDRESSES');
+    console.log('SEED DATA VERSION: 2.2 - WITH UPDATED EMAIL ADDRESSES');
     console.log('Seed-data using DATABASE_URL:', process.env.DATABASE_URL?.substring(0, 50) + '...');
     console.log('Starting enhanced seed data creation...');
     console.log('Seed-data using DATABASE_URL_DIRECT:', process.env.DATABASE_URL_DIRECT?.substring(0, 50) + '...');
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       data: {
         schoolName: "Lincoln Elementary",
         teacherName: "Jonas Rideout",
-        teacherEmail: "jonas.rideout@gmail.com",
+        teacherEmail: "rightbackatyou13+1@gmail.com",
         teacherPhone: "(914) 555-0707",
         schoolAddress: "100 School Street",
         schoolCity: "Yonkers",
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
       data: {
         schoolName: "Pacific Elementary",
         teacherName: "Sarah Johnson",
-        teacherEmail: "sarah.johnson@pacific.edu",
+        teacherEmail: "rightbackatyou13+2@gmail.com",
         teacherPhone: "(415) 555-0101",
         schoolAddress: "123 Ocean View Drive",
         schoolCity: "San Francisco",
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       data: {
         schoolName: "Northeast Academy",
         teacherName: "Michael Chen",
-        teacherEmail: "michael.chen@northeast.edu",
+        teacherEmail: "rightbackatyou13+3@gmail.com",
         teacherPhone: "(617) 555-0202",
         schoolAddress: "456 Maple Street",
         schoolCity: "Boston",
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
       data: {
         schoolName: "Desert View Elementary",
         teacherName: "Maria Rodriguez",
-        teacherEmail: "maria.rodriguez@desertview.edu",
+        teacherEmail: "rightbackatyou13+4@gmail.com",
         teacherPhone: "(602) 555-0303",
         schoolAddress: "789 Cactus Trail",
         schoolCity: "Phoenix",
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
       data: {
         schoolName: "Prairie View Middle School",
         teacherName: "Jennifer Williams",
-        teacherEmail: "jennifer.williams@prairieview.edu",
+        teacherEmail: "rightbackatyou13+5@gmail.com",
         teacherPhone: "(312) 555-0404",
         schoolAddress: "321 Cornfield Avenue",
         schoolCity: "Chicago",
@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
       data: {
         schoolName: "Magnolia Elementary",
         teacherName: "Robert Davis",
-        teacherEmail: "robert.davis@magnolia.edu",
+        teacherEmail: "rightbackatyou13+6@gmail.com",
         teacherPhone: "(404) 555-0505",
         schoolAddress: "567 Peachtree Lane",
         schoolCity: "Atlanta",
@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
       data: {
         schoolName: "Mountain View Elementary",
         teacherName: "Emily Carter",
-        teacherEmail: "rightbackatyou13@gmail.com",
+        teacherEmail: "rightbackatyou13+7@gmail.com",
         teacherPhone: "(303) 555-0606",
         schoolAddress: "890 Pine Ridge Road",
         schoolCity: "Denver",
@@ -210,7 +210,7 @@ export async function POST(request: NextRequest) {
       
       // Test accounts keep all students as ONE to force pen pal preference workflow
       // Other accounts get first 8 students with MULTIPLE to automatically meet requirements
-      const isTestAccount = teacherEmail === "jonas.rideout@gmail.com" || teacherEmail === "rightbackatyou13@gmail.com";
+      const isTestAccount = teacherEmail === "rightbackatyou13+1@gmail.com" || teacherEmail === "rightbackatyou13+7@gmail.com";
       const penpalPreference = (isTestAccount || index >= 8) ? "ONE" : "MULTIPLE";
       
       // 30% chance of having otherInterests
@@ -233,49 +233,49 @@ export async function POST(request: NextRequest) {
     // Create Lincoln Elementary students (10 students - all complete)
     console.log('Creating Lincoln Elementary students...');
     for (let i = 0; i < 10; i++) {
-      const studentData = generateStudent(lincolnSchool.id, i, 0, "jonas.rideout@gmail.com");
+      const studentData = generateStudent(lincolnSchool.id, i, 0, "rightbackatyou13+1@gmail.com");
       await prisma.student.create({ data: studentData });
     }
 
     // Create Pacific students (20 students - all complete)
     console.log('Creating Pacific Elementary students...');
     for (let i = 0; i < 20; i++) {
-      const studentData = generateStudent(pacificSchool.id, i, 10, "sarah.johnson@pacific.edu");
+      const studentData = generateStudent(pacificSchool.id, i, 10, "rightbackatyou13+2@gmail.com");
       await prisma.student.create({ data: studentData });
     }
 
     // Create Northeast students (23 students - all complete)
     console.log('Creating Northeast Academy students...');
     for (let i = 0; i < 23; i++) {
-      const studentData = generateStudent(northeastSchool.id, i, 30, "michael.chen@northeast.edu");
+      const studentData = generateStudent(northeastSchool.id, i, 30, "rightbackatyou13+3@gmail.com");
       await prisma.student.create({ data: studentData });
     }
 
     // Create Southwest students (30 students - all complete)
     console.log('Creating Desert View Elementary students...');
     for (let i = 0; i < 30; i++) {
-      const studentData = generateStudent(southwestSchool.id, i, 53, "maria.rodriguez@desertview.edu");
+      const studentData = generateStudent(southwestSchool.id, i, 53, "rightbackatyou13+4@gmail.com");
       await prisma.student.create({ data: studentData });
     }
 
     // Create Midwest students (23 students - all complete)
     console.log('Creating Prairie View Middle School students...');
     for (let i = 0; i < 23; i++) {
-      const studentData = generateStudent(midwestSchool.id, i, 83, "jennifer.williams@prairieview.edu");
+      const studentData = generateStudent(midwestSchool.id, i, 83, "rightbackatyou13+5@gmail.com");
       await prisma.student.create({ data: studentData });
     }
 
     // Create Southeast students (20 students - all complete)
     console.log('Creating Magnolia Elementary students...');
     for (let i = 0; i < 20; i++) {
-      const studentData = generateStudent(southeastSchool.id, i, 106, "robert.davis@magnolia.edu");
+      const studentData = generateStudent(southeastSchool.id, i, 106, "rightbackatyou13+6@gmail.com");
       await prisma.student.create({ data: studentData });
     }
 
     // Create Mountain View students (12 students - all complete)
     console.log('Creating Mountain View Elementary students...');
     for (let i = 0; i < 12; i++) {
-      const studentData = generateStudent(mountainViewSchool.id, i, 126, "rightbackatyou13@gmail.com");
+      const studentData = generateStudent(mountainViewSchool.id, i, 126, "rightbackatyou13+7@gmail.com");
       await prisma.student.create({ data: studentData });
     }
 
@@ -302,13 +302,13 @@ export async function POST(request: NextRequest) {
       where: {
         teacherEmail: {
           in: [
-            "jonas.rideout@gmail.com",
-            "sarah.johnson@pacific.edu",
-            "michael.chen@northeast.edu", 
-            "maria.rodriguez@desertview.edu",
-            "jennifer.williams@prairieview.edu",
-            "robert.davis@magnolia.edu",
-            "rightbackatyou13@gmail.com"
+            "rightbackatyou13+1@gmail.com",
+            "rightbackatyou13+2@gmail.com",
+            "rightbackatyou13+3@gmail.com", 
+            "rightbackatyou13+4@gmail.com",
+            "rightbackatyou13+5@gmail.com",
+            "rightbackatyou13+6@gmail.com",
+            "rightbackatyou13+7@gmail.com"
           ]
         }
       },
@@ -321,7 +321,7 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({
-      message: 'Test data created successfully - all students have complete profiles, communication platforms and mailing addresses added',
+      message: 'Test data created successfully - all emails use rightbackatyou13+N@gmail.com pattern',
       verification: {
         schoolsInDatabase: schoolCount,
         studentsInDatabase: studentCount,
@@ -329,13 +329,13 @@ export async function POST(request: NextRequest) {
       },
       schools: 7,
       schoolDetails: {
-        lincolnElementary: { students: 10, status: "COLLECTING", complete: 10, multiplePreference: 0, hasCommPlatforms: false, hasMailingAddress: false },
-        pacificElementary: { students: 20, status: "READY", complete: 20, multiplePreference: 8, hasCommPlatforms: true, hasMailingAddress: true },
-        northeastAcademy: { students: 23, status: "READY", complete: 23, multiplePreference: 8, hasCommPlatforms: true, hasMailingAddress: true },
-        desertViewElementary: { students: 30, status: "COLLECTING", complete: 30, multiplePreference: 8, hasCommPlatforms: true, hasMailingAddress: true },
-        prairieViewMiddle: { students: 23, status: "COLLECTING", complete: 23, multiplePreference: 8, hasCommPlatforms: true, hasMailingAddress: true },
-        magnoliaElementary: { students: 20, status: "COLLECTING", complete: 20, multiplePreference: 8, hasCommPlatforms: true, hasMailingAddress: true },
-        mountainViewElementary: { students: 12, status: "COLLECTING", complete: 12, multiplePreference: 0, hasCommPlatforms: false, hasMailingAddress: false }
+        lincolnElementary: { students: 10, status: "COLLECTING", complete: 10, multiplePreference: 0, hasCommPlatforms: false, hasMailingAddress: false, email: "rightbackatyou13+1@gmail.com" },
+        pacificElementary: { students: 20, status: "READY", complete: 20, multiplePreference: 8, hasCommPlatforms: true, hasMailingAddress: true, email: "rightbackatyou13+2@gmail.com" },
+        northeastAcademy: { students: 23, status: "READY", complete: 23, multiplePreference: 8, hasCommPlatforms: true, hasMailingAddress: true, email: "rightbackatyou13+3@gmail.com" },
+        desertViewElementary: { students: 30, status: "COLLECTING", complete: 30, multiplePreference: 8, hasCommPlatforms: true, hasMailingAddress: true, email: "rightbackatyou13+4@gmail.com" },
+        prairieViewMiddle: { students: 23, status: "COLLECTING", complete: 23, multiplePreference: 8, hasCommPlatforms: true, hasMailingAddress: true, email: "rightbackatyou13+5@gmail.com" },
+        magnoliaElementary: { students: 20, status: "COLLECTING", complete: 20, multiplePreference: 8, hasCommPlatforms: true, hasMailingAddress: true, email: "rightbackatyou13+6@gmail.com" },
+        mountainViewElementary: { students: 12, status: "COLLECTING", complete: 12, multiplePreference: 0, hasCommPlatforms: false, hasMailingAddress: false, email: "rightbackatyou13+7@gmail.com" }
       },
       totalStudents,
       dashboardTokens: createdSchools.map(school => ({
@@ -350,13 +350,13 @@ export async function POST(request: NextRequest) {
         "All students have interests (1-3 from predefined list)",
         "All students have valid grades (3, 4, or 5)",
         "All students have parent consent",
-        "Test accounts (jonas.rideout, rightbackatyou13): All students ONE preference, NO communication platforms or mailing addresses",
-        "Other accounts: First 8 students MULTIPLE preference to meet requirements, WITH communication platforms and mailing addresses",
+        "Test accounts (+1, +7): All students ONE preference, NO communication platforms or mailing addresses",
+        "Other accounts (+2 through +6): First 8 students MULTIPLE preference to meet requirements, WITH communication platforms and mailing addresses",
         "No incomplete students in seed data"
       ],
       testScenarios: [
-        "Lincoln Elementary: 10 students, COLLECTING status, all ONE preference, NO comm platforms/address (jonas.rideout@gmail.com)",
-        "Mountain View: 12 students, COLLECTING status, all ONE preference, NO comm platforms/address (rightbackatyou13@gmail.com)",
+        "Lincoln Elementary: 10 students, COLLECTING status, all ONE preference, NO comm platforms/address (rightbackatyou13+1@gmail.com)",
+        "Mountain View: 12 students, COLLECTING status, all ONE preference, NO comm platforms/address (rightbackatyou13+7@gmail.com)",
         "Two schools READY for matching with 8 MULTIPLE students each (Pacific + Northeast)",
         "Five schools COLLECTING information (Lincoln, Southwest, Midwest, Southeast, Mountain)",
         "Various student counts: 10, 20, 23, 30, 23, 20, 12",
