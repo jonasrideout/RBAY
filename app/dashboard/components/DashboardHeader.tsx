@@ -54,7 +54,7 @@ interface DashboardHeaderProps {
   adminBackButton?: boolean;
   allActiveStudentsComplete?: boolean;
   onMatchingRequested?: () => void;
-  onPenpalPreferenceCheckNeeded?: (required: number, current: number) => void;
+  onPenpalPreferenceCheckNeeded?: (required: number, current: number, recommended: number, matchedSchoolName: string) => void;
   isProfileIncomplete?: boolean;
 }
 
@@ -115,14 +115,17 @@ export default function DashboardHeader({
     let totalStudentsInGroup: number;
     let thisSchoolStudentCount: number;
     let totalGroupRequired: number;
+    let totalGroupRecommended: number;
     let currentMultipleAcrossGroup: number;
     
     // Determine the target class size to match against
     let targetClassSize = 30; // Default to 30 if not matched
+    let matchedSchoolName = 'the matched school';
     
     if (schoolData.matchedWithSchoolId && schoolData.matchedSchool) {
       // School is matched - use actual matched school/group size
       targetClassSize = schoolData.matchedSchool.actualStudentCount;
+      matchedSchoolName = schoolData.matchedSchool.schoolName;
     }
     
     if (isInGroup) {
@@ -130,9 +133,14 @@ export default function DashboardHeader({
       totalStudentsInGroup = allGroupStudents.length;
       thisSchoolStudentCount = schoolData.students.length;
       
+      // Required: minimum to ensure everyone at matched school gets at least 1
       const formulaRequired = Math.ceil((targetClassSize - totalStudentsInGroup) / 2);
       const maxPossible = Math.floor(totalStudentsInGroup * 0.8);
       totalGroupRequired = Math.min(formulaRequired, maxPossible);
+      
+      // Recommended: to ensure no one gets more than 2 pen pals
+      const formulaRecommended = Math.ceil((targetClassSize * 2) - totalStudentsInGroup);
+      totalGroupRecommended = Math.min(formulaRecommended, maxPossible);
       
       currentMultipleAcrossGroup = allGroupStudents.filter(
         (s: any) => s.penpalPreference === 'MULTIPLE'
@@ -142,9 +150,14 @@ export default function DashboardHeader({
       totalStudentsInGroup = schoolData.students.length;
       thisSchoolStudentCount = schoolData.students.length;
       
+      // Required: minimum to ensure everyone at matched school gets at least 1
       const formulaRequired = Math.ceil((targetClassSize - totalStudentsInGroup) / 2);
       const maxPossible = Math.floor(totalStudentsInGroup * 0.8);
       totalGroupRequired = Math.min(formulaRequired, maxPossible);
+      
+      // Recommended: to ensure no one gets more than 2 pen pals
+      const formulaRecommended = Math.ceil((targetClassSize * 2) - totalStudentsInGroup);
+      totalGroupRecommended = Math.min(formulaRecommended, maxPossible);
       
       currentMultipleAcrossGroup = schoolData.students.filter(
         (s: any) => s.penpalPreference === 'MULTIPLE'
@@ -163,7 +176,7 @@ export default function DashboardHeader({
         
         if (thisSchoolCurrentMultiple < thisSchoolRequired) {
           if (onPenpalPreferenceCheckNeeded) {
-            onPenpalPreferenceCheckNeeded(thisSchoolRequired, thisSchoolCurrentMultiple);
+            onPenpalPreferenceCheckNeeded(thisSchoolRequired, thisSchoolCurrentMultiple, totalGroupRecommended, matchedSchoolName);
           }
           return;
         }
@@ -320,7 +333,7 @@ export default function DashboardHeader({
                   alignItems: 'center',
                   justifyContent: 'center',
                   opacity: (isProfileIncomplete || !penPalsAssigned) ? 0.6 : 1,
-                  cursor: (isProfileIncomplete || !penPalsAssigned) ? 'not-allowed' : 'pointer',
+                  cursor: (isProfileIncomplete || !penPalsAssents) ? 'not-allowed' : 'pointer',
                   pointerEvents: (isProfileIncomplete || !penPalsAssigned) ? 'none' : 'auto'
                 }}
                 title={isProfileIncomplete ? "Complete your profile first" : penPalsAssigned ? "View and download pen pal assignments" : "Pen pals not assigned yet"}
