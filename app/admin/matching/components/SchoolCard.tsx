@@ -150,11 +150,11 @@ export default function SchoolCard({
         
         {/* Column 1: School Information */}
         <div className="school-info-column">
-          <h3 className="text-school-name">
+          <h3 className="text-school-name" style={{ marginBottom: '4px' }}>
             {school.schoolName}
           </h3>
           
-          <div className="teacher-info">
+          <div className="teacher-info" style={{ marginBottom: '2px' }}>
             <span>{school.teacherName}</span>
             <button
               onClick={copyEmailAddress}
@@ -166,12 +166,12 @@ export default function SchoolCard({
           </div>
           
           {communicationPlatformsDisplay && (
-            <div className="text-meta-info" style={{ marginTop: '1px' }}>
+            <div className="text-meta-info" style={{ marginTop: '0', marginBottom: '2px' }}>
               {communicationPlatformsDisplay}
             </div>
           )}
           
-          <div className="text-meta-info">
+          <div className="text-meta-info" style={{ marginTop: '0', marginBottom: '8px' }}>
             Grades {school.gradeLevel}
           </div>
 
