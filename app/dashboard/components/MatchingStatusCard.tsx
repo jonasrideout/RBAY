@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from 'react';
+import { Link, Plus, Check } from 'lucide-react';
 import SchoolEditModal from './SchoolEditModal';
 
 interface SchoolData {
@@ -298,9 +299,26 @@ export default function MatchingStatusCard({
             }}>
               Current Status: Collecting Student Info
             </h3>
-            <p className="text-meta-info" style={{ marginBottom: '0' }}>
-              Share the Student Registration link with your students, or add them yourself with the "Add New Student" button. When all students have registered, click "Ready to Pair Pen Pals."
-            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <Link size={18} color="#999" style={{ flexShrink: 0 }} />
+                <span className="text-meta-info" style={{ margin: 0 }}>
+                  Copy the Student Link and share that with your class so they can register
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <Plus size={18} color="#999" style={{ flexShrink: 0 }} />
+                <span className="text-meta-info" style={{ margin: 0 }}>
+                  Click Add New Student to register kids yourself
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <Check size={18} color="#999" style={{ flexShrink: 0 }} />
+                <span className="text-meta-info" style={{ margin: 0 }}>
+                  Click Ready to Pair Pen Pals when all kids have registered
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
