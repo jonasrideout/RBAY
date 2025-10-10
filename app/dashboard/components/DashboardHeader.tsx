@@ -54,7 +54,7 @@ interface DashboardHeaderProps {
   adminBackButton?: boolean;
   allActiveStudentsComplete?: boolean;
   onMatchingRequested?: () => void;
-  onPenpalPreferenceCheckNeeded?: (required: number, current: number, recommended: number, matchedSchoolName: string) => void;
+  onPenpalPreferenceCheckNeeded?: (required: number, current: number, matchedSchoolName: string) => void;
   isProfileIncomplete?: boolean;
 }
 
@@ -115,7 +115,6 @@ export default function DashboardHeader({
     let totalStudentsInGroup: number;
     let thisSchoolStudentCount: number;
     let totalGroupRequired: number;
-    let totalGroupRecommended: number;
     let currentMultipleAcrossGroup: number;
     
     // Determine the target class size to match against
@@ -138,10 +137,6 @@ export default function DashboardHeader({
       const maxPossible = Math.floor(totalStudentsInGroup * 0.8);
       totalGroupRequired = Math.min(formulaRequired, maxPossible);
       
-      // Recommended: to ensure no one gets more than 2 pen pals
-      const formulaRecommended = Math.ceil((targetClassSize * 2) - totalStudentsInGroup);
-      totalGroupRecommended = Math.min(formulaRecommended, maxPossible);
-      
       currentMultipleAcrossGroup = allGroupStudents.filter(
         (s: any) => s.penpalPreference === 'MULTIPLE'
       ).length;
@@ -154,10 +149,6 @@ export default function DashboardHeader({
       const formulaRequired = Math.ceil((targetClassSize - totalStudentsInGroup) / 2);
       const maxPossible = Math.floor(totalStudentsInGroup * 0.8);
       totalGroupRequired = Math.min(formulaRequired, maxPossible);
-      
-      // Recommended: to ensure no one gets more than 2 pen pals
-      const formulaRecommended = Math.ceil((targetClassSize * 2) - totalStudentsInGroup);
-      totalGroupRecommended = Math.min(formulaRecommended, maxPossible);
       
       currentMultipleAcrossGroup = schoolData.students.filter(
         (s: any) => s.penpalPreference === 'MULTIPLE'
@@ -176,7 +167,7 @@ export default function DashboardHeader({
         
         if (thisSchoolCurrentMultiple < thisSchoolRequired) {
           if (onPenpalPreferenceCheckNeeded) {
-            onPenpalPreferenceCheckNeeded(thisSchoolRequired, thisSchoolCurrentMultiple, totalGroupRecommended, matchedSchoolName);
+            onPenpalPreferenceCheckNeeded(thisSchoolRequired, thisSchoolCurrentMultiple, matchedSchoolName);
           }
           return;
         }
