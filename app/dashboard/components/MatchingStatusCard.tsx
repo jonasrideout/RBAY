@@ -108,6 +108,8 @@ export default function MatchingStatusCard({
 
   // Render mailing addresses for matched schools
   const renderMailingAddresses = () => {
+    console.log('matchedSchool:', schoolData.matchedSchool);
+    console.log('isGroup:', schoolData.matchedSchool?.isGroup);
     if (!schoolData.matchedSchool) return null;
 
     // If matched with a group, show all schools in the group
