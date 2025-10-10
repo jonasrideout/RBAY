@@ -294,7 +294,6 @@ export default function MatchingStatusCard({
               marginBottom: '2.5rem', 
               fontSize: '1.4rem',
               fontWeight: '400',
-              margin: 0
             }}>
               Current Status: Collecting Student Info
             </h3>
