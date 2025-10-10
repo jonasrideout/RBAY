@@ -33,6 +33,7 @@ export interface School {
       gradeLevel: string;
       specialConsiderations?: string;
       studentCount: number;
+      communicationPlatforms?: any;
     }[];
   };
   studentCounts?: {
