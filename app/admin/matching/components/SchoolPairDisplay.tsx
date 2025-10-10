@@ -188,14 +188,12 @@ export default function SchoolPairDisplay({
             </h4>
             
             <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
               fontSize: '12px',
               fontWeight: '300',
               color: '#555'
             }}>
-              <span>{school.teacherName}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span>{school.teacherName}</span>
               <button
                 onClick={() => copyEmailAddress(school.teacherEmail, isFirst)}
                 className="btn-icon"
@@ -208,13 +206,14 @@ export default function SchoolPairDisplay({
               >
                 {emailCopyText}
               </button>
+              </div>
               {school.communicationPlatforms && Array.isArray(school.communicationPlatforms) && school.communicationPlatforms.length > 0 && (
-                <span style={{ color: '#888', fontSize: '11px' }}>
+               <div style={{ color: '#888', fontSize: '11px', marginTop: '2px' }}>
                   • {school.communicationPlatforms.map(platform => {
                     if (platform.startsWith('Other:')) return platform.replace('Other:', '').trim();
                     return platform === 'Google Meet' ? 'Meet' : platform === 'Microsoft Teams' ? 'Teams' : platform;
                   }).join(' | ')}
-                </span>
+                </div>
               )}
               <span style={{ color: '#888', fontSize: '11px' }}>
                 • Grades {school.gradeLevel}
@@ -420,7 +419,9 @@ export default function SchoolPairDisplay({
               alignItems: 'center',
               gap: '6px'
             }}>
-              <span>{school.schoolName} | {school.teacherName}</span>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span>{school.schoolName} | {school.teacherName}</span>
               <button
                 onClick={() => copyEmailAddress(school.teacherEmail, true)}
                 className="btn-icon"
@@ -433,7 +434,16 @@ export default function SchoolPairDisplay({
               >
                 ✉
               </button>
-            </div>
+                </div>
+                {school.communicationPlatforms && Array.isArray(school.communicationPlatforms) && school.communicationPlatforms.length > 0 && (
+                  <div style={{ color: '#888', fontSize: '11px', marginTop: '2px' }}>
+                    {school.communicationPlatforms.map(platform => {
+                      if (platform.startsWith('Other:')) return platform.replace('Other:', '').trim();
+                      return platform === 'Google Meet' ? 'Meet' : platform === 'Microsoft Teams' ? 'Teams' : platform;
+                    }).join(' | ')}
+                  </div>
+                )}
+              </div>
             
             {pair.hasStudentPairings && (
               <button
