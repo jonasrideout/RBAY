@@ -117,7 +117,8 @@ export default function MatchingStatusCard({
           marginTop: '1rem',
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '1.5rem'
+          gap: '1rem',
+          justifyContent: 'end'
         }}>
           {schoolData.matchedSchool.schools.map((school, index) => (
             <div key={school.id}>
