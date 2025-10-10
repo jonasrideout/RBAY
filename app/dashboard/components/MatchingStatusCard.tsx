@@ -291,14 +291,14 @@ export default function MatchingStatusCard({
           <div style={{ flex: '1', minWidth: '300px' }}>
             <h3 style={{ 
               color: '#1f2937', 
-              marginBottom: '1rem', 
+              marginBottom: '1.5rem', 
               fontSize: '1.4rem',
               fontWeight: '400',
               margin: 0
             }}>
               Current Status: Collecting Student Info
             </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <span style={{ 
                   color: '#999', 
