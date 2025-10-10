@@ -406,13 +406,13 @@ export default function SchoolPairDisplay({
         {group.schools.map((school, idx) => (
           <div key={school.id} style={{
             display: 'flex',
-            alignItems: 'center',
+            alignItems: 'flex-start',
             justifyContent: 'space-between',
             gap: '6px',
             fontSize: '12px',
             fontWeight: '300',
             color: '#555',
-            marginBottom: idx < group.schools.length - 1 ? '4px' : '8px'
+            marginBottom: idx < group.schools.length - 1 ? '12px' : '8px'
           }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
