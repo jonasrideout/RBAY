@@ -23,8 +23,7 @@ export default function SchoolPairDisplay({
 }: SchoolPairDisplayProps) {
   const [copyButtonText1, setCopyButtonText1] = useState('Copy URL');
   const [copyButtonText2, setCopyButtonText2] = useState('Copy URL');
-  const [emailCopyText1, setEmailCopyText1] = useState('✉');
-  const [emailCopyText2, setEmailCopyText2] = useState('✉');
+  const [emailCopyStates, setEmailCopyStates] = useState<Record<string, string>>({});
   const [showUnmatchModal, setShowUnmatchModal] = useState(false);
   const [sendingEmails, setSendingEmails] = useState(false);
   const [emailsSent, setEmailsSent] = useState(false);
@@ -60,20 +59,21 @@ export default function SchoolPairDisplay({
     }
   };
 
-  const copyEmailAddress = async (email: string, isFirst: boolean) => {
+  const copyEmailAddress = async (email: string, schoolId: string) => {
     try {
       await navigator.clipboard.writeText(email);
-      if (isFirst) {
-        setEmailCopyText1('✓');
-        setTimeout(() => setEmailCopyText1('✉'), 1500);
-      } else {
-        setEmailCopyText2('✓');
-        setTimeout(() => setEmailCopyText2('✉'), 1500);
-      }
+      setEmailCopyStates(prev => ({ ...prev, [schoolId]: '✓' }));
+      setTimeout(() => {
+        setEmailCopyStates(prev => ({ ...prev, [schoolId]: '✉' }));
+      }, 1500);
     } catch (err) {
       console.error('Failed to copy email:', err);
       prompt('Copy this email:', email);
     }
+  };
+
+  const getEmailCopyText = (schoolId: string) => {
+    return emailCopyStates[schoolId] || '✉';
   };
 
   const handleUnmatchClick = () => {
@@ -155,7 +155,7 @@ export default function SchoolPairDisplay({
 
   const renderCompactSchoolCard = (school: School, isFirst: boolean) => {
     const copyButtonText = isFirst ? copyButtonText1 : copyButtonText2;
-    const emailCopyText = isFirst ? emailCopyText1 : emailCopyText2;
+    const emailCopyText = getEmailCopyText(school.id);
 
     return (
       <div style={{
@@ -195,7 +195,7 @@ export default function SchoolPairDisplay({
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span>{school.teacherName}</span>
                 <button
-                  onClick={() => copyEmailAddress(school.teacherEmail, isFirst)}
+                  onClick={() => copyEmailAddress(school.teacherEmail, school.id)}
                   className="btn-icon"
                   style={{
                     fontSize: '16px',
@@ -388,71 +388,75 @@ export default function SchoolPairDisplay({
         </div>
 
         {/* Teachers list - one per line with download button */}
-        {group.schools.map((school, idx) => (
-          <div key={school.id} style={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'space-between',
-            gap: '6px',
-            fontSize: '12px',
-            fontWeight: '300',
-            color: '#555',
-            marginBottom: idx < group.schools.length - 1 ? '12px' : '16px'
-          }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span>{school.schoolName} | {school.teacherName}</span>
-                <button
-                  onClick={() => copyEmailAddress(school.teacherEmail, idx === 0)}
-                  className="btn-icon"
-                  style={{
-                    fontSize: '16px',
-                    color: '#666',
-                    fontWeight: '300'
-                  }}
-                  title={`Copy email: ${school.teacherEmail}`}
-                >
-                  ✉
-                </button>
-              </div>
-              {school.communicationPlatforms && Array.isArray(school.communicationPlatforms) && school.communicationPlatforms.length > 0 && (
-                <div style={{ color: '#888', fontSize: '11px', marginTop: '2px' }}>
-                  {school.communicationPlatforms.map(platform => {
-                    if (platform.startsWith('Other:')) return platform.replace('Other:', '').trim();
-                    return platform === 'Google Meet' ? 'Meet' : platform === 'Microsoft Teams' ? 'Teams' : platform;
-                  }).join(' | ')}
+        {group.schools.map((school, idx) => {
+          const emailCopyText = getEmailCopyText(school.id);
+          
+          return (
+            <div key={school.id} style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              justifyContent: 'space-between',
+              gap: '6px',
+              fontSize: '12px',
+              fontWeight: '300',
+              color: '#555',
+              marginBottom: idx < group.schools.length - 1 ? '12px' : '16px'
+            }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span>{school.schoolName} | {school.teacherName}</span>
+                  <button
+                    onClick={() => copyEmailAddress(school.teacherEmail, school.id)}
+                    className="btn-icon"
+                    style={{
+                      fontSize: '16px',
+                      color: '#666',
+                      fontWeight: '300'
+                    }}
+                    title={`Copy email: ${school.teacherEmail}`}
+                  >
+                    {emailCopyText}
+                  </button>
                 </div>
-              )}
-              <div style={{ color: '#888', fontSize: '11px', marginTop: '2px' }}>
-                Grades {school.gradeLevel}
+                {school.communicationPlatforms && Array.isArray(school.communicationPlatforms) && school.communicationPlatforms.length > 0 && (
+                  <div style={{ color: '#888', fontSize: '11px', marginTop: '2px' }}>
+                    {school.communicationPlatforms.map(platform => {
+                      if (platform.startsWith('Other:')) return platform.replace('Other:', '').trim();
+                      return platform === 'Google Meet' ? 'Meet' : platform === 'Microsoft Teams' ? 'Teams' : platform;
+                    }).join(' | ')}
+                  </div>
+                )}
+                <div style={{ color: '#888', fontSize: '11px', marginTop: '2px' }}>
+                  Grades {school.gradeLevel}
+                </div>
               </div>
+              
+              {pair.hasStudentPairings && (
+                <button
+                  onClick={() => {
+                    const penPalListUrl = `/admin/pen-pal-list?schoolId=${school.id}`;
+                    window.open(penPalListUrl, '_blank');
+                  }}
+                  style={{
+                    background: 'white',
+                    border: '1px solid #28a745',
+                    borderRadius: '3px',
+                    color: '#28a745',
+                    fontSize: '11px',
+                    fontWeight: '400',
+                    cursor: 'pointer',
+                    padding: '4px 8px',
+                    textAlign: 'center',
+                    minWidth: '90px'
+                  }}
+                  title="Download pen pal assignments for this school"
+                >
+                  Download List
+                </button>
+              )}
             </div>
-            
-            {pair.hasStudentPairings && (
-              <button
-                onClick={() => {
-                  const penPalListUrl = `/admin/pen-pal-list?schoolId=${school.id}`;
-                  window.open(penPalListUrl, '_blank');
-                }}
-                style={{
-                  background: 'white',
-                  border: '1px solid #28a745',
-                  borderRadius: '3px',
-                  color: '#28a745',
-                  fontSize: '11px',
-                  fontWeight: '400',
-                  cursor: 'pointer',
-                  padding: '4px 8px',
-                  textAlign: 'center',
-                  minWidth: '90px'
-                }}
-                title="Download pen pal assignments for this school"
-              >
-                Download List
-              </button>
-            )}
-          </div>
-        ))}
+          );
+        })}
 
         {/* Data in single horizontal row */}
         <div style={{
