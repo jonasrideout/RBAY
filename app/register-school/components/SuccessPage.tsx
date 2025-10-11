@@ -31,6 +31,7 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
   const [emailStatus, setEmailStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [showExitWarning, setShowExitWarning] = useState(false);
   const [hasProvidedLinks, setHasProvidedLinks] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState<string>('');
 
   const handleLogout = () => {
     if (isAdminMode) {
@@ -127,6 +128,7 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
   const handleNavigation = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     if (isAdminMode && !hasProvidedLinks) {
       e.preventDefault();
+      setPendingNavigation(href);
       setShowExitWarning(true);
     } else {
       router.push(href);
@@ -136,11 +138,24 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
   const handleCopyFromWarning = async () => {
     await handleCopyLinks();
     setShowExitWarning(false);
+    if (pendingNavigation) {
+      router.push(pendingNavigation);
+    }
   };
 
   const handleEmailFromWarning = async () => {
     await handleSendEmail();
     setShowExitWarning(false);
+    if (pendingNavigation) {
+      router.push(pendingNavigation);
+    }
+  };
+
+  const handleProceedAnyway = () => {
+    setShowExitWarning(false);
+    if (pendingNavigation) {
+      router.push(pendingNavigation);
+    }
   };
 
   // Admin mode success page
@@ -327,7 +342,7 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
           <ExitWarningDialog
             onCopyDashboardUrl={handleCopyFromWarning}
             onSendEmail={handleEmailFromWarning}
-            onClose={() => setShowExitWarning(false)}
+            onProceed={handleProceedAnyway}
           />
         )}
 
