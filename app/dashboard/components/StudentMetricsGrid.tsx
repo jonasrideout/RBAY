@@ -37,6 +37,8 @@ interface MatchedSchool {
   expectedClassSize: number;
   region: string;
   communicationPlatforms?: any;
+  isGroup?: boolean;
+  schools?: Array<{ id: string; schoolName: string; teacherName: string; teacherEmail: string; communicationPlatforms?: any; }>;
 }
 
 interface StudentMetricsGridProps {
@@ -57,7 +59,7 @@ export default function StudentMetricsGrid({
   isMatched = false
 }: StudentMetricsGridProps) {
   const estimatedClassSize = schoolData?.expectedClassSize || 0;
-  const [emailCopyText, setEmailCopyText] = useState('✉');
+  const [emailCopyStates, setEmailCopyStates] = useState<Record<string, string>>({});
   
   // Determine grid columns: 4 if matched, 3 if not matched
   const gridColumns = isMatched ? 'repeat(4, 1fr)' : 'repeat(3, 1fr)';
@@ -70,13 +72,13 @@ export default function StudentMetricsGrid({
     return '—';
   };
 
-  // Format communication platforms for matched school
-  const formatCommunicationPlatforms = () => {
-    if (!matchedSchool?.communicationPlatforms || !Array.isArray(matchedSchool.communicationPlatforms) || matchedSchool.communicationPlatforms.length === 0) {
+  // Format communication platforms
+  const formatCommunicationPlatforms = (platforms?: any) => {
+    if (!platforms || !Array.isArray(platforms) || platforms.length === 0) {
       return null;
     }
     
-    const shortened = matchedSchool.communicationPlatforms.map((platform: string) => {
+    const shortened = platforms.map((platform: string) => {
       if (platform === 'Google Meet') return 'Meet';
       if (platform === 'Microsoft Teams') return 'Teams';
       if (platform.startsWith('Other: ')) return platform.substring(7);
@@ -86,20 +88,22 @@ export default function StudentMetricsGrid({
     return shortened.join(' | ');
   };
 
-  const copyTeacherEmail = async () => {
-    if (!matchedSchool?.teacherEmail) return;
-
+  const copyTeacherEmail = async (email: string, teacherId: string) => {
     try {
-      await navigator.clipboard.writeText(matchedSchool.teacherEmail);
-      setEmailCopyText('✓');
-      setTimeout(() => setEmailCopyText('✉'), 1500);
+      await navigator.clipboard.writeText(email);
+      setEmailCopyStates(prev => ({ ...prev, [teacherId]: '✓' }));
+      setTimeout(() => {
+        setEmailCopyStates(prev => ({ ...prev, [teacherId]: '✉' }));
+      }, 1500);
     } catch (err) {
       console.error('Failed to copy email:', err);
-      prompt('Copy this email:', matchedSchool.teacherEmail);
+      prompt('Copy this email:', email);
     }
   };
 
-  const communicationPlatformsDisplay = formatCommunicationPlatforms();
+  const getEmailCopyText = (teacherId: string) => {
+    return emailCopyStates[teacherId] || '✉';
+  };
   
   return (
     <div style={{ 
@@ -181,45 +185,97 @@ export default function StudentMetricsGrid({
           <div className="text-data-value" style={{ marginBottom: '0.25rem' }}>
             {formatLocation()}
           </div>
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            gap: '0.5rem',
-            marginBottom: '0.25rem' 
-          }}>
-            <span className="text-data-value">
-              {matchedSchool.teacherName}
-            </span>
-            <button
-              onClick={copyTeacherEmail}
-              className="btn-icon btn-icon-email"
-              title={`Copy email: ${matchedSchool.teacherEmail}`}
-              style={{
-                fontSize: '14px',
-                color: '#666',
-                fontWeight: '300',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer'
-              }}
-            >
-              {emailCopyText}
-            </button>
-          </div>
-          <div className="text-data-label" style={{ marginBottom: communicationPlatformsDisplay ? '0.5rem' : '0' }}>
+          
+          {/* Show group teachers if it's a group */}
+          {matchedSchool.isGroup && matchedSchool.schools ? (
+            <div style={{ marginBottom: '0.5rem' }}>
+              {matchedSchool.schools.map((school, idx) => (
+                <div key={school.id} style={{ 
+                  marginBottom: idx < matchedSchool.schools!.length - 1 ? '0.75rem' : '0.25rem'
+                }}>
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    gap: '0.5rem',
+                    marginBottom: '0.25rem'
+                  }}>
+                    <span className="text-data-value">
+                      {school.teacherName}
+                    </span>
+                    <button
+                      onClick={() => copyTeacherEmail(school.teacherEmail, school.id)}
+                      className="btn-icon btn-icon-email"
+                      title={`Copy email: ${school.teacherEmail}`}
+                      style={{
+                        fontSize: '14px',
+                        color: '#666',
+                        fontWeight: '300',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {getEmailCopyText(school.id)}
+                    </button>
+                  </div>
+                  {formatCommunicationPlatforms(school.communicationPlatforms) && (
+                    <div style={{ 
+                      fontSize: '11px', 
+                      fontWeight: '300', 
+                      color: '#666'
+                    }}>
+                      {formatCommunicationPlatforms(school.communicationPlatforms)}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            /* Single school display */
+            <>
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                gap: '0.5rem',
+                marginBottom: '0.25rem' 
+              }}>
+                <span className="text-data-value">
+                  {matchedSchool.teacherName}
+                </span>
+                <button
+                  onClick={() => copyTeacherEmail(matchedSchool.teacherEmail, matchedSchool.id)}
+                  className="btn-icon btn-icon-email"
+                  title={`Copy email: ${matchedSchool.teacherEmail}`}
+                  style={{
+                    fontSize: '14px',
+                    color: '#666',
+                    fontWeight: '300',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {getEmailCopyText(matchedSchool.id)}
+                </button>
+              </div>
+              {formatCommunicationPlatforms(matchedSchool.communicationPlatforms) && (
+                <div style={{ 
+                  fontSize: '11px', 
+                  fontWeight: '300', 
+                  color: '#666',
+                  marginBottom: '0.5rem'
+                }}>
+                  {formatCommunicationPlatforms(matchedSchool.communicationPlatforms)}
+                </div>
+              )}
+            </>
+          )}
+          
+          <div className="text-data-label">
             {matchedSchool.expectedClassSize || 0} students
           </div>
-          {communicationPlatformsDisplay && (
-            <div style={{ 
-              fontSize: '11px', 
-              fontWeight: '300', 
-              color: '#666',
-              marginTop: '0.5rem'
-            }}>
-              {communicationPlatformsDisplay}
-            </div>
-          )}
         </div>
       )}
 
