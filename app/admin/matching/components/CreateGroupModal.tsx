@@ -12,6 +12,8 @@ interface School {
     registered: number;
   };
   hasPenPals?: boolean;
+  matchedWithSchoolId?: string | null;
+  schoolGroupId?: string | null;
 }
 
 interface Group {
@@ -198,6 +200,20 @@ export default function CreateGroupModal({
     setSchoolsToRemove([]);
   };
 
+  // Helper function to determine if a school can be grouped
+  const getSchoolDisabledStatus = (school: School) => {
+    if (school.hasPenPals) {
+      return { disabled: true, reason: '(Has pen pals - cannot group)' };
+    }
+    if (school.matchedWithSchoolId) {
+      return { disabled: true, reason: '(Already matched - cannot group)' };
+    }
+    if (school.schoolGroupId) {
+      return { disabled: true, reason: '(Already in a group)' };
+    }
+    return { disabled: false, reason: '' };
+  };
+
   return (
     <div style={{
       position: 'fixed',
@@ -328,50 +344,53 @@ export default function CreateGroupModal({
                       No schools available for grouping
                     </div>
                   ) : (
-                    availableSchools.map(school => (
-                      <label
-                        key={school.id}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          padding: '12px',
-                          borderBottom: '1px solid #f8f9fa',
-                          cursor: school.hasPenPals ? 'not-allowed' : 'pointer',
-                          backgroundColor: selectedSchools.includes(school.id) 
-                            ? '#f8f9fa' 
-                            : 'transparent',
-                          opacity: school.hasPenPals ? 0.5 : 1
-                        }}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={selectedSchools.includes(school.id)}
-                          onChange={() => toggleSchool(school.id)}
-                          disabled={school.hasPenPals}
-                          style={{ marginRight: '12px' }}
-                        />
-                        <div style={{ flex: 1 }}>
-                          <div className="text-school-name" style={{ fontSize: '14px' }}>
-                            {school.schoolName}
-                            {school.hasPenPals && (
-                              <span style={{ 
-                                fontSize: '11px', 
-                                color: '#dc3545',
-                                marginLeft: '8px'
-                              }}>
-                                (Has pen pals - cannot group)
-                              </span>
-                            )}
+                    availableSchools.map(school => {
+                      const status = getSchoolDisabledStatus(school);
+                      return (
+                        <label
+                          key={school.id}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            padding: '12px',
+                            borderBottom: '1px solid #f8f9fa',
+                            cursor: status.disabled ? 'not-allowed' : 'pointer',
+                            backgroundColor: selectedSchools.includes(school.id) 
+                              ? '#f8f9fa' 
+                              : 'transparent',
+                            opacity: status.disabled ? 0.5 : 1
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedSchools.includes(school.id)}
+                            onChange={() => toggleSchool(school.id)}
+                            disabled={status.disabled}
+                            style={{ marginRight: '12px' }}
+                          />
+                          <div style={{ flex: 1 }}>
+                            <div className="text-school-name" style={{ fontSize: '14px' }}>
+                              {school.schoolName}
+                              {status.disabled && (
+                                <span style={{ 
+                                  fontSize: '11px', 
+                                  color: '#dc3545',
+                                  marginLeft: '8px'
+                                }}>
+                                  {status.reason}
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-meta-info" style={{ fontSize: '12px' }}>
+                              {school.teacherName} • {school.teacherEmail}
+                            </div>
                           </div>
-                          <div className="text-meta-info" style={{ fontSize: '12px' }}>
-                            {school.teacherName} • {school.teacherEmail}
+                          <div className="text-data-value" style={{ fontSize: '14px' }}>
+                            {school.studentCounts?.registered || 0} students
                           </div>
-                        </div>
-                        <div className="text-data-value" style={{ fontSize: '14px' }}>
-                          {school.studentCounts?.registered || 0} students
-                        </div>
-                      </label>
-                    ))
+                        </label>
+                      );
+                    })
                   )}
                 </div>
               </div>
@@ -569,6 +588,7 @@ export default function CreateGroupModal({
                           }}>
                             {availableSchools.map(school => {
                               const isMarkedForAdd = schoolsToAdd.includes(school.id);
+                              const status = getSchoolDisabledStatus(school);
                               return (
                                 <div
                                   key={school.id}
@@ -577,28 +597,28 @@ export default function CreateGroupModal({
                                     alignItems: 'center',
                                     padding: '12px',
                                     borderBottom: '1px solid #f8f9fa',
-                                    cursor: school.hasPenPals ? 'not-allowed' : 'pointer',
+                                    cursor: status.disabled ? 'not-allowed' : 'pointer',
                                     backgroundColor: isMarkedForAdd ? '#d1ecf1' : 'transparent',
-                                    opacity: school.hasPenPals ? 0.5 : 1
+                                    opacity: status.disabled ? 0.5 : 1
                                   }}
                                 >
                                   <input
                                     type="checkbox"
                                     checked={isMarkedForAdd}
                                     onChange={() => toggleSchoolToAdd(school.id)}
-                                    disabled={school.hasPenPals}
+                                    disabled={status.disabled}
                                     style={{ marginRight: '12px' }}
                                   />
                                   <div style={{ flex: 1 }}>
                                     <div className="text-school-name" style={{ fontSize: '14px' }}>
                                       {school.schoolName}
-                                      {school.hasPenPals && (
+                                      {status.disabled && (
                                         <span style={{ 
                                           fontSize: '11px', 
                                           color: '#dc3545',
                                           marginLeft: '8px'
                                         }}>
-                                          (Has pen pals - cannot add)
+                                          {status.reason}
                                         </span>
                                       )}
                                     </div>
