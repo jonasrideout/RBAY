@@ -8,8 +8,8 @@ interface PenpalData {
   name: string;
   grade: string;
   school: string | undefined;
-  city: string | undefined;
-  state: string | undefined;
+  city: string | null | undefined;
+  state: string | null | undefined;
   teacherName: string | undefined;
   interests: string[];
   otherInterests: string | null;
