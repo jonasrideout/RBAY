@@ -14,7 +14,7 @@ export default function Header({ showLogin = false, session, onLogout }: HeaderP
         <div className="header-content">
           <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
-            The Right Back at You Project
+            <span style={{ fontWeight: 300 }}>The Right Back at You Project</span>
           </Link>
           <nav className={showLogin || session ? "nav-login" : "nav-invisible"}>
             {session ? (
@@ -22,19 +22,26 @@ export default function Header({ showLogin = false, session, onLogout }: HeaderP
               <>
                 <button 
                   onClick={onLogout}
-                  className="btn btn-danger"
-                  >
+                  className="btn-blue"
+                  style={{
+                    backgroundColor: 'transparent',
+                    color: '#dc3545',
+                    borderColor: '#dc3545'
+                  }}
+                >
                   Logout
                 </button>
-                <span style={{ fontSize: '0.85rem', color: '#6c757d' }}>
+                <span style={{ fontSize: '0.85rem', color: '#666', fontWeight: 300 }}>
                   Logged in as: {session.user?.email}
                 </span>
               </>
             ) : showLogin ? (
               // Unauthenticated user - show login button and helper text
               <>
-                <Link href="/login" className="btn btn-primary">Login or Sign Up</Link>
-                <span style={{ fontSize: '0.85rem', color: '#6c757d' }}>
+                <Link href="/login" className="btn-blue">
+                  Login or Sign Up
+                </Link>
+                <span style={{ fontSize: '0.85rem', color: '#666', fontWeight: 300 }}>
                   Sign in to register or access your school
                 </span>
               </>
