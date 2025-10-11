@@ -38,8 +38,8 @@ export async function sendWelcomeEmail({
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nextjs-boilerplate-beta-three-49.vercel.app';
     
     const subject = isAdminCreated
-      ? `Welcome to Right Back at You - Complete Your School Profile`
-      : `Welcome to Right Back at You - ${schoolName}`;
+      ? `Welcome to The Right Back at You Project - Complete Your School Profile`
+      : `Welcome to The Right Back at You Project - ${schoolName}`;
     
     const { data, error } = await resend.emails.send({
       from: 'Right Back at You <noreply@carolynmackler.com>',
@@ -85,7 +85,7 @@ export async function sendMagicLinkEmail({
     const teacherName = school?.teacherName || '';
     
     const subject = isNewUser 
-      ? 'Welcome to Right Back at You - Verify Your Email to Get Started'
+      ? 'Welcome to The Right Back at You Project - Verify Your Email to Get Started'
       : 'Your Right Back at You Dashboard Login Link';
     
     const { data, error } = await resend.emails.send({
