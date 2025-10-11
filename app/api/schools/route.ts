@@ -114,28 +114,27 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Send welcome email (non-blocking)
+    // Send welcome email - both admin and regular flows
     let emailSent = false;
     let emailError = '';
     
-    if (!isAdminFlow) {
-      try {
-        const emailResult = await sendWelcomeEmail({
-          teacherName,
-          teacherEmail,
-          schoolName,
-          dashboardToken: school.dashboardToken
-        });
-        
-        emailSent = emailResult.success;
-        if (!emailResult.success) {
-          emailError = emailResult.error || 'Unknown email error';
-          console.warn('Welcome email failed to send:', emailError);
-        }
-      } catch (error: any) {
-        console.warn('Welcome email sending failed:', error);
-        emailError = error.message || 'Email service unavailable';
+    try {
+      const emailResult = await sendWelcomeEmail({
+        teacherName,
+        teacherEmail,
+        schoolName,
+        dashboardToken: school.dashboardToken,
+        isAdminCreated: isAdminFlow // Pass admin context flag
+      });
+      
+      emailSent = emailResult.success;
+      if (!emailResult.success) {
+        emailError = emailResult.error || 'Unknown email error';
+        console.warn('Welcome email failed to send:', emailError);
       }
+    } catch (error: any) {
+      console.warn('Welcome email sending failed:', error);
+      emailError = error.message || 'Email service unavailable';
     }
 
     // Generate links for admin response
