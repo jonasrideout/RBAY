@@ -105,11 +105,11 @@ function LoginContent() {
             textAlign: 'center' 
           }}>
             <h1 className="text-h2" style={{ marginBottom: '1rem' }}>
-              Welcome to Right Back at You!
+              Welcome to The Right Back at You Project!
             </h1>
             
             <p className="text-meta-info" style={{ marginBottom: '2rem', lineHeight: '1.6' }}>
-              We'd love to have you join our pen pal program! To get started, we need to verify your email address.
+              We'd love to have you join our pen-pal program! To get started, we need to verify your email address.
             </p>
 
             <div className="alert alert-warning" style={{ 
@@ -194,7 +194,7 @@ function LoginContent() {
                 marginBottom: '0.5rem',
                 lineHeight: '1.2'
               }}>
-                Welcome to the<br />Right Back At You Project
+                Welcome to<br />The Right Back At You Project
               </h1>
               
               <p className="text-normal" style={{ marginBottom: '2rem', lineHeight: '1.6' }}>
