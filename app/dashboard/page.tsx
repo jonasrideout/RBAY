@@ -71,6 +71,8 @@ interface SchoolData {
       id: string;
       schoolName: string;
       teacherName: string;
+      teacherEmail: string;
+      communicationPlatforms?: any;
       mailingAddress?: string;
     }>;
   };
