@@ -127,38 +127,21 @@ export async function GET(request: NextRequest) {
     // Determine partner school name(s)
     let partnerSchoolName: string;
     
-    if (school.schoolGroupId) {
-      // School is part of a group
-      // Get all OTHER schools in the same group (excluding this school)
-      const groupSchools = await prisma.school.findMany({
-        where: {
-          schoolGroupId: school.schoolGroupId,
-          id: { not: schoolId }
-        },
-        select: {
-          schoolName: true
-        }
+    // Check if any pen pals are from a group by looking at schoolGroupId
+    const firstPenpalWithGroup = studentsWithPenpals
+      .find(student => student.penpals.length > 0)
+      ?.penpals.find(p => p.schoolGroupId);
+    
+    if (firstPenpalWithGroup?.schoolGroupId) {
+      // Partner is a group - fetch the group name
+      const partnerGroup = await prisma.schoolGroup.findUnique({
+        where: { id: firstPenpalWithGroup.schoolGroupId },
+        select: { name: true }
       });
       
-      // Build partner name from other schools in group + pen pal schools
-      const groupPartnerNames = groupSchools.map(s => s.schoolName);
-      
-      // Get pen pal schools (schools from outside the group)
-      const penpalSchoolName = studentsWithPenpals
-        .find(student => student.penpals.length > 0)
-        ?.penpals[0]?.school;
-      
-      if (penpalSchoolName && !groupPartnerNames.includes(penpalSchoolName)) {
-        // Partner is outside the group
-        partnerSchoolName = penpalSchoolName;
-      } else if (groupPartnerNames.length > 0) {
-        // Partner is other schools in the group
-        partnerSchoolName = groupPartnerNames.join(' + ');
-      } else {
-        partnerSchoolName = 'Partner School';
-      }
+      partnerSchoolName = partnerGroup?.name || 'Partner Group';
     } else {
-      // School is NOT part of a group - use original logic
+      // Partner is a single school
       partnerSchoolName = studentsWithPenpals
         .find(student => student.penpals.length > 0)
         ?.penpals[0]?.school || 'Partner School';
