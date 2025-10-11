@@ -33,7 +33,7 @@ export default function WelcomeEmail({
       <Preview>
         {isAdminCreated 
           ? `Complete your school profile for ${schoolName}`
-          : `Welcome to Right Back at You!`
+          : `Welcome to The Right Back at You Project!`
         }
       </Preview>
       <Body style={main}>
@@ -41,7 +41,7 @@ export default function WelcomeEmail({
           <Heading style={h1}>
             {isAdminCreated 
               ? 'Complete Your School Profile'
-              : 'Welcome to Right Back at You!'
+              : 'Welcome to The Right Back at You Project'
             }
           </Heading>
           
@@ -53,7 +53,7 @@ export default function WelcomeEmail({
             // Admin-created school email content
             <>
               <Text style={text}>
-                You've been added to the Right Back at You pen pal program for {schoolName}.
+                You've been added to The Right Back at You Project for {schoolName}.
               </Text>
 
               <Text style={text}>
@@ -81,7 +81,7 @@ export default function WelcomeEmail({
             // Self-registered school email content
             <>
               <Text style={text}>
-                Welcome to the Right Back at You pen pal program! We're excited to help connect your students at {schoolName} with pen pals from distant schools through our literature-based program.
+                Welcome to The Right Back at You Project! We're excited to help connect your students at {schoolName} with pen pals from distant schools through our literature-based program.
               </Text>
 
               <Text style={text}>
