@@ -51,7 +51,7 @@ export default function MagicLinkEmail({
             // New User Email Content
             <>
               <Text style={text}>
-                Thank you for your interest in The Right Back at You Project! We're excited to help you connect your students with pen pals from distant schools through our literature-based program.
+                Thank you for your interest in The Right Back at You Project! We're excited to help you connect your students with pen pals from distant schools.
               </Text>
 
               <Text style={text}>
