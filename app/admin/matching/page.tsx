@@ -556,7 +556,7 @@ export default function AdminDashboard() {
     unmatchedToShow = unmatchedToShow.filter(unit => unit.id !== pinnedUnit.id);
   }
 
-  const availableForGrouping = schools.filter(school => !school.schoolGroupId);
+  const availableForGrouping = schools;
 
   return (
     <div className="page">
