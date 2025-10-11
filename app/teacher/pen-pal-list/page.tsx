@@ -18,8 +18,9 @@ interface Penpal {
   name: string;
   grade: string;
   school: string;
-  city?: string;
-  state?: string;
+  city?: string | null;
+  state?: string | null;
+  schoolGroupId?: string | null;
   teacherName?: string;
   interests: string[];
   otherInterests: string | null;
@@ -58,8 +59,9 @@ interface ConsolidatedStudent {
   penpals: {
     name: string;
     school: string;
-    city?: string;
-    state?: string;
+    city?: string | null;
+    state?: string | null;
+    schoolGroupId?: string | null;
     teacherName?: string;
     interests: string;
   }[];
@@ -153,6 +155,7 @@ function PenPalListContent() {
           school: penpal.school,
           city: penpal.city,
           state: penpal.state,
+          schoolGroupId: penpal.schoolGroupId,
           teacherName: penpal.teacherName,
           interests: formatInterests(penpal.interests, penpal.otherInterests)
         });
@@ -295,45 +298,26 @@ function PenPalListContent() {
 
           {/* Student listings - consolidated and sorted alphabetically */}
           {consolidatedStudents.map((student, studentIndex) => (
-            <div key={studentIndex}>
-              {/* Cut line with scissors and branding */}
+            <div key={studentIndex} style={{ position: 'relative' }}>
+              {/* Cut line with scissors */}
               <div style={{
                 borderTop: '2px dashed #ccc',
                 position: 'relative',
-                marginBottom: '1rem',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                paddingTop: '0.5rem'
+                marginBottom: '1rem'
               }}>
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem'
-                }}>
-                  <span style={{
-                    color: '#4285f4',
-                    fontSize: '0.75rem',
-                    fontWeight: '600',
-                    letterSpacing: '0.5px'
-                  }}>
-                    THE RIGHT BACK AT YOU PROJECT
-                  </span>
-                  <img 
-                    src="/RB@Y-logo.jpg" 
-                    alt="Logo" 
-                    style={{ height: '24px' }} 
-                  />
-                </div>
                 <span style={{
+                  position: 'absolute',
+                  right: '0',
+                  top: '-12px',
                   fontSize: '1.2rem'
                 }}>
                   ✂️
                 </span>
               </div>
 
-              {/* Student entry with padding */}
+              {/* Student slip with branding */}
               <div style={{
+                position: 'relative',
                 paddingTop: '0.75rem',
                 paddingBottom: '1.25rem',
                 paddingLeft: '0.5rem',
@@ -342,6 +326,20 @@ function PenPalListContent() {
                 fontWeight: '300',
                 lineHeight: '1.6'
               }}>
+                {/* Branding image - positioned on right, vertically centered */}
+                <img 
+                  src="/slip-branding.png" 
+                  alt="The Right Back at You Project" 
+                  style={{
+                    position: 'absolute',
+                    right: '0.25in',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    height: '80px'
+                  }}
+                />
+
+                {/* Student info */}
                 <div style={{ marginBottom: '0.5rem' }}>
                   {student.studentName} Interests: {student.studentInterests}
                 </div>
@@ -357,8 +355,10 @@ function PenPalListContent() {
                     if (penpal.state) locationParts.push(penpal.state);
                     const location = locationParts.join(', ');
                     
-                    // Add teacher info if available
-                    const teacherInfo = penpal.teacherName ? ` | ${penpal.teacherName}'s class` : '';
+                    // Only add teacher info if pen pal's school is part of a group
+                    const teacherInfo = (penpal.schoolGroupId && penpal.teacherName) 
+                      ? ` | ${penpal.teacherName}'s class` 
+                      : '';
                     
                     return (
                       <div key={penpalIndex} style={{ marginBottom: penpalIndex < student.penpals.length - 1 ? '0.5rem' : '0' }}>
