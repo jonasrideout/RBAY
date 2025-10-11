@@ -309,16 +309,13 @@ export default function AdminDashboard() {
   };
 
   const handleAssignPenPalsFromDialog = async () => {
-    if (!pinnedUnit || !selectedMatch) return;
-    await handleAssignPenPals(pinnedUnit, selectedMatch);
-    
-    setTimeout(() => {
-      setShowConfirmDialog(false);
-      setSelectedMatch(null);
-      setShowWarning(false);
-      setIsMatched(false);
-    }, 1000);
-  };
+  if (!pinnedUnit || !selectedMatch) return;
+  await handleAssignPenPals(pinnedUnit, selectedMatch);
+  
+  setTimeout(async () => {
+    await handleCloseAfterMatch();
+  }, 1000);
+};
 
   const cancelMatch = () => {
     setShowConfirmDialog(false);
