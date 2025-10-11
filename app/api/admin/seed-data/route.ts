@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('SEED DATA VERSION: 2.2 - WITH UPDATED EMAIL ADDRESSES');
+    console.log('SEED DATA VERSION: 2.3 - GRADES MATCH SCHOOL GRADE LEVELS');
     console.log('Seed-data using DATABASE_URL:', process.env.DATABASE_URL?.substring(0, 50) + '...');
     console.log('Starting enhanced seed data creation...');
     console.log('Seed-data using DATABASE_URL_DIRECT:', process.env.DATABASE_URL_DIRECT?.substring(0, 50) + '...');
@@ -192,16 +192,18 @@ export async function POST(request: NextRequest) {
       null, null, null // 30% have otherInterests, 70% don't
     ];
 
-    const gradeOptions = ["3", "4", "5"];
     const firstNames = ["Emma", "Liam", "Sophia", "Noah", "Ava", "Mason", "Isabella", "Ethan", "Mia", "Alexander", "Charlotte", "William", "Grace", "James", "Lily", "Owen", "Zoe", "Caleb", "Olivia", "Lucas", "Amelia", "Benjamin", "Harper", "Henry", "Evelyn", "Sebastian", "Abigail", "Jackson", "Emily", "Logan", "Aria", "Carter", "Chloe", "Wyatt", "Layla", "Luke", "Riley", "Jack", "Zoey", "Daniel"];
     
     const lastInitials = ["W", "R", "K", "C", "T", "D", "G", "B", "J", "L", "M", "Ta", "P", "Mi", "Co", "Tu", "A", "Mo", "An", "Wh", "H", "Cl", "Le", "Wa", "Ha", "Y", "Ki", "Wr", "Lo", "Hi", "Gr", "Ba", "N", "Ca", "Ro", "Ph", "E", "Tur", "Pa", "Col"];
 
     // Helper function to generate realistic student data with complete profiles
-    const generateStudent = (schoolId: string, index: number, nameOffset: number, teacherEmail: string) => {
+    const generateStudent = (schoolId: string, index: number, nameOffset: number, teacherEmail: string, schoolGrades: string) => {
       const firstName = firstNames[(index + nameOffset) % firstNames.length];
       const lastInitial = lastInitials[Math.floor(Math.random() * lastInitials.length)];
-      const grade = gradeOptions[Math.floor(Math.random() * gradeOptions.length)];
+      
+      // Parse the school's grade levels and randomly select one
+      const availableGrades = schoolGrades.split(',');
+      const grade = availableGrades[Math.floor(Math.random() * availableGrades.length)];
       
       // Generate 1-3 interests (all students have interests)
       const numInterests = Math.floor(Math.random() * 3) + 1;
@@ -233,49 +235,49 @@ export async function POST(request: NextRequest) {
     // Create Lincoln Elementary students (10 students - all complete)
     console.log('Creating Lincoln Elementary students...');
     for (let i = 0; i < 10; i++) {
-      const studentData = generateStudent(lincolnSchool.id, i, 0, "rightbackatyou13+1@gmail.com");
+      const studentData = generateStudent(lincolnSchool.id, i, 0, "rightbackatyou13+1@gmail.com", "3");
       await prisma.student.create({ data: studentData });
     }
 
     // Create Pacific students (20 students - all complete)
     console.log('Creating Pacific Elementary students...');
     for (let i = 0; i < 20; i++) {
-      const studentData = generateStudent(pacificSchool.id, i, 10, "rightbackatyou13+2@gmail.com");
+      const studentData = generateStudent(pacificSchool.id, i, 10, "rightbackatyou13+2@gmail.com", "3,4,5");
       await prisma.student.create({ data: studentData });
     }
 
     // Create Northeast students (23 students - all complete)
     console.log('Creating Northeast Academy students...');
     for (let i = 0; i < 23; i++) {
-      const studentData = generateStudent(northeastSchool.id, i, 30, "rightbackatyou13+3@gmail.com");
+      const studentData = generateStudent(northeastSchool.id, i, 30, "rightbackatyou13+3@gmail.com", "3,4,5");
       await prisma.student.create({ data: studentData });
     }
 
     // Create Southwest students (30 students - all complete)
     console.log('Creating Desert View Elementary students...');
     for (let i = 0; i < 30; i++) {
-      const studentData = generateStudent(southwestSchool.id, i, 53, "rightbackatyou13+4@gmail.com");
+      const studentData = generateStudent(southwestSchool.id, i, 53, "rightbackatyou13+4@gmail.com", "4,5");
       await prisma.student.create({ data: studentData });
     }
 
     // Create Midwest students (23 students - all complete)
     console.log('Creating Prairie View Middle School students...');
     for (let i = 0; i < 23; i++) {
-      const studentData = generateStudent(midwestSchool.id, i, 83, "rightbackatyou13+5@gmail.com");
+      const studentData = generateStudent(midwestSchool.id, i, 83, "rightbackatyou13+5@gmail.com", "3,4");
       await prisma.student.create({ data: studentData });
     }
 
     // Create Southeast students (20 students - all complete)
     console.log('Creating Magnolia Elementary students...');
     for (let i = 0; i < 20; i++) {
-      const studentData = generateStudent(southeastSchool.id, i, 106, "rightbackatyou13+6@gmail.com");
+      const studentData = generateStudent(southeastSchool.id, i, 106, "rightbackatyou13+6@gmail.com", "3,4,5");
       await prisma.student.create({ data: studentData });
     }
 
     // Create Mountain View students (12 students - all complete)
     console.log('Creating Mountain View Elementary students...');
     for (let i = 0; i < 12; i++) {
-      const studentData = generateStudent(mountainViewSchool.id, i, 126, "rightbackatyou13+7@gmail.com");
+      const studentData = generateStudent(mountainViewSchool.id, i, 126, "rightbackatyou13+7@gmail.com", "3,4,5");
       await prisma.student.create({ data: studentData });
     }
 
@@ -329,13 +331,13 @@ export async function POST(request: NextRequest) {
       },
       schools: 7,
       schoolDetails: {
-        lincolnElementary: { students: 10, status: "COLLECTING", complete: 10, multiplePreference: 0, hasCommPlatforms: false, hasMailingAddress: false, email: "rightbackatyou13+1@gmail.com" },
-        pacificElementary: { students: 20, status: "READY", complete: 20, multiplePreference: 8, hasCommPlatforms: true, hasMailingAddress: true, email: "rightbackatyou13+2@gmail.com" },
-        northeastAcademy: { students: 23, status: "READY", complete: 23, multiplePreference: 8, hasCommPlatforms: true, hasMailingAddress: true, email: "rightbackatyou13+3@gmail.com" },
-        desertViewElementary: { students: 30, status: "COLLECTING", complete: 30, multiplePreference: 8, hasCommPlatforms: true, hasMailingAddress: true, email: "rightbackatyou13+4@gmail.com" },
-        prairieViewMiddle: { students: 23, status: "COLLECTING", complete: 23, multiplePreference: 8, hasCommPlatforms: true, hasMailingAddress: true, email: "rightbackatyou13+5@gmail.com" },
-        magnoliaElementary: { students: 20, status: "COLLECTING", complete: 20, multiplePreference: 8, hasCommPlatforms: true, hasMailingAddress: true, email: "rightbackatyou13+6@gmail.com" },
-        mountainViewElementary: { students: 12, status: "COLLECTING", complete: 12, multiplePreference: 0, hasCommPlatforms: false, hasMailingAddress: false, email: "rightbackatyou13+7@gmail.com" }
+        lincolnElementary: { students: 10, status: "COLLECTING", complete: 10, multiplePreference: 0, hasCommPlatforms: false, hasMailingAddress: false, email: "rightbackatyou13+1@gmail.com", grades: "3" },
+        pacificElementary: { students: 20, status: "READY", complete: 20, multiplePreference: 8, hasCommPlatforms: true, hasMailingAddress: true, email: "rightbackatyou13+2@gmail.com", grades: "3,4,5" },
+        northeastAcademy: { students: 23, status: "READY", complete: 23, multiplePreference: 8, hasCommPlatforms: true, hasMailingAddress: true, email: "rightbackatyou13+3@gmail.com", grades: "3,4,5" },
+        desertViewElementary: { students: 30, status: "COLLECTING", complete: 30, multiplePreference: 8, hasCommPlatforms: true, hasMailingAddress: true, email: "rightbackatyou13+4@gmail.com", grades: "4,5" },
+        prairieViewMiddle: { students: 23, status: "COLLECTING", complete: 23, multiplePreference: 8, hasCommPlatforms: true, hasMailingAddress: true, email: "rightbackatyou13+5@gmail.com", grades: "3,4" },
+        magnoliaElementary: { students: 20, status: "COLLECTING", complete: 20, multiplePreference: 8, hasCommPlatforms: true, hasMailingAddress: true, email: "rightbackatyou13+6@gmail.com", grades: "3,4,5" },
+        mountainViewElementary: { students: 12, status: "COLLECTING", complete: 12, multiplePreference: 0, hasCommPlatforms: false, hasMailingAddress: false, email: "rightbackatyou13+7@gmail.com", grades: "3,4,5" }
       },
       totalStudents,
       dashboardTokens: createdSchools.map(school => ({
@@ -348,20 +350,21 @@ export async function POST(request: NextRequest) {
       dataModel: [
         "All students have complete profiles (profileCompleted = true)",
         "All students have interests (1-3 from predefined list)",
-        "All students have valid grades (3, 4, or 5)",
+        "All students have grades matching their school's gradeLevel field",
         "All students have parent consent",
         "Test accounts (+1, +7): All students ONE preference, NO communication platforms or mailing addresses",
         "Other accounts (+2 through +6): First 8 students MULTIPLE preference to meet requirements, WITH communication platforms and mailing addresses",
         "No incomplete students in seed data"
       ],
       testScenarios: [
-        "Lincoln Elementary: 10 students, COLLECTING status, all ONE preference, NO comm platforms/address (rightbackatyou13+1@gmail.com)",
-        "Mountain View: 12 students, COLLECTING status, all ONE preference, NO comm platforms/address (rightbackatyou13+7@gmail.com)",
+        "Lincoln Elementary: 10 students (grade 3 only), COLLECTING status, all ONE preference, NO comm platforms/address (rightbackatyou13+1@gmail.com)",
+        "Mountain View: 12 students (grades 3,4,5), COLLECTING status, all ONE preference, NO comm platforms/address (rightbackatyou13+7@gmail.com)",
         "Two schools READY for matching with 8 MULTIPLE students each (Pacific + Northeast)",
         "Five schools COLLECTING information (Lincoln, Southwest, Midwest, Southeast, Mountain)",
         "Various student counts: 10, 20, 23, 30, 23, 20, 12",
         "All students registered = all students ready",
-        "Simplified metrics: registered count = ready count"
+        "Simplified metrics: registered count = ready count",
+        "Student grades now match school gradeLevel: Lincoln=3, Desert View=4,5, Prairie View=3,4, others=3,4,5"
       ]
     });
 
