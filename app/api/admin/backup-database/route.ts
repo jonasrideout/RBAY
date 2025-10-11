@@ -73,7 +73,7 @@ export async function GET(request: Request) {
 
     console.log('Backup created:', backup.summary);
 
-    // If this is from cron job, email the backup
+    // If this is from cron job, email the backup file
     if (isFromCron) {
       const timestamp = new Date().toLocaleString('en-US', { 
         timeZone: 'America/New_York',
