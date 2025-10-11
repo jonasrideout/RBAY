@@ -3,13 +3,13 @@
 interface ExitWarningDialogProps {
   onCopyDashboardUrl: () => void;
   onSendEmail: () => void;
-  onClose: () => void;
+  onProceed: () => void;
 }
 
 export default function ExitWarningDialog({
   onCopyDashboardUrl,
   onSendEmail,
-  onClose
+  onProceed
 }: ExitWarningDialogProps) {
   return (
     <div style={{
@@ -56,18 +56,6 @@ export default function ExitWarningDialog({
           justifyContent: 'flex-end' 
         }}>
           <button
-            onClick={onClose}
-            className="btn"
-            style={{
-              backgroundColor: '#f5f5f5',
-              color: '#666',
-              border: '1px solid #ddd'
-            }}
-          >
-            Cancel
-          </button>
-          
-          <button
             onClick={onCopyDashboardUrl}
             className="btn btn-primary"
           >
@@ -79,6 +67,18 @@ export default function ExitWarningDialog({
             className="btn btn-primary"
           >
             Send Welcome Email
+          </button>
+          
+          <button
+            onClick={onProceed}
+            className="btn"
+            style={{
+              backgroundColor: '#f5f5f5',
+              color: '#666',
+              border: '1px solid #ddd'
+            }}
+          >
+            Proceed Anyway
           </button>
         </div>
       </div>
