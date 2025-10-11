@@ -1,5 +1,3 @@
-// /app/register-school/components/SuccessPage.tsx
-
 "use client";
 
 import Link from 'next/link';
@@ -8,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useTeacherSession } from '@/lib/useTeacherSession';
 import Header from '../../components/Header';
 import { sendWelcomeEmail } from '@/lib/email';
+import ExitWarningDialog from './ExitWarningDialog';
 
 interface SuccessPageProps {
   registeredSchool: {
@@ -30,6 +29,8 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
   const [linksCopyStatus, setLinksCopyStatus] = useState<'idle' | 'copied'>('idle');
   const [studentLinkCopyStatus, setStudentLinkCopyStatus] = useState<'idle' | 'copied'>('idle');
   const [emailStatus, setEmailStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [showExitWarning, setShowExitWarning] = useState(false);
+  const [hasProvidedLinks, setHasProvidedLinks] = useState(false);
 
   const handleLogout = () => {
     if (isAdminMode) {
@@ -72,6 +73,7 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
       await navigator.clipboard.writeText(text);
       setLinksCopyStatus('copied');
       setTimeout(() => setLinksCopyStatus('idle'), 2000);
+      setHasProvidedLinks(true);
     } catch (err) {
       console.error('Failed to copy links:', err);
     }
@@ -113,12 +115,32 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
       }
 
       setEmailStatus('sent');
+      setHasProvidedLinks(true);
       setTimeout(() => setEmailStatus('idle'), 3000);
     } catch (error) {
       console.error('Error sending email:', error);
       setEmailStatus('error');
       setTimeout(() => setEmailStatus('idle'), 3000);
     }
+  };
+
+  const handleNavigation = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (isAdminMode && !hasProvidedLinks) {
+      e.preventDefault();
+      setShowExitWarning(true);
+    } else {
+      router.push(href);
+    }
+  };
+
+  const handleCopyFromWarning = async () => {
+    await handleCopyLinks();
+    setShowExitWarning(false);
+  };
+
+  const handleEmailFromWarning = async () => {
+    await handleSendEmail();
+    setShowExitWarning(false);
   };
 
   // Admin mode success page
@@ -150,7 +172,11 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
               </div>
               
               <div>
-                <Link href="/admin/matching" className="btn">
+                <Link 
+                  href="/admin/matching" 
+                  className="btn"
+                  onClick={(e) => handleNavigation(e, '/admin/matching')}
+                >
                   ← Back to Admin Dashboard
                 </Link>
               </div>
@@ -278,6 +304,7 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
                   href="/register-school?admin=true"
                   className="btn"
                   style={{ textDecoration: 'none' }}
+                  onClick={(e) => handleNavigation(e, '/register-school?admin=true')}
                 >
                   Add Another School
                 </Link>
@@ -286,6 +313,7 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
                   href="/admin/matching"
                   className="btn"
                   style={{ textDecoration: 'none' }}
+                  onClick={(e) => handleNavigation(e, '/admin/matching')}
                 >
                   View All Schools
                 </Link>
@@ -294,6 +322,14 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
 
           </div>
         </main>
+
+        {showExitWarning && (
+          <ExitWarningDialog
+            onCopyDashboardUrl={handleCopyFromWarning}
+            onSendEmail={handleEmailFromWarning}
+            onClose={() => setShowExitWarning(false)}
+          />
+        )}
 
         <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
           <div className="container text-center">
@@ -477,7 +513,7 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
 
       <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
         <div className="container text-center">
-          <p>&copy; 2024 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
+          <p>&copy; 2025 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
         </div>
       </footer>
     </div>
