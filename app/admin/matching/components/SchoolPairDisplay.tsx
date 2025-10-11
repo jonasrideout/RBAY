@@ -403,7 +403,7 @@ export default function SchoolPairDisplay({
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span>{school.schoolName} | {school.teacherName}</span>
                 <button
-                  onClick={() => copyEmailAddress(school.teacherEmail, true)}
+                  onClick={() => copyEmailAddress(school.teacherEmail, idx === 0)}
                   className="btn-icon"
                   style={{
                     fontSize: '16px',
