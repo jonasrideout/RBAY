@@ -248,18 +248,14 @@ export default function RegisterSchoolClient({
         throw new Error(data.error || 'Failed to register school');
       }
 
-      setRegisteredSchool(data.school);
-      
-      // Store additional data for admin mode
+      // If admin mode, redirect immediately to admin matching page
       if (isAdminMode) {
-        setRegisteredSchool({
-          ...data.school,
-          dashboardLink: data.dashboardLink,
-          registrationLink: data.registrationLink,
-          emailSent: data.emailSent
-        });
+        router.push('/admin/matching');
+        return;
       }
-      
+
+      // For regular teachers, show success page
+      setRegisteredSchool(data.school);
       setIsSubmitted(true);
       setHasCheckedExistingSchool(true);
       setShowExistingSchoolError(false);
@@ -283,9 +279,9 @@ export default function RegisterSchoolClient({
     );
   }
 
-  // Success state
-  if (isSubmitted && registeredSchool) {
-    return <SuccessPage registeredSchool={registeredSchool} isAdminMode={isAdminMode} />;
+  // Success state (only for regular teachers, not admin)
+  if (isSubmitted && registeredSchool && !isAdminMode) {
+    return <SuccessPage registeredSchool={registeredSchool} isAdminMode={false} />;
   }
 
   // Show existing school error (only for non-verified, non-admin users)
