@@ -5,8 +5,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTeacherSession } from '@/lib/useTeacherSession';
 import Header from '../../components/Header';
-import { sendWelcomeEmail } from '@/lib/email';
-import ExitWarningDialog from './ExitWarningDialog';
 
 interface SuccessPageProps {
   registeredSchool: {
@@ -26,19 +24,10 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
   const router = useRouter();
   
   // Copy button states
-  const [linksCopyStatus, setLinksCopyStatus] = useState<'idle' | 'copied'>('idle');
   const [studentLinkCopyStatus, setStudentLinkCopyStatus] = useState<'idle' | 'copied'>('idle');
-  const [emailStatus, setEmailStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
-  const [showExitWarning, setShowExitWarning] = useState(false);
-  const [hasProvidedLinks, setHasProvidedLinks] = useState(false);
-  const [pendingNavigation, setPendingNavigation] = useState<string>('');
 
   const handleLogout = () => {
-    if (isAdminMode) {
-      router.push('/admin/login');
-    } else {
-      router.push('/api/auth/signout?callbackUrl=' + encodeURIComponent(getBaseUrl()));
-    }
+    router.push('/api/auth/signout?callbackUrl=' + encodeURIComponent(getBaseUrl()));
   };
 
   // Use environment variable for consistent URL generation
@@ -47,9 +36,6 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
   };
 
   const generateStudentLink = () => {
-    if (isAdminMode && registeredSchool?.registrationLink) {
-      return registeredSchool.registrationLink;
-    }
     if (registeredSchool?.dashboardToken) {
       return `${getBaseUrl()}/register-student?token=${registeredSchool.dashboardToken}`;
     }
@@ -57,27 +43,8 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
   };
 
   const generateDashboardLink = () => {
-    if (isAdminMode && registeredSchool?.dashboardLink) {
-      return registeredSchool.dashboardLink;
-    }
     // Session-based dashboard - no token needed
     return `${getBaseUrl()}/dashboard`;
-  };
-
-  // Copy both links for admin
-  const handleCopyLinks = async () => {
-    try {
-      const dashboardLink = generateDashboardLink();
-      const studentLink = generateStudentLink();
-      const text = `Teacher Dashboard: ${dashboardLink}\nStudent Registration: ${studentLink}`;
-      
-      await navigator.clipboard.writeText(text);
-      setLinksCopyStatus('copied');
-      setTimeout(() => setLinksCopyStatus('idle'), 2000);
-      setHasProvidedLinks(true);
-    } catch (err) {
-      console.error('Failed to copy links:', err);
-    }
   };
 
   // Copy student registration link
@@ -91,269 +58,6 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
       console.error('Failed to copy student link:', err);
     }
   };
-
-  // Send welcome email for admin
-  const handleSendEmail = async () => {
-    setEmailStatus('sending');
-
-    try {
-      const response = await fetch('/api/admin/send-welcome-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          teacherEmail: registeredSchool.teacherEmail,
-          teacherName: registeredSchool.teacherName || 'Teacher',
-          schoolName: registeredSchool.schoolName,
-          dashboardToken: registeredSchool.dashboardToken
-        }),
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to send email');
-      }
-
-      setEmailStatus('sent');
-      setHasProvidedLinks(true);
-      setTimeout(() => setEmailStatus('idle'), 3000);
-    } catch (error) {
-      console.error('Error sending email:', error);
-      setEmailStatus('error');
-      setTimeout(() => setEmailStatus('idle'), 3000);
-    }
-  };
-
-  const handleNavigation = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    if (isAdminMode && !hasProvidedLinks) {
-      e.preventDefault();
-      setPendingNavigation(href);
-      setShowExitWarning(true);
-    } else {
-      router.push(href);
-    }
-  };
-
-  const handleCopyFromWarning = async () => {
-    await handleCopyLinks();
-    setShowExitWarning(false);
-    if (pendingNavigation) {
-      router.push(pendingNavigation);
-    }
-  };
-
-  const handleEmailFromWarning = async () => {
-    await handleSendEmail();
-    setShowExitWarning(false);
-    if (pendingNavigation) {
-      router.push(pendingNavigation);
-    }
-  };
-
-  const handleProceedAnyway = () => {
-    setShowExitWarning(false);
-    if (pendingNavigation) {
-      router.push(pendingNavigation);
-    }
-  };
-
-  // Admin mode success page
-  if (isAdminMode) {
-    return (
-      <div className="page">
-        <Header 
-          session={{ user: { email: 'Admin User' } }} 
-          onLogout={handleLogout} 
-        />
-
-        <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
-          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-            
-            {/* Page Header */}
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'flex-start', 
-              marginBottom: '1.5rem' 
-            }}>
-              <div>
-                <h1 className="text-school-name" style={{ marginBottom: '0.5rem', fontSize: '1.8rem' }}>
-                  School Created Successfully!
-                </h1>
-                <p className="text-school-name" style={{ margin: 0 }}>
-                  Admin Dashboard - {registeredSchool?.schoolName}
-                </p>
-              </div>
-              
-              <div>
-                <Link 
-                  href="/admin/matching" 
-                  className="btn"
-                  onClick={(e) => handleNavigation(e, '/admin/matching')}
-                >
-                  ← Back to Admin Dashboard
-                </Link>
-              </div>
-            </div>
-
-            {/* Success Status Card */}
-            <div className="card" style={{ 
-              background: '#f8f9fa', 
-              borderLeft: '3px solid #28a745',
-              marginBottom: '1.5rem'
-            }}>
-              <div style={{ textAlign: 'center', padding: '1rem 0' }}>
-                <div style={{ 
-                  fontSize: '1.2rem', 
-                  fontWeight: '400', 
-                  color: '#333',
-                  marginBottom: '0.5rem'
-                }}>
-                  ✓ School successfully added to the system
-                </div>
-                <div className="text-meta-info">
-                  The teacher can now access their dashboard and begin registering students
-                </div>
-              </div>
-            </div>
-
-            {/* School Information Card */}
-            <div className="card" style={{ marginBottom: '1.5rem' }}>
-              <h3 style={{ 
-                color: '#333', 
-                fontSize: '1.2rem',
-                fontWeight: '400',
-                borderBottom: '1px solid #e9ecef', 
-                paddingBottom: '0.5rem', 
-                marginBottom: '1.5rem' 
-              }}>
-                School Information
-              </h3>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.5rem' }}>
-                <div className="data-cell">
-                  <div className="text-data-label">School Name</div>
-                  <div className="text-data-value">{registeredSchool?.schoolName}</div>
-                </div>
-                <div className="data-cell">
-                  <div className="text-data-label">Teacher Name</div>
-                  <div className="text-data-value">{registeredSchool?.teacherName || 'Not provided'}</div>
-                </div>
-                <div className="data-cell">
-                  <div className="text-data-label">Email Address</div>
-                  <div className="text-data-value">{registeredSchool?.teacherEmail}</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Generated Links Card */}
-            <div className="card" style={{ marginBottom: '1.5rem' }}>
-              <h3 style={{ 
-                color: '#333', 
-                fontSize: '1.2rem',
-                fontWeight: '400',
-                borderBottom: '1px solid #e9ecef', 
-                paddingBottom: '0.5rem', 
-                marginBottom: '1.5rem' 
-              }}>
-                Generated Links
-              </h3>
-              
-              <div style={{ marginBottom: '1.5rem' }}>
-                <div className="text-data-label" style={{ marginBottom: '0.5rem' }}>Teacher Dashboard</div>
-                <div style={{ 
-                  background: '#f8f9fa', 
-                  padding: '0.75rem', 
-                  borderRadius: '4px', 
-                  border: '1px solid #e9ecef',
-                  wordBreak: 'break-all',
-                  fontFamily: 'monospace',
-                  fontSize: '13px',
-                  color: '#555'
-                }}>
-                  {generateDashboardLink()}
-                </div>
-              </div>
-              
-              <div style={{ marginBottom: '1.5rem' }}>
-                <div className="text-data-label" style={{ marginBottom: '0.5rem' }}>Student Registration Link</div>
-                <div style={{ 
-                  background: '#f8f9fa', 
-                  padding: '0.75rem', 
-                  borderRadius: '4px', 
-                  border: '1px solid #e9ecef',
-                  wordBreak: 'break-all',
-                  fontFamily: 'monospace',
-                  fontSize: '13px',
-                  color: '#555'
-                }}>
-                  {generateStudentLink()}
-                </div>
-              </div>
-
-              {/* All 4 Action Buttons in One Container */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '1rem' }}>
-                <button 
-                  onClick={handleCopyLinks}
-                  className="btn"
-                >
-                  {linksCopyStatus === 'copied' ? '✓ Links Copied!' : 'Copy Both Links'}
-                </button>
-
-                <button 
-                  onClick={handleSendEmail}
-                  className="btn"
-                  disabled={emailStatus === 'sending'}
-                >
-                  {emailStatus === 'sending' ? (
-                    <>
-                      <span className="loading" style={{ marginRight: '0.5rem' }}></span>
-                      Sending...
-                    </>
-                  ) : emailStatus === 'sent' ? '✓ Email Sent!' :
-                     emailStatus === 'error' ? '✗ Send Failed' : 'Send Welcome Email'}
-                </button>
-
-                <Link 
-                  href="/register-school?admin=true"
-                  className="btn"
-                  style={{ textDecoration: 'none' }}
-                  onClick={(e) => handleNavigation(e, '/register-school?admin=true')}
-                >
-                  Add Another School
-                </Link>
-                
-                <Link 
-                  href="/admin/matching"
-                  className="btn"
-                  style={{ textDecoration: 'none' }}
-                  onClick={(e) => handleNavigation(e, '/admin/matching')}
-                >
-                  View All Schools
-                </Link>
-              </div>
-            </div>
-
-          </div>
-        </main>
-
-        {showExitWarning && (
-          <ExitWarningDialog
-            onCopyDashboardUrl={handleCopyFromWarning}
-            onSendEmail={handleEmailFromWarning}
-            onProceed={handleProceedAnyway}
-          />
-        )}
-
-        <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
-          <div className="container text-center">
-            <p>&copy; 2025 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
-          </div>
-        </footer>
-      </div>
-    );
-  }
 
   // Regular teacher success page
   return (
