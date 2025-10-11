@@ -30,8 +30,8 @@ export default function MagicLinkEmail({
       <Head />
       <Preview>
         {isNewUser 
-          ? 'Verify your email to get started with Right Back at You'
-          : 'Your login link for Right Back at You'
+          ? 'Verify your email to get started with The Right Back at You Project'
+          : 'Your login link for The Right Back at You Project'
         }
       </Preview>
       <Body style={main}>
@@ -51,7 +51,7 @@ export default function MagicLinkEmail({
             // New User Email Content
             <>
               <Text style={text}>
-                Thank you for your interest in the Right Back at You pen pal program! We're excited to help you connect your students with pen pals from distant schools through our literature-based program.
+                Thank you for your interest in The Right Back at You Project! We're excited to help you connect your students with pen pals from distant schools through our literature-based program.
               </Text>
 
               <Text style={text}>
@@ -86,7 +86,7 @@ export default function MagicLinkEmail({
             // Existing Teacher Email Content
             <>
               <Text style={text}>
-                Here's your secure login link to access your Right Back at You teacher dashboard:
+                Here's your secure login link to access your teacher dashboard:
               </Text>
 
               <Section style={buttonContainer}>
