@@ -50,54 +50,57 @@ export default function AdminLogin() {
         display: 'flex', 
         justifyContent: 'center', 
         alignItems: 'center',
-        paddingTop: '2rem',
-        paddingBottom: '2rem'
+        paddingTop: '3rem',
+        paddingBottom: '3rem'
       }}>
-        <div style={{
-          background: '#fff',
-          border: '1px solid #e0e6ed',
-          borderRadius: '12px',
-          padding: '2.5rem',
+        <div className="card" style={{
           width: '100%',
-          maxWidth: '400px',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+          maxWidth: '500px'
         }}>
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <h1 style={{ 
               color: '#2c5aa0', 
               fontSize: '1.8rem', 
-              marginBottom: '0.5rem',
-              fontWeight: 'bold'
+              marginBottom: '0.75rem',
+              fontWeight: 300
             }}>
               Administrator Login
             </h1>
-            <p style={{ color: '#6c757d', fontSize: '0.9rem' }}>
+            <p style={{ 
+              color: '#666', 
+              fontSize: '0.95rem',
+              fontWeight: 300
+            }}>
               Access the admin dashboard
             </p>
           </div>
 
           {error && (
-            <div style={{
-              background: '#fee',
-              border: '1px solid #fcc',
-              borderRadius: '6px',
-              padding: '0.75rem',
-              marginBottom: '1.5rem',
-              color: '#c33',
-              fontSize: '0.9rem'
-            }}>
-              {error}
+            <div className="alert alert-error" style={{ marginBottom: '1.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                <div style={{ flexShrink: 0, marginRight: '0.75rem' }}>
+                  <svg 
+                    style={{ height: '20px', width: '20px', color: '#c53030' }} 
+                    viewBox="0 0 20 20" 
+                    fill="currentColor"
+                  >
+                    <path 
+                      fillRule="evenodd" 
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" 
+                      clipRule="evenodd" 
+                    />
+                  </svg>
+                </div>
+                <div style={{ fontWeight: 300, fontSize: '0.9rem' }}>
+                  {error}
+                </div>
+              </div>
             </div>
           )}
 
           <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{
-                display: 'block',
-                marginBottom: '0.5rem',
-                fontWeight: '600',
-                color: '#374151'
-              }}>
+            <div className="form-group">
+              <label className="form-label" style={{ fontWeight: 300 }}>
                 Email Address
               </label>
               <input
@@ -105,26 +108,14 @@ export default function AdminLogin() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '6px',
-                  fontSize: '1rem',
-                  boxSizing: 'border-box'
-                }}
+                className="form-input"
                 placeholder="admin@example.com"
                 disabled={isLoading}
               />
             </div>
 
-            <div style={{ marginBottom: '2rem' }}>
-              <label style={{
-                display: 'block',
-                marginBottom: '0.5rem',
-                fontWeight: '600',
-                color: '#374151'
-              }}>
+            <div className="form-group">
+              <label className="form-label" style={{ fontWeight: 300 }}>
                 Password
               </label>
               <input
@@ -132,58 +123,36 @@ export default function AdminLogin() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '6px',
-                  fontSize: '1rem',
-                  boxSizing: 'border-box'
-                }}
+                className="form-input"
                 placeholder="Enter your password"
                 disabled={isLoading}
               />
             </div>
 
-            <button
-              type="submit"
-              disabled={isLoading}
-              style={{
-                width: '100%',
-                backgroundColor: isLoading ? '#9ca3af' : '#2c5aa0',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                padding: '0.875rem',
-                fontSize: '1rem',
-                fontWeight: '600',
-                cursor: isLoading ? 'not-allowed' : 'pointer',
-                transition: 'background-color 0.2s'
-              }}
-              onMouseOver={(e) => {
-                if (!isLoading) {
-                  e.currentTarget.style.backgroundColor = '#1e3a8a';
-                }
-              }}
-              onMouseOut={(e) => {
-                if (!isLoading) {
-                  e.currentTarget.style.backgroundColor = '#2c5aa0';
-                }
-              }}
-            >
-              {isLoading ? 'Signing In...' : 'Sign In'}
-            </button>
+            <div style={{ textAlign: 'center' }}>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="btn-blue"
+                style={{ 
+                  width: '100%'
+                }}
+              >
+                {isLoading ? 'Signing In...' : 'Sign In'}
+              </button>
+            </div>
           </form>
 
           <div style={{ 
             textAlign: 'center', 
-            marginTop: '1.5rem',
+            marginTop: '2rem',
             paddingTop: '1.5rem',
-            borderTop: '1px solid #e5e7eb'
+            borderTop: '1px solid #e9ecef'
           }}>
             <p style={{ 
-              color: '#6b7280', 
-              fontSize: '0.85rem'
+              color: '#666', 
+              fontSize: '0.875rem',
+              fontWeight: 300
             }}>
               Contact the system administrator if you need access
             </p>
