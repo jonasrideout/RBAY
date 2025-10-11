@@ -17,6 +17,9 @@ interface Penpal {
   name: string;
   grade: string;
   school: string;
+  city?: string | null;
+  state?: string | null;
+  schoolGroupId?: string | null;
   teacherName?: string;
   interests: string[];
   otherInterests: string | null;
@@ -48,17 +51,18 @@ interface PenPalData {
   generatedAt: string;
 }
 
-// Group students by their pen pal's teacher
-interface TeacherGroup {
-  teacherName: string;
-  schoolName: string;
-  consolidatedStudents: {
-    studentName: string;
-    studentInterests: string;
-    penpals: {
-      name: string;
-      interests: string;
-    }[];
+// Consolidate students globally with all their pen pals
+interface ConsolidatedStudent {
+  studentName: string;
+  studentInterests: string;
+  penpals: {
+    name: string;
+    school: string;
+    city?: string | null;
+    state?: string | null;
+    schoolGroupId?: string | null;
+    teacherName?: string;
+    interests: string;
   }[];
 }
 
@@ -116,75 +120,41 @@ function PenPalListContent() {
     return parts.length > 0 ? parts.join(', ') : 'No interests listed';
   };
 
-  // Organize students by teacher, consolidate duplicates, and sort
-  const organizeByTeacher = (): TeacherGroup[] => {
+  // Consolidate all students globally and sort alphabetically
+  const consolidateStudents = (): ConsolidatedStudent[] => {
     if (!data) return [];
 
-    const teacherMap = new Map<string, {
-      teacherName: string;
-      schoolName: string;
-      students: {
-        studentName: string;
-        studentInterests: string;
-        penpalName: string;
-        penpalInterests: string;
-      }[];
-    }>();
+    const studentMap = new Map<string, ConsolidatedStudent>();
 
     data.pairings.forEach(pairing => {
-      pairing.penpals.forEach(penpal => {
-        const key = `${penpal.teacherName || 'Unknown Teacher'}_${penpal.school}`;
-        
-        if (!teacherMap.has(key)) {
-          teacherMap.set(key, {
-            teacherName: penpal.teacherName || 'Unknown Teacher',
-            schoolName: penpal.school,
-            students: []
-          });
-        }
+      const studentName = pairing.student.name;
+      const studentInterests = formatInterests(pairing.student.interests, pairing.student.otherInterests);
+      
+      if (!studentMap.has(studentName)) {
+        studentMap.set(studentName, {
+          studentName,
+          studentInterests,
+          penpals: []
+        });
+      }
 
-        teacherMap.get(key)!.students.push({
-          studentName: pairing.student.name,
-          studentInterests: formatInterests(pairing.student.interests, pairing.student.otherInterests),
-          penpalName: penpal.name,
-          penpalInterests: formatInterests(penpal.interests, penpal.otherInterests)
+      // Add all pen pals for this student
+      pairing.penpals.forEach(penpal => {
+        studentMap.get(studentName)!.penpals.push({
+          name: penpal.name,
+          school: penpal.school,
+          city: penpal.city,
+          state: penpal.state,
+          schoolGroupId: penpal.schoolGroupId,
+          teacherName: penpal.teacherName,
+          interests: formatInterests(penpal.interests, penpal.otherInterests)
         });
       });
     });
 
-    // Convert to array and consolidate + sort students
-    return Array.from(teacherMap.values()).map(group => {
-      // Group students by name
-      const studentMap = new Map<string, {
-        studentName: string;
-        studentInterests: string;
-        penpals: { name: string; interests: string }[];
-      }>();
-
-      group.students.forEach(student => {
-        if (!studentMap.has(student.studentName)) {
-          studentMap.set(student.studentName, {
-            studentName: student.studentName,
-            studentInterests: student.studentInterests,
-            penpals: []
-          });
-        }
-        studentMap.get(student.studentName)!.penpals.push({
-          name: student.penpalName,
-          interests: student.penpalInterests
-        });
-      });
-
-      // Convert to array and sort by first name
-      const consolidatedStudents = Array.from(studentMap.values()).sort((a, b) => {
-        return a.studentName.localeCompare(b.studentName);
-      });
-
-      return {
-        teacherName: group.teacherName,
-        schoolName: group.schoolName,
-        consolidatedStudents
-      };
+    // Convert to array and sort alphabetically by student name
+    return Array.from(studentMap.values()).sort((a, b) => {
+      return a.studentName.localeCompare(b.studentName);
     });
   };
 
@@ -225,7 +195,7 @@ function PenPalListContent() {
     );
   }
 
-  const teacherGroups = organizeByTeacher();
+  const consolidatedStudents = consolidateStudents();
 
   return (
     <div className="page">
@@ -316,70 +286,83 @@ function PenPalListContent() {
             </h2>
           </div>
 
-          {/* Student listings organized by teacher */}
-          {teacherGroups.map((group, groupIndex) => (
-            <div key={groupIndex} style={{ marginBottom: '3rem' }}>
-              {/* Section header */}
-              <h3 style={{
-                fontSize: '1.1rem',
-                fontWeight: '300',
-                margin: '0 0 1.5rem 0',
-                color: '#2c5aa0',
-                fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+          {/* Student listings - consolidated and sorted alphabetically */}
+          {consolidatedStudents.map((student, studentIndex) => (
+            <div key={studentIndex} style={{ position: 'relative' }}>
+              {/* Cut line with scissors */}
+              <div style={{
+                borderTop: '2px dashed #ccc',
+                position: 'relative',
+                marginBottom: '1rem'
               }}>
-                Students paired with {group.teacherName}, {group.schoolName}
-              </h3>
+                <span style={{
+                  position: 'absolute',
+                  right: '0',
+                  top: '-12px',
+                  fontSize: '1.2rem'
+                }}>
+                  ✂️
+                </span>
+              </div>
 
-              {/* Students in this group */}
-              {group.consolidatedStudents.map((student, studentIndex) => (
-                <div key={studentIndex}>
-                  {/* Cut line with scissors on right */}
-                  <div style={{
-                    borderTop: '2px dashed #ccc',
-                    position: 'relative',
-                    marginBottom: '1rem'
-                  }}>
-                    <span style={{
-                      position: 'absolute',
-                      right: '0',
-                      top: '-12px',
-                      fontSize: '1.2rem'
-                    }}>
-                      ✂️
-                    </span>
-                  </div>
+              {/* Student slip with branding */}
+              <div style={{
+                position: 'relative',
+                paddingTop: '0.75rem',
+                paddingBottom: '1.25rem',
+                paddingLeft: '0.5rem',
+                paddingRight: '0.5rem',
+                fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                fontWeight: '300',
+                lineHeight: '1.6'
+              }}>
+                {/* Branding image - positioned on right, vertically centered */}
+                <img 
+                  src="/slip-branding.png" 
+                  alt="The Right Back at You Project" 
+                  style={{
+                    position: 'absolute',
+                    right: '0.25in',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    height: '80px'
+                  }}
+                />
 
-                  {/* Student entry with padding */}
-                  <div style={{
-                    paddingTop: '0.75rem',
-                    paddingBottom: '1.25rem',
-                    paddingLeft: '0.5rem',
-                    paddingRight: '0.5rem',
-                    fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                    fontWeight: '300',
-                    lineHeight: '1.6'
-                  }}>
-                    <div style={{ marginBottom: '0.5rem' }}>
-                      {student.studentName}  Interests: {student.studentInterests}
-                    </div>
-                    <div style={{
-                      marginLeft: '1rem',
-                      color: '#4a5568'
-                    }}>
-                      {student.penpals.map((penpal, penpalIndex) => (
-                        <div key={penpalIndex} style={{ marginBottom: penpalIndex < student.penpals.length - 1 ? '0.5rem' : '0' }}>
-                          <div style={{ marginBottom: '0.25rem' }}>
-                            → Matched with {penpal.name} - {group.teacherName}'s class
-                          </div>
-                          <div style={{ marginLeft: '1rem' }}>
-                            Interests: {penpal.interests}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                {/* Student info */}
+                <div style={{ marginBottom: '0.5rem' }}>
+                  {student.studentName} Interests: {student.studentInterests}
                 </div>
-              ))}
+                <div style={{
+                  marginLeft: '1rem',
+                  color: '#4a5568'
+                }}>
+                  {student.penpals.map((penpal, penpalIndex) => {
+                    // Build location string
+                    const locationParts = [];
+                    if (penpal.school) locationParts.push(penpal.school);
+                    if (penpal.city) locationParts.push(penpal.city);
+                    if (penpal.state) locationParts.push(penpal.state);
+                    const location = locationParts.join(', ');
+                    
+                    // Only add teacher info if pen pal's school is part of a group
+                    const teacherInfo = (penpal.schoolGroupId && penpal.teacherName) 
+                      ? ` | ${penpal.teacherName}'s class` 
+                      : '';
+                    
+                    return (
+                      <div key={penpalIndex} style={{ marginBottom: penpalIndex < student.penpals.length - 1 ? '0.5rem' : '0' }}>
+                        <div style={{ marginBottom: '0.25rem' }}>
+                          → Matched with {penpal.name} - {location}{teacherInfo}
+                        </div>
+                        <div style={{ marginLeft: '1rem' }}>
+                          Interests: {penpal.interests}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           ))}
 
