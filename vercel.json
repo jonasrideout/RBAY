@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/admin/backup-database",
-      "schedule": "0 7,19 * * *"
+      "schedule": "0 7 * * *"
     }
   ]
 }
