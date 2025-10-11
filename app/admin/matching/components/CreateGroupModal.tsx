@@ -289,7 +289,7 @@ export default function CreateGroupModal({
                   color: '#495057',
                   marginBottom: '8px'
                 }}>
-                  Group Name
+                  Group Name (this appears on the Pen Pal list)
                 </label>
                 <input
                   type="text"
