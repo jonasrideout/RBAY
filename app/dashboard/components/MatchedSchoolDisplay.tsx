@@ -24,6 +24,8 @@ interface MatchedSchoolDisplayProps {
   matchedSchoolTeacher?: string;
   matchedSchoolEmail?: string;
   matchedSchoolRegion?: string;
+  isGroup?: boolean;
+  schools?: Array<{ id: string; schoolName: string; teacherName: string; teacherEmail: string; communicationPlatforms?: any; }>;
 }
 
 export default function MatchedSchoolDisplay({ 
@@ -31,7 +33,10 @@ export default function MatchedSchoolDisplay({
   matchedSchoolName,
   matchedSchoolTeacher,
   matchedSchoolEmail,
-  matchedSchoolRegion
+  matchedSchoolRegion,
+  isGroup,
+  schools
+  
 }: MatchedSchoolDisplayProps) {
   const [emailCopyText, setEmailCopyText] = useState('✉');
   const [hasStudentPairings, setHasStudentPairings] = useState(false);
