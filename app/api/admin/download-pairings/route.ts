@@ -10,6 +10,7 @@ interface PenpalData {
   school: string | undefined;
   city: string | null | undefined;
   state: string | null | undefined;
+  schoolGroupId: string | null | undefined;
   teacherName: string | undefined;
   interests: string[];
   otherInterests: string | null;
@@ -80,6 +81,7 @@ export async function GET(request: NextRequest) {
             school: connection.penpal.school?.schoolName,
             city: connection.penpal.school?.schoolCity,
             state: connection.penpal.school?.schoolState,
+            schoolGroupId: connection.penpal.school?.schoolGroupId,
             teacherName: connection.penpal.school?.teacherName,
             interests: connection.penpal.interests,
             otherInterests: connection.penpal.otherInterests
@@ -96,6 +98,7 @@ export async function GET(request: NextRequest) {
             school: connection.student.school?.schoolName,
             city: connection.student.school?.schoolCity,
             state: connection.student.school?.schoolState,
+            schoolGroupId: connection.student.school?.schoolGroupId,
             teacherName: connection.student.school?.teacherName,
             interests: connection.student.interests,
             otherInterests: connection.student.otherInterests
