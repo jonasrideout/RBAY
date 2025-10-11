@@ -200,21 +200,21 @@ export default function AdminDashboard() {
 
   const handleUnmatchUnits = async (unit1: MatchableUnit, unit2: MatchableUnit) => {
     try {
-      let unmatchId: string;
+      const body: any = {};
       
       if (isSchool(unit1)) {
-        unmatchId = unit1.id;
+        body.schoolId = unit1.id;
       } else if (isSchool(unit2)) {
-        unmatchId = unit2.id;
+        body.schoolId = unit2.id;
       } else {
-        alert('Group unmatching not yet implemented');
-        return;
+        // Both are groups - unmatch the first one
+        body.groupId = unit1.id;
       }
 
       const response = await fetch(`/api/admin/unmatch-schools?t=${Date.now()}&r=${Math.random()}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ schoolId: unmatchId })
+        body: JSON.stringify(body)
       });
 
       if (!response.ok) {
