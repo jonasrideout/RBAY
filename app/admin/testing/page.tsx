@@ -73,6 +73,41 @@ export default function AdminTestingPage() {
     }
   };
 
+  const handleBackupDatabase = async () => {
+    if (!confirm('Download database backup? This will create a JSON file with all current data.')) {
+      return;
+    }
+    
+    try {
+      const response = await fetch('/api/admin/backup-database');
+      
+      if (!response.ok) {
+        throw new Error('Backup failed');
+      }
+      
+      const backup = await response.json();
+      
+      // Create downloadable file
+      const dataStr = JSON.stringify(backup, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+      
+      // Trigger download
+      const link = document.createElement('a');
+      link.href = url;
+      const timestamp = new Date().toISOString().split('T')[0];
+      link.download = `penpal-backup-${timestamp}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      alert(`Backup downloaded successfully!\n\nSchools: ${backup.summary.schools}\nGroups: ${backup.summary.groups}\nStudents: ${backup.summary.students}\nPen Pals: ${backup.summary.penpals}`);
+    } catch (error) {
+      alert('Failed to create backup: ' + (error instanceof Error ? error.message : 'Unknown error'));
+    }
+  };
+
   return (
     <div className="page">
       <Header 
@@ -96,6 +131,35 @@ export default function AdminTestingPage() {
           <h2 style={{ marginBottom: '1.5rem', fontSize: '1.4rem' }}>Database Operations</h2>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ 
+              padding: '1.5rem', 
+              border: '1px solid #28a745', 
+              borderRadius: '8px',
+              backgroundColor: '#f0f9f4'
+            }}>
+              <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: '#28a745' }}>
+                Download Database Backup
+              </h3>
+              <p style={{ marginBottom: '1rem', color: '#666', fontSize: '14px' }}>
+                Creates a complete backup of all schools, students, groups, and pen pal assignments. Download this before making risky changes to the database.
+              </p>
+              <button 
+                onClick={handleBackupDatabase}
+                style={{
+                  padding: '12px 24px',
+                  backgroundColor: '#28a745',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  fontWeight: '300'
+                }}
+              >
+                📥 Download Database Backup
+              </button>
+            </div>
+
             <div style={{ 
               padding: '1.5rem', 
               border: '1px solid #e0e0e0', 
