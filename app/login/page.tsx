@@ -98,17 +98,30 @@ function LoginContent() {
     return (
       <div className="page">
         <Header showLogin={false} />
-        <main className="container" style={{ flex: 1, paddingTop: '2rem' }}>
+        <main className="container" style={{ flex: 1, paddingTop: '3rem', paddingBottom: '3rem' }}>
           <div className="card" style={{ 
-            maxWidth: '550px', 
-            margin: '0 auto',
-            textAlign: 'center' 
+            maxWidth: '600px', 
+            margin: '0 auto'
           }}>
-            <h1 className="text-h2" style={{ marginBottom: '1rem' }}>
+            <h1 style={{ 
+              fontSize: '1.8rem',
+              fontWeight: 300,
+              color: '#2c5aa0',
+              marginBottom: '1.5rem',
+              textAlign: 'center',
+              lineHeight: 1.3
+            }}>
               Welcome to The Right Back at You Project!
             </h1>
             
-            <p className="text-meta-info" style={{ marginBottom: '2rem', lineHeight: '1.6' }}>
+            <p style={{ 
+              fontSize: '1rem',
+              fontWeight: 300,
+              color: '#555',
+              marginBottom: '2rem',
+              lineHeight: 1.6,
+              textAlign: 'center'
+            }}>
               We'd love to have you join our pen-pal program! To get started, we need to verify your email address.
             </p>
 
@@ -123,10 +136,10 @@ function LoginContent() {
                   </svg>
                 </div>
                 <div>
-                  <div style={{ fontWeight: '500', marginBottom: '0.5rem' }}>
-                    Email to verify: <strong>{verificationEmail}</strong>
+                  <div style={{ fontWeight: 300, marginBottom: '0.5rem', color: '#555' }}>
+                    Email to verify: <strong style={{ fontWeight: 500 }}>{verificationEmail}</strong>
                   </div>
-                  <div style={{ fontSize: '0.875rem' }}>
+                  <div style={{ fontSize: '0.875rem', fontWeight: 300, color: '#666' }}>
                     After verification, you'll be guided through school registration to join the program.
                   </div>
                 </div>
@@ -136,15 +149,10 @@ function LoginContent() {
             <div style={{ marginBottom: '2rem' }}>
               <button
                 onClick={handleVerifyEmail}
-                className="btn"
+                className="btn-blue"
                 style={{ 
                   width: '100%',
-                  padding: '0.875rem',
-                  marginBottom: '1rem',
-                  backgroundColor: '#2c5aa0',
-                  color: 'white',
-                  border: '1px solid #2c5aa0',
-                  fontWeight: '500'
+                  marginBottom: '1rem'
                 }}
               >
                 Verify Email Address
@@ -156,8 +164,17 @@ function LoginContent() {
                   setEmail('');
                   setVerificationEmail('');
                 }}
-                className="nav-link"
-                style={{ background: 'none', border: 'none' }}
+                style={{ 
+                  background: 'none', 
+                  border: 'none',
+                  color: '#2c5aa0',
+                  cursor: 'pointer',
+                  fontSize: '0.95rem',
+                  fontWeight: 300,
+                  textDecoration: 'underline',
+                  display: 'block',
+                  margin: '0 auto'
+                }}
               >
                 Use a different email address
               </button>
@@ -165,11 +182,20 @@ function LoginContent() {
 
             <div style={{ 
               borderTop: '1px solid #e9ecef',
-              paddingTop: '1.5rem'
+              paddingTop: '1.5rem',
+              textAlign: 'center'
             }}>
-              <a href="/" className="nav-link">
+              <Link 
+                href="/" 
+                style={{
+                  color: '#2c5aa0',
+                  textDecoration: 'none',
+                  fontSize: '0.95rem',
+                  fontWeight: 300
+                }}
+              >
                 ← Back to Home
-              </a>
+              </Link>
             </div>
           </div>
         </main>
@@ -181,53 +207,59 @@ function LoginContent() {
     return (
       <div className="page">
         <Header showLogin={false} />
-        <main className="container" style={{ flex: 1, paddingTop: '2rem' }}>
+        <main className="container" style={{ flex: 1, paddingTop: '3rem', paddingBottom: '3rem' }}>
           <div className="card" style={{ 
-            maxWidth: '550px', 
+            maxWidth: '600px', 
             margin: '0 auto'
           }}>
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
               <h1 style={{ 
-                fontSize: '2rem',
-                fontWeight: 700,
+                fontSize: '1.8rem',
+                fontWeight: 300,
                 color: '#2c5aa0',
-                marginBottom: '0.5rem',
-                lineHeight: '1.2'
+                marginBottom: '1.5rem',
+                lineHeight: 1.3
               }}>
-                Welcome to<br />The Right Back At You Project
+                Welcome to The Right Back At You Project
               </h1>
               
-              <p className="text-normal" style={{ marginBottom: '2rem', lineHeight: '1.6' }}>
+              <p style={{ 
+                fontSize: '1rem',
+                fontWeight: 300,
+                color: '#555',
+                marginBottom: '1.5rem',
+                lineHeight: 1.6
+              }}>
                 Check your email for a secure link to register your class.
               </p>
 
-              <p className="text-meta-info" style={{ marginBottom: '2rem' }}>
+              <p style={{ 
+                fontSize: '0.9rem',
+                fontWeight: 300,
+                color: '#666',
+                marginBottom: '2rem'
+              }}>
                 The login link expires in 30 minutes for your security.
               </p>
             </div>
 
-            <div style={{ marginBottom: '2rem' }}>
+            <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
               <button
                 onClick={handleNewLink}
-                  className="btn"
-                  style={{ 
-                    width: 'auto',
-                    padding: '0.875rem 2rem',
-                    fontSize: '1rem',
-                    backgroundColor: 'transparent',
-                    color: '#2c5aa0',
-                    border: '2px solid #2c5aa0',
-                    fontWeight: '500',
-                    boxShadow: '0 4px 6px rgba(44, 90, 160, 0.2)',
-                    margin: '0 auto',
-                    display: 'block'
+                className="btn-blue"
+                style={{ 
+                  width: 'auto',
+                  display: 'inline-flex'
                 }}
               >
                 Send another login link
               </button>
             </div>
 
-            <p className="text-meta-info" style={{ 
+            <p style={{ 
+              fontSize: '0.9rem',
+              fontWeight: 300,
+              color: '#666',
               marginBottom: '1.5rem',
               textAlign: 'center'
             }}>
@@ -239,9 +271,17 @@ function LoginContent() {
               paddingTop: '1.5rem',
               textAlign: 'center'
             }}>
-              <a href="/" className="nav-link">
+              <Link 
+                href="/" 
+                style={{
+                  color: '#2c5aa0',
+                  textDecoration: 'none',
+                  fontSize: '0.95rem',
+                  fontWeight: 300
+                }}
+              >
                 ← Back to Home
-              </a>
+              </Link>
             </div>
           </div>
         </main>
@@ -253,20 +293,24 @@ function LoginContent() {
     <div className="page">
       <Header showLogin={false} />
 
-      <main className="container" style={{ flex: 1, paddingTop: '2rem' }}>
-        <div className="card" style={{ maxWidth: '550px', margin: '0 auto' }}>
+      <main className="container" style={{ flex: 1, paddingTop: '3rem', paddingBottom: '3rem' }}>
+        <div className="card" style={{ maxWidth: '600px', margin: '0 auto' }}>
           {/* Title */}
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <h1 style={{ 
-              fontSize: '2rem',
-              fontWeight: 700,
+              fontSize: '1.8rem',
+              fontWeight: 300,
               color: '#2c5aa0',
-              marginBottom: '0.5rem',
-              lineHeight: '1.2'
+              marginBottom: '1rem',
+              lineHeight: 1.3
             }}>
-              Welcome to the<br />Right Back At You Project
+              Welcome to the Right Back At You Project
             </h1>
-            <p className="text-meta-info">
+            <p style={{ 
+              fontSize: '0.95rem',
+              fontWeight: 300,
+              color: '#666'
+            }}>
               Enter your email to receive a secure link to register your class.
             </p>
           </div>
@@ -289,10 +333,19 @@ function LoginContent() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-normal" style={{ color: '#c53030', margin: '0 0 0.25rem 0' }}>
+                  <h3 style={{ 
+                    fontSize: '0.95rem',
+                    fontWeight: 500,
+                    color: '#c53030', 
+                    margin: '0 0 0.25rem 0' 
+                  }}>
                     Sign-in Error
                   </h3>
-                  <div style={{ color: '#721c24' }}>
+                  <div style={{ 
+                    fontSize: '0.9rem',
+                    fontWeight: 300,
+                    color: '#721c24' 
+                  }}>
                     {error}
                   </div>
                 </div>
@@ -303,7 +356,7 @@ function LoginContent() {
           {/* Magic Link Form */}
           <form onSubmit={handleSendMagicLink}>
             <div className="form-group">
-              <label htmlFor="email" className="form-label">
+              <label htmlFor="email" className="form-label" style={{ fontWeight: 300 }}>
                 Email Address
               </label>
               <input
@@ -318,44 +371,46 @@ function LoginContent() {
               />
             </div>
 
-            <button
-              type="submit"
-              disabled={isLoading || !email.trim()}
-              className="btn"
-              style={{ 
-                width: 'auto',
-                padding: '0.875rem 2rem',
-                fontSize: '1rem',
-                backgroundColor: 'transparent',
-                color: '#2c5aa0',
-                border: '2px solid #2c5aa0',
-                fontWeight: '500',
-                boxShadow: '0 4px 6px rgba(44, 90, 160, 0.2)',
-                margin: '0 auto',
-                display: 'block'
-              }}
-            >
-              {isLoading ? (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <div className="loading" style={{ marginRight: '0.75rem' }}></div>
-                  Sending Login Link...
-                </div>
-              ) : (
-                'Send Login Link'
-              )}
-            </button>
+            <div style={{ textAlign: 'center' }}>
+              <button
+                type="submit"
+                disabled={isLoading || !email.trim()}
+                className="btn-blue"
+                style={{ 
+                  width: 'auto',
+                  display: 'inline-flex'
+                }}
+              >
+                {isLoading ? (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div className="loading" style={{ marginRight: '0.75rem' }}></div>
+                    Sending Login Link...
+                  </div>
+                ) : (
+                  'Send Login Link'
+                )}
+              </button>
+            </div>
           </form>
 
           {/* Back to Home */}
           <div style={{ 
-            marginTop: '1.5rem', 
+            marginTop: '2rem', 
             textAlign: 'center',
             borderTop: '1px solid #e9ecef',
             paddingTop: '1.5rem'
           }}>
-            <a href="/" className="nav-link">
+            <Link 
+              href="/" 
+              style={{
+                color: '#2c5aa0',
+                textDecoration: 'none',
+                fontSize: '0.95rem',
+                fontWeight: 300
+              }}
+            >
               ← Back to Home
-            </a>
+            </Link>
           </div>
         </div>
       </main>
