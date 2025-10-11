@@ -76,20 +76,6 @@ export default function WelcomeEmail({
                 • Track your class's readiness for matching<br />
                 • Access program resources and materials
               </Text>
-
-              <Text style={text}>
-                <strong>Student Registration Link:</strong>
-              </Text>
-              
-              <Text style={text}>
-                Once your profile is complete, share this link with your students:
-              </Text>
-              
-              <Section style={linkBox}>
-                <Link href={studentRegistrationUrl} style={linkText}>
-                  {studentRegistrationUrl}
-                </Link>
-              </Section>
             </>
           ) : (
             // Self-registered school email content
