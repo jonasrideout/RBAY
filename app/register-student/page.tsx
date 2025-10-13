@@ -249,7 +249,15 @@ function RegisterStudentForm() {
         });
         setCurrentStep('schoolConfirm');
       } else {
-        setError('No school found with that name, teacher name, or email');
+        // Show the school info but with a "not found" state
+        setFoundSchoolInfo({
+          name: actualSchoolName,
+          teacher: teacherName,
+          found: false,
+          schoolId: data.school.id,
+          teacherEmail: teacherEmail
+        });
+        setCurrentStep('schoolConfirm');
       }
     } catch (err: any) {
       setError(err.message || 'Invalid registration link. Please check with your teacher for the correct link.');
@@ -414,19 +422,6 @@ function RegisterStudentForm() {
               />
             )}
           </>
-        )}
-
-        {/* Help section - only show when not in success or error state */}
-        {!error && currentStep !== 'success' && (
-          <div className="card mt-3" style={{ background: '#f8f9fa' }}>
-            <h3>Questions?</h3>
-            <p style={{ marginBottom: '1rem' }}>
-              If you need help or have questions about the project, ask your teacher or contact us:
-            </p>
-            <p style={{ marginBottom: '0' }}>
-              <strong>Email:</strong> <a href="mailto:carolyn.mackler@gmail.com" style={{ color: '#4a90e2' }}>carolyn.mackler@gmail.com</a>
-            </p>
-          </div>
         )}
       </main>
 
