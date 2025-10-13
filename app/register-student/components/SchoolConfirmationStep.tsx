@@ -22,7 +22,7 @@ export default function SchoolConfirmationStep({
     <div className="card">
       {isMatch ? (
         <>
-          <h1 className="text-h2 text-center text-light">Is this your school?</h1>
+          <h1 className="text-h2 text-center" style={{ fontWeight: 300 }}>Is this your school?</h1>
           
           <div style={{ 
             background: '#f0f8ff', 
@@ -73,7 +73,9 @@ export default function SchoolConfirmationStep({
         </>
       ) : (
         <>
-          <h1 className="text-h2 text-center">I can't find a school that matches the information you entered.</h1>
+          <h1 className="text-h2 text-center" style={{ fontWeight: 300 }}>
+          I can't find a school that matches the information you entered.
+          </h1>
           
           <div style={{ textAlign: 'center', marginTop: '2rem' }}>
             <button 
