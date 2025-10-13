@@ -22,7 +22,7 @@ export default function SchoolConfirmationStep({
     <div className="card">
       {isMatch ? (
         <>
-          <h1 className="text-h2 text-center">Is this your school?</h1>
+          <h1 className="text-h2 text-center text-light">Is this your school?</h1>
           
           <div style={{ 
             background: '#f0f8ff', 
