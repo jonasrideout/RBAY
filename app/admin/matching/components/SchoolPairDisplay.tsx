@@ -43,14 +43,14 @@ export default function SchoolPairDisplay({
     window.open(url, '_blank');
   };
 
-  const copyDashboardUrl = async (school: { dashboardToken: string; id?: string }, isFirst: boolean) => {
+  const copyDashboardUrl = async (school: { dashboardToken: string; id?: string }, isFirst: boolean, isGroupSchool: boolean = false) => {
     const url = getDashboardUrl(school);
     try {
       await navigator.clipboard.writeText(url);
       if (isFirst) {
         setCopyButtonText1('Copied');
         setTimeout(() => setCopyButtonText1('Copy URL'), 2000);
-      } else if (school.id) {
+      } else if (isGroupSchool && school.id) {
         // For group schools, use school-specific state
         setUrlCopyStates(prev => ({ ...prev, [school.id!]: 'Copied' }));
         setTimeout(() => {
@@ -63,6 +63,8 @@ export default function SchoolPairDisplay({
     } catch (err) {
       console.error('Failed to copy URL:', err);
       prompt('Copy this URL:', url);
+    }
+  };
     }
   };
 
@@ -463,7 +465,7 @@ export default function SchoolPairDisplay({
                   </button>
 
                   <button
-                     onClick={() => copyDashboardUrl(school, false)}
+                     onClick={() => copyDashboardUrl(school, false, true)}
                     style={{
                       background: 'white',
                       border: '1px solid #ddd',
