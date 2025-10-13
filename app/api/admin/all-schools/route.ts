@@ -51,6 +51,7 @@ export async function GET() {
                 schoolName: true,
                 teacherName: true,
                 teacherEmail: true,
+                dashboardToken: true,
                 gradeLevel: true,
                 specialConsiderations: true,
                 communicationPlatforms: true,
