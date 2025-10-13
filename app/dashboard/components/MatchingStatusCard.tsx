@@ -367,7 +367,8 @@ export default function MatchingStatusCard({
               : isAdminView
               ? 'This school is ready for pen pal pairing and is waiting for a partner school.'
               : isMatched && schoolData.matchedSchool
-              ? `Ready for pen pals. When ${schoolData.matchedSchool.schoolName} is done collecting student data, pen pals will be paired.`
+              ? `Ready for pen pals. When ${schoolData.matchedSchool.schoolName} is done collecting student data, pen pals will be paired and we will notify you via email.
+.`
               : isMatched
               ? 'Ready for pen pals. When your partner school is done collecting student data, pen pals will be paired.'
               : 'Waiting for partner school. We will email you when matching is complete.'
