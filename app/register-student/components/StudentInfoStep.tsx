@@ -50,7 +50,7 @@ export default function StudentInfoStep({
         <h4 style={{ color: '#495057', marginBottom: '0.5rem' }}>
           {isTeacherFlow ? 'Adding Student to:' : 'Your School:'}
         </h4>
-        <p style={{ fontSize: '1.1rem', fontWeight: '600', color: '#2c5aa0', marginBottom: '0.25rem' }}>
+        <p style={{ fontSize: '1.1rem', fontWeight: '300', color: '#2c5aa0', marginBottom: '0.25rem' }}>
           {schoolInfo?.name}
         </p>
         <p style={{ color: '#6c757d', marginBottom: '0', fontSize: '0.95rem' }}>
@@ -58,7 +58,7 @@ export default function StudentInfoStep({
         </p>
       </div>
 
-      <h2 className="text-center mb-3">{isTeacherFlow ? 'Student Info' : 'Tell Us About Yourself'}</h2>
+      <h2 className="text-h2 text-center mb-3" style={{ fontWeight: 300 }}>{isTeacherFlow ? 'Student Info' : 'Tell Us About Yourself'}</h2>
       <p className="text-center mb-4" style={{ color: '#6c757d' }}>
         {isTeacherFlow 
           ? "Helps us find your student a great penpal who shares their interests!"
@@ -105,7 +105,7 @@ export default function StudentInfoStep({
         <div className="form-group text-center">
           <button 
             type="submit" 
-            className="btn btn-primary" 
+            className="btn-blue btn-blue-lg"
             disabled={isLoading}
             style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}
           >
