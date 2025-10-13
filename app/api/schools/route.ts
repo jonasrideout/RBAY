@@ -2,7 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { sendWelcomeEmail } from '@/lib/email';
+import { sendWelcomeEmail, sendAdminNotification } from '@/lib/email';
 import { createTeacherSession, setSessionCookie } from '@/lib/magicLink';
 
 export async function POST(request: NextRequest) {
@@ -137,6 +137,18 @@ export async function POST(request: NextRequest) {
       emailError = error.message || 'Email service unavailable';
     }
 
+    // Send admin notification (don't block on failure)
+    try {
+      await sendAdminNotification({
+        schoolName,
+        teacherName,
+        teacherEmail,
+        action: 'registration'
+      });
+    } catch (error: any) {
+      console.warn('Admin notification failed:', error);
+    }
+    
     // Generate links for admin response
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nextjs-boilerplate-beta-three-49.vercel.app';
     const dashboardLink = `${baseUrl}/dashboard?token=${school.dashboardToken}`;
