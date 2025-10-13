@@ -102,7 +102,7 @@ export default function MagicLinkEmail({
               <Text style={text}>
                 • Manage your students and their profiles<br />
                 • View your school's matching status<br />
-                • Access program resources and updates
+                • Inform us when all of your students have registered
               </Text>
 
               <Text style={warningText}>
