@@ -429,6 +429,51 @@ export default function SchoolPairDisplay({
                 <div style={{ color: '#888', fontSize: '11px', marginTop: '2px' }}>
                   Grades {school.gradeLevel}
                 </div>
+
+                {/* New row with dashboard buttons */}
+                <div style={{ 
+                  display: 'flex', 
+                  gap: '4px', 
+                  marginTop: '4px' 
+                }}>
+                  <button
+                    onClick={() => openDashboard(school)}
+                    style={{
+                      background: 'white',
+                      border: '1px solid #ddd',
+                      borderRadius: '3px',
+                      color: '#555',
+                      fontSize: '10px',
+                      fontWeight: '400',
+                      cursor: 'pointer',
+                      padding: '3px 6px',
+                      textAlign: 'center',
+                      minWidth: '75px'
+                    }}
+                    title="Open school dashboard in new tab"
+                  >
+                    Open Dashboard
+                  </button>
+
+                  <button
+                    onClick={() => copyDashboardUrl(school, false)}
+                    style={{
+                      background: 'white',
+                      border: '1px solid #ddd',
+                      borderRadius: '3px',
+                      color: '#555',
+                      fontSize: '10px',
+                      fontWeight: '400',
+                      cursor: 'pointer',
+                      padding: '3px 6px',
+                      textAlign: 'center',
+                      minWidth: '60px'
+                    }}
+                    title="Copy school dashboard URL to clipboard"
+                  >
+                    Copy URL
+                  </button>
+                </div>
               </div>
               
               {pair.hasStudentPairings && (
