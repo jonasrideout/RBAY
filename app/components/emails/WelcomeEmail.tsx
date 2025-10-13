@@ -73,7 +73,8 @@ export default function WelcomeEmail({
               <Text style={text}>
                 • Start registering your students for the program<br />
                 • Help students create their pen-pal profiles<br />
-                • Track your class's readiness for matching
+                • Track your class's readiness for matching<br />
+                • Inform us when all of your students have registered
               </Text>
             </>
           ) : (
