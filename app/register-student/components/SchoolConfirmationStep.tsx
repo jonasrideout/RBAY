@@ -20,12 +20,10 @@ export default function SchoolConfirmationStep({
   
   return (
     <div className="card">
-      <h1 className="text-center mb-3">
-        {isMatch ? 'Is this your school?' : 'That doesn\'t match'}
-      </h1>
-      
       {isMatch ? (
         <>
+          <h1 className="text-h2 text-center">Is this your school?</h1>
+          
           <div style={{ 
             background: '#f0f8ff', 
             padding: '2rem', 
@@ -34,29 +32,36 @@ export default function SchoolConfirmationStep({
             border: '2px solid #2196f3',
             textAlign: 'center'
           }}>
-            <h2 style={{ color: '#2c5aa0', marginBottom: '0.5rem', fontSize: '1.5rem' }}>
+            <h2 style={{ 
+              color: '#2c5aa0', 
+              marginBottom: '0.5rem', 
+              fontSize: '1.5rem',
+              fontWeight: 600
+            }}>
               {foundSchoolInfo?.name}
             </h2>
-            <p style={{ color: '#6c757d', marginBottom: '0', fontSize: '1rem' }}>
+            <p style={{ 
+              color: '#6c757d', 
+              marginBottom: '0', 
+              fontSize: '1rem',
+              fontWeight: 400
+            }}>
               Teacher: {foundSchoolInfo?.teacher}
             </p>
           </div>
+          
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
             <button 
               onClick={() => onConfirm(true)}
-              className="btn btn-primary"
-              style={{ padding: '1rem 2rem', fontSize: '1.1rem', minWidth: '120px' }}
+              className="btn-blue btn-blue-lg"
             >
               ✓ Yes, that's my school
             </button>
             
             <button 
               onClick={() => onConfirm(false)}
-              className="btn"
+              className="btn btn-blue-lg"
               style={{ 
-                padding: '1rem 2rem', 
-                fontSize: '1.1rem', 
-                minWidth: '120px',
                 background: '#f8f9fa',
                 border: '1px solid #dee2e6',
                 color: '#6c757d'
@@ -68,29 +73,12 @@ export default function SchoolConfirmationStep({
         </>
       ) : (
         <>
-          <div style={{ 
-            background: '#fff3cd', 
-            padding: '2rem', 
-            borderRadius: '8px', 
-            marginBottom: '2rem', 
-            border: '2px solid #ffc107',
-            textAlign: 'center'
-          }}>
-            <p style={{ color: '#856404', marginBottom: '1rem', fontSize: '1.1rem' }}>
-              The information you entered doesn't match this school:
-            </p>
-            <h2 style={{ color: '#2c5aa0', marginBottom: '0.5rem', fontSize: '1.5rem' }}>
-              {foundSchoolInfo?.name}
-            </h2>
-            <p style={{ color: '#6c757d', marginBottom: '0', fontSize: '1rem' }}>
-              Teacher: {foundSchoolInfo?.teacher}
-            </p>
-          </div>
-          <div style={{ textAlign: 'center' }}>
+          <h1 className="text-h2 text-center">I can't find a school that matches the information you entered.</h1>
+          
+          <div style={{ textAlign: 'center', marginTop: '2rem' }}>
             <button 
               onClick={() => onConfirm(false)}
-              className="btn btn-primary"
-              style={{ padding: '1rem 2rem', fontSize: '1.1rem', minWidth: '160px' }}
+              className="btn-blue btn-blue-lg"
             >
               ← Try Again
             </button>
