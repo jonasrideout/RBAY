@@ -24,6 +24,7 @@ export default function SchoolPairDisplay({
   const [copyButtonText1, setCopyButtonText1] = useState('Copy URL');
   const [copyButtonText2, setCopyButtonText2] = useState('Copy URL');
   const [emailCopyStates, setEmailCopyStates] = useState<Record<string, string>>({});
+  const [urlCopyStates, setUrlCopyStates] = useState<Record<string, string>>({});
   const [showUnmatchModal, setShowUnmatchModal] = useState(false);
   const [sendingEmails, setSendingEmails] = useState(false);
   const [emailsSent, setEmailsSent] = useState(false);
@@ -42,13 +43,19 @@ export default function SchoolPairDisplay({
     window.open(url, '_blank');
   };
 
-  const copyDashboardUrl = async (school: { dashboardToken: string }, isFirst: boolean) => {
+  const copyDashboardUrl = async (school: { dashboardToken: string; id?: string }, isFirst: boolean) => {
     const url = getDashboardUrl(school);
     try {
       await navigator.clipboard.writeText(url);
       if (isFirst) {
         setCopyButtonText1('Copied');
         setTimeout(() => setCopyButtonText1('Copy URL'), 2000);
+      } else if (school.id) {
+        // For group schools, use school-specific state
+        setUrlCopyStates(prev => ({ ...prev, [school.id!]: 'Copied' }));
+        setTimeout(() => {
+          setUrlCopyStates(prev => ({ ...prev, [school.id!]: 'Copy URL' }));
+        }, 2000);
       } else {
         setCopyButtonText2('Copied');
         setTimeout(() => setCopyButtonText2('Copy URL'), 2000);
@@ -456,7 +463,7 @@ export default function SchoolPairDisplay({
                   </button>
 
                   <button
-                    onClick={() => copyDashboardUrl(school, false)}
+                     onClick={() => copyDashboardUrl(school, false)}
                     style={{
                       background: 'white',
                       border: '1px solid #ddd',
@@ -471,7 +478,7 @@ export default function SchoolPairDisplay({
                     }}
                     title="Copy school dashboard URL to clipboard"
                   >
-                    Copy URL
+                    {urlCopyStates[school.id] || 'Copy URL'}
                   </button>
                 </div>
               </div>
