@@ -72,6 +72,7 @@ export interface SchoolGroup {
     schoolName: string;
     teacherName: string;
     teacherEmail: string;
+    dashboardToken: string;
     gradeLevel: string;
     specialConsiderations?: string;
     region: string;
