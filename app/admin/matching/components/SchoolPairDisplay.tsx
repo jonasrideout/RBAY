@@ -28,7 +28,7 @@ export default function SchoolPairDisplay({
   const [sendingEmails, setSendingEmails] = useState(false);
   const [emailsSent, setEmailsSent] = useState(false);
 
-  const getDashboardUrl = (school: School) => {
+  const getDashboardUrl = (school: { dashboardToken: string }) => {
     const adminDashboardPath = `/dashboard?token=${school.dashboardToken}`;
     if (typeof window !== 'undefined') {
       const currentOrigin = window.location.origin;
@@ -37,12 +37,12 @@ export default function SchoolPairDisplay({
     return adminDashboardPath;
   };
 
-  const openDashboard = (school: School) => {
+  const openDashboard = (school: { dashboardToken: string }) => {
     const url = getDashboardUrl(school);
     window.open(url, '_blank');
   };
 
-  const copyDashboardUrl = async (school: School, isFirst: boolean) => {
+  const copyDashboardUrl = async (school: { dashboardToken: string }, isFirst: boolean) => {
     const url = getDashboardUrl(school);
     try {
       await navigator.clipboard.writeText(url);
