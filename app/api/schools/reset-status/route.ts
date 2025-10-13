@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { sendAdminNotification } from '@/lib/email';
 
 export async function POST(request: Request) {
   try {
@@ -17,20 +16,6 @@ export async function POST(request: Request) {
       where: { id: schoolId },
       data: { status }
     });
-
-    // Send admin notification if status changed to READY
-    if (status === 'READY') {
-      try {
-        await sendAdminNotification({
-          schoolName: updatedSchool.schoolName,
-          teacherName: updatedSchool.teacherName,
-          teacherEmail: updatedSchool.teacherEmail,
-          action: 'ready_for_penpals'
-        });
-      } catch (error: any) {
-        console.warn('Admin notification failed:', error);
-      }
-    }
 
     return NextResponse.json({ 
       success: true, 
