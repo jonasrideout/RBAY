@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { sendAdminNotification } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   try {
@@ -112,8 +113,20 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Log the pen pal pairing request for potential notification/admin purposes
+   // Log the pen pal pairing request for potential notification/admin purposes
     console.log(`School pen pal pairing requested: ${school.schoolName} (${teacherEmail}) with ${school.students.length} students`);
+
+    // Send admin notification (don't block on failure)
+    try {
+      await sendAdminNotification({
+        schoolName: updatedSchool.schoolName,
+        teacherName: updatedSchool.teacherName,
+        teacherEmail: updatedSchool.teacherEmail,
+        action: 'ready_for_penpals'
+      });
+    } catch (error: any) {
+      console.warn('Admin notification failed:', error);
+    }
 
     return NextResponse.json({
       success: true,
