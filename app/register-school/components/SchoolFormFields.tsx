@@ -334,6 +334,8 @@ export default function SchoolFormFields({
           required={!isAdminMode}
         >
           <option value="">Select Month</option>
+          <option value="Not Sure Yet">Not Sure Yet</option>
+          <option value="As Soon as Possible">As Soon as Possible</option>
           {MONTHS.map(month => (
             <option key={month} value={month}>{month}</option>
           ))}
