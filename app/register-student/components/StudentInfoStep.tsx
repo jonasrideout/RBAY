@@ -47,19 +47,19 @@ export default function StudentInfoStep({
   return (
     <div className="card" style={{ maxWidth: '915px', margin: '0 auto' }}>
       <div style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '6px', marginBottom: '1.5rem', border: '1px solid #dee2e6' }}>
-        <h4 style={{ color: '#495057', marginBottom: '0.5rem' }}>
+        <h4 style={{ color: '#495057', marginBottom: '0.5rem', fontWeight: 300 }}>
           {isTeacherFlow ? 'Adding Student to:' : 'Your School:'}
         </h4>
         <p style={{ fontSize: '1.1rem', fontWeight: '300', color: '#2c5aa0', marginBottom: '0.25rem' }}>
           {schoolInfo?.name}
         </p>
-        <p style={{ color: '#6c757d', marginBottom: '0', fontSize: '0.95rem' }}>
+        <p style={{ color: '#6c757d', marginBottom: '0', fontSize: '0.95rem', fontWeight: 300 }}>
           Teacher: {schoolInfo?.teacher}
         </p>
       </div>
 
       <h2 className="text-h2 text-center mb-3" style={{ fontWeight: 300 }}>{isTeacherFlow ? 'Student Info' : 'Tell Us About Yourself'}</h2>
-      <p className="text-center mb-4" style={{ color: '#6c757d' }}>
+      <p className="text-center mb-4" style={{ color: '#6c757d', fontWeight: 300 }}>
         {isTeacherFlow 
           ? "Helps us find your student a great penpal who shares their interests!"
           : "Helps us find you a great penpal who shares your interests!"
