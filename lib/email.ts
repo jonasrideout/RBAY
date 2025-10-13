@@ -27,6 +27,13 @@ export interface SendPenPalAssignmentEmailParams {
   partnerSchoolNames: string[];
 }
 
+export interface SendAdminNotificationParams {
+  schoolName: string;
+  teacherName: string;
+  teacherEmail: string;
+  action: 'registration' | 'ready_for_penpals';
+}
+
 export async function sendWelcomeEmail({
   teacherName,
   teacherEmail,
@@ -141,5 +148,40 @@ export async function sendPenPalAssignmentEmail({
   } catch (error: any) {
     console.error('Pen pal assignment email error:', error);
     return { success: false, error: error.message || 'Failed to send pen pal assignment email' };
+  }
+}
+
+export async function sendAdminNotification({
+  schoolName,
+  teacherName,
+  teacherEmail,
+  action
+}: SendAdminNotificationParams): Promise<{ success: boolean; error?: string }> {
+  try {
+    const subject = action === 'registration'
+      ? `New School Registration: ${schoolName}`
+      : `School Ready for Pen Pals: ${schoolName}`;
+    
+    const message = action === 'registration'
+      ? `A new school has been registered:\n\nSchool: ${schoolName}\nTeacher: ${teacherName}\nEmail: ${teacherEmail}`
+      : `A school is ready for pen pal matching:\n\nSchool: ${schoolName}\nTeacher: ${teacherName}\nEmail: ${teacherEmail}`;
+    
+    const { data, error } = await resend.emails.send({
+      from: 'Right Back at You <noreply@carolynmackler.com>',
+      to: ['carolyn.mackler@gmail.com', 'jonas.rideout@gmail.com'],
+      subject: subject,
+      text: message,
+    });
+
+    if (error) {
+      console.error('Admin notification error:', error);
+      return { success: false, error: error.message };
+    }
+
+    console.log('Admin notification sent successfully:', data);
+    return { success: true };
+  } catch (error: any) {
+    console.error('Admin notification error:', error);
+    return { success: false, error: error.message || 'Failed to send admin notification' };
   }
 }
