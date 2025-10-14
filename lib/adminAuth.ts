@@ -32,7 +32,17 @@ function getAdminUsers(): Map<string, string> {
 
 export async function verifyAdminCredentials(email: string, password: string): Promise<boolean> {
   const adminUsers = getAdminUsers();
+  
+  // Debug logging
+  console.log('=== Admin Auth Debug ===');
+  console.log('Attempting login with email:', email);
+  console.log('Admin users configured:', Array.from(adminUsers.keys()));
+  console.log('ADMIN_USERS env var:', process.env.ADMIN_USERS);
+  
   const storedPassword = adminUsers.get(email);
+  console.log('Stored password for user:', storedPassword ? 'EXISTS' : 'NOT FOUND');
+  console.log('Password match:', storedPassword === password);
+  console.log('======================');
   
   return storedPassword === password;
 }
