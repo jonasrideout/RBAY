@@ -21,9 +21,10 @@ export default function SchoolVerificationStep({
     <div style={{
       minHeight: '100vh',
       display: 'flex',
-      alignItems: 'center',
+      alignItems: 'flex-start',
       justifyContent: 'center',
-      padding: '1rem 2rem'
+      paddingTop: '4rem',
+      padding: '0 2rem'
     }}>
       <div style={{
         background: 'white',
