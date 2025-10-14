@@ -789,23 +789,6 @@ export default function AdminDashboard() {
           </>
         )}
 
-        <div style={{ textAlign: 'center', marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid #e9ecef' }}>
-          <Link 
-            href="/admin/testing" 
-            style={{ 
-              fontSize: '12px', 
-              color: '#999', 
-              textDecoration: 'none',
-              padding: '0.5rem 1rem',
-              border: '1px solid #e9ecef',
-              borderRadius: '4px',
-              display: 'inline-block'
-            }}
-          >
-            Testing Tools
-          </Link>
-        </div>
-
       </main>
 
       {showConfirmDialog && pinnedUnit && selectedMatch && (
