@@ -7,7 +7,8 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 300;
   background-color: #f8f9fa;
   color: #333;
   line-height: 1.6;
@@ -584,8 +585,9 @@ body {
 .form-label {
   display: block;
   margin-bottom: 0.5rem;
-  font-weight: 600;
+  font-weight: 300;
   color: #495057;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .form-input,
