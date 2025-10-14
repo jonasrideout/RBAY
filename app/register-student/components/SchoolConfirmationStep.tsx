@@ -31,19 +31,20 @@ export default function SchoolConfirmationStep({
         background: 'white',
         borderRadius: '12px',
         padding: '3rem',
-        maxWidth: '600px',
+        maxWidth: '700px',
         width: '100%',
         boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
       }}>
         {isMatch ? (
           <>
             <h1 style={{ 
-              fontSize: '2.5rem',
-              fontWeight: '300',
-              color: '#5b8fc9',
+              fontSize: '1.8rem',
+              fontWeight: 300,
+              color: '#2c5aa0',
               textAlign: 'center',
               marginBottom: '1rem',
-              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              lineHeight: 1.3
             }}>
               Is this your school?
             </h1>
@@ -60,7 +61,7 @@ export default function SchoolConfirmationStep({
                 color: '#2c5aa0', 
                 marginBottom: '0.5rem', 
                 fontSize: '1.5rem',
-                fontWeight: '400',
+                fontWeight: 300,
                 fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
               }}>
                 {foundSchoolInfo?.name}
@@ -69,7 +70,7 @@ export default function SchoolConfirmationStep({
                 color: '#6c757d', 
                 marginBottom: '0', 
                 fontSize: '1rem',
-                fontWeight: '300',
+                fontWeight: 300,
                 fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
               }}>
                 Teacher: {foundSchoolInfo?.teacher}
@@ -93,7 +94,7 @@ export default function SchoolConfirmationStep({
                   color: '#6c757d',
                   padding: '1rem 2rem',
                   fontSize: '1.125rem',
-                  fontWeight: '300'
+                  fontWeight: 300
                 }}
               >
                 ← No, try again
@@ -103,13 +104,13 @@ export default function SchoolConfirmationStep({
         ) : (
           <>
             <h1 style={{ 
-              fontSize: '2.5rem',
-              fontWeight: '300',
-              color: '#5b8fc9',
+              fontSize: '1.8rem',
+              fontWeight: 300,
+              color: '#2c5aa0',
               textAlign: 'center',
               marginBottom: '2rem',
               fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-              lineHeight: '1.3'
+              lineHeight: 1.3
             }}>
               I can't find a school that matches the information you entered.
             </h1>
