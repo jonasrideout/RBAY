@@ -149,7 +149,7 @@ export default function BasicInfoForm({
               color: '#2c5aa0', 
               marginBottom: '1rem',
               fontSize: '1.5rem',
-              fontWeight: '400'
+              fontWeight: '300'
             }}>
               Multiple Pen Pals
             </h3>
@@ -157,7 +157,8 @@ export default function BasicInfoForm({
               color: '#495057', 
               marginBottom: '2rem', 
               lineHeight: '1.5',
-              fontSize: '1.1rem'
+              fontSize: '1.1rem',
+              fontWeight: '300'
             }}>
               This requires a commitment to write letters to more than one pen pal. Are you sure you want to commit to this?
             </p>
