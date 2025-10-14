@@ -65,8 +65,6 @@ export default function SchoolPairDisplay({
       prompt('Copy this URL:', url);
     }
   };
-    }
-  };
 
   const copyEmailAddress = async (email: string, schoolId: string) => {
     try {
