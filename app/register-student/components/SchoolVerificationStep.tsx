@@ -23,7 +23,7 @@ export default function SchoolVerificationStep({
       display: 'flex',
       alignItems: 'flex-start',
       justifyContent: 'center',
-      paddingTop: '3rem',
+      paddingTop: '2rem',
       paddingLeft: '2rem',
       paddingRight: '2rem'
     }}>
