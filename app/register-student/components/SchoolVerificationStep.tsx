@@ -24,7 +24,8 @@ export default function SchoolVerificationStep({
       alignItems: 'flex-start',
       justifyContent: 'center',
       paddingTop: '4rem',
-      padding: '0 2rem'
+      paddingLeft: '2rem',
+      paddingRight: '2rem'
     }}>
       <div style={{
         background: 'white',
@@ -35,12 +36,13 @@ export default function SchoolVerificationStep({
         boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
       }}>
         <h1 style={{
-          fontSize: '2.5rem',
-          fontWeight: '300',
-          color: '#5b8fc9',
+          fontSize: '1.8rem',
+          fontWeight: 300,
+          color: '#2c5aa0',
           textAlign: 'center',
           marginBottom: '1rem',
-          fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+          fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          lineHeight: 1.3
         }}>
           Join The Right Back at You Project
         </h1>
