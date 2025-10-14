@@ -23,13 +23,13 @@ export default function SchoolVerificationStep({
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '2rem'
+      padding: '1rem 2rem'
     }}>
       <div style={{
         background: 'white',
         borderRadius: '12px',
         padding: '3rem',
-        maxWidth: '600px',
+        maxWidth: '700px',
         width: '100%',
         boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
       }}>
