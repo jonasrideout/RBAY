@@ -1,5 +1,3 @@
-// /app/register-student/components/SchoolVerificationStep.tsx
-
 interface SchoolVerificationStepProps {
   schoolNameInput: string;
   setSchoolNameInput: (value: string) => void;
@@ -20,57 +18,97 @@ export default function SchoolVerificationStep({
   onSubmit
 }: SchoolVerificationStepProps) {
   return (
-    <div className="card">
-      <h1 className="text-center mb-3">Join The Right Back at You Project</h1>
-      <p className="text-center mb-4" style={{ color: '#6c757d' }}>
-        Please enter your school name, teacher name, or teacher email to get started
-      </p>
-      
-      <form onSubmit={onSubmit}>
-        <div className="form-group">
-          <label htmlFor="school-name" className="form-label">School Name, Teacher Name, or Teacher Email</label>
-          <input 
-            type="text" 
-            id="school-name" 
-            className="form-input" 
-            placeholder="Enter your school name, teacher's name, or teacher's email"
-            value={schoolNameInput}
-            onChange={(e) => {
-              setSchoolNameInput(e.target.value);
-              if (error) setError('');
-            }}
-            disabled={isLoading}
-            required
-          />
-          <p style={{ fontSize: '0.85rem', color: '#6c757d', marginTop: '0.5rem', marginBottom: '0' }}>
-            Examples: "Lincoln Elementary", "Ms. Johnson", or "teacher@school.edu"
-          </p>
-        </div>
-
-        {error && (
-          <div className="alert alert-error">
-            <strong>Error:</strong> {error}
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '2rem'
+    }}>
+      <div style={{
+        background: 'white',
+        borderRadius: '12px',
+        padding: '3rem',
+        maxWidth: '600px',
+        width: '100%',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
+      }}>
+        <h1 style={{
+          fontSize: '2.5rem',
+          fontWeight: '300',
+          color: '#5b8fc9',
+          textAlign: 'center',
+          marginBottom: '1rem',
+          fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+        }}>
+          Join The Right Back at You Project
+        </h1>
+        
+        <p style={{
+          textAlign: 'center',
+          marginBottom: '2.5rem',
+          color: '#6c757d',
+          fontSize: '1.1rem',
+          fontWeight: '300',
+          fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+        }}>
+          Please enter your school name, teacher name, or teacher email to get started
+        </p>
+        
+        <form onSubmit={onSubmit}>
+          <div className="form-group">
+            <label htmlFor="school-name" className="form-label">
+              School Name, Teacher Name, or Teacher Email
+            </label>
+            <input 
+              type="text" 
+              id="school-name" 
+              className="form-input" 
+              placeholder="Enter your school name, teacher's name, or teacher's email"
+              value={schoolNameInput}
+              onChange={(e) => {
+                setSchoolNameInput(e.target.value);
+                if (error) setError('');
+              }}
+              disabled={isLoading}
+              required
+            />
+            <p style={{ 
+              fontSize: '0.85rem', 
+              color: '#6c757d', 
+              marginTop: '0.5rem', 
+              marginBottom: '0',
+              fontWeight: '300',
+              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+            }}>
+              Examples: "Lincoln Elementary", "Ms. Johnson", or "teacher@school.edu"
+            </p>
           </div>
-        )}
-
-        <div className="form-group text-center">
-          <button 
-            type="submit" 
-            className="btn btn-primary" 
-            disabled={isLoading || !schoolToken}
-            style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}
-          >
-            {isLoading ? (
-              <>
-                <span className="loading"></span>
-                <span style={{ marginLeft: '0.5rem' }}>Verifying...</span>
-              </>
-            ) : (
-              'Continue'
-            )}
-          </button>
-        </div>
-      </form>
+          
+          {error && (
+            <div className="alert alert-error" style={{ fontWeight: '300' }}>
+              <strong style={{ fontWeight: '400' }}>Error:</strong> {error}
+            </div>
+          )}
+          
+          <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+            <button 
+              type="submit" 
+              className="btn-blue btn-blue-lg"
+              disabled={isLoading || !schoolToken}
+            >
+              {isLoading ? (
+                <>
+                  <span className="loading"></span>
+                  <span style={{ marginLeft: '0.5rem' }}>Verifying...</span>
+                </>
+              ) : (
+                'Continue'
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
