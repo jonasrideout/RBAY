@@ -21,9 +21,11 @@ export default function SchoolConfirmationStep({
     <div style={{
       minHeight: '100vh',
       display: 'flex',
-      alignItems: 'center',
+      alignItems: 'flex-start',
       justifyContent: 'center',
-      padding: '2rem'
+      paddingTop: '1rem',
+      paddingLeft: '2rem',
+      paddingRight: '2rem'
     }}>
       <div style={{
         background: 'white',
