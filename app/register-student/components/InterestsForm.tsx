@@ -36,7 +36,7 @@ export default function InterestsForm({
     <>
       <div className="form-group">
         <label className="form-label">{isTeacherFlow ? "Interests & Hobbies *" : "Your Interests & Hobbies *"}</label>
-        <p style={{ color: '#6c757d', fontSize: '0.9rem', marginBottom: '1rem' }}>
+        <p style={{ color: '#6c757d', fontSize: '0.9rem', marginBottom: '1rem', fontWeight: '300' }}>
           {isTeacherFlow 
             ? "Select at least one that applies"
             : "Select at least one that applies - this helps us find you a great penpal!"
