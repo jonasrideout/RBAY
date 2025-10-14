@@ -51,7 +51,7 @@ export default function SchoolConfirmationStep({
             
             <div style={{ 
               background: '#f0f8ff', 
-              padding: '2rem', 
+              padding: '1rem', 
               borderRadius: '8px', 
               marginBottom: '2rem', 
               border: '2px solid #2196f3',
