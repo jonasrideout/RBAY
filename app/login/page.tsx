@@ -311,7 +311,7 @@ function LoginContent() {
               fontWeight: 300,
               color: '#666'
             }}>
-              Enter your email to receive a secure link to register your class.
+              Enter your email to receive a secure link to login or register your class.
             </p>
           </div>
 
