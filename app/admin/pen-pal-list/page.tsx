@@ -330,12 +330,18 @@ function PenPalListContent() {
                 />
 
                 {/* Student info */}
-                <div style={{ marginBottom: '0.5rem' }}>
+                <div style={{ 
+                  marginBottom: '0.5rem',
+                  maxWidth: 'calc(100% - 180px)', // Leave room for logo on right
+                  paddingRight: '1rem'
+                }}>
                   {student.studentName} Interests: {student.studentInterests}
                 </div>
                 <div style={{
                   marginLeft: '1rem',
-                  color: '#4a5568'
+                  color: '#4a5568',
+                  maxWidth: 'calc(100% - 180px)', // Also apply to pen pal info
+                  paddingRight: '1rem'
                 }}>
                   {student.penpals.map((penpal, penpalIndex) => {
                     // Build location string
@@ -353,7 +359,7 @@ function PenPalListContent() {
                     return (
                       <div key={penpalIndex} style={{ marginBottom: penpalIndex < student.penpals.length - 1 ? '0.5rem' : '0' }}>
                         <div style={{ marginBottom: '0.25rem' }}>
-                          → Matched with {penpal.name} - {location}{teacherInfo}
+                          → Your Pen Pal: {penpal.name} - {location}{teacherInfo}
                         </div>
                         <div style={{ marginLeft: '1rem' }}>
                           Interests: {penpal.interests}
