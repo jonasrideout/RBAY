@@ -340,12 +340,18 @@ function PenPalListContent() {
                 />
 
                 {/* Student info */}
-                <div style={{ marginBottom: '0.5rem' }}>
+                <div style={{ 
+                  marginBottom: '0.5rem',
+                  maxWidth: 'calc(100% - 180px)', // Leave room for logo on right
+                  paddingRight: '1rem'
+                }}>
                   {student.studentName} Interests: {student.studentInterests}
                 </div>
                 <div style={{
                   marginLeft: '1rem',
-                  color: '#4a5568'
+                  color: '#4a5568',
+                  maxWidth: 'calc(100% - 180px)', // Also apply to pen pal info
+                  paddingRight: '1rem'
                 }}>
                   {student.penpals.map((penpal, penpalIndex) => {
                     // Build location string
