@@ -130,6 +130,7 @@ export async function sendPenPalAssignmentEmail({
     const { data, error } = await resend.emails.send({
       from: 'Right Back at You <noreply@carolynmackler.com>',
       to: [teacherEmail],
+      cc: ['jonas.rideout@gmail.com', 'carolyn.mackler@gmail.com'],
       subject: 'Your Pen Pal Assignments Are Ready!',
       react: PenPalAssignmentEmail({
         teacherName,
