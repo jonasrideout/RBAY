@@ -152,29 +152,30 @@ export default function DashboardHeader({
       ).length;
     }
     
-    if (totalGroupRequired > 0) {
-      const shortfall = totalGroupRequired - currentMultipleAcrossGroup;
-      
-      if (shortfall > 0) {
-        const thisSchoolRequired = Math.ceil(shortfall * (thisSchoolStudentCount / totalStudentsInGroup));
-        
-        const thisSchoolCurrentMultiple = schoolData.students.filter(
-          (s: any) => s.penpalPreference === 'MULTIPLE'
-        ).length;
-        
-        if (thisSchoolCurrentMultiple < thisSchoolRequired) {
-          if (onPenpalPreferenceCheckNeeded) {
-            onPenpalPreferenceCheckNeeded(thisSchoolRequired, thisSchoolCurrentMultiple, matchedSchoolName);
-          }
-          return;
-        }
-      }
-      
-      setShowConfirmation(true);
-      
+    // Calculate the requirement for this specific school
+    let thisSchoolRequired: number;
+    
+    if (isInGroup) {
+      // For grouped schools: calculate proportional share
+      thisSchoolRequired = Math.ceil(totalGroupRequired * (thisSchoolStudentCount / totalStudentsInGroup));
     } else {
-      setShowConfirmation(true);
+      // For standalone schools: use the total requirement
+      thisSchoolRequired = totalGroupRequired;
     }
+    
+    // Check if this school meets its requirement
+    const thisSchoolCurrentMultiple = schoolData.students.filter(
+      (s: any) => s.penpalPreference === 'MULTIPLE'
+    ).length;
+    
+    if (thisSchoolCurrentMultiple < thisSchoolRequired) {
+      if (onPenpalPreferenceCheckNeeded) {
+        onPenpalPreferenceCheckNeeded(thisSchoolRequired, thisSchoolCurrentMultiple, matchedSchoolName);
+      }
+      return;
+    }
+    
+    setShowConfirmation(true);
   };
 
   const handleConfirmPairing = async () => {
