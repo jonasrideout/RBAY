@@ -58,7 +58,7 @@ export default function UpdatePenpalPreferences({
   };
 
   const selectedCount = selectedStudents.size;
-  const canProceed = selectedCount >= requiredCount;
+  const canProceed = selectedCount === requiredCount;
   const additionalNeeded = Math.max(0, requiredCount - selectedCount);
 
   const handleDone = async () => {
@@ -145,7 +145,7 @@ export default function UpdatePenpalPreferences({
             marginBottom: '1.5rem',
             lineHeight: '1.6'
           }}>
-            To ensure everyone at your matched school gets at least one pen pal, your class must have at least <strong>{requiredCount}</strong> {requiredCount === 1 ? 'student' : 'students'} set to receive more than one pen pal.
+            To ensure no one gets more than 2 pen pals, you must select exactly <strong>{requiredCount}</strong> {requiredCount === 1 ? 'student' : 'students'} to receive more than one pen pal.
           </p>
 
           {/* Progress indicator */}
