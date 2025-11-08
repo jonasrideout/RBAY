@@ -38,6 +38,7 @@ interface SchoolData {
   schoolGroup?: {
     id: string;
     name: string;
+    matchedWithGroupId?: string;
     schools: Array<{
       id: string;
       schoolName: string;
