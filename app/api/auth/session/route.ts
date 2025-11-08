@@ -1,7 +1,7 @@
 // /app/api/auth/session/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyTeacherSession } from '@/lib/magicLink';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
@@ -28,16 +28,12 @@ export async function GET(request: NextRequest) {
     }
 
     // Double-check that teacher still exists in database
-    const prisma = new PrismaClient();
-    
     try {
       const school = await prisma.school.findUnique({
         where: {
           teacherEmail: sessionCheck.session.email
         }
       });
-
-      await prisma.$disconnect();
 
       if (!school) {
         console.log('Teacher no longer exists in database:', sessionCheck.session.email);
@@ -55,7 +51,6 @@ export async function GET(request: NextRequest) {
         needsWarning: sessionCheck.needsWarning || false
       });
     } catch (dbError) {
-      await prisma.$disconnect();
       console.error('Database error during session check:', dbError);
       return NextResponse.json({
         valid: false,
