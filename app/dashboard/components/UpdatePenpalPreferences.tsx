@@ -30,7 +30,7 @@ export default function UpdatePenpalPreferences({
   const [selectedStudents, setSelectedStudents] = useState<Set<string>>(new Set());
   const [isUpdating, setIsUpdating] = useState(false);
 
-  // Pre-select students who already have MULTIPLE preference (locked)
+  // Separate students by their original preference
   const studentsWithMultiple = students.filter(s => s.penpalPreference === 'MULTIPLE');
   const studentsWithOne = students.filter(s => s.penpalPreference === 'ONE');
 
@@ -40,17 +40,21 @@ export default function UpdatePenpalPreferences({
     setSelectedStudents(initialSelected);
   }, []);
 
-  const handleToggleStudent = (studentId: string) => {
-    // Don't allow toggling students who already have MULTIPLE
-    if (studentsWithMultiple.some(s => s.id === studentId)) {
-      return;
+  const handleToggleStudent = (studentId: string, isInTopSection: boolean) => {
+    // Check if this student was originally set to MULTIPLE (locked)
+    const isLocked = studentsWithMultiple.some(s => s.id === studentId);
+    
+    if (isLocked) {
+      return; // Can't toggle locked students
     }
 
     setSelectedStudents(prev => {
       const newSet = new Set(prev);
-      if (newSet.has(studentId)) {
+      if (isInTopSection) {
+        // Clicking in top section - remove from selection (move to bottom)
         newSet.delete(studentId);
       } else {
+        // Clicking in bottom section - add to selection (move to top)
         newSet.add(studentId);
       }
       return newSet;
@@ -58,8 +62,11 @@ export default function UpdatePenpalPreferences({
   };
 
   const selectedCount = selectedStudents.size;
-  const canProceed = selectedCount === requiredCount;
-  const additionalNeeded = Math.max(0, requiredCount - selectedCount);
+  const canProceed = selectedCount >= requiredCount;
+
+  // Separate students for display
+  const studentsInTopSection = students.filter(s => selectedStudents.has(s.id));
+  const studentsInBottomSection = students.filter(s => !selectedStudents.has(s.id));
 
   const handleDone = async () => {
     if (!canProceed) return;
@@ -170,57 +177,145 @@ export default function UpdatePenpalPreferences({
           padding: '0 2rem',
           minHeight: 0
         }}>
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.5rem',
-            paddingBottom: '1rem'
-          }}>
-            {students.map(student => {
-              const isLocked = studentsWithMultiple.some(s => s.id === student.id);
-              const isSelected = selectedStudents.has(student.id);
-              
-              return (
-                <div
-                  key={student.id}
-                  onClick={() => handleToggleStudent(student.id)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    padding: '0.75rem',
-                    border: '1px solid #dee2e6',
-                    borderRadius: '6px',
-                    cursor: isLocked ? 'not-allowed' : 'pointer',
-                    backgroundColor: isSelected ? '#f8f9fa' : 'white',
-                    opacity: isLocked ? 0.7 : 1,
-                    transition: 'all 0.2s'
-                  }}
-                >
-                  <input
-                    type="checkbox"
-                    checked={isSelected}
-                    disabled={isLocked}
-                    readOnly
-                    style={{
-                      marginRight: '1rem',
-                      width: '18px',
-                      height: '18px',
-                      cursor: isLocked ? 'not-allowed' : 'pointer'
-                    }}
-                  />
-                  <div style={{ flex: 1 }}>
-                    <div style={{ color: '#333' }}>
-                      {student.firstName} {student.lastInitial}.
+          {/* Top section - Students with MULTIPLE */}
+          {studentsInTopSection.length > 0 && (
+            <div style={{ marginBottom: '1.5rem' }}>
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem'
+              }}>
+                {studentsInTopSection.map(student => {
+                  const isLocked = studentsWithMultiple.some(s => s.id === student.id);
+                  
+                  return (
+                    <div
+                      key={student.id}
+                      onClick={() => handleToggleStudent(student.id, true)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        borderRadius: '6px',
+                        cursor: isLocked ? 'not-allowed' : 'pointer',
+                        backgroundColor: '#f8f9fa',
+                        opacity: 0.7,
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={true}
+                        disabled={isLocked}
+                        readOnly
+                        style={{
+                          marginRight: '1rem',
+                          width: '18px',
+                          height: '18px',
+                          cursor: isLocked ? 'not-allowed' : 'pointer'
+                        }}
+                      />
+                      <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span style={{ color: '#333' }}>
+                          {student.firstName} {student.lastInitial}.
+                        </span>
+                        <span style={{ color: '#6c757d' }}>|</span>
+                        <span style={{ fontSize: '0.85rem', color: '#6c757d' }}>
+                          Grade {student.grade}
+                          {isLocked && ' • Already set to multiple pen pals'}
+                        </span>
+                      </div>
                     </div>
-                    <div style={{ fontSize: '0.85rem', color: '#6c757d' }}>
-                      Grade {student.grade}
-                      {isLocked && ' • Already set to multiple pen pals'}
-                    </div>
-                  </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Divider and header for bottom section */}
+          {studentsInBottomSection.length > 0 && (
+            <>
+              {studentsInTopSection.length > 0 && (
+                <div style={{
+                  borderTop: '2px solid #dee2e6',
+                  margin: '1rem 0',
+                  paddingTop: '1rem'
+                }}>
+                  <h4 style={{
+                    fontSize: '0.9rem',
+                    fontWeight: '500',
+                    color: '#495057',
+                    marginBottom: '0.75rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px'
+                  }}>
+                    Select Students
+                  </h4>
                 </div>
-              );
-            })}
-          </div>
+              )}
+              {studentsInTopSection.length === 0 && (
+                <h4 style={{
+                  fontSize: '0.9rem',
+                  fontWeight: '500',
+                  color: '#495057',
+                  marginBottom: '0.75rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}>
+                  Select Students
+                </h4>
+              )}
+
+              {/* Bottom section - Students with ONE */}
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem',
+                paddingBottom: '1rem'
+              }}>
+                {studentsInBottomSection.map(student => {
+                  return (
+                    <div
+                      key={student.id}
+                      onClick={() => handleToggleStudent(student.id, false)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        padding: '0.75rem',
+                        border: '1px solid #dee2e6',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        backgroundColor: 'white',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={false}
+                        readOnly
+                        style={{
+                          marginRight: '1rem',
+                          width: '18px',
+                          height: '18px',
+                          cursor: 'pointer'
+                        }}
+                      />
+                      <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span style={{ color: '#333' }}>
+                          {student.firstName} {student.lastInitial}.
+                        </span>
+                        <span style={{ color: '#6c757d' }}>|</span>
+                        <span style={{ fontSize: '0.85rem', color: '#6c757d' }}>
+                          Grade {student.grade}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
         </div>
 
         {/* Action buttons - sticky at bottom */}
