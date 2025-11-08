@@ -1,7 +1,7 @@
 // /app/api/auth/verify-magic-link/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyMagicLinkToken, createTeacherSession, setSessionCookie } from '@/lib/magicLink';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import crypto from 'crypto';
 
 export async function GET(request: NextRequest) {
@@ -24,16 +24,12 @@ export async function GET(request: NextRequest) {
     }
 
     // Double-check that teacher still exists in database
-    import { prisma } from '@/lib/prisma';
-
     try {
       const school = await prisma.school.findUnique({
         where: {
           teacherEmail: verification.email
         }
       });
-
-      await prisma.$disconnect();
 
       // For new users (no school), create a temporary registration token
       if (!school) {
@@ -79,7 +75,6 @@ export async function GET(request: NextRequest) {
       return response;
 
     } catch (dbError) {
-      await prisma.$disconnect();
       console.error('Database error during magic link verification:', dbError);
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nextjs-boilerplate-beta-three-49.vercel.app';
       return NextResponse.redirect(`${baseUrl}/login?error=verification_failed`);
