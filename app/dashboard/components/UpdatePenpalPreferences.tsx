@@ -145,7 +145,7 @@ export default function UpdatePenpalPreferences({
             marginBottom: '1.5rem',
             lineHeight: '1.6'
           }}>
-            To ensure no one gets more than 2 pen pals, you must select exactly <strong>{requiredCount}</strong> {requiredCount === 1 ? 'student' : 'students'} to receive more than one pen pal.
+            To make sure everyone at {matchedSchoolName} gets at least one pen pal, please select <strong>{requiredCount}</strong> of your students to have more than one.
           </p>
 
           {/* Progress indicator */}
