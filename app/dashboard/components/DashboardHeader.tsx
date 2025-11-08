@@ -132,10 +132,8 @@ export default function DashboardHeader({
       totalStudentsInGroup = allGroupStudents.length;
       thisSchoolStudentCount = schoolData.students.length;
       
-      // Required: minimum to ensure everyone at matched school gets at least 1
-      const formulaRequired = Math.ceil((targetClassSize - totalStudentsInGroup) / 2);
-      const maxPossible = Math.floor(totalStudentsInGroup * 0.8);
-      totalGroupRequired = Math.min(formulaRequired, maxPossible);
+      // Required: exact number to ensure no one gets more than 2 pen pals
+      totalGroupRequired = Math.abs(targetClassSize - totalStudentsInGroup);
       
       currentMultipleAcrossGroup = allGroupStudents.filter(
         (s: any) => s.penpalPreference === 'MULTIPLE'
@@ -145,10 +143,8 @@ export default function DashboardHeader({
       totalStudentsInGroup = schoolData.students.length;
       thisSchoolStudentCount = schoolData.students.length;
       
-      // Required: minimum to ensure everyone at matched school gets at least 1
-      const formulaRequired = Math.ceil((targetClassSize - totalStudentsInGroup) / 2);
-      const maxPossible = Math.floor(totalStudentsInGroup * 0.8);
-      totalGroupRequired = Math.min(formulaRequired, maxPossible);
+      // Required: exact number to ensure no one gets more than 2 pen pals
+      totalGroupRequired = Math.abs(targetClassSize - totalStudentsInGroup);
       
       currentMultipleAcrossGroup = schoolData.students.filter(
         (s: any) => s.penpalPreference === 'MULTIPLE'
@@ -334,11 +330,11 @@ export default function DashboardHeader({
 
               <button 
                 className="btn" 
-                disabled={isProfileIncomplete || penPalsAssigned || hasPairingRequested || isRequestingMatching || !allActiveStudentsComplete || schoolData.students.length === 0}
+                disabled={isProfileIncomplete || penPalsAssigned || hasPairingRequested || isRequestingMatching || !allActiveStudentsComplete || schoolData.students.length === 0 || (!schoolData.matchedWithSchoolId && !schoolData.schoolGroup?.matchedWithGroupId)}
                 onClick={handleRequestPairingClick}
                 style={{
-                  cursor: (isProfileIncomplete || penPalsAssigned || hasPairingRequested || isRequestingMatching || !allActiveStudentsComplete || schoolData.students.length === 0) ? 'not-allowed' : 'pointer',
-                  opacity: (isProfileIncomplete || penPalsAssigned || hasPairingRequested || isRequestingMatching || !allActiveStudentsComplete || schoolData.students.length === 0) ? 0.6 : 1,
+                  cursor: (isProfileIncomplete || penPalsAssigned || hasPairingRequested || isRequestingMatching || !allActiveStudentsComplete || schoolData.students.length === 0 || (!schoolData.matchedWithSchoolId && !schoolData.schoolGroup?.matchedWithGroupId)) ? 'not-allowed' : 'pointer',
+                  opacity: (isProfileIncomplete || penPalsAssigned || hasPairingRequested || isRequestingMatching || !allActiveStudentsComplete || schoolData.students.length === 0 || (!schoolData.matchedWithSchoolId && !schoolData.schoolGroup?.matchedWithGroupId)) ? 0.6 : 1,
                   fontSize: '13px'
                 }}
                 title={
@@ -348,6 +344,8 @@ export default function DashboardHeader({
                     ? "Pen pals already assigned"
                     : hasPairingRequested
                     ? "Waiting for pen pal assignments"
+                    : (!schoolData.matchedWithSchoolId && !schoolData.schoolGroup?.matchedWithGroupId)
+                    ? "Must be matched with another school first"
                     : schoolData.students.length === 0
                     ? "Need students first"
                     : !allActiveStudentsComplete
