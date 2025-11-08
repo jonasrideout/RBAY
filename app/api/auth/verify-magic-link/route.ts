@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Double-check that teacher still exists in database
-    const prisma = new PrismaClient();
+    import { prisma } from '@/lib/prisma';
 
     try {
       const school = await prisma.school.findUnique({
