@@ -152,126 +152,96 @@ export default function UpdatePenpalPreferences({
             marginBottom: '1.5rem',
             lineHeight: '1.6'
           }}>
-            To make sure everyone at {matchedSchoolName} gets at least one pen pal, please select <strong>{requiredCount}</strong> of your students to have more than one.
+            To make sure everyone at {matchedSchoolName} gets at least one pen pal, please select <strong>{requiredCount}</strong> of your students to have more than one. <strong>{selectedCount} of {requiredCount} required.</strong>
           </p>
-
-          {/* Progress indicator */}
-          <div style={{
-            padding: '0.75rem',
-            backgroundColor: canProceed ? '#d4edda' : '#f8f9fa',
-            border: `1px solid ${canProceed ? '#c3e6cb' : '#dee2e6'}`,
-            borderRadius: '6px',
-            textAlign: 'center'
-          }}>
-            <span style={{ fontWeight: '500' }}>
-              {selectedCount} of {requiredCount} required selected
-              {canProceed && ' ✓'}
-            </span>
-          </div>
         </div>
 
-        {/* Student list - scrollable */}
-        <div style={{
-          flex: 1,
-          overflowY: 'auto',
-          padding: '0 2rem',
-          minHeight: 0
-        }}>
-          {/* Top section - Students with MULTIPLE */}
-          {studentsInTopSection.length > 0 && (
-            <div style={{ marginBottom: '1.5rem' }}>
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.5rem'
-              }}>
-                {studentsInTopSection.map(student => {
-                  const isLocked = studentsWithMultiple.some(s => s.id === student.id);
-                  
-                  return (
-                    <div
-                      key={student.id}
-                      onClick={() => handleToggleStudent(student.id, true)}
+        {/* Top section - Students with MULTIPLE (fixed, non-scrollable) */}
+        {studentsInTopSection.length > 0 && (
+          <div style={{ 
+            padding: '0 2rem',
+            borderBottom: studentsInBottomSection.length > 0 ? '2px solid #dee2e6' : 'none'
+          }}>
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.4rem',
+              paddingBottom: studentsInBottomSection.length > 0 ? '1rem' : '0'
+            }}>
+              {studentsInTopSection.map(student => {
+                const isLocked = studentsWithMultiple.some(s => s.id === student.id);
+                
+                return (
+                  <div
+                    key={student.id}
+                    onClick={() => handleToggleStudent(student.id, true)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: '0.5rem',
+                      border: '1px solid #dee2e6',
+                      borderRadius: '6px',
+                      cursor: isLocked ? 'not-allowed' : 'pointer',
+                      backgroundColor: '#f8f9fa',
+                      opacity: 0.7,
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={true}
+                      disabled={isLocked}
+                      readOnly
                       style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        padding: '0.75rem',
-                        border: '1px solid #dee2e6',
-                        borderRadius: '6px',
-                        cursor: isLocked ? 'not-allowed' : 'pointer',
-                        backgroundColor: '#f8f9fa',
-                        opacity: 0.7,
-                        transition: 'all 0.2s'
+                        marginRight: '0.75rem',
+                        width: '16px',
+                        height: '16px',
+                        cursor: isLocked ? 'not-allowed' : 'pointer'
                       }}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={true}
-                        disabled={isLocked}
-                        readOnly
-                        style={{
-                          marginRight: '1rem',
-                          width: '18px',
-                          height: '18px',
-                          cursor: isLocked ? 'not-allowed' : 'pointer'
-                        }}
-                      />
-                      <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span style={{ color: '#333' }}>
-                          {student.firstName} {student.lastInitial}.
-                        </span>
-                        <span style={{ color: '#6c757d' }}>|</span>
-                        <span style={{ fontSize: '0.85rem', color: '#6c757d' }}>
-                          Grade {student.grade}
-                          {isLocked && ' • Already set to multiple pen pals'}
-                        </span>
-                      </div>
+                    />
+                    <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span style={{ color: '#333', fontSize: '0.9rem' }}>
+                        {student.firstName} {student.lastInitial}.
+                      </span>
+                      <span style={{ color: '#6c757d' }}>|</span>
+                      <span style={{ fontSize: '0.8rem', color: '#6c757d' }}>
+                        Grade {student.grade}
+                        {isLocked && ' • Already set to multiple pen pals'}
+                      </span>
                     </div>
-                  );
-                })}
-              </div>
+                  </div>
+                );
+              })}
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Divider and header for bottom section */}
-          {studentsInBottomSection.length > 0 && (
-            <>
-              {studentsInTopSection.length > 0 && (
-                <div style={{
-                  borderTop: '2px solid #dee2e6',
-                  margin: '1rem 0',
-                  paddingTop: '1rem'
-                }}>
-                  <h4 style={{
-                    fontSize: '0.9rem',
-                    fontWeight: '500',
-                    color: '#495057',
-                    marginBottom: '0.75rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.5px'
-                  }}>
-                    Select Students
-                  </h4>
-                </div>
-              )}
-              {studentsInTopSection.length === 0 && (
-                <h4 style={{
-                  fontSize: '0.9rem',
-                  fontWeight: '500',
-                  color: '#495057',
-                  marginBottom: '0.75rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
-                }}>
-                  Select Students
-                </h4>
-              )}
+        {/* Bottom section - Students with ONE (scrollable) */}
+        {studentsInBottomSection.length > 0 && (
+          <div style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '0 2rem',
+            minHeight: 0
+          }}>
+            <div style={{
+              paddingTop: studentsInTopSection.length > 0 ? '1rem' : '0'
+            }}>
+              <h4 style={{
+                fontSize: '0.9rem',
+                fontWeight: '500',
+                color: '#495057',
+                marginBottom: '0.75rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px'
+              }}>
+                Select Students
+              </h4>
 
-              {/* Bottom section - Students with ONE */}
               <div style={{
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '0.5rem',
+                gap: '0.4rem',
                 paddingBottom: '1rem'
               }}>
                 {studentsInBottomSection.map(student => {
@@ -282,7 +252,7 @@ export default function UpdatePenpalPreferences({
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        padding: '0.75rem',
+                        padding: '0.5rem',
                         border: '1px solid #dee2e6',
                         borderRadius: '6px',
                         cursor: 'pointer',
@@ -295,18 +265,18 @@ export default function UpdatePenpalPreferences({
                         checked={false}
                         readOnly
                         style={{
-                          marginRight: '1rem',
-                          width: '18px',
-                          height: '18px',
+                          marginRight: '0.75rem',
+                          width: '16px',
+                          height: '16px',
                           cursor: 'pointer'
                         }}
                       />
                       <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span style={{ color: '#333' }}>
+                        <span style={{ color: '#333', fontSize: '0.9rem' }}>
                           {student.firstName} {student.lastInitial}.
                         </span>
                         <span style={{ color: '#6c757d' }}>|</span>
-                        <span style={{ fontSize: '0.85rem', color: '#6c757d' }}>
+                        <span style={{ fontSize: '0.8rem', color: '#6c757d' }}>
                           Grade {student.grade}
                         </span>
                       </div>
@@ -314,9 +284,9 @@ export default function UpdatePenpalPreferences({
                   );
                 })}
               </div>
-            </>
-          )}
-        </div>
+            </div>
+          </div>
+        )}
 
         {/* Action buttons - sticky at bottom */}
         <div style={{ 
