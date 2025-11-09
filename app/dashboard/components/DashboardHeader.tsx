@@ -32,7 +32,10 @@ interface SchoolData {
       id: string;
       schoolName: string;
       teacherName: string;
-      students: any[];
+      teacherEmail: string;
+      communicationPlatforms?: any;
+      mailingAddress?: string;
+      students?: any[];
     }>;
   };
   studentStats?: {
