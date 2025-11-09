@@ -209,19 +209,14 @@ export default function UpdatePenpalPreferences({
                           flexShrink: 0
                         }}
                       />
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ 
-                          color: '#333', 
-                          fontSize: '0.8rem',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis'
-                        }}>
+                      <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                        <span style={{ color: '#333', fontSize: '0.8rem' }}>
                           {student.firstName} {student.lastInitial}.
-                        </div>
-                        <div style={{ fontSize: '0.7rem', color: '#6c757d' }}>
+                        </span>
+                        <span style={{ color: '#6c757d' }}>|</span>
+                        <span style={{ fontSize: '0.7rem', color: '#6c757d' }}>
                           Grade {student.grade}
-                        </div>
+                        </span>
                       </div>
                     </div>
                   );
