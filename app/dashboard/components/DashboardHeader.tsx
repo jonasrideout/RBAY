@@ -125,7 +125,16 @@ export default function DashboardHeader({
     if (schoolData.matchedWithSchoolId && schoolData.matchedSchool) {
       // School is matched - use actual matched school/group size
       targetClassSize = schoolData.matchedSchool.actualStudentCount;
-      matchedSchoolName = schoolData.matchedSchool.schoolName;
+      
+      // Get the name - handle both individual schools and groups
+      if (schoolData.matchedSchool.isGroup && schoolData.matchedSchool.schools) {
+        // For groups, create a combined name from all schools
+        matchedSchoolName = schoolData.matchedSchool.schools
+          .map(s => s.schoolName)
+          .join(' + ');
+      } else {
+        matchedSchoolName = schoolData.matchedSchool.schoolName;
+      }
     }
     
     if (isInGroup) {
