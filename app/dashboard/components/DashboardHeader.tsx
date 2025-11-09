@@ -27,6 +27,13 @@ interface SchoolData {
     expectedClassSize: number;
     actualStudentCount: number;
     region: string;
+    isGroup?: boolean;
+    schools?: Array<{
+      id: string;
+      schoolName: string;
+      teacherName: string;
+      students: any[];
+    }>;
   };
   studentStats?: {
     expected: number;
