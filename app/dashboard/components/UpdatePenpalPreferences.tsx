@@ -187,7 +187,7 @@ export default function UpdatePenpalPreferences({
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        padding: '0.5rem',
+                        padding: '0.3rem',
                         border: '1px solid #dee2e6',
                         borderRadius: '6px',
                         cursor: isLocked ? 'not-allowed' : 'pointer',
@@ -202,9 +202,9 @@ export default function UpdatePenpalPreferences({
                         disabled={isLocked}
                         readOnly
                         style={{
-                          marginRight: '0.5rem',
-                          width: '14px',
-                          height: '14px',
+                          marginRight: '0.3rem',
+                          width: '12px',
+                          height: '12px',
                           cursor: isLocked ? 'not-allowed' : 'pointer',
                           flexShrink: 0
                         }}
@@ -212,14 +212,14 @@ export default function UpdatePenpalPreferences({
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ 
                           color: '#333', 
-                          fontSize: '0.85rem',
+                          fontSize: '0.8rem',
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
                           textOverflow: 'ellipsis'
                         }}>
                           {student.firstName} {student.lastInitial}.
                         </div>
-                        <div style={{ fontSize: '0.75rem', color: '#6c757d' }}>
+                        <div style={{ fontSize: '0.7rem', color: '#6c757d' }}>
                           Grade {student.grade}
                         </div>
                       </div>
