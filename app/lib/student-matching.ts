@@ -113,7 +113,9 @@ function calculateDistribution(
           extraForThisStudent += 1;
         }
         
-        distribution.set(student.id, currentCount + extraForThisStudent);
+        // ENFORCE MAXIMUM OF 2 PEN PALS TOTAL
+        const newTotal = currentCount + extraForThisStudent;
+        distribution.set(student.id, Math.min(newTotal, 2));
       });
     }
     
