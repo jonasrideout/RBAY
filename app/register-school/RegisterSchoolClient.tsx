@@ -38,6 +38,7 @@ export default function RegisterSchoolClient({
     schoolName: '',
     schoolCity: '',
     schoolState: '',
+    schoolCountry: 'United States',
     gradeLevels: [],
     classSize: '',
     programStartMonth: '',
@@ -155,10 +156,17 @@ export default function RegisterSchoolClient({
       }
     } else {
       // Regular mode validation - all original required fields plus new ones
+      const isUSSchool = formData.schoolCountry === 'United States';
+      
       const requiredFields = [
         'teacherName', 'teacherEmail', 'schoolName', 
-        'schoolState', 'classSize', 'programStartMonth', 'mailingAddress'
+        'classSize', 'programStartMonth', 'mailingAddress'
       ];
+      
+      // Add schoolState to required fields only for US schools
+      if (isUSSchool) {
+        requiredFields.push('schoolState');
+      }
 
       for (const field of requiredFields) {
         if (!formData[field as keyof SchoolFormData]) {
@@ -203,7 +211,8 @@ export default function RegisterSchoolClient({
 
     try {
       // Transform data to match API expectations
-      const region = getRegionForState(formData.schoolState);
+      const isUSSchool = formData.schoolCountry === 'United States';
+      const region = isUSSchool ? getRegionForState(formData.schoolState) : formData.schoolCountry;
       
       // Build communication platforms array with "Other: xxx" format if needed
       const communicationPlatformsFormatted = formData.communicationPlatforms.map(platform => {
@@ -221,6 +230,7 @@ export default function RegisterSchoolClient({
         schoolCity: formData.schoolCity,
         schoolAddress: '',
         schoolState: formData.schoolState,
+        schoolCountry: formData.schoolCountry,
         schoolZip: '',
         region,
         gradeLevel: formData.gradeLevels.join(', '),
