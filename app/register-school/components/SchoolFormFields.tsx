@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { SchoolFormData } from '../types';
+import { COUNTRIES, US_STATES } from '../constants';
 
 interface SchoolFormFieldsProps {
   formData: SchoolFormData;
@@ -12,14 +13,6 @@ interface SchoolFormFieldsProps {
   isAdminMode?: boolean;
   isEmailReadOnly?: boolean;
 }
-
-const STATES = [
-  'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
-  'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
-  'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
-  'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
-  'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
-];
 
 const GRADE_LEVELS = [
   'Kindergarten',
@@ -136,7 +129,28 @@ export default function SchoolFormFields({
         />
       </div>
 
-      {/* City and State - MOVED HERE */}
+      {/* Country Selector */}
+      <div style={{ marginBottom: '1.5rem' }}>
+        <label htmlFor="schoolCountry" className="form-label">
+          Country {!isAdminMode && '*'}
+        </label>
+        <select
+          id="schoolCountry"
+          name="schoolCountry"
+          value={formData.schoolCountry || 'United States'}
+          onChange={handleChange}
+          disabled={isLoading}
+          className="form-input"
+          required={!isAdminMode}
+        >
+          <option value="">Select Country</option>
+          {COUNTRIES.map(country => (
+            <option key={country.value} value={country.value}>{country.label}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* City and State/Province */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
         <div>
           <label htmlFor="schoolCity" className="form-label">
@@ -155,22 +169,35 @@ export default function SchoolFormFields({
 
         <div>
           <label htmlFor="schoolState" className="form-label">
-            State {!isAdminMode && '*'}
+            {formData.schoolCountry === 'United States' ? 'State' : 'State/Province/Region'} {!isAdminMode && formData.schoolCountry === 'United States' && '*'}
           </label>
-          <select
-            id="schoolState"
-            name="schoolState"
-            value={formData.schoolState}
-            onChange={handleChange}
-            disabled={isLoading}
-            className="form-input"
-            required={!isAdminMode}
-          >
-            <option value="">Select State</option>
-            {STATES.map(state => (
-              <option key={state} value={state}>{state}</option>
-            ))}
-          </select>
+          {formData.schoolCountry === 'United States' ? (
+            <select
+              id="schoolState"
+              name="schoolState"
+              value={formData.schoolState}
+              onChange={handleChange}
+              disabled={isLoading}
+              className="form-input"
+              required={!isAdminMode}
+            >
+              <option value="">Select State</option>
+              {US_STATES.map(state => (
+                <option key={state.value} value={state.value}>{state.label}</option>
+              ))}
+            </select>
+          ) : (
+            <input
+              type="text"
+              id="schoolState"
+              name="schoolState"
+              value={formData.schoolState}
+              onChange={handleChange}
+              disabled={isLoading}
+              className="form-input"
+              placeholder="Enter state, province, or region"
+            />
+          )}
         </div>
       </div>
 
