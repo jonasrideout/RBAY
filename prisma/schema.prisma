@@ -49,7 +49,8 @@ model School {
   dashboardToken       String        @unique @default(cuid())
   schoolAddress        String?
   schoolCity           String?
-  schoolState          String
+  schoolState          String?
+  schoolCountry        String        @default("United States")
   schoolZip            String?
   gradeLevel           String
   expectedClassSize    Int
@@ -60,15 +61,14 @@ model School {
   isActive             Boolean       @default(true)
   
   // New fields for communications and mailing
-  communicationPlatforms Json?      // ["Zoom", "Google Meet", "Other: Skype"]
-  mailingAddress        String?     // Multi-line mailing address
+  communicationPlatforms Json?
+  mailingAddress        String?
   
   // Group membership
   schoolGroupId        String?
   schoolGroup          SchoolGroup?  @relation(fields: [schoolGroupId], references: [id])
   
   // One-to-one school pairing
-  // Can contain either a valid School ID OR a marker like "group:xxx" for cross-type matches
   matchedWithSchoolId  String?       @unique
   notificationEmailsSent Boolean     @default(false)
   
