@@ -48,6 +48,7 @@ export default function SchoolEditModal({
     schoolName: schoolData.schoolName || '',
     schoolCity: schoolData.schoolCity || '',
     schoolState: schoolData.schoolState || '',
+    schoolCountry: 'United States',
     gradeLevels: schoolData.gradeLevel ? schoolData.gradeLevel.split(', ') : [],
     classSize: schoolData.expectedClassSize?.toString() || '',
     programStartMonth: schoolData.startMonth || schoolData.programStartMonth || '',
