@@ -560,6 +560,7 @@ export async function GET(request: NextRequest) {
             teacherEmail: true,
             schoolCity: true,
             schoolState: true,
+            schoolCountry: true,
             expectedClassSize: true,
             region: true,
             mailingAddress: true,
