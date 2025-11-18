@@ -17,6 +17,7 @@ export async function POST(request: NextRequest) {
       schoolAddress,
       schoolCity,
       schoolState,
+      schoolCountry,
       schoolZip,
       region,
       gradeLevel,
@@ -38,10 +39,20 @@ export async function POST(request: NextRequest) {
         );
       }
     } else {
+      const isUSSchool = schoolCountry === 'United States';
+      
       if (!teacherName || !teacherEmail || !schoolName || 
-          !schoolState || !gradeLevel || !expectedClassSize || !startMonth || !mailingAddress) {
+          !gradeLevel || !expectedClassSize || !startMonth || !mailingAddress) {
         return NextResponse.json(
           { error: 'Missing required fields' },
+          { status: 400 }
+        );
+      }
+      
+      // State is only required for US schools
+      if (isUSSchool && !schoolState) {
+        return NextResponse.json(
+          { error: 'State is required for US schools' },
           { status: 400 }
         );
       }
@@ -64,18 +75,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate state format only if provided
-    if (schoolState && schoolState.length !== 2) {
+    // Validate state format only for US schools
+    if (schoolCountry === 'United States' && schoolState && schoolState.length !== 2) {
       return NextResponse.json(
         { error: 'Invalid state format' },
         { status: 400 }
       );
     }
 
-    // Only validate region if state is provided
-    if (schoolState && !region) {
+    // Only validate region if it's a US school with a state
+    if (schoolCountry === 'United States' && schoolState && !region) {
       return NextResponse.json(
-        { error: 'Region is required when state is provided' },
+        { error: 'Region is required for US schools' },
         { status: 400 }
       );
     }
@@ -93,6 +104,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Create the school
+    const isUSSchool = schoolCountry === 'United States';
+    
     const school = await prisma.school.create({
       data: {
         teacherName,
@@ -101,9 +114,10 @@ export async function POST(request: NextRequest) {
         schoolName,
         schoolAddress: schoolAddress || null,
         schoolCity: schoolCity || null,
-        schoolState: schoolState || 'TBD',
+        schoolState: schoolState || (isUSSchool ? 'TBD' : null),
+        schoolCountry: schoolCountry || 'United States',
         schoolZip: schoolZip || null,
-        region: region || 'TBD',
+        region: region || (isUSSchool ? 'TBD' : schoolCountry),
         gradeLevel: gradeLevel || 'TBD',
         expectedClassSize: expectedClassSize ? parseInt(expectedClassSize) : 0,
         startMonth: startMonth || 'TBD',
