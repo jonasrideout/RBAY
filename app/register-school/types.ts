@@ -5,6 +5,7 @@ export interface SchoolFormData {
   schoolName: string;
   schoolCity: string;
   schoolState: string;
+  schoolCountry: string;
   gradeLevels: string[];
   classSize: string;
   programStartMonth: string;
