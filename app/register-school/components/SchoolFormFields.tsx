@@ -258,6 +258,11 @@ export default function SchoolFormFields({
         <label htmlFor="mailingAddress" className="form-label">
           Complete mailing address, including city, state, and zip, where pen pal letters should be mailed {!isAdminMode && '*'}
         </label>
+        {formData.schoolCountry !== 'United States' && (
+          <p style={{ fontSize: '0.875rem', color: '#666', marginTop: '0.25rem', marginBottom: '0.5rem' }}>
+            Note: If physical letters cannot be mailed internationally, please indicate if letters will be scanned and shared digitally.
+          </p>
+        )}
         <textarea
           id="mailingAddress"
           name="mailingAddress"
