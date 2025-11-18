@@ -34,6 +34,7 @@ interface MatchedSchool {
   teacherEmail: string;
   schoolCity?: string;
   schoolState?: string;
+  schoolCountry?: string;
   expectedClassSize: number;
   region: string;
   communicationPlatforms?: any;
@@ -66,8 +67,19 @@ export default function StudentMetricsGrid({
   
   // Format location for matched school
   const formatLocation = () => {
-    if (matchedSchool?.schoolCity && matchedSchool?.schoolState) {
-      return `${matchedSchool.schoolCity}, ${matchedSchool.schoolState}`;
+    const isUS = !matchedSchool?.schoolCountry || matchedSchool?.schoolCountry === 'United States';
+    
+    if (isUS) {
+      if (matchedSchool?.schoolCity && matchedSchool?.schoolState) {
+        return `${matchedSchool.schoolCity}, ${matchedSchool.schoolState}`;
+      }
+    } else {
+      // International school - show city and country
+      if (matchedSchool?.schoolCity && matchedSchool?.schoolCountry) {
+        return `${matchedSchool.schoolCity}, ${matchedSchool.schoolCountry}`;
+      } else if (matchedSchool?.schoolCountry) {
+        return matchedSchool.schoolCountry;
+      }
     }
     return '—';
   };
