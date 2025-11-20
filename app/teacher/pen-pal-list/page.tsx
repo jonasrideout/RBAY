@@ -20,6 +20,7 @@ interface Penpal {
   school: string;
   city?: string | null;
   state?: string | null;
+  country?: string;
   schoolGroupId?: string | null;
   teacherName?: string;
   interests: string[];
@@ -61,6 +62,7 @@ interface ConsolidatedStudent {
     school: string;
     city?: string | null;
     state?: string | null;
+    country?: string;
     schoolGroupId?: string | null;
     teacherName?: string;
     interests: string;
@@ -155,6 +157,7 @@ function PenPalListContent() {
           school: penpal.school,
           city: penpal.city,
           state: penpal.state,
+          country: penpal.country,
           schoolGroupId: penpal.schoolGroupId,
           teacherName: penpal.teacherName,
           interests: formatInterests(penpal.interests, penpal.otherInterests)
@@ -354,11 +357,11 @@ function PenPalListContent() {
                   paddingRight: '1rem'
                 }}>
                   {student.penpals.map((penpal, penpalIndex) => {
-                    // Build location string
+                    // Build location string: School, City, Country
                     const locationParts = [];
                     if (penpal.school) locationParts.push(penpal.school);
                     if (penpal.city) locationParts.push(penpal.city);
-                    if (penpal.state) locationParts.push(penpal.state);
+                    if (penpal.country) locationParts.push(penpal.country);
                     const location = locationParts.join(', ');
                     
                     // Only add teacher info if pen pal's school is part of a group
