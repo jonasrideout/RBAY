@@ -19,7 +19,7 @@ export default function PenPalPreferenceForm({
       <p style={{ color: '#6c757d', fontSize: '0.9rem', marginBottom: '1rem' }}>
         {isTeacherFlow 
           ? "" 
-          : "Would you like to have one pen pal or would you be excited to write to multiple pen pals?"
+          : "Would you like to have one pen pal or would you be excited to write to two pen pals?"
         }
       </p>
       
@@ -76,10 +76,10 @@ export default function PenPalPreferenceForm({
           />
           <div>
             <div style={{ fontWeight: '500', marginBottom: '0.25rem' }}>
-              {isTeacherFlow ? "✉️ Multiple pen pals if possible!" : "✉️ I'd love multiple pen pals if possible!"}
+              {isTeacherFlow ? "✉️ Two pen pals" : "✉️ I'd love two pen pals"}
             </div>
             <div style={{ fontSize: '0.85rem', color: '#6c757d' }}>
-              {isTeacherFlow ? "Excited to write to 2-3 different students" : "I'm excited to write to 2-3 different students"}
+              {isTeacherFlow ? "Excited to write to 2 different students" : "I'm excited to write to 2 different students"}
             </div>
           </div>
         </label>
