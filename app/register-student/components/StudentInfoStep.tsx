@@ -92,6 +92,7 @@ export default function StudentInfoStep({
           interests={formData.interests}
           otherInterests={formData.otherInterests}
           isLoading={isLoading}
+          showError={!!error}
           onInterestChange={onInterestChange}
           onOtherInterestsChange={(value) => onUpdateFormData('otherInterests', value)}
         />
