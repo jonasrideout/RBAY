@@ -26,6 +26,8 @@ export async function POST(request: NextRequest) {
       specialConsiderations,
       communicationPlatforms,
       mailingAddress,
+      hasMultipleClasses,
+      teacherNames,
       isAdminFlow,
       isEmailVerified
     } = body;
@@ -124,7 +126,9 @@ export async function POST(request: NextRequest) {
         status: 'COLLECTING',
         specialConsiderations: specialConsiderations || null,
         communicationPlatforms: communicationPlatforms || null,
-        mailingAddress: mailingAddress || null
+        mailingAddress: mailingAddress || null,
+        hasMultipleClasses: hasMultipleClasses || false,
+        teacherNames: teacherNames || []
       }
     });
 
