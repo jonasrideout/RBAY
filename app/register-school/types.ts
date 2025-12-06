@@ -15,4 +15,6 @@ export interface SchoolFormData {
   communicationPlatforms: string[];
   communicationPlatformsOther: string;
   mailingAddress: string;
+  hasMultipleClasses: boolean;
+  teacherNames: string[];
 }
