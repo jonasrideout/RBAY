@@ -157,11 +157,19 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { studentId, interests, penpalPreference, otherInterests } = body;
+    const { studentId, firstName, lastInitial, grade, interests, penpalPreference, otherInterests } = body;
 
     if (!studentId) {
       return NextResponse.json(
         { error: 'Student ID is required' },
+        { status: 400 }
+      );
+    }
+
+    // Validate lastInitial if provided
+    if (lastInitial !== undefined && lastInitial.length > 2) {
+      return NextResponse.json(
+        { error: 'Last initial must be 1-2 characters only' },
         { status: 400 }
       );
     }
@@ -173,6 +181,18 @@ export async function PUT(request: NextRequest) {
     const updateData: any = {
       profileCompleted
     };
+
+    if (firstName !== undefined) {
+      updateData.firstName = firstName;
+    }
+
+    if (lastInitial !== undefined) {
+      updateData.lastInitial = lastInitial;
+    }
+
+    if (grade !== undefined) {
+      updateData.grade = grade;
+    }
 
     if (interests !== undefined) {
       updateData.interests = interests;
@@ -196,7 +216,8 @@ export async function PUT(request: NextRequest) {
       student: {
         id: updatedStudent.id,
         firstName: updatedStudent.firstName,
-        lastInitial: updatedStudent.lastInitial,  // Changed from lastName
+        lastInitial: updatedStudent.lastInitial,
+        grade: updatedStudent.grade,
         interests: updatedStudent.interests,
         otherInterests: updatedStudent.otherInterests,
         penpalPreference: updatedStudent.penpalPreference,
