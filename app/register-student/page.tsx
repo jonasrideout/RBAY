@@ -21,6 +21,7 @@ interface StudentFormData {
   firstName: string;
   lastInitial: string;
   grade: string;
+  teacherName: string;
   interests: string[];
   otherInterests: string;
   penpalPreference: 'ONE' | 'MULTIPLE';
@@ -33,6 +34,8 @@ interface SchoolInfo {
   found: boolean;
   schoolId: string;
   teacherEmail?: string;
+  hasMultipleClasses?: boolean;
+  teacherNames?: string[];
 }
 
 type Step = 'schoolVerify' | 'schoolConfirm' | 'info' | 'success';
@@ -49,6 +52,7 @@ function RegisterStudentForm() {
     firstName: '',
     lastInitial: '',
     grade: '',
+    teacherName: '',
     interests: [],
     otherInterests: '',
     penpalPreference: 'ONE',
@@ -123,7 +127,9 @@ function RegisterStudentForm() {
         teacher: data.school.teacherName,
         found: true,
         schoolId: data.school.id,
-        teacherEmail: data.school.teacherEmail
+        teacherEmail: data.school.teacherEmail,
+        hasMultipleClasses: data.school.hasMultipleClasses || false,
+        teacherNames: data.school.teacherNames || []
       });
 
       // Check if the current user is a teacher with a session
@@ -163,7 +169,9 @@ function RegisterStudentForm() {
         teacher: data.school.teacherName,
         found: true,
         schoolId: data.school.id,
-        teacherEmail: data.school.teacherEmail
+        teacherEmail: data.school.teacherEmail,
+        hasMultipleClasses: data.school.hasMultipleClasses || false,
+        teacherNames: data.school.teacherNames || []
       });
 
       // Set the dashboard token for form submission
