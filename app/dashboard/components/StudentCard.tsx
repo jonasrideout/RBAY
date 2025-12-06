@@ -246,7 +246,7 @@ export default function StudentCard({
         }}>
           {/* Name and Grade Fields */}
           <div style={{ marginBottom: '1.5rem' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
               <div>
                 <label className="text-data-value" style={{ 
                   display: 'block', 
@@ -269,7 +269,7 @@ export default function StudentCard({
                   marginBottom: '0.5rem',
                   fontSize: '0.9rem'
                 }}>
-                  Last Initial:
+                  Initials:
                 </label>
                 <input 
                   type="text" 
@@ -280,32 +280,32 @@ export default function StudentCard({
                   style={{ width: '100%' }}
                 />
               </div>
-              <div>
-                <label className="text-data-value" style={{ 
-                  display: 'block', 
-                  marginBottom: '0.5rem',
-                  fontSize: '0.9rem'
-                }}>
-                  Grade:
-                </label>
-                <select 
-                  className="form-select"
-                  value={tempGrade}
-                  onChange={(e) => onGradeChange?.(e.target.value)}
-                  style={{ width: '100%' }}
-                >
-                  <option value="">Select</option>
-                  <option value="K">Kindergarten</option>
-                  <option value="1">1st Grade</option>
-                  <option value="2">2nd Grade</option>
-                  <option value="3">3rd Grade</option>
-                  <option value="4">4th Grade</option>
-                  <option value="5">5th Grade</option>
-                  <option value="6">6th Grade</option>
-                  <option value="7">7th Grade</option>
-                  <option value="8">8th Grade</option>
-                </select>
-              </div>
+            </div>
+            <div>
+              <label className="text-data-value" style={{ 
+                display: 'block', 
+                marginBottom: '0.5rem',
+                fontSize: '0.9rem'
+              }}>
+                Grade:
+              </label>
+              <select 
+                className="form-select"
+                value={tempGrade}
+                onChange={(e) => onGradeChange?.(e.target.value)}
+                style={{ width: '100%' }}
+              >
+                <option value="">Select</option>
+                <option value="K">Kindergarten</option>
+                <option value="1">1st Grade</option>
+                <option value="2">2nd Grade</option>
+                <option value="3">3rd Grade</option>
+                <option value="4">4th Grade</option>
+                <option value="5">5th Grade</option>
+                <option value="6">6th Grade</option>
+                <option value="7">7th Grade</option>
+                <option value="8">8th Grade</option>
+              </select>
             </div>
           </div>
 
