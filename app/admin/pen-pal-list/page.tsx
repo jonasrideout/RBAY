@@ -350,11 +350,7 @@ function PenPalListContent() {
                   maxWidth: 'calc(100% - 180px)', // Leave room for logo on right
                   paddingRight: '1rem'
                 }}>
-                  {student.studentName}
-                  {((student.studentSchoolGroupId || student.studentHasMultipleClasses) && student.studentTeacherName) && 
-                    ` | ${student.studentTeacherName}`
-                  }
-                  {' | '}Interests: {student.studentInterests}
+                  {student.studentName} | Interests: {student.studentInterests}
                 </div>
                 <div style={{
                   marginLeft: '1rem',
