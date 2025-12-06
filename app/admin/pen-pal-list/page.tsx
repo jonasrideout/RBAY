@@ -23,6 +23,7 @@ interface Penpal {
   country?: string;
   schoolGroupId?: string | null;
   teacherName?: string;
+  hasMultipleClasses?: boolean;
   interests: string[];
   otherInterests: string | null;
 }
