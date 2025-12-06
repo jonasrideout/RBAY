@@ -253,6 +253,80 @@ export default function SchoolFormFields({
         />
       </div>
 
+      {/* Multiple Classes Checkbox */}
+      <div style={{ marginBottom: '1.5rem' }}>
+        <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', cursor: 'pointer' }}>
+          <input
+            type="checkbox"
+            checked={formData.hasMultipleClasses || false}
+            onChange={(e) => {
+              onUpdateFormData('hasMultipleClasses', e.target.checked);
+              if (!e.target.checked) {
+                onUpdateFormData('teacherNames', []);
+              }
+            }}
+            disabled={isLoading}
+            style={{ marginTop: '0.25rem' }}
+          />
+          <span className="form-label" style={{ margin: 0 }}>
+            I have students from multiple classes participating in this program
+          </span>
+        </label>
+      </div>
+
+      {/* Teacher Names List */}
+      {formData.hasMultipleClasses && (
+        <div style={{ marginBottom: '1.5rem', paddingLeft: '1.5rem' }}>
+          <label className="form-label">
+            Teacher Names *
+          </label>
+          <p className="text-meta-info" style={{ fontSize: '0.9rem', marginBottom: '1rem' }}>
+            Add the names of teachers whose students are participating. Students will select their teacher during registration.
+          </p>
+          {(formData.teacherNames || []).map((name, index) => (
+            <div key={index} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => {
+                  const newNames = [...(formData.teacherNames || [])];
+                  newNames[index] = e.target.value;
+                  onUpdateFormData('teacherNames', newNames);
+                }}
+                disabled={isLoading}
+                className="form-input"
+                placeholder="Teacher name"
+                required
+                style={{ flex: 1 }}
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  const newNames = (formData.teacherNames || []).filter((_, i) => i !== index);
+                  onUpdateFormData('teacherNames', newNames);
+                }}
+                disabled={isLoading}
+                className="btn btn-danger"
+                style={{ padding: '0.5rem 1rem' }}
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => {
+              onUpdateFormData('teacherNames', [...(formData.teacherNames || []), '']);
+            }}
+            disabled={isLoading}
+            className="btn"
+            style={{ marginTop: '0.5rem' }}
+          >
+            + Add Teacher
+          </button>
+        </div>
+      )}
+
       {/* Mailing Address - UPDATED LABEL */}
       <div style={{ marginBottom: '1.5rem' }}>
         <label htmlFor="mailingAddress" className="form-label">
