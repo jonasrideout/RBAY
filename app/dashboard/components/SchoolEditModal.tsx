@@ -57,7 +57,9 @@ export default function SchoolEditModal({
     parentNotification: true,
     communicationPlatforms: schoolData.communicationPlatforms || [],
     communicationPlatformsOther: '',
-    mailingAddress: schoolData.mailingAddress || ''
+    mailingAddress: schoolData.mailingAddress || '',
+    hasMultipleClasses: (schoolData as any).hasMultipleClasses || false,
+    teacherNames: (schoolData as any).teacherNames || []
   });
 
   const handleUpdateFormData = (field: keyof SchoolFormData, value: any) => {
