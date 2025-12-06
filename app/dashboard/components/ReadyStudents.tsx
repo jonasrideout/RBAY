@@ -24,8 +24,11 @@ interface ReadyStudentsProps {
   editTempFirstName: string;
   editTempLastInitial: string;
   editTempGrade: string;
+  editTempTeacherName: string;
   editTempInterests: string[];
   editTempOtherInterests: string;
+  hasMultipleClasses: boolean;
+  teacherNames: string[];
   onToggleRemovalMode: () => void;
   onToggleEditMode: () => void;
   onRemoveStudent: (studentId: string) => void;
@@ -35,6 +38,7 @@ interface ReadyStudentsProps {
   onEditFirstNameChange: (value: string) => void;
   onEditLastInitialChange: (value: string) => void;
   onEditGradeChange: (value: string) => void;
+  onEditTeacherNameChange: (value: string) => void;
   onEditInterestChange: (interest: string, checked: boolean) => void;
   onEditOtherInterestsChange: (value: string) => void;
   onToggleExpansion: (studentId: string) => void;
@@ -51,8 +55,11 @@ export default function ReadyStudents({
   editTempFirstName,
   editTempLastInitial,
   editTempGrade,
+  editTempTeacherName,
   editTempInterests,
   editTempOtherInterests,
+  hasMultipleClasses,
+  teacherNames,
   onToggleRemovalMode,
   onToggleEditMode,
   onRemoveStudent,
@@ -62,6 +69,7 @@ export default function ReadyStudents({
   onEditFirstNameChange,
   onEditLastInitialChange,
   onEditGradeChange,
+  onEditTeacherNameChange,
   onEditInterestChange,
   onEditOtherInterestsChange,
   onToggleExpansion,
@@ -138,8 +146,11 @@ export default function ReadyStudents({
             tempFirstName={editTempFirstName}
             tempLastInitial={editTempLastInitial}
             tempGrade={editTempGrade}
+            tempTeacherName={editTempTeacherName}
             tempInterests={editTempInterests}
             tempOtherInterests={editTempOtherInterests}
+            hasMultipleClasses={hasMultipleClasses}
+            teacherNames={teacherNames}
             onExpandClick={() => onToggleExpansion(student.id)}
             onRemoveClick={() => onRemoveStudent(student.id)}
             onEditClick={() => onEditStudent(student.id)}
@@ -148,6 +159,7 @@ export default function ReadyStudents({
             onFirstNameChange={onEditFirstNameChange}
             onLastInitialChange={onEditLastInitialChange}
             onGradeChange={onEditGradeChange}
+            onTeacherNameChange={onEditTeacherNameChange}
             onInterestChange={onEditInterestChange}
             onOtherInterestsChange={onEditOtherInterestsChange}
             readOnly={readOnly}
