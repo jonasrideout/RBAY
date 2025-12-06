@@ -387,13 +387,8 @@ function RegisterStudentForm() {
           <LoadingState message="Processing..." />
         )}
 
-        {/* Show error state */}
-        {error && !isLoading && (
-          <ErrorState error={error} />
-        )}
-
         {/* Show form steps when ready */}
-        {!isLoading && !error && (
+        {!isLoading && (
           <>
             {currentStep === 'schoolVerify' && (
               <SchoolVerificationStep
