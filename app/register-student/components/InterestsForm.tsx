@@ -20,6 +20,7 @@ interface InterestsFormProps {
   interests: string[];
   otherInterests: string;
   isLoading: boolean;
+  showError?: boolean;
   onInterestChange: (interest: string, checked: boolean) => void;
   onOtherInterestsChange: (value: string) => void;
 }
@@ -29,6 +30,7 @@ export default function InterestsForm({
   interests,
   otherInterests,
   isLoading,
+  showError = false,
   onInterestChange,
   onOtherInterestsChange
 }: InterestsFormProps) {
@@ -42,6 +44,20 @@ export default function InterestsForm({
             : "Select at least one that applies - this helps us find you a great penpal!"
           }
         </p>
+        
+        {showError && interests.length === 0 && (
+          <div style={{ 
+            color: '#dc3545', 
+            fontSize: '0.9rem', 
+            marginBottom: '1rem',
+            padding: '0.5rem',
+            backgroundColor: '#f8d7da',
+            border: '1px solid #f5c6cb',
+            borderRadius: '4px'
+          }}>
+            ⚠️ Please select at least one interest
+          </div>
+        )}
         
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.5rem' }}>
           {INTEREST_OPTIONS.map(interest => (
