@@ -10,6 +10,8 @@ interface SchoolInfo {
   found: boolean;
   schoolId: string;
   teacherEmail?: string;
+  hasMultipleClasses?: boolean;
+  teacherNames?: string[];
 }
 
 interface StudentFormData {
@@ -17,6 +19,7 @@ interface StudentFormData {
   firstName: string;
   lastInitial: string;
   grade: string;
+  teacherName: string;
   interests: string[];
   otherInterests: string;
   penpalPreference: 'ONE' | 'MULTIPLE';
@@ -72,11 +75,15 @@ export default function StudentInfoStep({
           firstName={formData.firstName}
           lastInitial={formData.lastInitial}
           grade={formData.grade}
+          teacherName={formData.teacherName}
           penpalPreference={formData.penpalPreference}
           isLoading={isLoading}
+          hasMultipleClasses={schoolInfo?.hasMultipleClasses || false}
+          teacherNames={schoolInfo?.teacherNames || []}
           onFirstNameChange={(value) => onUpdateFormData('firstName', value)}
           onLastInitialChange={(value) => onUpdateFormData('lastInitial', value)}
           onGradeChange={(value) => onUpdateFormData('grade', value)}
+          onTeacherNameChange={(value) => onUpdateFormData('teacherName', value)}
           onPenpalPreferenceChange={(value) => onUpdateFormData('penpalPreference', value)}
         />
 
