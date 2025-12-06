@@ -305,8 +305,9 @@ function RegisterStudentForm() {
     setIsLoading(true);
     setError('');
     
-    if (!formData.firstName || !formData.lastInitial || !formData.grade || !formData.parentConsent || formData.interests.length === 0) {
-      setError('Please fill in all required fields, select at least one interest, and check the parent consent box');
+    // Check interests separately for inline error display
+    if (formData.interests.length === 0) {
+      setError('interests'); // Set error flag for inline display
       setIsLoading(false);
       return;
     }
