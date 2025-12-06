@@ -35,14 +35,23 @@ interface StudentCardProps {
   isExpanded?: boolean;
   isEditing?: boolean;
   showRemoveButton?: boolean;
+  showEditButton?: boolean;
   readyForMatching?: boolean;
+  penPalsAssigned?: boolean;
+  tempFirstName?: string;
+  tempLastInitial?: string;
+  tempGrade?: string;
   tempInterests?: string[];
   tempOtherInterests?: string;
   onEditClick?: () => void;
   onRemoveClick?: () => void;
   onExpandClick?: () => void;
+  onSaveEdit?: () => void;
   onSaveInterests?: () => void;
   onCancelEdit?: () => void;
+  onFirstNameChange?: (value: string) => void;
+  onLastInitialChange?: (value: string) => void;
+  onGradeChange?: (value: string) => void;
   onInterestChange?: (interest: string, checked: boolean) => void;
   onOtherInterestsChange?: (value: string) => void;
   readOnly?: boolean;
@@ -54,14 +63,23 @@ export default function StudentCard({
   isExpanded = false,
   isEditing = false,
   showRemoveButton = false,
+  showEditButton = false,
   readyForMatching = false,
+  penPalsAssigned = false,
+  tempFirstName = '',
+  tempLastInitial = '',
+  tempGrade = '',
   tempInterests = [],
   tempOtherInterests = '',
   onEditClick,
   onRemoveClick,
   onExpandClick,
+  onSaveEdit,
   onSaveInterests,
   onCancelEdit,
+  onFirstNameChange,
+  onLastInitialChange,
+  onGradeChange,
   onInterestChange,
   onOtherInterestsChange,
   readOnly = false
@@ -204,7 +222,157 @@ export default function StudentCard({
     );
   }
 
-  // Ready student card - expanded view
+  // Ready student card - EDITING mode
+  if (type === 'ready' && isEditing) {
+    return (
+      <div className="card" style={{ margin: '0' }}>
+        <div style={{ marginBottom: '1rem' }}>
+          <h4 className="text-data-value" style={{ 
+            marginBottom: '0.25rem',
+            fontSize: '1.1rem'
+          }}>
+            Editing Student
+          </h4>
+          <span className="text-meta-info">
+            Update all student information
+          </span>
+        </div>
+        
+        <div style={{ 
+          background: '#fafafa', 
+          padding: '1.5rem', 
+          borderRadius: '6px', 
+          border: '1px solid #e0e0e0' 
+        }}>
+          {/* Name and Grade Fields */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+              <div>
+                <label className="text-data-value" style={{ 
+                  display: 'block', 
+                  marginBottom: '0.5rem',
+                  fontSize: '0.9rem'
+                }}>
+                  First Name:
+                </label>
+                <input 
+                  type="text" 
+                  className="form-input"
+                  value={tempFirstName}
+                  onChange={(e) => onFirstNameChange?.(e.target.value)}
+                  style={{ width: '100%' }}
+                />
+              </div>
+              <div>
+                <label className="text-data-value" style={{ 
+                  display: 'block', 
+                  marginBottom: '0.5rem',
+                  fontSize: '0.9rem'
+                }}>
+                  Last Initial:
+                </label>
+                <input 
+                  type="text" 
+                  className="form-input"
+                  value={tempLastInitial}
+                  onChange={(e) => onLastInitialChange?.(e.target.value)}
+                  maxLength={2}
+                  style={{ width: '100%' }}
+                />
+              </div>
+              <div>
+                <label className="text-data-value" style={{ 
+                  display: 'block', 
+                  marginBottom: '0.5rem',
+                  fontSize: '0.9rem'
+                }}>
+                  Grade:
+                </label>
+                <select 
+                  className="form-select"
+                  value={tempGrade}
+                  onChange={(e) => onGradeChange?.(e.target.value)}
+                  style={{ width: '100%' }}
+                >
+                  <option value="">Select</option>
+                  <option value="K">Kindergarten</option>
+                  <option value="1">1st Grade</option>
+                  <option value="2">2nd Grade</option>
+                  <option value="3">3rd Grade</option>
+                  <option value="4">4th Grade</option>
+                  <option value="5">5th Grade</option>
+                  <option value="6">6th Grade</option>
+                  <option value="7">7th Grade</option>
+                  <option value="8">8th Grade</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Interests Section */}
+          <h5 className="text-data-value" style={{ 
+            marginBottom: '1rem', 
+            fontSize: '1rem'
+          }}>
+            Select Interests:
+          </h5>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', 
+            gap: '0.5rem', 
+            marginBottom: '1rem' 
+          }}>
+            {INTEREST_OPTIONS.map(interest => (
+              <label key={interest.value} className="text-meta-info" style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.5rem'
+              }}>
+                <input 
+                  type="checkbox" 
+                  checked={tempInterests.includes(interest.value)}
+                  onChange={(e) => onInterestChange?.(interest.value, e.target.checked)}
+                />
+                {interest.label}
+              </label>
+            ))}
+          </div>
+          <div style={{ marginBottom: '1rem' }}>
+            <label className="text-data-value" style={{ 
+              display: 'block', 
+              marginBottom: '0.5rem'
+            }}>
+              Other Interests:
+            </label>
+            <textarea 
+              className="form-textarea" 
+              placeholder="Any other hobbies or interests..."
+              rows={2}
+              value={tempOtherInterests}
+              onChange={(e) => onOtherInterestsChange?.(e.target.value)}
+              style={{ width: '100%' }}
+            />
+          </div>
+          <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+            <button 
+              className="btn btn-secondary"
+              onClick={onCancelEdit}
+            >
+              Cancel
+            </button>
+            <button 
+              className="btn" 
+              onClick={onSaveEdit}
+            >
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Ready student card - expanded view (NOT editing)
   if (type === 'ready' && isExpanded) {
     return (
       <div 
@@ -237,6 +405,24 @@ export default function StudentCard({
             }}>
               ✅ Ready
             </span>
+            {!readOnly && showEditButton && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEditClick?.();
+                }}
+                className="btn"
+                style={{ 
+                  fontSize: '12px',
+                  padding: '4px 8px',
+                  minWidth: 'auto'
+                }}
+                title={`Edit ${student.firstName} ${student.lastInitial}.`}
+                disabled={penPalsAssigned}
+              >
+                ✏️
+              </button>
+            )}
             {!readOnly && showRemoveButton && (
               <button
                 onClick={(e) => {
@@ -328,6 +514,24 @@ export default function StudentCard({
             }}>
               ✅ Ready
             </span>
+            {!readOnly && showEditButton && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEditClick?.();
+                }}
+                className="btn"
+                style={{ 
+                  fontSize: '12px',
+                  padding: '4px 8px',
+                  minWidth: 'auto'
+                }}
+                title={`Edit ${student.firstName} ${student.lastInitial}.`}
+                disabled={penPalsAssigned}
+              >
+                ✏️
+              </button>
+            )}
             {!readOnly && showRemoveButton && (
               <button
                 onClick={(e) => {
