@@ -47,7 +47,9 @@ export default function RegisterSchoolClient({
     parentNotification: false,
     communicationPlatforms: [],
     communicationPlatformsOther: '',
-    mailingAddress: ''
+    mailingAddress: '',
+    hasMultipleClasses: false,
+    teacherNames: []
   });
 
   // Pre-populate email from server-validated data
