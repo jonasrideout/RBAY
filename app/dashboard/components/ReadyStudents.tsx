@@ -17,10 +17,13 @@ interface Student {
 interface ReadyStudentsProps {
   studentsWithInterests: Student[];
   readyStudentsRemovalMode: boolean;
+  readyStudentsEditMode: boolean;
   expandedReadyStudents: Set<string>;
   penPalsAssigned: boolean;
   onToggleRemovalMode: () => void;
+  onToggleEditMode: () => void;
   onRemoveStudent: (studentId: string) => void;
+  onEditStudent: (studentId: string) => void;
   onToggleExpansion: (studentId: string) => void;
   readOnly?: boolean;
 }
@@ -28,10 +31,13 @@ interface ReadyStudentsProps {
 export default function ReadyStudents({
   studentsWithInterests,
   readyStudentsRemovalMode,
+  readyStudentsEditMode,
   expandedReadyStudents,
   penPalsAssigned,
   onToggleRemovalMode,
+  onToggleEditMode,
   onRemoveStudent,
+  onEditStudent,
   onToggleExpansion,
   readOnly = false
 }: ReadyStudentsProps) {
@@ -57,20 +63,34 @@ export default function ReadyStudents({
           Ready Students ({studentsWithInterests.length})
         </h3>
         
-        {/* Clean button styling */}
+        {/* Button group for Edit and Remove */}
         {!readOnly && (
-          <button
-           className={readyStudentsRemovalMode ? "btn btn-secondary" : "btn"}
-          onClick={onToggleRemovalMode}
-          disabled={penPalsAssigned}
-          title={penPalsAssigned ? "Cannot remove students after pen pals are assigned" : undefined}
-          style={{
-          fontSize: '14px',
-          opacity: penPalsAssigned ? 0.6 : 1
-        }}
-      >
-  {readyStudentsRemovalMode ? 'Finished' : 'Remove Student'}
-          </button>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              className={readyStudentsEditMode ? "btn btn-secondary" : "btn"}
+              onClick={onToggleEditMode}
+              disabled={penPalsAssigned}
+              title={penPalsAssigned ? "Cannot edit students after pen pals are assigned" : undefined}
+              style={{
+                fontSize: '14px',
+                opacity: penPalsAssigned ? 0.6 : 1
+              }}
+            >
+              {readyStudentsEditMode ? 'Finished' : 'Edit Student'}
+            </button>
+            <button
+              className={readyStudentsRemovalMode ? "btn btn-secondary" : "btn"}
+              onClick={onToggleRemovalMode}
+              disabled={penPalsAssigned}
+              title={penPalsAssigned ? "Cannot remove students after pen pals are assigned" : undefined}
+              style={{
+                fontSize: '14px',
+                opacity: penPalsAssigned ? 0.6 : 1
+              }}
+            >
+              {readyStudentsRemovalMode ? 'Finished' : 'Remove Student'}
+            </button>
+          </div>
         )}
       </div>
 
@@ -86,8 +106,11 @@ export default function ReadyStudents({
             type="ready"
             isExpanded={expandedReadyStudents.has(student.id)}
             showRemoveButton={readyStudentsRemovalMode}
+            showEditButton={readyStudentsEditMode}
+            penPalsAssigned={penPalsAssigned}
             onExpandClick={() => onToggleExpansion(student.id)}
             onRemoveClick={() => onRemoveStudent(student.id)}
+            onEditClick={() => onEditStudent(student.id)}
             readOnly={readOnly}
           />
         ))}
