@@ -258,7 +258,9 @@ function RegisterStudentForm() {
           teacher: teacherName,
           found: true,
           schoolId: data.school.id,
-          teacherEmail: teacherEmail
+          teacherEmail: teacherEmail,
+          hasMultipleClasses: data.school.hasMultipleClasses || false,
+          teacherNames: data.school.teacherNames || []
         });
         setCurrentStep('schoolConfirm');
       } else {
@@ -268,7 +270,9 @@ function RegisterStudentForm() {
           teacher: teacherName,
           found: false,
           schoolId: data.school.id,
-          teacherEmail: teacherEmail
+          teacherEmail: teacherEmail,
+          hasMultipleClasses: data.school.hasMultipleClasses || false,
+          teacherNames: data.school.teacherNames || []
         });
         setCurrentStep('schoolConfirm');
       }
