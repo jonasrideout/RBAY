@@ -20,6 +20,7 @@ interface Student {
   firstName: string;
   lastInitial: string;
   grade: string;
+  teacherName?: string;
   interests: string[];
   otherInterests: string;
   hasInterests: boolean;
@@ -47,6 +48,8 @@ interface SchoolData {
   specialConsiderations?: string;
   communicationPlatforms?: any;
   mailingAddress?: string;
+  hasMultipleClasses?: boolean;
+  teacherNames?: string[];
   studentStats?: {
     expected: number;
     registered: number;
@@ -357,6 +360,7 @@ function TeacherDashboardContent() {
         firstName: student.firstName,
         lastInitial: student.lastInitial,
         grade: student.grade,
+        teacherName: student.teacherName,
         interests: student.interests || [],
         otherInterests: student.otherInterests || '',
         hasInterests: student.profileCompleted || false,
