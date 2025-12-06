@@ -20,10 +20,23 @@ interface ReadyStudentsProps {
   readyStudentsEditMode: boolean;
   expandedReadyStudents: Set<string>;
   penPalsAssigned: boolean;
+  editingStudentId: string | null;
+  editTempFirstName: string;
+  editTempLastInitial: string;
+  editTempGrade: string;
+  editTempInterests: string[];
+  editTempOtherInterests: string;
   onToggleRemovalMode: () => void;
   onToggleEditMode: () => void;
   onRemoveStudent: (studentId: string) => void;
   onEditStudent: (studentId: string) => void;
+  onSaveEditStudent: () => void;
+  onCancelEditStudent: () => void;
+  onEditFirstNameChange: (value: string) => void;
+  onEditLastInitialChange: (value: string) => void;
+  onEditGradeChange: (value: string) => void;
+  onEditInterestChange: (interest: string, checked: boolean) => void;
+  onEditOtherInterestsChange: (value: string) => void;
   onToggleExpansion: (studentId: string) => void;
   readOnly?: boolean;
 }
@@ -34,10 +47,23 @@ export default function ReadyStudents({
   readyStudentsEditMode,
   expandedReadyStudents,
   penPalsAssigned,
+  editingStudentId,
+  editTempFirstName,
+  editTempLastInitial,
+  editTempGrade,
+  editTempInterests,
+  editTempOtherInterests,
   onToggleRemovalMode,
   onToggleEditMode,
   onRemoveStudent,
   onEditStudent,
+  onSaveEditStudent,
+  onCancelEditStudent,
+  onEditFirstNameChange,
+  onEditLastInitialChange,
+  onEditGradeChange,
+  onEditInterestChange,
+  onEditOtherInterestsChange,
   onToggleExpansion,
   readOnly = false
 }: ReadyStudentsProps) {
@@ -105,12 +131,25 @@ export default function ReadyStudents({
             student={student}
             type="ready"
             isExpanded={expandedReadyStudents.has(student.id)}
+            isEditing={student.id === editingStudentId}
             showRemoveButton={readyStudentsRemovalMode}
             showEditButton={readyStudentsEditMode}
             penPalsAssigned={penPalsAssigned}
+            tempFirstName={editTempFirstName}
+            tempLastInitial={editTempLastInitial}
+            tempGrade={editTempGrade}
+            tempInterests={editTempInterests}
+            tempOtherInterests={editTempOtherInterests}
             onExpandClick={() => onToggleExpansion(student.id)}
             onRemoveClick={() => onRemoveStudent(student.id)}
             onEditClick={() => onEditStudent(student.id)}
+            onSaveEdit={onSaveEditStudent}
+            onCancelEdit={onCancelEditStudent}
+            onFirstNameChange={onEditFirstNameChange}
+            onLastInitialChange={onEditLastInitialChange}
+            onGradeChange={onEditGradeChange}
+            onInterestChange={onEditInterestChange}
+            onOtherInterestsChange={onEditOtherInterestsChange}
             readOnly={readOnly}
           />
         ))}
