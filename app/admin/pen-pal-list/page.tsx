@@ -64,6 +64,7 @@ interface ConsolidatedStudent {
     country?: string;
     schoolGroupId?: string | null;
     teacherName?: string;
+    hasMultipleClasses?: boolean;
     interests: string;
   }[];
 }
@@ -354,8 +355,8 @@ function PenPalListContent() {
                     if (penpal.country) locationParts.push(penpal.country);
                     const location = locationParts.join(', ');
                     
-                    // Only add teacher info if pen pal's school is part of a group
-                    const teacherInfo = (penpal.schoolGroupId && penpal.teacherName) 
+                    // Show teacher info if pen pal's school is part of a group OR has multiple classes
+                    const teacherInfo = ((penpal.schoolGroupId || penpal.hasMultipleClasses) && penpal.teacherName) 
                       ? ` | ${penpal.teacherName}'s class` 
                       : '';
                     
