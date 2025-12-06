@@ -12,6 +12,7 @@ interface PenpalData {
   country: string | undefined;
   schoolGroupId: string | null | undefined;
   teacherName: string | undefined;
+  hasMultipleClasses: boolean | undefined;
   interests: string[];
   otherInterests: string | null;
 }
@@ -84,6 +85,7 @@ export async function GET(request: NextRequest) {
             country: connection.penpal.school?.schoolCountry,
             schoolGroupId: connection.penpal.school?.schoolGroupId,
             teacherName: connection.penpal.school?.teacherName,
+            hasMultipleClasses: connection.penpal.school?.hasMultipleClasses,
             interests: connection.penpal.interests,
             otherInterests: connection.penpal.otherInterests
           });
@@ -102,6 +104,7 @@ export async function GET(request: NextRequest) {
             country: connection.student.school?.schoolCountry,
             schoolGroupId: connection.student.school?.schoolGroupId,
             teacherName: connection.student.school?.teacherName,
+            hasMultipleClasses: connection.student.school?.hasMultipleClasses,
             interests: connection.student.interests,
             otherInterests: connection.student.otherInterests
           });
