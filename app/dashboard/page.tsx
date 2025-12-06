@@ -171,6 +171,7 @@ function TeacherDashboardContent() {
   const [editTempFirstName, setEditTempFirstName] = useState('');
   const [editTempLastInitial, setEditTempLastInitial] = useState('');
   const [editTempGrade, setEditTempGrade] = useState('');
+  const [editTempTeacherName, setEditTempTeacherName] = useState('');
   const [editTempInterests, setEditTempInterests] = useState<string[]>([]);
   const [editTempOtherInterests, setEditTempOtherInterests] = useState('');
   
@@ -534,6 +535,7 @@ function TeacherDashboardContent() {
     setEditTempFirstName(student.firstName);
     setEditTempLastInitial(student.lastInitial);
     setEditTempGrade(student.grade);
+    setEditTempTeacherName(student.teacherName || '');
     setEditTempInterests(student.interests);
     setEditTempOtherInterests(student.otherInterests || '');
   };
@@ -568,6 +570,7 @@ function TeacherDashboardContent() {
           firstName: editTempFirstName,
           lastInitial: editTempLastInitial,
           grade: editTempGrade,
+          teacherName: editTempTeacherName || null,
           interests: editTempInterests,
           otherInterests: editTempOtherInterests
         })
@@ -588,6 +591,7 @@ function TeacherDashboardContent() {
                 firstName: editTempFirstName,
                 lastInitial: editTempLastInitial,
                 grade: editTempGrade,
+                teacherName: editTempTeacherName || undefined,
                 interests: editTempInterests,
                 otherInterests: editTempOtherInterests
               }
@@ -731,8 +735,11 @@ function TeacherDashboardContent() {
           editTempFirstName={editTempFirstName}
           editTempLastInitial={editTempLastInitial}
           editTempGrade={editTempGrade}
+          editTempTeacherName={editTempTeacherName}
           editTempInterests={editTempInterests}
           editTempOtherInterests={editTempOtherInterests}
+          hasMultipleClasses={schoolData?.hasMultipleClasses || false}
+          teacherNames={schoolData?.teacherNames || []}
           onToggleRemovalMode={toggleReadyStudentsRemovalMode}
           onToggleEditMode={toggleReadyStudentsEditMode}
           onRemoveStudent={handleRemoveStudent}
@@ -742,6 +749,7 @@ function TeacherDashboardContent() {
           onEditFirstNameChange={setEditTempFirstName}
           onEditLastInitialChange={setEditTempLastInitial}
           onEditGradeChange={setEditTempGrade}
+          onEditTeacherNameChange={setEditTempTeacherName}
           onEditInterestChange={handleEditInterestChange}
           onEditOtherInterestsChange={setEditTempOtherInterests}
           onToggleExpansion={toggleReadyStudentExpansion}
