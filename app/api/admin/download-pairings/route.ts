@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
             state: connection.penpal.school?.schoolState,
             country: connection.penpal.school?.schoolCountry,
             schoolGroupId: connection.penpal.school?.schoolGroupId,
-            teacherName: connection.penpal.school?.teacherName,
+            teacherName: connection.penpal.teacherName,
             hasMultipleClasses: connection.penpal.school?.hasMultipleClasses,
             interests: connection.penpal.interests,
             otherInterests: connection.penpal.otherInterests
@@ -103,7 +103,7 @@ export async function GET(request: NextRequest) {
             state: connection.student.school?.schoolState,
             country: connection.student.school?.schoolCountry,
             schoolGroupId: connection.student.school?.schoolGroupId,
-            teacherName: connection.student.school?.teacherName,
+            teacherName: connection.student.teacherName,
             hasMultipleClasses: connection.student.school?.hasMultipleClasses,
             interests: connection.student.interests,
             otherInterests: connection.student.otherInterests
