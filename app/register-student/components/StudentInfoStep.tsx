@@ -104,12 +104,6 @@ export default function StudentInfoStep({
           onConsentChange={(value) => onUpdateFormData('parentConsent', value)}
         />
 
-        {error && (
-          <div className="alert alert-error">
-            <strong>Error:</strong> {error}
-          </div>
-        )}
-
         <div className="form-group text-center">
           <button 
             type="submit" 
