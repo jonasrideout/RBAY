@@ -42,8 +42,11 @@ interface StudentCardProps {
   tempFirstName?: string;
   tempLastInitial?: string;
   tempGrade?: string;
+  tempTeacherName?: string;
   tempInterests?: string[];
   tempOtherInterests?: string;
+  hasMultipleClasses?: boolean;
+  teacherNames?: string[];
   onEditClick?: () => void;
   onRemoveClick?: () => void;
   onExpandClick?: () => void;
@@ -53,6 +56,7 @@ interface StudentCardProps {
   onFirstNameChange?: (value: string) => void;
   onLastInitialChange?: (value: string) => void;
   onGradeChange?: (value: string) => void;
+  onTeacherNameChange?: (value: string) => void;
   onInterestChange?: (interest: string, checked: boolean) => void;
   onOtherInterestsChange?: (value: string) => void;
   readOnly?: boolean;
@@ -70,8 +74,11 @@ export default function StudentCard({
   tempFirstName = '',
   tempLastInitial = '',
   tempGrade = '',
+  tempTeacherName = '',
   tempInterests = [],
   tempOtherInterests = '',
+  hasMultipleClasses = false,
+  teacherNames = [],
   onEditClick,
   onRemoveClick,
   onExpandClick,
@@ -81,6 +88,7 @@ export default function StudentCard({
   onFirstNameChange,
   onLastInitialChange,
   onGradeChange,
+  onTeacherNameChange,
   onInterestChange,
   onOtherInterestsChange,
   readOnly = false
@@ -299,6 +307,28 @@ export default function StudentCard({
               <option value="7">7th Grade</option>
               <option value="8">8th Grade</option>
             </select>
+            {hasMultipleClasses && (
+              <div style={{ marginTop: '1rem' }}>
+                <label className="text-data-value" style={{ 
+                  display: 'block', 
+                  marginBottom: '0.5rem',
+                  fontSize: '0.9rem'
+                }}>
+                  Teacher:
+                </label>
+                <select 
+                  className="form-select"
+                  value={tempTeacherName}
+                  onChange={(e) => onTeacherNameChange?.(e.target.value)}
+                  style={{ width: '100%' }}
+                >
+                  <option value="">Select teacher</option>
+                  {teacherNames.map((name, index) => (
+                    <option key={index} value={name}>{name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           {/* Interests Section */}
