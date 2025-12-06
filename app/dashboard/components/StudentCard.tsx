@@ -281,32 +281,23 @@ export default function StudentCard({
                 />
               </div>
             </div>
-            <div>
-              <label className="text-data-value" style={{ 
-                display: 'block', 
-                marginBottom: '0.5rem',
-                fontSize: '0.9rem'
-              }}>
-                Grade:
-              </label>
-              <select 
-                className="form-select"
-                value={tempGrade}
-                onChange={(e) => onGradeChange?.(e.target.value)}
-                style={{ width: '100%' }}
-              >
-                <option value="">Select</option>
-                <option value="K">Kindergarten</option>
-                <option value="1">1st Grade</option>
-                <option value="2">2nd Grade</option>
-                <option value="3">3rd Grade</option>
-                <option value="4">4th Grade</option>
-                <option value="5">5th Grade</option>
-                <option value="6">6th Grade</option>
-                <option value="7">7th Grade</option>
-                <option value="8">8th Grade</option>
-              </select>
-            </div>
+            <select 
+              className="form-select"
+              value={tempGrade}
+              onChange={(e) => onGradeChange?.(e.target.value)}
+              style={{ width: '100%' }}
+            >
+              <option value="">Select</option>
+              <option value="K">Kindergarten</option>
+              <option value="1">1st Grade</option>
+              <option value="2">2nd Grade</option>
+              <option value="3">3rd Grade</option>
+              <option value="4">4th Grade</option>
+              <option value="5">5th Grade</option>
+              <option value="6">6th Grade</option>
+              <option value="7">7th Grade</option>
+              <option value="8">8th Grade</option>
+            </select>
           </div>
 
           {/* Interests Section */}
