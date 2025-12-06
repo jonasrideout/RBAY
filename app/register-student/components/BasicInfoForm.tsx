@@ -62,7 +62,7 @@ export default function BasicInfoForm({
 
   return (
     <>
-      <div style={{ display: 'grid', gridTemplateColumns: hasMultipleClasses ? '200px 100px 140px 200px 200px' : '280px 120px 170px 250px', gap: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: hasMultipleClasses ? '220px 100px 120px 180px 80px' : '260px 110px 150px 80px', gap: '1rem' }}>
         <div className="form-group">
           <label htmlFor="first-name" className="form-label">
             {isTeacherFlow ? "Student's first name *" : "First Name *"}
@@ -134,7 +134,7 @@ export default function BasicInfoForm({
         )}
 
         <div className="form-group">
-          <label htmlFor="penpal-preference" className="form-label">How Many Pen Pals *</label>
+          <label htmlFor="penpal-preference" className="form-label">Pen Pals *</label>
           <select 
             id="penpal-preference" 
             className="form-select" 
@@ -143,8 +143,8 @@ export default function BasicInfoForm({
             disabled={isLoading}
             required
           >
-            <option value="ONE">Just one</option>
-            <option value="MULTIPLE">More than one if possible</option>
+            <option value="ONE">1</option>
+            <option value="MULTIPLE">2</option>
           </select>
         </div>
       </div>
