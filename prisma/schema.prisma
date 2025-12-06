@@ -64,6 +64,10 @@ model School {
   communicationPlatforms Json?
   mailingAddress        String?
   
+  // Multiple classes support
+  hasMultipleClasses    Boolean       @default(false)
+  teacherNames          String[]      @default([])
+  
   // Group membership
   schoolGroupId        String?
   schoolGroup          SchoolGroup?  @relation(fields: [schoolGroupId], references: [id])
@@ -91,6 +95,7 @@ model Student {
   firstName         String
   lastInitial       String
   grade             String
+  teacherName       String?
   interests         String[]
   otherInterests    String?
   parentConsent     Boolean          @default(false)
