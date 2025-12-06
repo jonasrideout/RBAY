@@ -8,6 +8,7 @@ interface Student {
   firstName: string;
   lastInitial: string;
   grade: string;
+  teacherName?: string;
   interests: string[];
   otherInterests: string;
   hasInterests: boolean;
@@ -384,6 +385,15 @@ export default function StudentCard({
             }}>
               {student.firstName} {student.lastInitial}.
             </h4>
+            {student.teacherName && (
+              <p className="text-meta-info" style={{ 
+                marginTop: '0.25rem',
+                marginBottom: '0',
+                fontSize: '0.9rem'
+              }}>
+                {student.teacherName}
+              </p>
+            )}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{
@@ -493,6 +503,15 @@ export default function StudentCard({
             }}>
               {student.firstName} {student.lastInitial}.
             </h4>
+            {student.teacherName && (
+              <p className="text-meta-info" style={{ 
+                marginTop: '0.25rem',
+                marginBottom: '0',
+                fontSize: '0.85rem'
+              }}>
+                {student.teacherName}
+              </p>
+            )}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{
