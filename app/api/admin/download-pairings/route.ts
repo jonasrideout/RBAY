@@ -122,7 +122,8 @@ export async function GET(request: NextRequest) {
           grade: student.grade,
           interests: student.interests,
           otherInterests: student.otherInterests,
-          penpalPreference: student.penpalPreference
+          penpalPreference: student.penpalPreference,
+          teacherName: student.teacherName
         },
         penpals: uniquePenpals,
         penpalCount: uniquePenpals.length
@@ -157,7 +158,9 @@ export async function GET(request: NextRequest) {
         name: school.schoolName,
         teacher: school.teacherName,
         email: school.teacherEmail,
-        partnerSchool: partnerSchoolName
+        partnerSchool: partnerSchoolName,
+        schoolGroupId: school.schoolGroupId,
+        hasMultipleClasses: school.hasMultipleClasses
       },
       pairings: studentsWithPenpals,
       summary: {
