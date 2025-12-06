@@ -8,6 +8,7 @@ export async function POST(request: NextRequest) {
       firstName,
       lastInitial,  // Changed from lastName
       grade,
+      teacherName,
       interests,
       parentConsent,  // Removed parentName, parentEmail, parentPhone
       teacherEmail,
@@ -54,6 +55,7 @@ export async function POST(request: NextRequest) {
           firstName,
           lastInitial,  // Changed from lastName
           grade,
+          teacherName: teacherName || null,
           interests: interests || [],
           otherInterests: otherInterests || null,
           // Removed parentName, parentEmail, parentPhone
@@ -157,7 +159,7 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { studentId, firstName, lastInitial, grade, interests, penpalPreference, otherInterests } = body;
+    const { studentId, firstName, lastInitial, grade, teacherName, interests, penpalPreference, otherInterests } = body;
 
     if (!studentId) {
       return NextResponse.json(
@@ -192,6 +194,10 @@ export async function PUT(request: NextRequest) {
 
     if (grade !== undefined) {
       updateData.grade = grade;
+    }
+
+    if (teacherName !== undefined) {
+      updateData.teacherName = teacherName;
     }
 
     if (interests !== undefined) {
