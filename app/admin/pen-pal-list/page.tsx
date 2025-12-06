@@ -352,9 +352,9 @@ function PenPalListContent() {
                 }}>
                   {student.studentName}
                   {((student.studentSchoolGroupId || student.studentHasMultipleClasses) && student.studentTeacherName) && 
-                    ` | ${student.studentTeacherName}'s class`
+                    ` | ${student.studentTeacherName}`
                   }
-                  {' '}Interests: {student.studentInterests}
+                  {' | '}Interests: {student.studentInterests}
                 </div>
                 <div style={{
                   marginLeft: '1rem',
@@ -372,7 +372,7 @@ function PenPalListContent() {
                     
                     // Show teacher info if pen pal's school is part of a group OR has multiple classes
                     const teacherInfo = ((penpal.schoolGroupId || penpal.hasMultipleClasses) && penpal.teacherName) 
-                      ? ` | ${penpal.teacherName}'s class` 
+                      ? ` | ${penpal.teacherName}` 
                       : '';
                     
                     return (
