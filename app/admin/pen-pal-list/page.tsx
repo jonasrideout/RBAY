@@ -41,6 +41,7 @@ interface SchoolData {
   partnerSchool?: string;
   schoolGroupId?: string | null;
   hasMultipleClasses?: boolean;
+  schoolCountry?: string;
 }
 
 interface PenPalData {
@@ -212,6 +213,14 @@ function PenPalListContent() {
 
   const consolidatedStudents = consolidateStudents();
 
+  // Check if this is an international pairing
+  // If either the viewing school OR any pen pal school is non-US, show country for all
+  const isInternationalPairing = 
+    data.school.schoolCountry !== 'United States' ||
+    consolidatedStudents.some(student => 
+      student.penpals.some(penpal => penpal.country && penpal.country !== 'United States')
+    );
+
   return (
     <div className="page">
       {/* Header - only show on screen, not in print */}
@@ -359,11 +368,13 @@ function PenPalListContent() {
                   paddingRight: '1rem'
                 }}>
                   {student.penpals.map((penpal, penpalIndex) => {
-                    // Build location string: School, City, Country
+                    // Build location string based on international pairing
                     const locationParts = [];
                     if (penpal.school) locationParts.push(penpal.school);
                     if (penpal.city) locationParts.push(penpal.city);
-                    if (penpal.country) locationParts.push(penpal.country);
+                    if (penpal.state) locationParts.push(penpal.state);
+                    // Only include country if this is an international pairing
+                    if (isInternationalPairing && penpal.country) locationParts.push(penpal.country);
                     const location = locationParts.join(', ');
                     
                     // Show teacher info if pen pal's school is part of a group OR has multiple classes
