@@ -341,6 +341,7 @@ export async function GET(request: NextRequest) {
             firstName: true,
             lastInitial: true,
             grade: true,
+            teacherName: true,
             interests: true,
             otherInterests: true,
             profileCompleted: true,
