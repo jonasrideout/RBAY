@@ -11,6 +11,7 @@ interface Student {
   interests: string[];
   otherInterests: string | null;
   penpalPreference?: string;
+  teacherName?: string;
 }
 
 interface Penpal {
@@ -37,6 +38,8 @@ interface SchoolData {
   teacher: string;
   email: string;
   partnerSchool?: string;
+  schoolGroupId?: string | null;
+  hasMultipleClasses?: boolean;
 }
 
 interface PenPalData {
@@ -56,6 +59,9 @@ interface PenPalData {
 interface ConsolidatedStudent {
   studentName: string;
   studentInterests: string;
+  studentSchoolGroupId?: string | null;
+  studentTeacherName?: string;
+  studentHasMultipleClasses?: boolean;
   penpals: {
     name: string;
     school: string;
@@ -137,6 +143,9 @@ function PenPalListContent() {
         studentMap.set(studentName, {
           studentName,
           studentInterests,
+          studentSchoolGroupId: data.school.schoolGroupId,
+          studentTeacherName: pairing.student.teacherName,
+          studentHasMultipleClasses: data.school.hasMultipleClasses,
           penpals: []
         });
       }
@@ -151,6 +160,7 @@ function PenPalListContent() {
           country: penpal.country,
           schoolGroupId: penpal.schoolGroupId,
           teacherName: penpal.teacherName,
+          hasMultipleClasses: penpal.hasMultipleClasses,
           interests: formatInterests(penpal.interests, penpal.otherInterests)
         });
       });
@@ -339,7 +349,11 @@ function PenPalListContent() {
                   maxWidth: 'calc(100% - 180px)', // Leave room for logo on right
                   paddingRight: '1rem'
                 }}>
-                  {student.studentName} Interests: {student.studentInterests}
+                  {student.studentName}
+                  {((student.studentSchoolGroupId || student.studentHasMultipleClasses) && student.studentTeacherName) && 
+                    ` | ${student.studentTeacherName}'s class`
+                  }
+                  {' '}Interests: {student.studentInterests}
                 </div>
                 <div style={{
                   marginLeft: '1rem',
