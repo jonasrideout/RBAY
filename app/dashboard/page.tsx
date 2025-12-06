@@ -162,6 +162,15 @@ function TeacherDashboardContent() {
   // Removal mode state
   const [readyStudentsRemovalMode, setReadyStudentsRemovalMode] = useState(false);
   
+  // Edit mode state
+  const [readyStudentsEditMode, setReadyStudentsEditMode] = useState(false);
+  const [editingStudentId, setEditingStudentId] = useState<string | null>(null);
+  const [editTempFirstName, setEditTempFirstName] = useState('');
+  const [editTempLastInitial, setEditTempLastInitial] = useState('');
+  const [editTempGrade, setEditTempGrade] = useState('');
+  const [editTempInterests, setEditTempInterests] = useState<string[]>([]);
+  const [editTempOtherInterests, setEditTempOtherInterests] = useState('');
+  
   // Pen pal preference update state
   const [showPenpalPreferenceUpdate, setShowPenpalPreferenceUpdate] = useState(false);
   const [penpalPreferenceRequired, setPenpalPreferenceRequired] = useState(0);
@@ -502,6 +511,106 @@ function TeacherDashboardContent() {
     setReadyStudentsRemovalMode(!readyStudentsRemovalMode);
   };
 
+  const toggleReadyStudentsEditMode = () => {
+    setReadyStudentsEditMode(!readyStudentsEditMode);
+    // Clear editing state when toggling off
+    if (readyStudentsEditMode) {
+      setEditingStudentId(null);
+    }
+  };
+
+  const handleEditStudent = (studentId: string) => {
+    const student = students.find(s => s.id === studentId);
+    if (!student) return;
+
+    // Set the student being edited
+    setEditingStudentId(studentId);
+    
+    // Populate temp state with current values
+    setEditTempFirstName(student.firstName);
+    setEditTempLastInitial(student.lastInitial);
+    setEditTempGrade(student.grade);
+    setEditTempInterests(student.interests);
+    setEditTempOtherInterests(student.otherInterests || '');
+  };
+
+  const handleSaveEditStudent = async () => {
+    if (!editingStudentId) return;
+
+    // Validation
+    if (!editTempFirstName || !editTempLastInitial || !editTempGrade) {
+      alert('Please fill in all required fields (First Name, Last Initial, Grade)');
+      return;
+    }
+
+    if (editTempLastInitial.length > 2) {
+      alert('Last initial must be 1-2 characters only');
+      return;
+    }
+
+    if (editTempInterests.length === 0) {
+      alert('Please select at least one interest');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/students', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          studentId: editingStudentId,
+          firstName: editTempFirstName,
+          lastInitial: editTempLastInitial,
+          grade: editTempGrade,
+          interests: editTempInterests,
+          otherInterests: editTempOtherInterests
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to update student');
+      }
+
+      // Update local state
+      setStudents(prevStudents => 
+        prevStudents.map(s => 
+          s.id === editingStudentId 
+            ? {
+                ...s,
+                firstName: editTempFirstName,
+                lastInitial: editTempLastInitial,
+                grade: editTempGrade,
+                interests: editTempInterests,
+                otherInterests: editTempOtherInterests
+              }
+            : s
+        )
+      );
+
+      // Clear editing state
+      setEditingStudentId(null);
+      
+    } catch (err: any) {
+      alert('Error updating student: ' + err.message);
+    }
+  };
+
+  const handleCancelEditStudent = () => {
+    setEditingStudentId(null);
+  };
+
+  const handleEditInterestChange = (interest: string, checked: boolean) => {
+    if (checked) {
+      setEditTempInterests(prev => [...prev, interest]);
+    } else {
+      setEditTempInterests(prev => prev.filter(i => i !== interest));
+    }
+  };
+
   const handleLogout = () => {
     if (isAdminViewing) {
       router.push('/admin/matching');
@@ -611,10 +720,26 @@ function TeacherDashboardContent() {
         <ReadyStudents 
           studentsWithInterests={studentsWithInterests}
           readyStudentsRemovalMode={readyStudentsRemovalMode}
+          readyStudentsEditMode={readyStudentsEditMode}
           expandedReadyStudents={expandedReadyStudents}
           penPalsAssigned={penPalsAssigned}
+          editingStudentId={editingStudentId}
+          editTempFirstName={editTempFirstName}
+          editTempLastInitial={editTempLastInitial}
+          editTempGrade={editTempGrade}
+          editTempInterests={editTempInterests}
+          editTempOtherInterests={editTempOtherInterests}
           onToggleRemovalMode={toggleReadyStudentsRemovalMode}
+          onToggleEditMode={toggleReadyStudentsEditMode}
           onRemoveStudent={handleRemoveStudent}
+          onEditStudent={handleEditStudent}
+          onSaveEditStudent={handleSaveEditStudent}
+          onCancelEditStudent={handleCancelEditStudent}
+          onEditFirstNameChange={setEditTempFirstName}
+          onEditLastInitialChange={setEditTempLastInitial}
+          onEditGradeChange={setEditTempGrade}
+          onEditInterestChange={handleEditInterestChange}
+          onEditOtherInterestsChange={setEditTempOtherInterests}
           onToggleExpansion={toggleReadyStudentExpansion}
           readOnly={isAdminViewing}
         />
