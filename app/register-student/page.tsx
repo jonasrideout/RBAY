@@ -132,6 +132,11 @@ function RegisterStudentForm() {
         teacherNames: data.school.teacherNames || []
       });
 
+      console.log('fetchSchoolByToken - Setting schoolInfo:', {
+        hasMultipleClasses: data.school.hasMultipleClasses,
+        teacherNames: data.school.teacherNames
+      });
+
       // Check if the current user is a teacher with a session
       const hasTeacherSession = status === 'authenticated' && session?.user?.email;
       
