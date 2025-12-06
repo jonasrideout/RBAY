@@ -6,11 +6,15 @@ interface BasicInfoFormProps {
   firstName: string;
   lastInitial: string;
   grade: string;
+  teacherName: string;
   penpalPreference: 'ONE' | 'MULTIPLE';
   isLoading: boolean;
+  hasMultipleClasses: boolean;
+  teacherNames: string[];
   onFirstNameChange: (value: string) => void;
   onLastInitialChange: (value: string) => void;
   onGradeChange: (value: string) => void;
+  onTeacherNameChange: (value: string) => void;
   onPenpalPreferenceChange: (value: 'ONE' | 'MULTIPLE') => void;
 }
 
@@ -19,11 +23,15 @@ export default function BasicInfoForm({
   firstName,
   lastInitial,
   grade,
+  teacherName,
   penpalPreference,
   isLoading,
+  hasMultipleClasses,
+  teacherNames,
   onFirstNameChange,
   onLastInitialChange,
   onGradeChange,
+  onTeacherNameChange,
   onPenpalPreferenceChange
 }: BasicInfoFormProps) {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -54,7 +62,7 @@ export default function BasicInfoForm({
 
   return (
     <>
-      <div style={{ display: 'grid', gridTemplateColumns: '280px 120px 170px 250px', gap: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: hasMultipleClasses ? '200px 100px 140px 200px 200px' : '280px 120px 170px 250px', gap: '1rem' }}>
         <div className="form-group">
           <label htmlFor="first-name" className="form-label">
             {isTeacherFlow ? "Student's first name *" : "First Name *"}
@@ -105,6 +113,25 @@ export default function BasicInfoForm({
             <option value="8">8th Grade</option>
           </select>
         </div>
+
+        {hasMultipleClasses && (
+          <div className="form-group">
+            <label htmlFor="teacher-name" className="form-label">Teacher *</label>
+            <select 
+              id="teacher-name" 
+              className="form-select" 
+              value={teacherName}
+              onChange={(e) => onTeacherNameChange(e.target.value)}
+              disabled={isLoading}
+              required
+            >
+              <option value="">Select teacher</option>
+              {teacherNames.map((name, index) => (
+                <option key={index} value={name}>{name}</option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div className="form-group">
           <label htmlFor="penpal-preference" className="form-label">How Many Pen Pals *</label>
