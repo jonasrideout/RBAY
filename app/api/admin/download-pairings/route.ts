@@ -160,7 +160,8 @@ export async function GET(request: NextRequest) {
         email: school.teacherEmail,
         partnerSchool: partnerSchoolName,
         schoolGroupId: school.schoolGroupId,
-        hasMultipleClasses: school.hasMultipleClasses
+        hasMultipleClasses: school.hasMultipleClasses,
+        schoolCountry: school.schoolCountry
       },
       pairings: studentsWithPenpals,
       summary: {
