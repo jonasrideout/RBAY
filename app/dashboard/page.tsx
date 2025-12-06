@@ -263,6 +263,8 @@ function TeacherDashboardContent() {
         specialConsiderations: data.school.specialConsiderations,
         communicationPlatforms: data.school.communicationPlatforms,
         mailingAddress: data.school.mailingAddress,
+        hasMultipleClasses: data.school.hasMultipleClasses,
+        teacherNames: data.school.teacherNames,
         schoolGroup: data.school.schoolGroup,
         studentStats: data.school.studentStats,
         matchedSchool: data.school.matchedWithSchool ? {
@@ -324,6 +326,8 @@ function TeacherDashboardContent() {
         specialConsiderations: data.school.specialConsiderations,
         communicationPlatforms: data.school.communicationPlatforms,
         mailingAddress: data.school.mailingAddress,
+        hasMultipleClasses: data.school.hasMultipleClasses,
+        teacherNames: data.school.teacherNames,
         schoolGroup: data.school.schoolGroup,
         studentStats: data.school.studentStats,
         matchedSchool: data.school.matchedWithSchool ? {
