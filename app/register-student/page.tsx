@@ -323,6 +323,7 @@ function RegisterStudentForm() {
         firstName: formData.firstName,
         lastInitial: formData.lastInitial,
         grade: formData.grade,
+        teacherName: formData.teacherName || undefined,
         interests: formData.interests,
         otherInterests: formData.otherInterests,
         penpalPreference: formData.penpalPreference,
