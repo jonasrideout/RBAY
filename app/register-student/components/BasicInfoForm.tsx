@@ -187,7 +187,7 @@ export default function BasicInfoForm({
               fontSize: '1.1rem',
               fontWeight: '300'
             }}>
-              This requires a commitment to write letters to more than one pen pal. Are you sure you want to commit to this?
+              We'll do our best to pair you with 2 pen pals! This depends on the number of students at your matched school, so we can't guarantee it. Are you ready to commit to writing letters to 2 pen pals if we can match you?
             </p>
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
               <button 
