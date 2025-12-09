@@ -77,7 +77,10 @@ export default function ReadyStudents({
   onToggleExpansion,
   readOnly = false
 }: ReadyStudentsProps) {
-  const [sortBy, setSortBy] = useState<'alphabetical' | 'teacher'>('alphabetical');
+  // Default to 'teacher' sort if school has multiple classes, otherwise 'alphabetical'
+  const [sortBy, setSortBy] = useState<'alphabetical' | 'teacher'>(
+    hasMultipleClasses ? 'teacher' : 'alphabetical'
+  );
 
   // Only show if there are ready students
   if (studentsWithInterests.length === 0) {
