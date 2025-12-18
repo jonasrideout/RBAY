@@ -90,6 +90,7 @@ export default function BasicInfoForm({
             disabled={isLoading}
             maxLength={2}
             required
+            style={{ fontSize: '0.8rem' }}
           />
         </div>
 
