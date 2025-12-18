@@ -71,7 +71,6 @@ export default function BasicInfoForm({
             type="text" 
             id="first-name" 
             className="form-input" 
-            placeholder={isTeacherFlow ? "Student's first name" : "Your first name"}
             value={firstName}
             onChange={(e) => onFirstNameChange(e.target.value)}
             disabled={isLoading}
@@ -85,7 +84,7 @@ export default function BasicInfoForm({
             type="text" 
             id="last-initial" 
             className="form-input" 
-            placeholder="Letters"
+            placeholder="Max 2 letters"
             value={lastInitial}
             onChange={(e) => onLastInitialChange(e.target.value)}
             disabled={isLoading}
