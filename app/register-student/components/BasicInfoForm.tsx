@@ -62,7 +62,7 @@ export default function BasicInfoForm({
 
   return (
     <>
-      <div style={{ display: 'grid', gridTemplateColumns: hasMultipleClasses ? '220px 100px 120px 180px 80px' : '260px 110px 150px 80px', gap: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: hasMultipleClasses ? '180px 140px 120px 180px 80px' : '200px 130px 150px 80px', gap: '1rem' }}>
         <div className="form-group">
           <label htmlFor="first-name" className="form-label">
             {isTeacherFlow ? "Student's first name *" : "First Name *"}
@@ -90,7 +90,6 @@ export default function BasicInfoForm({
             disabled={isLoading}
             maxLength={2}
             required
-            style={{ fontSize: '0.8rem' }}
           />
         </div>
 
@@ -104,7 +103,7 @@ export default function BasicInfoForm({
             disabled={isLoading}
             required
           >
-            <option value="">{isTeacherFlow ? "Select grade" : "Select grade"}</option>
+            <option value=""></option>
             <option value="3">3rd Grade</option>
             <option value="4">4th Grade</option>
             <option value="5">5th Grade</option>
@@ -125,7 +124,7 @@ export default function BasicInfoForm({
               disabled={isLoading}
               required
             >
-              <option value="">Select teacher</option>
+              <option value=""></option>
               {teacherNames.map((name, index) => (
                 <option key={index} value={name}>{name}</option>
               ))}
