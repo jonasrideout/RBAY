@@ -152,8 +152,14 @@ export default function DashboardHeader({
       totalStudentsInGroup = allGroupStudents.length;
       thisSchoolStudentCount = schoolData.students.length;
       
-      // Required: exact number to ensure no one gets more than 2 pen pals
-      totalGroupRequired = Math.abs(targetClassSize - totalStudentsInGroup);
+      // FIXED: Only the SMALLER school/group should select students for multiple pen pals
+      if (totalStudentsInGroup >= targetClassSize) {
+        // This school/group has same or more students - no action needed
+        totalGroupRequired = 0;
+      } else {
+        // This school/group has fewer students - need to select some for multiple pen pals
+        totalGroupRequired = targetClassSize - totalStudentsInGroup;
+      }
       
       currentMultipleAcrossGroup = allGroupStudents.filter(
         (s: any) => s.penpalPreference === 'MULTIPLE'
@@ -163,8 +169,14 @@ export default function DashboardHeader({
       totalStudentsInGroup = schoolData.students.length;
       thisSchoolStudentCount = schoolData.students.length;
       
-      // Required: exact number to ensure no one gets more than 2 pen pals
-      totalGroupRequired = Math.abs(targetClassSize - totalStudentsInGroup);
+      // FIXED: Only the SMALLER school should select students for multiple pen pals
+      if (totalStudentsInGroup >= targetClassSize) {
+        // This school has same or more students - no action needed
+        totalGroupRequired = 0;
+      } else {
+        // This school has fewer students - need to select some for multiple pen pals
+        totalGroupRequired = targetClassSize - totalStudentsInGroup;
+      }
       
       currentMultipleAcrossGroup = schoolData.students.filter(
         (s: any) => s.penpalPreference === 'MULTIPLE'
