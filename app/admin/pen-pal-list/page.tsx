@@ -417,6 +417,11 @@ function PenPalListContent() {
 
       {/* Print-specific styles */}
       <style jsx>{`
+        @page {
+          margin: 0;
+          size: auto;
+        }
+        
         @media print {
           .no-print {
             display: none !important;
