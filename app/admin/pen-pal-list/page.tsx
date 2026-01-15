@@ -418,7 +418,7 @@ function PenPalListContent() {
       {/* Print-specific styles */}
       <style jsx>{`
         @page {
-          margin: 0;
+          margin: 0.5in 0 0 0;
           size: auto;
         }
         
@@ -445,6 +445,7 @@ function PenPalListContent() {
             page-break-inside: avoid;
             break-inside: avoid;
             -webkit-column-break-inside: avoid;
+            overflow: hidden;
           }
         }
       `}</style>
