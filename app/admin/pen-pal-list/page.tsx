@@ -267,7 +267,8 @@ function PenPalListContent() {
           backgroundColor: 'white',
           padding: '3rem 4rem',
           maxWidth: '1000px',
-          margin: '0 auto'
+          margin: '0 auto',
+          overflow: 'hidden'
         }}>
           {/* Header with logo */}
           <div style={{ 
@@ -311,23 +312,24 @@ function PenPalListContent() {
           </div>
 
           {/* Student listings - consolidated and sorted alphabetically */}
-          {consolidatedStudents.map((student, studentIndex) => (
-            <div key={studentIndex} className="student-card" style={{ position: 'relative' }}>
-              {/* Cut line with scissors */}
-              <div className="cut-line" style={{
-                borderTop: '2px dashed #ccc',
-                position: 'relative',
-                marginBottom: '1rem'
-              }}>
-                <span style={{
-                  position: 'absolute',
-                  right: '0',
-                  top: '-12px',
-                  fontSize: '1.2rem'
+          <div className="student-cards-container">
+            {consolidatedStudents.map((student, studentIndex) => (
+              <div key={studentIndex} className="student-card" style={{ position: 'relative' }}>
+                {/* Cut line with scissors */}
+                <div className="cut-line" style={{
+                  borderTop: '2px dashed #ccc',
+                  position: 'relative',
+                  marginBottom: '1rem'
                 }}>
-                  ✂️
-                </span>
-              </div>
+                  <span style={{
+                    position: 'absolute',
+                    right: '0',
+                    top: '-12px',
+                    fontSize: '1.2rem'
+                  }}>
+                    ✂️
+                  </span>
+                </div>
 
               {/* Student slip with branding */}
               <div style={{
@@ -397,6 +399,7 @@ function PenPalListContent() {
               </div>
             </div>
           ))}
+          </div>
 
           {/* Footer info */}
           <div style={{ 
@@ -445,11 +448,21 @@ function PenPalListContent() {
             page-break-inside: avoid;
             break-inside: avoid;
             -webkit-column-break-inside: avoid;
+            position: relative;
           }
           
           .cut-line {
             page-break-after: avoid;
             break-after: avoid;
+          }
+          
+          /* Hide the cut line for the first student card */
+          .student-cards-container > .student-card:first-child .cut-line {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            margin: 0 !important;
+            border: none !important;
           }
         }
       `}</style>
