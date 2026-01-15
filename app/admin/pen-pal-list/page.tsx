@@ -418,7 +418,7 @@ function PenPalListContent() {
       {/* Print-specific styles */}
       <style jsx>{`
         @page {
-          margin: 0.5in 0 0 0;
+          margin: 0;
           size: auto;
         }
         
@@ -439,6 +439,10 @@ function PenPalListContent() {
           
           main {
             padding: 0 !important;
+          }
+          
+          .student-cards-container {
+            padding-top: 0.5in;
           }
           
           .student-card {
