@@ -315,33 +315,30 @@ function PenPalListContent() {
           <div className="student-cards-container">
             {consolidatedStudents.map((student, studentIndex) => (
               <div key={studentIndex} className="student-card" style={{ position: 'relative' }}>
-                {/* Cut line with scissors */}
-                <div className="cut-line" style={{
-                  borderTop: '2px dashed #ccc',
+                {/* Student slip with branding */}
+                <div style={{
                   position: 'relative',
-                  marginBottom: '1rem'
+                  paddingTop: '0.75rem',
+                  paddingBottom: '1.25rem',
+                  paddingLeft: '0.5rem',
+                  paddingRight: '0.5rem',
+                  fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                  fontWeight: '300',
+                  lineHeight: '1.6',
+                  borderTop: studentIndex > 0 ? '2px dashed #ccc' : 'none',
+                  marginTop: studentIndex > 0 ? '1rem' : '0'
                 }}>
-                  <span style={{
-                    position: 'absolute',
-                    right: '0',
-                    top: '-12px',
-                    fontSize: '1.2rem'
-                  }}>
-                    ✂️
-                  </span>
-                </div>
-
-              {/* Student slip with branding */}
-              <div style={{
-                position: 'relative',
-                paddingTop: '0.75rem',
-                paddingBottom: '1.25rem',
-                paddingLeft: '0.5rem',
-                paddingRight: '0.5rem',
-                fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                fontWeight: '300',
-                lineHeight: '1.6'
-              }}>
+                  {/* Scissors icon - only show if not first card */}
+                  {studentIndex > 0 && (
+                    <span style={{
+                      position: 'absolute',
+                      right: '0',
+                      top: '-12px',
+                      fontSize: '1.2rem'
+                    }}>
+                      ✂️
+                    </span>
+                  )}
                 {/* Branding image - positioned on right, vertically centered */}
                 <img 
                   src="/slip-branding.png" 
@@ -448,21 +445,6 @@ function PenPalListContent() {
             page-break-inside: avoid;
             break-inside: avoid;
             -webkit-column-break-inside: avoid;
-            position: relative;
-          }
-          
-          .cut-line {
-            page-break-after: avoid;
-            break-after: avoid;
-          }
-          
-          /* Hide the cut line for the first student card */
-          .student-cards-container > .student-card:first-child .cut-line {
-            display: none !important;
-            visibility: hidden !important;
-            height: 0 !important;
-            margin: 0 !important;
-            border: none !important;
           }
         }
       `}</style>
