@@ -312,13 +312,12 @@ function PenPalListContent() {
 
           {/* Student listings - consolidated and sorted alphabetically */}
           {consolidatedStudents.map((student, studentIndex) => (
-            <div key={studentIndex} style={{ position: 'relative', pageBreakInside: 'avoid' }}>
+            <div key={studentIndex} className="student-card" style={{ position: 'relative' }}>
               {/* Cut line with scissors */}
-              <div style={{
+              <div className="cut-line" style={{
                 borderTop: '2px dashed #ccc',
                 position: 'relative',
-                marginBottom: '1rem',
-                pageBreakAfter: 'avoid'
+                marginBottom: '1rem'
               }}>
                 <span style={{
                   position: 'absolute',
@@ -440,6 +439,19 @@ function PenPalListContent() {
           
           main {
             padding: 0 !important;
+          }
+          
+          .student-card {
+            page-break-inside: avoid;
+          }
+          
+          .cut-line {
+            page-break-after: avoid;
+          }
+          
+          /* Hide cut line if it's at the top of a page */
+          .cut-line {
+            break-before: avoid-page;
           }
         }
       `}</style>
