@@ -314,10 +314,7 @@ function PenPalListContent() {
           {/* Student listings - consolidated and sorted alphabetically */}
           <div className="student-cards-container">
             {consolidatedStudents.map((student, studentIndex) => (
-              <div key={studentIndex} className="student-card" style={{ 
-                position: 'relative',
-                marginBottom: '0.75in' 
-              }}>
+              <div key={studentIndex} className="student-card" style={{ position: 'relative' }}>
                 {/* Student slip with branding */}
                 <div style={{
                   position: 'relative',
@@ -444,10 +441,15 @@ function PenPalListContent() {
             padding: 0 !important;
           }
           
+          .student-cards-container {
+            padding-top: 0.5in;
+          }
+          
           .student-card {
             page-break-inside: avoid;
             break-inside: avoid;
             -webkit-column-break-inside: avoid;
+            overflow: hidden;
           }
         }
       `}</style>
