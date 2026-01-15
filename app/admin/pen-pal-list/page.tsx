@@ -317,7 +317,8 @@ function PenPalListContent() {
               <div style={{
                 borderTop: '2px dashed #ccc',
                 position: 'relative',
-                marginBottom: '1rem'
+                marginBottom: '1rem',
+                pageBreakAfter: 'avoid'
               }}>
                 <span style={{
                   position: 'absolute',
