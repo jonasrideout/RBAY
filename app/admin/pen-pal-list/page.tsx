@@ -443,15 +443,13 @@ function PenPalListContent() {
           
           .student-card {
             page-break-inside: avoid;
+            break-inside: avoid;
+            -webkit-column-break-inside: avoid;
           }
           
           .cut-line {
             page-break-after: avoid;
-          }
-          
-          /* Hide cut line if it's at the top of a page */
-          .cut-line {
-            break-before: avoid-page;
+            break-after: avoid;
           }
         }
       `}</style>
