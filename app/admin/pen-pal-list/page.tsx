@@ -312,7 +312,7 @@ function PenPalListContent() {
 
           {/* Student listings - consolidated and sorted alphabetically */}
           {consolidatedStudents.map((student, studentIndex) => (
-            <div key={studentIndex} style={{ position: 'relative' }}>
+            <div key={studentIndex} style={{ position: 'relative', pageBreakInside: 'avoid' }}>
               {/* Cut line with scissors */}
               <div style={{
                 borderTop: '2px dashed #ccc',
