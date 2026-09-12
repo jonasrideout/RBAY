@@ -1,3 +1,4 @@
+// /app/api/students/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -32,9 +33,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Find the school by teacher email
-    const school = await prisma.school.findUnique({
-      where: { teacherEmail }
+    // Find the school by teacher email. findFirst + isActive: true rather
+    // than findUnique: teacherEmail is no longer unique (a teacher can have
+    // one School row per year), so this resolves to whichever school is
+    // currently active for them - the intended target for any new student
+    // signup, even if the link being used was generated for an older class.
+    const school = await prisma.school.findFirst({
+      where: { teacherEmail, isActive: true }
     });
 
     if (!school) {
@@ -116,9 +121,10 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Find the school by teacher email
-    const school = await prisma.school.findUnique({
-      where: { teacherEmail },
+    // Find the school by teacher email. Same findFirst + isActive: true
+    // reasoning as the POST handler above.
+    const school = await prisma.school.findFirst({
+      where: { teacherEmail, isActive: true },
       include: {
         students: {
           where: { isActive: true },
