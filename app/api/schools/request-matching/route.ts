@@ -1,3 +1,4 @@
+// /app/api/schools/request-matching/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { sendAdminNotification } from '@/lib/email';
@@ -24,9 +25,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Find the school by teacher email
-    const school = await prisma.school.findUnique({
-      where: { teacherEmail },
+    // Find the school by teacher email. findFirst + isActive: true rather
+    // than findUnique: teacherEmail is no longer unique (one School row per
+    // year), so this targets the teacher's current active class.
+    const school = await prisma.school.findFirst({
+      where: { teacherEmail, isActive: true },
       include: {
         students: {
           where: {
@@ -92,9 +95,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Update the school to mark it as ready for pen pal pairing
+    // Update the school to mark it as ready for pen pal pairing. Update by
+    // id (from the school we already fetched above) rather than
+    // teacherEmail, since that's no longer a unique field an update's where
+    // clause can target.
     const updatedSchool = await prisma.school.update({
-      where: { teacherEmail },
+      where: { id: school.id },
       data: { 
         status: 'READY',
         updatedAt: new Date()
@@ -168,9 +174,10 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get the school's pen pal pairing status
-    const school = await prisma.school.findUnique({
-      where: { teacherEmail },
+    // Get the school's pen pal pairing status. findFirst + isActive: true,
+    // same reasoning as the POST handler above.
+    const school = await prisma.school.findFirst({
+      where: { teacherEmail, isActive: true },
       select: {
         id: true,
         schoolName: true,
