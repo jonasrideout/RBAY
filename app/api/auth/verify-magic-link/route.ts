@@ -24,14 +24,20 @@ export async function GET(request: NextRequest) {
     }
 
     // Double-check that teacher still exists in database
+    // NOTE: teacherEmail is no longer a unique column (a teacher can have one
+    // School row per school year), so we look up their currently ACTIVE
+    // school rather than using findUnique. If a teacher somehow has no active
+    // school (e.g. they haven't started a new year's class yet), they're
+    // treated the same as a brand-new teacher below.
     try {
-      const school = await prisma.school.findUnique({
+      const school = await prisma.school.findFirst({
         where: {
-          teacherEmail: verification.email
+          teacherEmail: verification.email,
+          isActive: true
         }
       });
 
-      // For new users (no school), create a temporary registration token
+      // For new users (no active school), create a temporary registration token
       if (!school) {
         // Generate a short-lived registration token (15 minutes)
         const registrationToken = crypto.randomBytes(32).toString('hex');
