@@ -81,9 +81,16 @@ export async function sendMagicLinkEmail({
   try {
     const prisma = new PrismaClient();
     
-    const school = await prisma.school.findUnique({
+    // findFirst + isActive: true rather than findUnique: teacherEmail is no
+    // longer unique (a teacher can have an archived School row from a prior
+    // year), and we want this "new user vs returning" check to reflect
+    // whether they currently have an active class - which is exactly what
+    // verify-magic-link checks too, so the email wording matches what
+    // actually happens when they click the link.
+    const school = await prisma.school.findFirst({
       where: {
-        teacherEmail: teacherEmail
+        teacherEmail: teacherEmail,
+        isActive: true
       }
     });
     await prisma.$disconnect();
