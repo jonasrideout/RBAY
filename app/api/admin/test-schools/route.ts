@@ -1,3 +1,4 @@
+// /app/api/admin/test-schools/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -19,7 +20,8 @@ export async function GET() {
     });
 
     // Check specifically for the jennifer.rodriguez school
-    const jenniferSchool = await prisma.school.findUnique({
+    // (findFirst, not findUnique: teacherEmail is no longer a unique column)
+    const jenniferSchool = await prisma.school.findFirst({
       where: {
         teacherEmail: 'jennifer.rodriguez@midwest-elem.edu'
       },
