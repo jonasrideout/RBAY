@@ -58,6 +58,16 @@ interface SchoolData {
   };
 }
 
+interface PastClassSummary {
+  id: string;
+  schoolName: string;
+  status: string;
+  isActive: boolean;
+  createdAt: string;
+  expectedClassSize: number;
+  gradeLevel: string;
+}
+
 interface DashboardHeaderProps {
   schoolData: SchoolData;
   dashboardToken: string;
@@ -67,6 +77,11 @@ interface DashboardHeaderProps {
   onMatchingRequested?: () => void;
   onPenpalPreferenceCheckNeeded?: (required: number, current: number, matchedSchoolName: string) => void;
   isProfileIncomplete?: boolean;
+  // Past-classes switcher: the teacher's other School rows (any year, any
+  // active state), and whether the dashboard is currently showing one of
+  // those past classes in read-only mode rather than their live one.
+  pastClasses?: PastClassSummary[];
+  isViewingPastClass?: boolean;
 }
 
 export default function DashboardHeader({ 
@@ -77,11 +92,14 @@ export default function DashboardHeader({
   allActiveStudentsComplete = false,
   onMatchingRequested,
   onPenpalPreferenceCheckNeeded,
-  isProfileIncomplete = false 
+  isProfileIncomplete = false,
+  pastClasses = [],
+  isViewingPastClass = false
 }: DashboardHeaderProps) {
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied'>('idle');
   const [isRequestingMatching, setIsRequestingMatching] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showClassSwitcher, setShowClassSwitcher] = useState(false);
   
   // Check if school has requested pairing (status is READY)
   const hasPairingRequested = schoolData?.status === 'READY';
@@ -277,6 +295,92 @@ export default function DashboardHeader({
             }}>
               {communicationPlatformsDisplay}
             </p>
+          )}
+
+          {/* Past Classes switcher - hidden for real admin token views, since
+              this is a teacher-facing way to browse their own class history */}
+          {!adminBackButton && (
+            <div style={{ marginTop: '0.5rem', position: 'relative' }}>
+              <button
+                type="button"
+                onClick={() => setShowClassSwitcher(prev => !prev)}
+                className="nav-link"
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  fontSize: '13px',
+                  color: '#2c5aa0',
+                  cursor: 'pointer',
+                  textDecoration: 'underline'
+                }}
+              >
+                {isViewingPastClass ? 'Viewing a past class ▾' : 'Past Classes ▾'}
+              </button>
+
+              {showClassSwitcher && (
+                <div style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0,
+                  marginTop: '0.5rem',
+                  background: 'white',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                  minWidth: '260px',
+                  zIndex: 50,
+                  padding: '0.5rem 0'
+                }}>
+                  {isViewingPastClass && (
+                    <a
+                      href="/dashboard"
+                      className="nav-link"
+                      style={{ display: 'block', padding: '0.5rem 1rem', fontSize: '13px', textDecoration: 'none', color: '#333' }}
+                    >
+                      ← Back to Current Class
+                    </a>
+                  )}
+
+                  {pastClasses.length === 0 ? (
+                    <p style={{ padding: '0.5rem 1rem', fontSize: '13px', color: '#888', margin: 0 }}>
+                      No past classes yet
+                    </p>
+                  ) : (
+                    pastClasses.map(pastClass => (
+                      <a
+                        key={pastClass.id}
+                        href={pastClass.isActive ? '/dashboard' : `/dashboard?viewSchoolId=${pastClass.id}`}
+                        className="nav-link"
+                        style={{
+                          display: 'block',
+                          padding: '0.5rem 1rem',
+                          fontSize: '13px',
+                          textDecoration: 'none',
+                          color: pastClass.isActive ? '#2c5aa0' : '#333',
+                          fontWeight: pastClass.isActive ? 500 : 300
+                        }}
+                      >
+                        {pastClass.schoolName || 'Untitled Class'}
+                        {' — '}
+                        {new Date(pastClass.createdAt).getFullYear()}
+                        {pastClass.isActive ? ' (current)' : ''}
+                      </a>
+                    ))
+                  )}
+
+                  <div style={{ borderTop: '1px solid #eee', marginTop: '0.5rem', paddingTop: '0.5rem' }}>
+                    <a
+                      href="/dashboard/new-class"
+                      className="nav-link"
+                      style={{ display: 'block', padding: '0.5rem 1rem', fontSize: '13px', textDecoration: 'none', color: '#28a745' }}
+                    >
+                      + Start This Year&rsquo;s Class
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
           )}
         </div>
         
