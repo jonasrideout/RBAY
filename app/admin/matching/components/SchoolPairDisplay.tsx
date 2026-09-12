@@ -1,3 +1,4 @@
+// /app/admin/matching/components/SchoolPairDisplay.tsx
 "use client";
 
 import { useState } from 'react';
@@ -11,6 +12,13 @@ interface SchoolPairDisplayProps {
   onAssignPenPals?: () => void;
   onViewPenPals?: (schoolId: string) => void;
   onUnmatch?: () => void;
+  // "Mark as Done" support: shown alongside the existing action buttons for
+  // completed pairs. assignedAt is an ISO date string (or null) showing how
+  // long ago pen pals were assigned, so the admin has context before
+  // deciding to archive a pair.
+  showMarkDoneButton?: boolean;
+  onMarkDone?: () => void;
+  assignedAt?: string | null;
 }
 
 export default function SchoolPairDisplay({ 
@@ -19,7 +27,10 @@ export default function SchoolPairDisplay({
   showPenPalListButtons = false,
   onAssignPenPals,
   onViewPenPals,
-  onUnmatch
+  onUnmatch,
+  showMarkDoneButton = false,
+  onMarkDone,
+  assignedAt = null
 }: SchoolPairDisplayProps) {
   const [copyButtonText1, setCopyButtonText1] = useState('Copy URL');
   const [copyButtonText2, setCopyButtonText2] = useState('Copy URL');
@@ -28,6 +39,18 @@ export default function SchoolPairDisplay({
   const [showUnmatchModal, setShowUnmatchModal] = useState(false);
   const [sendingEmails, setSendingEmails] = useState(false);
   const [emailsSent, setEmailsSent] = useState(false);
+
+  // Formats the assignedAt ISO date into something like
+  // "Assigned Mar 4, 2025 (187 days ago)" for the Complete Pairs action row.
+  const formatAssignedAt = (isoDate: string | null): string | null => {
+    if (!isoDate) return null;
+    const date = new Date(isoDate);
+    const daysAgo = Math.floor((Date.now() - date.getTime()) / (1000 * 60 * 60 * 24));
+    const dateLabel = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    if (daysAgo <= 0) return `Assigned ${dateLabel} (today)`;
+    if (daysAgo === 1) return `Assigned ${dateLabel} (1 day ago)`;
+    return `Assigned ${dateLabel} (${daysAgo} days ago)`;
+  };
 
   const getDashboardUrl = (school: { dashboardToken: string }) => {
     const adminDashboardPath = `/dashboard?token=${school.dashboardToken}`;
@@ -675,6 +698,12 @@ export default function SchoolPairDisplay({
                   Pen Pals Assigned
                 </div>
 
+                {formatAssignedAt(assignedAt) && (
+                  <span style={{ fontSize: '11px', color: '#888' }}>
+                    {formatAssignedAt(assignedAt)}
+                  </span>
+                )}
+
                 <button
                   onClick={handleSendEmails}
                   disabled={sendingEmails || emailsSent || alreadySent}
@@ -712,6 +741,26 @@ export default function SchoolPairDisplay({
                     'Send Pen Pal Assignments'
                   )}
                 </button>
+
+                {showMarkDoneButton && onMarkDone && (
+                  <button
+                    onClick={onMarkDone}
+                    style={{
+                      background: 'white',
+                      border: '1px solid #6c757d',
+                      borderRadius: '3px',
+                      color: '#6c757d',
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      cursor: 'pointer',
+                      padding: '8px 16px',
+                      textAlign: 'center'
+                    }}
+                    title="Mark this pair as done - moves it out of the active workflow into the Done section"
+                  >
+                    Mark as Done
+                  </button>
+                )}
               </>
             )}
             
