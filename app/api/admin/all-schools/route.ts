@@ -5,6 +5,26 @@ import { prisma } from '@/lib/prisma';
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
+// Given a school's (or group's) roster, returns the earliest pen-pal
+// connection timestamp across all its students - i.e. roughly "when this
+// school's kids were matched." Used so the admin dashboard can show how old
+// a completed pairing is when deciding whether to mark it done.
+function getEarliestPenpalAssignmentDate(
+  students: { penpalConnections: { createdAt: Date }[]; penpalOf: { createdAt: Date }[] }[]
+): string | null {
+  let earliest: Date | null = null;
+
+  for (const student of students) {
+    for (const connection of [...student.penpalConnections, ...student.penpalOf]) {
+      if (!earliest || connection.createdAt < earliest) {
+        earliest = connection.createdAt;
+      }
+    }
+  }
+
+  return earliest ? earliest.toISOString() : null;
+}
+
 export async function GET() {
   try {
     console.log('All-schools using DATABASE_URL:', process.env.DATABASE_URL?.substring(0, 50) + '...');
@@ -29,13 +49,15 @@ export async function GET() {
             penpalConnections: {
               select: {
                 id: true,
-                penpalId: true
+                penpalId: true,
+                createdAt: true
               }
             },
             penpalOf: {
               select: {
                 id: true,
-                studentId: true
+                studentId: true,
+                createdAt: true
               }
             }
           }
@@ -98,10 +120,10 @@ export async function GET() {
                 profileCompleted: true,
                 penpalPreference: true,
                 penpalConnections: {
-                  select: { id: true }
+                  select: { id: true, createdAt: true }
                 },
                 penpalOf: {
-                  select: { id: true }
+                  select: { id: true, createdAt: true }
                 }
               }
             }
@@ -136,6 +158,8 @@ export async function GET() {
         Math.floor(classSize * 0.8)
       ) : 0;
       const meetsPreferenceRequirement = studentsWithMultiple >= requiredMultiple;
+
+      const penPalAssignedAt = getEarliestPenpalAssignmentDate(school.students);
       
       return {
         id: school.id,
@@ -197,7 +221,8 @@ export async function GET() {
           studentsWithPenPals: studentsWithAssignments,
           totalStudents: totalStudents,
           allStudentsAssigned: allStudentsAssigned,
-          assignmentPercentage: totalStudents > 0 ? Math.round((studentsWithAssignments / totalStudents) * 100) : 0
+          assignmentPercentage: totalStudents > 0 ? Math.round((studentsWithAssignments / totalStudents) * 100) : 0,
+          assignedAt: penPalAssignedAt
         },
         penPalPreferences: {
           studentsWithMultiple: studentsWithMultiple,
@@ -250,6 +275,8 @@ export async function GET() {
         Math.floor(classSize * 0.8)
       ) : 0;
       const meetsPreferenceRequirement = studentsWithMultiple >= requiredMultiple;
+
+      const penPalAssignedAt = getEarliestPenpalAssignmentDate(allStudents);
       
       // Determine if group is ready for matching (all schools must be READY or COLLECTING)
       const allSchoolsReady = group.schools.every(school => 
@@ -290,7 +317,8 @@ export async function GET() {
           studentsWithPenPals: studentsWithAssignments,
           totalStudents: totalStudents,
           allStudentsAssigned: allStudentsAssigned,
-          assignmentPercentage: totalStudents > 0 ? Math.round((studentsWithAssignments / totalStudents) * 100) : 0
+          assignmentPercentage: totalStudents > 0 ? Math.round((studentsWithAssignments / totalStudents) * 100) : 0,
+          assignedAt: penPalAssignedAt
         },
         penPalPreferences: {
           studentsWithMultiple: studentsWithMultiple,
