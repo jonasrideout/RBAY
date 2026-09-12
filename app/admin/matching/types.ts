@@ -47,6 +47,10 @@ export interface School {
     totalStudents: number;
     allStudentsAssigned: boolean;
     assignmentPercentage: number;
+    // ISO timestamp of the earliest pen-pal connection created for this
+    // school's students - i.e. roughly "when this school's kids were
+    // matched." Null if no assignments exist yet.
+    assignedAt?: string | null;
   };
   penPalPreferences?: {
     studentsWithMultiple: number;
@@ -92,6 +96,7 @@ export interface SchoolGroup {
     totalStudents: number;
     allStudentsAssigned: boolean;
     assignmentPercentage: number;
+    assignedAt?: string | null;
   };
   penPalPreferences: {
     studentsWithMultiple: number;
