@@ -37,11 +37,14 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Verify teacher still exists in database
+    // Verify teacher still exists in database. findFirst rather than
+    // findUnique: teacherEmail is no longer a unique column (a teacher can
+    // have multiple School rows across years) - we only need to confirm at
+    // least one exists, not fetch a canonical single record.
     const prisma = new PrismaClient();
 
     try {
-      const school = await prisma.school.findUnique({
+      const school = await prisma.school.findFirst({
         where: {
           teacherEmail: sessionCheck.session.email
         }
