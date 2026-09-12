@@ -1,3 +1,5 @@
+// /prisma/schema.prisma
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -44,7 +46,7 @@ model School {
   id                   String        @id @default(cuid())
   schoolName           String
   teacherName          String
-  teacherEmail         String        @unique
+  teacherEmail         String
   teacherPhone         String?
   dashboardToken       String        @unique @default(cuid())
   schoolAddress        String?
@@ -87,6 +89,13 @@ model School {
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
   
+  // teacherEmail is intentionally NOT globally unique: a returning teacher can
+  // have multiple School rows over time (one per school year). Only one of
+  // them should have isActive: true at any given moment — that uniqueness is
+  // enforced in application code (see /app/api/schools/route.ts POST handler),
+  // not at the database level, since Postgres partial/filtered unique
+  // constraints aren't expressible directly in this schema file.
+  @@index([teacherEmail])
   @@map("schools")
 }
 
