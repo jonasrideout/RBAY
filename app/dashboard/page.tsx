@@ -1,3 +1,4 @@
+// /app/dashboard/page.tsx
 "use client";
 
 import { useState, useEffect, Suspense } from 'react';
@@ -161,6 +162,15 @@ function TeacherDashboardContent() {
   const [error, setError] = useState('');
   const [expandedReadyStudents, setExpandedReadyStudents] = useState<Set<string>>(new Set());
   const [isAdminViewing, setIsAdminViewing] = useState(false);
+  // Past Classes switcher state: the teacher's other School rows (any year),
+  // and whether we're currently showing one of those past classes read-only
+  // rather than the teacher's live, active one.
+  const [pastClasses, setPastClasses] = useState<any[]>([]);
+  const [isViewingPastClass, setIsViewingPastClass] = useState(false);
+  // True whenever the dashboard should be shown read-only: either a real
+  // admin viewing via token, or a teacher browsing one of their own past
+  // classes. Used everywhere the old code checked isAdminViewing alone.
+  const isReadOnlyView = isAdminViewing || isViewingPastClass;
   
   // Removal mode state
   const [readyStudentsRemovalMode, setReadyStudentsRemovalMode] = useState(false);
@@ -205,6 +215,7 @@ function TeacherDashboardContent() {
   useEffect(() => {
     const checkAuthAndLoadDashboard = async () => {
       const tokenParam = searchParams?.get('token');
+      const viewSchoolIdParam = searchParams?.get('viewSchoolId');
       const isAdmin = await checkIsAdmin();
 
 
@@ -224,7 +235,19 @@ function TeacherDashboardContent() {
       }
 
       if (session?.user?.email) {
-        fetchSchoolByEmail(session.user.email);
+        // Always load the Past Classes list for the switcher, regardless of
+        // whether we're about to show the current class or a past one.
+        fetchPastClasses();
+
+        if (viewSchoolIdParam) {
+          // Teacher browsing one of their own past classes via the Past
+          // Classes switcher - read-only, ownership checked server-side.
+          setIsViewingPastClass(true);
+          fetchSchoolById(viewSchoolIdParam);
+        } else {
+          setIsViewingPastClass(false);
+          fetchSchoolByEmail(session.user.email);
+        }
       } else {
         setError('User email not found in session');
         setIsLoading(false);
@@ -233,6 +256,80 @@ function TeacherDashboardContent() {
 
     checkAuthAndLoadDashboard();
   }, [session, status, router, searchParams]);
+
+  const fetchPastClasses = async () => {
+    try {
+      const response = await fetch('/api/schools/history', { credentials: 'include' });
+      const data = await response.json();
+
+      if (response.ok) {
+        setPastClasses(data.schools || []);
+      }
+    } catch (err) {
+      console.error('Error fetching past classes:', err);
+    }
+  };
+
+  const fetchSchoolById = async (schoolId: string) => {
+    try {
+      const response = await fetch(`/api/schools?id=${encodeURIComponent(schoolId)}`, {
+        credentials: 'include'
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to load that class');
+      }
+
+      const transformedSchoolData: SchoolData = {
+        id: data.school.id,
+        schoolName: data.school.schoolName,
+        teacherName: data.school.teacherName,
+        teacherEmail: data.school.teacherEmail,
+        dashboardToken: data.school.dashboardToken,
+        expectedClassSize: data.school.expectedClassSize,
+        startMonth: data.school.startMonth,
+        programStartMonth: data.school.programStartMonth,
+        status: data.school.status,
+        students: data.school.students,
+        matchedWithSchoolId: data.school.matchedWithSchoolId,
+        matchedSchoolName: data.school.matchedWithSchool?.schoolName || undefined,
+        schoolState: data.school.schoolState,
+        schoolCity: data.school.schoolCity,
+        gradeLevel: data.school.gradeLevel,
+        teacherPhone: data.school.teacherPhone,
+        specialConsiderations: data.school.specialConsiderations,
+        communicationPlatforms: data.school.communicationPlatforms,
+        mailingAddress: data.school.mailingAddress,
+        hasMultipleClasses: data.school.hasMultipleClasses,
+        teacherNames: data.school.teacherNames,
+        schoolGroup: data.school.schoolGroup,
+        studentStats: data.school.studentStats,
+        matchedSchool: data.school.matchedWithSchool ? {
+          id: data.school.matchedWithSchool.id,
+          schoolName: data.school.matchedWithSchool.schoolName,
+          teacherName: data.school.matchedWithSchool.teacherName,
+          teacherEmail: data.school.matchedWithSchool.teacherEmail,
+          schoolCity: data.school.matchedWithSchool.schoolCity,
+          schoolState: data.school.matchedWithSchool.schoolState,
+          expectedClassSize: data.school.matchedWithSchool.expectedClassSize,
+          actualStudentCount: data.school.matchedWithSchool.actualStudentCount,
+          region: data.school.matchedWithSchool.region,
+          communicationPlatforms: data.school.matchedWithSchool.communicationPlatforms,
+          mailingAddress: data.school.matchedWithSchool.mailingAddress,
+          isGroup: data.school.matchedWithSchool.isGroup,
+          schools: data.school.matchedWithSchool.schools
+        } : undefined
+      };
+
+      setSchoolData(transformedSchoolData);
+      fetchStudentData(data.school.id, transformedSchoolData);
+
+    } catch (err: any) {
+      setError(err.message || 'Failed to load that class');
+      setIsLoading(false);
+    }
+  };
 
   const fetchSchoolByToken = async (token: string) => {
     try {
@@ -661,6 +758,10 @@ function TeacherDashboardContent() {
               <Link href="/admin/matching" className="btn btn-primary">
                 Back to Admin Dashboard
               </Link>
+            ) : isViewingPastClass ? (
+              <Link href="/dashboard" className="btn btn-primary">
+                Back to Current Class
+              </Link>
             ) : (
               <Link href="/register-school" className="btn btn-primary">
                 Register School
@@ -687,12 +788,14 @@ function TeacherDashboardContent() {
         <DashboardHeader 
           schoolData={schoolData} 
           dashboardToken={schoolData.dashboardToken}
-          readOnly={isAdminViewing}
+          readOnly={isReadOnlyView}
           adminBackButton={isAdminViewing}
           allActiveStudentsComplete={allActiveStudentsComplete}
           onMatchingRequested={handleMatchingRequested}
           onPenpalPreferenceCheckNeeded={handlePenpalPreferenceCheckNeeded}
           isProfileIncomplete={isProfileIncomplete}
+          pastClasses={pastClasses}
+          isViewingPastClass={isViewingPastClass}
         />
 
         {/* Status card - positioned directly after header */}
@@ -702,7 +805,7 @@ function TeacherDashboardContent() {
           matchedSchoolTeacher={schoolData.matchedSchool?.teacherName}
           matchedSchoolRegion={schoolData.matchedSchool?.region}
           onSchoolUpdated={handleSchoolUpdated}
-          readOnly={isAdminViewing}
+          readOnly={isReadOnlyView}
           isAdminView={isAdminViewing}
         />
 
@@ -726,7 +829,7 @@ function TeacherDashboardContent() {
           studentsWithInterests={studentsWithInterests}
           matchedSchool={schoolData.matchedSchool}
           isMatched={schoolData?.matchedWithSchoolId != null || schoolData?.matchedSchool != null}
-          readOnly={isAdminViewing}
+          readOnly={isReadOnlyView}
         />
 
         <ReadyStudents 
@@ -757,10 +860,10 @@ function TeacherDashboardContent() {
           onEditInterestChange={handleEditInterestChange}
           onEditOtherInterestsChange={setEditTempOtherInterests}
           onToggleExpansion={toggleReadyStudentExpansion}
-          readOnly={isAdminViewing}
+          readOnly={isReadOnlyView}
         />
 
-        {!isAdminViewing && (
+        {!isReadOnlyView && (
           <>
             <ConfirmationDialog 
               show={confirmDialog.show}
@@ -794,7 +897,7 @@ function TeacherDashboardContent() {
               No Students Registered Yet
             </h3>
             <p className="text-meta-info" style={{ marginBottom: '2rem' }}>
-              {isAdminViewing 
+              {isReadOnlyView 
                 ? 'This school has not registered any students yet.'
                 : 'Use the "Copy Student Link" button above to share with your students, or click "Add New Student" to add them manually.'
               }
