@@ -3,7 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { sendWelcomeEmail, sendAdminNotification } from '@/lib/email';
-import { createTeacherSession, setSessionCookie } from '@/lib/magicLink';
+import { createTeacherSession, setSessionCookie, getSessionFromRequest } from '@/lib/magicLink';
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,7 +29,12 @@ export async function POST(request: NextRequest) {
       hasMultipleClasses,
       teacherNames,
       isAdminFlow,
-      isEmailVerified
+      isEmailVerified,
+      // When a returning teacher starts a new year's class, the client sends
+      // the id of their previous (currently active) School row here. We
+      // archive that row (isActive: false) in the same transaction that
+      // creates the new one, so the teacher only ever has one active school.
+      previousSchoolId
     } = body;
 
     // Conditional validation based on admin context
@@ -93,44 +98,80 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if school with this email already exists
-    const existingSchool = await prisma.school.findUnique({
-      where: { teacherEmail }
-    });
+    // Check if this teacher already has an ACTIVE school. teacherEmail is no
+    // longer a unique column at the database level (a teacher can have one
+    // School row per school year), so "already registered" now specifically
+    // means "already has a currently-active school" rather than "has ever
+    // registered." A returning teacher starting a new year goes through the
+    // previousSchoolId path below instead of hitting this check.
+    if (!previousSchoolId) {
+      const existingSchool = await prisma.school.findFirst({
+        where: { teacherEmail, isActive: true }
+      });
 
-    if (existingSchool) {
-      return NextResponse.json(
-        { error: 'A school with this teacher email already exists' },
-        { status: 409 }
-      );
+      if (existingSchool) {
+        return NextResponse.json(
+          { error: 'A school with this teacher email already exists' },
+          { status: 409 }
+        );
+      }
     }
 
     // Create the school
     const isUSSchool = schoolCountry === 'United States';
-    
-    const school = await prisma.school.create({
-      data: {
-        teacherName,
-        teacherEmail,
-        teacherPhone: teacherPhone || null,
-        schoolName,
-        schoolAddress: schoolAddress || null,
-        schoolCity: schoolCity || null,
-        schoolState: schoolState || (isUSSchool ? 'TBD' : null),
-        schoolCountry: schoolCountry || 'United States',
-        schoolZip: schoolZip || null,
-        region: region || (isUSSchool ? 'TBD' : schoolCountry),
-        gradeLevel: gradeLevel || 'TBD',
-        expectedClassSize: expectedClassSize ? parseInt(expectedClassSize) : 0,
-        startMonth: startMonth || 'TBD',
-        status: 'COLLECTING',
-        specialConsiderations: specialConsiderations || null,
-        communicationPlatforms: communicationPlatforms || null,
-        mailingAddress: mailingAddress || null,
-        hasMultipleClasses: hasMultipleClasses || false,
-        teacherNames: teacherNames || []
-      }
-    });
+
+    const schoolData = {
+      teacherName,
+      teacherEmail,
+      teacherPhone: teacherPhone || null,
+      schoolName,
+      schoolAddress: schoolAddress || null,
+      schoolCity: schoolCity || null,
+      schoolState: schoolState || (isUSSchool ? 'TBD' : null),
+      schoolCountry: schoolCountry || 'United States',
+      schoolZip: schoolZip || null,
+      region: region || (isUSSchool ? 'TBD' : schoolCountry),
+      gradeLevel: gradeLevel || 'TBD',
+      expectedClassSize: expectedClassSize ? parseInt(expectedClassSize) : 0,
+      startMonth: startMonth || 'TBD',
+      status: 'COLLECTING' as const,
+      specialConsiderations: specialConsiderations || null,
+      communicationPlatforms: communicationPlatforms || null,
+      mailingAddress: mailingAddress || null,
+      hasMultipleClasses: hasMultipleClasses || false,
+      teacherNames: teacherNames || []
+    };
+
+    let school;
+
+    if (previousSchoolId) {
+      // Returning teacher starting a new year's class: verify the previous
+      // school actually belongs to this teacher and is currently active,
+      // then archive it and create the new one together so we never end up
+      // with two active schools (or an orphaned archive) for one teacher.
+      school = await prisma.$transaction(async (tx) => {
+        const previousSchool = await tx.school.findUnique({
+          where: { id: previousSchoolId }
+        });
+
+        if (!previousSchool || previousSchool.teacherEmail !== teacherEmail) {
+          throw new Error('PREVIOUS_SCHOOL_MISMATCH');
+        }
+
+        if (!previousSchool.isActive) {
+          throw new Error('PREVIOUS_SCHOOL_NOT_ACTIVE');
+        }
+
+        await tx.school.update({
+          where: { id: previousSchoolId },
+          data: { isActive: false }
+        });
+
+        return tx.school.create({ data: schoolData });
+      });
+    } else {
+      school = await prisma.school.create({ data: schoolData });
+    }
 
     // Send welcome email - both admin and regular flows
     let emailSent = false;
@@ -203,7 +244,21 @@ export async function POST(request: NextRequest) {
 
   } catch (error: any) {
     console.error('School registration error:', error);
-    
+
+    if (error?.message === 'PREVIOUS_SCHOOL_MISMATCH') {
+      return NextResponse.json(
+        { error: 'The previous school could not be found for this teacher email.' },
+        { status: 400 }
+      );
+    }
+
+    if (error?.message === 'PREVIOUS_SCHOOL_NOT_ACTIVE') {
+      return NextResponse.json(
+        { error: 'That school is no longer active and cannot be renewed again.' },
+        { status: 400 }
+      );
+    }
+
     if (error?.code === 'P2002') {
       return NextResponse.json(
         { error: 'A school with this teacher email already exists' },
@@ -313,59 +368,90 @@ export async function PUT(request: NextRequest) {
   }
 }
 
+// Shared include clause for the three GET lookup paths below (by token, by
+// id, by teacherEmail) so we only have to maintain one copy of it.
+const SCHOOL_INCLUDE = {
+  students: {
+    where: { isActive: true },
+    select: {
+      id: true,
+      firstName: true,
+      lastInitial: true,
+      grade: true,
+      teacherName: true,
+      interests: true,
+      otherInterests: true,
+      profileCompleted: true,
+      parentConsent: true,
+      createdAt: true,
+      penpalConnections: true,
+      penpalOf: true,
+      penpalPreference: true
+    }
+  },
+  // Include school group information
+  schoolGroup: {
+    include: {
+      schools: {
+        include: {
+          students: {
+            where: { isActive: true }
+          }
+        }
+      }
+    }
+  }
+} as const;
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const teacherEmail = searchParams.get('teacherEmail');
     const dashboardToken = searchParams.get('token');
+    const schoolId = searchParams.get('id');
 
-    let whereClause: any;
+    let school;
+
     if (dashboardToken) {
-      whereClause = { dashboardToken };
+      // Used by the admin matching dashboard's per-school "view dashboard"
+      // link. Unaffected by the teacherEmail uniqueness change below.
+      school = await prisma.school.findUnique({
+        where: { dashboardToken },
+        include: SCHOOL_INCLUDE
+      });
+    } else if (schoolId) {
+      // Used by a teacher's "Past Classes" switcher to view one of their own
+      // archived (isActive: false) schools in read-only mode. Since this
+      // isn't scoped by dashboardToken or teacherEmail, we verify ownership
+      // against the logged-in teacher's session before returning anything.
+      school = await prisma.school.findUnique({
+        where: { id: schoolId },
+        include: SCHOOL_INCLUDE
+      });
+
+      if (school) {
+        const sessionCheck = getSessionFromRequest(request);
+        if (!sessionCheck.valid || sessionCheck.session?.email !== school.teacherEmail) {
+          return NextResponse.json(
+            { error: 'You are not authorized to view this school' },
+            { status: 403 }
+          );
+        }
+      }
     } else if (teacherEmail) {
-      whereClause = { teacherEmail };
+      // teacherEmail is no longer unique (a teacher can have one School row
+      // per school year), so this returns whichever school is currently
+      // ACTIVE for that email rather than using findUnique.
+      school = await prisma.school.findFirst({
+        where: { teacherEmail, isActive: true },
+        include: SCHOOL_INCLUDE
+      });
     } else {
       return NextResponse.json(
-        { error: 'Teacher email or dashboard token is required' },
+        { error: 'Teacher email, dashboard token, or school id is required' },
         { status: 400 }
       );
     }
-
-    const school = await prisma.school.findUnique({
-      where: whereClause,
-      include: {
-        students: {
-          where: { isActive: true },
-          select: {
-            id: true,
-            firstName: true,
-            lastInitial: true,
-            grade: true,
-            teacherName: true,
-            interests: true,
-            otherInterests: true,
-            profileCompleted: true,
-            parentConsent: true,
-            createdAt: true,
-            penpalConnections: true,
-            penpalOf: true,
-            penpalPreference: true
-          }
-        },
-        // Include school group information
-        schoolGroup: {
-          include: {
-            schools: {
-              include: {
-                students: {
-                  where: { isActive: true }
-                }
-              }
-            }
-          }
-        }
-      }
-    });
 
     if (!school) {
       return NextResponse.json(
