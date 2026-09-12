@@ -1,3 +1,4 @@
+// /app/admin/matching/page.tsx
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -36,6 +37,11 @@ export default function AdminDashboard() {
   
   // Group modal state
   const [showGroupModal, setShowGroupModal] = useState(false);
+  // Collapsed by default: pairs the admin has explicitly marked DONE (see
+  // handleMarkAsDone) move out of "Complete Pairs" into this hidden-until-
+  // expanded section, so the active workflow view doesn't accumulate every
+  // past year's completed pairs.
+  const [showDonePairs, setShowDonePairs] = useState(false);
   
   // Filter state
   const [filters, setFilters] = useState<Filters>({
@@ -157,6 +163,59 @@ export default function AdminDashboard() {
   } else {
     const validStatuses = ['READY', 'MATCHED'];
     return validStatuses.includes(unit.status);
+    }
+  };
+
+  // A unit is "done" once every school inside it (itself, for a plain
+  // school) has been explicitly marked DONE via handleMarkAsDone below.
+  const isUnitDone = (unit: MatchableUnit): boolean => {
+    if (isGroup(unit)) {
+      return unit.schools.every(school => school.status === 'DONE');
+    } else {
+      return unit.status === 'DONE';
+    }
+  };
+
+  // Earliest pen-pal assignment date for a unit, for display next to the
+  // "Mark as Done" button so the admin has some sense of how old a
+  // completed pairing is before deciding to archive it.
+  const getUnitAssignedAt = (unit: MatchableUnit): string | null => {
+    return unit.penPalAssignments?.assignedAt || null;
+  };
+
+  const handleMarkAsDone = async (unit1: MatchableUnit, unit2: MatchableUnit) => {
+    try {
+      const body: any = {};
+
+      if (isSchool(unit1)) {
+        body.school1Id = unit1.id;
+      } else {
+        body.group1Id = unit1.id;
+      }
+
+      if (isSchool(unit2)) {
+        body.school2Id = unit2.id;
+      } else {
+        body.group2Id = unit2.id;
+      }
+
+      const response = await fetch('/api/admin/mark-done', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to mark pair as done');
+      }
+
+      fetchAllData();
+
+    } catch (err: any) {
+      console.error('Error marking pair as done:', err);
+      alert('Error marking pair as done: ' + err.message);
     }
   };
 
@@ -528,13 +587,20 @@ export default function AdminDashboard() {
     
     const awaitingReadiness = matchedPairs.filter(pair => !pair.bothUnitsReady);
     const readyForPairing = matchedPairs.filter(pair => pair.bothUnitsReady && !pair.hasStudentPairings);
-    const completePairs = matchedPairs.filter(pair => pair.hasStudentPairings);
+    const allCompletePairs = matchedPairs.filter(pair => pair.hasStudentPairings);
+    // Split completed pairs into ones still awaiting an admin decision vs.
+    // ones already marked DONE (both units' schools all flipped to DONE via
+    // handleMarkAsDone). Done pairs move into a separate, collapsed section
+    // instead of piling up in the main workflow view.
+    const completePairs = allCompletePairs.filter(pair => !(isUnitDone(pair.unit1) && isUnitDone(pair.unit2)));
+    const donePairs = allCompletePairs.filter(pair => isUnitDone(pair.unit1) && isUnitDone(pair.unit2));
 
     return {
       unmatched,
       awaitingReadiness,
       readyForPairing,
-      completePairs
+      completePairs,
+      donePairs
     };
   };
 
@@ -549,7 +615,7 @@ export default function AdminDashboard() {
     );
   }
 
-  const { unmatched, awaitingReadiness, readyForPairing, completePairs } = organizeUnitsByWorkflow();
+  const { unmatched, awaitingReadiness, readyForPairing, completePairs, donePairs } = organizeUnitsByWorkflow();
   
   let unmatchedToShow = filtersApplied ? filteredUnits : unmatched;
   if (pinnedUnit) {
@@ -781,9 +847,44 @@ export default function AdminDashboard() {
                       pair={pair} 
                       onAssignPenPals={() => handleAssignPenPals(pair.unit1, pair.unit2)}
                       onUnmatch={() => handleUnmatchUnits(pair.unit1, pair.unit2)}
+                      showMarkDoneButton={true}
+                      onMarkDone={() => handleMarkAsDone(pair.unit1, pair.unit2)}
+                      assignedAt={getUnitAssignedAt(pair.unit1) || getUnitAssignedAt(pair.unit2)}
                     />
                   ))}
                 </div>
+              )}
+            </section>
+
+            <section style={{ marginBottom: '3rem' }}>
+              <button
+                type="button"
+                onClick={() => setShowDonePairs(prev => !prev)}
+                className="btn"
+                style={{ marginBottom: showDonePairs ? '1rem' : 0 }}
+              >
+                {showDonePairs ? '▾' : '▸'} Done ({donePairs.length})
+              </button>
+
+              {showDonePairs && (
+                donePairs.length === 0 ? (
+                  <div style={{ 
+                    background: '#fff', border: '1px solid #e0e6ed', borderRadius: '12px',
+                    textAlign: 'center', padding: '2rem', color: '#6c757d'
+                  }}>
+                    No pairs have been marked done yet.
+                  </div>
+                ) : (
+                  <div>
+                    {donePairs.map((pair, index) => (
+                      <SchoolPairDisplay 
+                        key={`done-${index}`} 
+                        pair={pair} 
+                        assignedAt={getUnitAssignedAt(pair.unit1) || getUnitAssignedAt(pair.unit2)}
+                      />
+                    ))}
+                  </div>
+                )
               )}
             </section>
           </>
