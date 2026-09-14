@@ -403,6 +403,15 @@ function TeacherDashboardContent() {
         throw new Error(data.error || 'Failed to load school data');
       }
 
+      // If the admin has already marked this school DONE (e.g. their session
+      // was already active when that happened, so the login-time redirect
+      // in verify-magic-link didn't catch it), send them into "Start This
+      // Year's Class" instead of rendering a dashboard for an archived class.
+      if (data.school.status === 'DONE') {
+        router.push('/dashboard/new-class');
+        return;
+      }
+
       const transformedSchoolData: SchoolData = {
         id: data.school.id,
         schoolName: data.school.schoolName,
