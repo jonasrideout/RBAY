@@ -53,7 +53,6 @@ export default function SchoolEditModal({
     classSize: schoolData.expectedClassSize?.toString() || '',
     programStartMonth: schoolData.startMonth || schoolData.programStartMonth || '',
     specialConsiderations: schoolData.specialConsiderations || '',
-    programAgreement: true,
     parentNotification: true,
     communicationPlatforms: schoolData.communicationPlatforms || [],
     communicationPlatformsOther: '',
