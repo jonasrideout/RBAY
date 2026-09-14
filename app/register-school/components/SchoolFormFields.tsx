@@ -1,3 +1,4 @@
+// /app/register-school/components/SchoolFormFields.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -281,7 +282,7 @@ export default function SchoolFormFields({
             Teacher Names *
           </label>
           <p className="text-meta-info" style={{ fontSize: '0.9rem', marginBottom: '1rem' }}>
-            Add the names of teachers whose students are participating. Students will select their teacher during registration.
+            Only you&rsquo;ll log in and manage this dashboard. Teacher names are attached to students so letters are easy to sort when they arrive.
           </p>
           {(formData.teacherNames || []).map((name, index) => (
             <div key={index} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
@@ -496,26 +497,6 @@ export default function SchoolFormFields({
           style={{ fontFamily: 'inherit', resize: 'vertical' }}
         />
       </div>
-
-      {/* Program Agreement */}
-      {!editMode && !isAdminMode && (
-        <div style={{ marginBottom: '1.5rem' }}>
-          <label style={{ display: 'flex', alignItems: 'flex-start', cursor: 'pointer' }}>
-            <input
-              type="checkbox"
-              name="programAgreement"
-              checked={formData.programAgreement}
-              onChange={handleChange}
-              disabled={isLoading}
-              style={{ marginRight: '0.75rem', marginTop: '0.25rem', flexShrink: 0 }}
-              required
-            />
-            <span className="text-data-value">
-              I agree to participate in the Right Back at You pen pal program and understand the commitment to facilitate letter exchanges between students. *
-            </span>
-          </label>
-        </div>
-      )}
 
       {/* Parent Notification (hidden field for now) */}
       <input
