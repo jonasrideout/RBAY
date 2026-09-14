@@ -1,3 +1,4 @@
+// /app/register-school/types.ts
 export interface SchoolFormData {
   teacherName: string;
   teacherEmail: string;
@@ -10,7 +11,6 @@ export interface SchoolFormData {
   classSize: string;
   programStartMonth: string;
   specialConsiderations: string;
-  programAgreement: boolean;
   parentNotification: boolean;
   communicationPlatforms: string[];
   communicationPlatformsOther: string;
