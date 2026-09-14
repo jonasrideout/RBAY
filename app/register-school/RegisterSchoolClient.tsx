@@ -43,7 +43,6 @@ export default function RegisterSchoolClient({
     classSize: '',
     programStartMonth: '',
     specialConsiderations: '',
-    programAgreement: false,
     parentNotification: false,
     communicationPlatforms: [],
     communicationPlatformsOther: '',
@@ -190,12 +189,6 @@ export default function RegisterSchoolClient({
         return;
       }
 
-      if (!formData.programAgreement) {
-        setError('Please check the agreement box to continue');
-        setIsLoading(false);
-        return;
-      }
-
       // Validate communication platforms
       if (formData.communicationPlatforms.length === 0) {
         setError('Please select at least one communication platform');
@@ -239,7 +232,6 @@ export default function RegisterSchoolClient({
         expectedClassSize: formData.classSize,
         startMonth: formData.programStartMonth,
         specialConsiderations: formData.specialConsiderations,
-        programAgreement: formData.programAgreement,
         communicationPlatforms: communicationPlatformsFormatted,
         mailingAddress: formData.mailingAddress,
         isAdminFlow: isAdminMode,
