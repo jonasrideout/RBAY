@@ -21,7 +21,6 @@ const EMPTY_FORM_DATA: SchoolFormData = {
   classSize: '',
   programStartMonth: '',
   specialConsiderations: '',
-  programAgreement: false,
   parentNotification: false,
   communicationPlatforms: [],
   communicationPlatformsOther: '',
@@ -102,7 +101,6 @@ export default function StartNewClassPage() {
           classSize: '',
           programStartMonth: '',
           specialConsiderations: school.specialConsiderations || '',
-          programAgreement: false,
           parentNotification: false,
           communicationPlatforms: school.communicationPlatforms || [],
           communicationPlatformsOther: '',
@@ -176,12 +174,6 @@ export default function StartNewClassPage() {
 
     if (!formData.teacherEmail.includes('@')) {
       setSubmitError('Please enter a valid email address');
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (!formData.programAgreement) {
-      setSubmitError('Please check the agreement box to continue');
       setIsSubmitting(false);
       return;
     }
