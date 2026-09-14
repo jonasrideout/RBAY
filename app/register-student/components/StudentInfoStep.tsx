@@ -2,7 +2,6 @@
 
 import BasicInfoForm from './BasicInfoForm';
 import InterestsForm from './InterestsForm';
-import ParentConsentForm from './ParentConsentForm';
 
 interface SchoolInfo {
   name: string;
@@ -95,13 +94,6 @@ export default function StudentInfoStep({
           showError={!!error}
           onInterestChange={onInterestChange}
           onOtherInterestsChange={(value) => onUpdateFormData('otherInterests', value)}
-        />
-
-        <ParentConsentForm
-          isTeacherFlow={isTeacherFlow}
-          parentConsent={formData.parentConsent}
-          isLoading={isLoading}
-          onConsentChange={(value) => onUpdateFormData('parentConsent', value)}
         />
 
         <div className="form-group text-center">
