@@ -16,6 +16,17 @@ import SchoolConfirmationStep from './components/SchoolConfirmationStep';
 import StudentInfoStep from './components/StudentInfoStep';
 import SuccessStep from './components/SuccessStep';
 
+// The School record's teacherNames array only holds the ADDITIONAL teachers
+// typed into the "multiple classes" field at registration - it never
+// included the primary registering teacher's own name. That meant the
+// per-student teacher dropdown was missing the one teacher most likely to
+// actually have students in the mix. This builds the full, deduplicated
+// list students should choose from.
+function buildTeacherOptions(primaryTeacherName: string, additionalTeacherNames: string[]): string[] {
+  const names = [primaryTeacherName, ...additionalTeacherNames].filter(Boolean);
+  return Array.from(new Set(names));
+}
+
 interface StudentFormData {
   schoolToken: string;
   firstName: string;
@@ -56,7 +67,12 @@ function RegisterStudentForm() {
     interests: [],
     otherInterests: '',
     penpalPreference: 'ONE',
-    parentConsent: false
+    // No longer collected via a checkbox on the form (removed per feedback -
+    // it was tripping teachers up who weren't sending home permission
+    // slips). Defaulting to true so the existing consent check in
+    // /api/schools/request-matching doesn't block anyone now that nothing
+    // ever sets this to false.
+    parentConsent: true
   });
   const [schoolInfo, setSchoolInfo] = useState<SchoolInfo | null>(null);
   const [error, setError] = useState('');
@@ -129,7 +145,7 @@ function RegisterStudentForm() {
         schoolId: data.school.id,
         teacherEmail: data.school.teacherEmail,
         hasMultipleClasses: data.school.hasMultipleClasses || false,
-        teacherNames: data.school.teacherNames || []
+        teacherNames: buildTeacherOptions(data.school.teacherName, data.school.teacherNames || [])
       });
 
       // Check if the current user is a teacher with a session
@@ -171,7 +187,7 @@ function RegisterStudentForm() {
         schoolId: data.school.id,
         teacherEmail: data.school.teacherEmail,
         hasMultipleClasses: data.school.hasMultipleClasses || false,
-        teacherNames: data.school.teacherNames || []
+        teacherNames: buildTeacherOptions(data.school.teacherName, data.school.teacherNames || [])
       });
 
       // Set the dashboard token for form submission
@@ -255,7 +271,7 @@ function RegisterStudentForm() {
           schoolId: data.school.id,
           teacherEmail: teacherEmail,
           hasMultipleClasses: data.school.hasMultipleClasses || false,
-          teacherNames: data.school.teacherNames || []
+          teacherNames: buildTeacherOptions(data.school.teacherName, data.school.teacherNames || [])
         });
         setCurrentStep('schoolConfirm');
       } else {
@@ -267,7 +283,7 @@ function RegisterStudentForm() {
           schoolId: data.school.id,
           teacherEmail: teacherEmail,
           hasMultipleClasses: data.school.hasMultipleClasses || false,
-          teacherNames: data.school.teacherNames || []
+          teacherNames: buildTeacherOptions(data.school.teacherName, data.school.teacherNames || [])
         });
         setCurrentStep('schoolConfirm');
       }
