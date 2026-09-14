@@ -532,7 +532,7 @@ export default function DashboardHeader({
               Ready to Pair Pen Pals?
             </h3>
             <p style={{ color: '#6c757d', marginBottom: '2rem', lineHeight: '1.5' }}>
-              Are you ready to indicate that your students are ready to be paired with pen pals? This will mark your class as ready for the pairing process.
+              We&rsquo;ll let you know if you need to select students to be paired with more than one pen pal. You can keep adding or removing students until then.
             </p>
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
               <button 
