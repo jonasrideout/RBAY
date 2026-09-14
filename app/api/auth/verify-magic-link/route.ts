@@ -71,7 +71,12 @@ export async function GET(request: NextRequest) {
 
       // Create redirect response and set session cookie
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nextjs-boilerplate-beta-three-49.vercel.app';
-      const response = NextResponse.redirect(`${baseUrl}/dashboard`);
+
+      // If the admin has already marked this teacher's active school DONE,
+      // send them straight into "Start This Year's Class" instead of a
+      // dashboard for a class that's been archived from their perspective.
+      const redirectPath = school.status === 'DONE' ? '/dashboard/new-class' : '/dashboard';
+      const response = NextResponse.redirect(`${baseUrl}${redirectPath}`);
       
       // Set session cookie
       setSessionCookie(response, session);
