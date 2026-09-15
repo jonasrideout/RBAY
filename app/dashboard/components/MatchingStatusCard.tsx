@@ -171,7 +171,7 @@ export default function MatchingStatusCard({
             const schoolPlatforms = formatPlatforms(school.communicationPlatforms);
             return (
               <div key={school.id}>
-                <div style={{ fontSize: '14px', fontWeight: '500', color: '#333', marginBottom: '0.15rem' }}>
+                <div style={{ fontSize: '16px', fontWeight: 600, color: '#333', marginBottom: '0.15rem' }}>
                   {school.schoolName}
                 </div>
                 {schoolPlatforms && (
@@ -200,7 +200,7 @@ export default function MatchingStatusCard({
       <p style={{ fontSize: '11px', fontWeight: 500, color: '#888', textTransform: 'uppercase', letterSpacing: '0.03em', margin: '0 0 0.35rem' }}>
         Pen Pal School
       </p>
-      <div style={{ fontSize: '14px', fontWeight: '500', color: '#333', marginBottom: '0.15rem' }}>
+      <div style={{ fontSize: '16px', fontWeight: 600, color: '#333', marginBottom: '0.15rem' }}>
         {partner.schoolName}
       </div>
       {partnerPlatforms && (
