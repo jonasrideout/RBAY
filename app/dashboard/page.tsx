@@ -804,8 +804,8 @@ function TeacherDashboardContent() {
             header is identity ("who you are"), the partner card is the
             practical counterpart ("who you're paired with"), so they read
             as a natural two-up pairing rather than stacking vertically. */}
-        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
-          <div style={{ flex: '0 0 auto' }}>
+        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'stretch', flexWrap: 'wrap' }}>
+          <div style={{ flex: '1 1 380px', maxWidth: '480px' }}>
             <DashboardHeader 
               schoolData={schoolData} 
               readOnly={isReadOnlyView}
@@ -814,7 +814,7 @@ function TeacherDashboardContent() {
               isViewingPastClass={isViewingPastClass}
             />
           </div>
-          <div style={{ flex: '0 1 480px' }}>
+          <div style={{ flex: '1 1 380px', maxWidth: '480px' }}>
             <MatchingSection 
               schoolData={schoolData}
               allActiveStudentsComplete={allActiveStudentsComplete}
