@@ -3,6 +3,7 @@ import { Resend } from 'resend';
 import WelcomeEmail from '@/app/components/emails/WelcomeEmail';
 import MagicLinkEmail from '@/app/components/emails/MagicLinkEmail';
 import PenPalAssignmentEmail from '@/app/components/emails/PenPalAssignmentEmail';
+import PenpalPreferenceNeededEmail from '@/app/components/emails/PenpalPreferenceNeededEmail';
 import { PrismaClient } from '@prisma/client';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -32,6 +33,15 @@ export interface SendAdminNotificationParams {
   teacherName: string;
   teacherEmail: string;
   action: 'registration' | 'ready_for_penpals';
+}
+
+export interface SendPenpalPreferenceNeededEmailParams {
+  teacherEmail: string;
+  teacherName: string;
+  schoolName: string;
+  matchedSchoolName: string;
+  required: number;
+  current: number;
 }
 
 export async function sendWelcomeEmail({
@@ -156,6 +166,42 @@ export async function sendPenPalAssignmentEmail({
   } catch (error: any) {
     console.error('Pen pal assignment email error:', error);
     return { success: false, error: error.message || 'Failed to send pen pal assignment email' };
+  }
+}
+
+export async function sendPenpalPreferenceNeededEmail({
+  teacherEmail,
+  teacherName,
+  schoolName,
+  matchedSchoolName,
+  required,
+  current,
+}: SendPenpalPreferenceNeededEmailParams): Promise<{ success: boolean; error?: string }> {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: 'Right Back at You <noreply@carolynmackler.com>',
+      to: [teacherEmail],
+      cc: ['jonas.rideout@gmail.com', 'carolyn.mackler@gmail.com'],
+      subject: 'Please select students for a second pen pal',
+      react: PenpalPreferenceNeededEmail({
+        teacherName,
+        schoolName,
+        matchedSchoolName,
+        required,
+        current,
+      }),
+    });
+
+    if (error) {
+      console.error('Resend error:', error);
+      return { success: false, error: error.message };
+    }
+
+    console.log('Penpal preference needed email sent successfully:', data);
+    return { success: true };
+  } catch (error: any) {
+    console.error('Penpal preference needed email error:', error);
+    return { success: false, error: error.message || 'Failed to send penpal preference needed email' };
   }
 }
 
