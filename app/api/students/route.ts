@@ -1,6 +1,7 @@
 // /app/api/students/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { checkAndNotifyBothSides } from '@/lib/penpalRequirement';
 
 export async function POST(request: NextRequest) {
   try {
@@ -52,9 +53,13 @@ export async function POST(request: NextRequest) {
     // Check if student interests are completed (has at least one interest)
     const profileCompleted = interests && interests.length > 0;
 
-    // Start a transaction to create student and potentially update school status
+    // Start a transaction to create the student. Note: we deliberately do
+    // NOT reset the school's status back to COLLECTING here even if it was
+    // READY. "Ready to Pair" is meant to be a simple, freely-toggleable
+    // signal a teacher sets once - adding or removing a student afterward
+    // (which is expected right up until pen pals are actually assigned)
+    // should not silently un-check it and force them to re-confirm.
     const result = await prisma.$transaction(async (tx) => {
-      // Create the student with updated schema
       const student = await tx.student.create({
         data: {
           firstName,
@@ -72,17 +77,17 @@ export async function POST(request: NextRequest) {
         }
       });
 
-      // If school was previously READY, reset to COLLECTING when new student added
-      let updatedSchool = school;
-      if (school.status === 'READY') {
-        updatedSchool = await tx.school.update({
-          where: { id: school.id },
-          data: { status: 'COLLECTING' }
-        });
-      }
-
-      return { student, updatedSchool };
+      return { student };
     });
+
+    // If this school is READY-or-further and matched, adding a student can
+    // change (or resolve) the "select students for more than one pen pal"
+    // requirement for this school AND its matched partner - recheck both
+    // and notify if a new gap just opened up. Fire-and-forget: a failure
+    // here shouldn't fail the student registration itself.
+    checkAndNotifyBothSides(school.id).catch(err =>
+      console.error('checkAndNotifyBothSides error after student add:', err)
+    );
 
     return NextResponse.json({
       message: 'Student registered successfully',
@@ -96,8 +101,7 @@ export async function POST(request: NextRequest) {
         penpalPreference: result.student.penpalPreference,
         profileCompleted: result.student.profileCompleted,
         schoolName: school.schoolName
-      },
-      schoolStatusReset: school.status === 'READY' // Inform frontend if status was reset
+      }
     });
 
   } catch (error) {
@@ -262,7 +266,9 @@ export async function DELETE(request: NextRequest) {
     const student = await prisma.student.findUnique({
       where: { id: studentId },
       include: {
-        school: true
+        school: true,
+        penpalConnections: true,
+        penpalOf: true
       }
     });
 
@@ -273,10 +279,27 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // Check if school is still in collecting or ready status (before matching)
-    if (student.school.status !== 'COLLECTING' && student.school.status !== 'READY') {
+    // The real freeze point is whether pen pals have actually been assigned
+    // for this school - not the school's status field. A school can reach
+    // MATCHED (paired with a partner school) well before pen pals are
+    // individually assigned, and teachers are expected to be able to keep
+    // adding or removing students right up until that assignment happens
+    // (this is the same signal DashboardHeader uses to disable "Add New
+    // Student").
+    const anyStudentHasPenpalAssignment = await prisma.student.findFirst({
+      where: {
+        schoolId: student.schoolId,
+        isActive: true,
+        OR: [
+          { penpalConnections: { some: {} } },
+          { penpalOf: { some: {} } }
+        ]
+      }
+    });
+
+    if (anyStudentHasPenpalAssignment) {
       return NextResponse.json(
-        { error: 'Cannot remove student after matching has been completed' },
+        { error: 'Cannot remove student after pen pals have been assigned' },
         { status: 400 }
       );
     }
@@ -285,6 +308,14 @@ export async function DELETE(request: NextRequest) {
     await prisma.student.delete({
       where: { id: studentId }
     });
+
+    // Removing a student can change (or resolve) the "select students for
+    // more than one pen pal" requirement for this school AND its matched
+    // partner - recheck both and notify if a new gap just opened up.
+    // Fire-and-forget: a failure here shouldn't fail the removal itself.
+    checkAndNotifyBothSides(student.schoolId).catch(err =>
+      console.error('checkAndNotifyBothSides error after student remove:', err)
+    );
 
     return NextResponse.json({
       message: 'Student removed successfully',
