@@ -208,27 +208,33 @@ export default function DashboardTimeline({
     border: state === 'upcoming' ? '1px solid #dee2e6' : 'none'
   });
 
-  const lineStyle = (leftState: 'active' | 'done' | 'upcoming') => ({
-    flex: 1,
-    height: '2px',
-    backgroundColor: leftState === 'upcoming' ? '#e9ecef' : '#c3e6cb',
-    margin: '0 8px'
-  });
-
   return (
     <div className="card" style={{ marginBottom: '2rem' }}>
-      {/* Step circles */}
-      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <div style={circleStyle(stepState(1))}>{stepState(1) === 'done' ? '✓' : '1'}</div>
-        <div style={lineStyle(stepState(1))} />
-        <div style={circleStyle(stepState(2))}>{stepState(2) === 'done' ? '✓' : '2'}</div>
-        <div style={lineStyle(stepState(2))} />
-        <div style={circleStyle(stepState(3))}>{stepState(3) === 'done' ? '✓' : '3'}</div>
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', fontSize: '13px', color: '#6c757d', textAlign: 'center' as const }}>
-        <span style={{ flex: 1 }}>Register Students</span>
-        <span style={{ flex: 1 }}>Ready to Pair</span>
-        <span style={{ flex: 1 }}>Distribute Pen Pals</span>
+      {/* Step circles + labels, laid out as one 3-column grid so each label
+          is guaranteed to sit centered under its own circle rather than
+          depending on two separate rows staying in sync. */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', marginBottom: '1.5rem' }}>
+        {([1, 2, 3] as const).map((step, index) => (
+          <div key={step} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
+            {index > 0 && (
+              <div style={{
+                position: 'absolute',
+                top: '18px',
+                right: '50%',
+                width: '100%',
+                height: '2px',
+                backgroundColor: stepState((step - 1) as 1 | 2 | 3) === 'upcoming' ? '#e9ecef' : '#c3e6cb',
+                zIndex: 0
+              }} />
+            )}
+            <div style={{ ...circleStyle(stepState(step)), position: 'relative', zIndex: 1 }}>
+              {stepState(step) === 'done' ? '✓' : step}
+            </div>
+            <span style={{ marginTop: '0.5rem', fontSize: '13px', color: '#6c757d', textAlign: 'center' }}>
+              {step === 1 ? 'Register Students' : step === 2 ? 'Ready to Pair' : 'Distribute Pen Pals'}
+            </span>
+          </div>
+        ))}
       </div>
 
       {readOnly ? (
@@ -241,10 +247,12 @@ export default function DashboardTimeline({
         </p>
       ) : (
         <>
-          {/* Step 1 content - roster management stays available through step 2,
-              since students can be added/removed right up until pen pals are
-              actually assigned. */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: isReady ? '1.5rem' : 0 }}>
+          {/* Step 1 content: roster management buttons plus the toggle that
+              completes this step. Roster management itself stays available
+              through step 2 too, since students can be added/removed right
+              up until pen pals are actually assigned - only the toggle
+              belongs exclusively to step 1. */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '1rem' }}>
             <button
               onClick={handleCopyLink}
               className="btn"
@@ -253,12 +261,27 @@ export default function DashboardTimeline({
                 backgroundColor: copyStatus === 'copied' ? '#28a745' : 'white',
                 color: copyStatus === 'copied' ? 'white' : '#555',
                 border: copyStatus === 'copied' ? '1px solid #28a745' : '1px solid #ddd',
+                borderRadius: '10px',
                 fontSize: '13px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.4rem',
                 opacity: (isProfileIncomplete || penPalsAssigned) ? 0.6 : 1,
                 cursor: (isProfileIncomplete || penPalsAssigned) ? 'not-allowed' : 'pointer'
               }}
             >
-              {copyStatus === 'copied' ? '✓ Copied!' : 'Copy Student Link'}
+              {copyStatus === 'copied' ? (
+                '✓ Copied!'
+              ) : (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                  </svg>
+                  Copy Student Link
+                </>
+              )}
             </button>
 
             <Link
@@ -271,59 +294,95 @@ export default function DashboardTimeline({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                gap: '0.4rem',
+                borderRadius: '10px',
                 opacity: (isProfileIncomplete || penPalsAssigned) ? 0.6 : 1,
                 cursor: (isProfileIncomplete || penPalsAssigned) ? 'not-allowed' : 'pointer',
                 pointerEvents: (isProfileIncomplete || penPalsAssigned) ? 'none' : 'auto'
               }}
               title={penPalsAssigned ? 'Cannot add students after pen pals are assigned' : 'Add new student'}
             >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
               Add New Student
             </Link>
           </div>
 
-          {/* Step 2 content */}
-          {!isReady ? (
-            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: readyCheckboxDisabled ? 'not-allowed' : 'pointer', opacity: readyCheckboxDisabled ? 0.6 : 1 }}>
-              <input
-                type="checkbox"
-                checked={false}
-                disabled={readyCheckboxDisabled}
-                onChange={handleReadyClick}
-                title={readyCheckboxTitle}
-              />
-              <span className="text-data-value">
-                {isRequestingMatching ? 'Marking ready…' : 'All students are in'}
-              </span>
-            </label>
-          ) : !penPalsAssigned ? (
-            <p className="text-meta-info" style={{ margin: 0, marginBottom: needsMultipleSelection ? '0.75rem' : 0 }}>
-              {needsMultipleSelection
-                ? (hasAnyMultipleSelected
-                    ? `Select additional students to have more than 1 pen pal.`
-                    : `Select students to have more than 1 pen pal.`)
-                : liveRequirement
-                ? `Waiting for ${liveRequirement.matchedSchoolName}'s class to finish registering their students.`
-                : 'Waiting to be matched with a partner school.'}
-            </p>
-          ) : null}
-
-          {isReady && !penPalsAssigned && needsMultipleSelection && liveRequirement && (
+          {/* "All students are in" toggle - the action that completes step 1
+              and moves the active step forward to step 2. */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.5rem' }}>
             <button
-              className="btn"
-              style={{ fontSize: '13px' }}
-              onClick={() => onPenpalPreferenceCheckNeeded && onPenpalPreferenceCheckNeeded(liveRequirement.required, liveRequirement.current, liveRequirement.matchedSchoolName)}
+              type="button"
+              role="switch"
+              aria-checked={isReady}
+              disabled={readyCheckboxDisabled || isReady}
+              onClick={handleReadyClick}
+              title={isReady ? 'All students are in' : readyCheckboxTitle}
+              style={{
+                width: '40px',
+                height: '22px',
+                borderRadius: '11px',
+                border: 'none',
+                position: 'relative',
+                flexShrink: 0,
+                backgroundColor: isReady ? '#28a745' : '#dee2e6',
+                cursor: (readyCheckboxDisabled || isReady) ? 'not-allowed' : 'pointer',
+                opacity: readyCheckboxDisabled && !isReady ? 0.6 : 1,
+                transition: 'background-color 0.2s ease',
+                padding: 0
+              }}
             >
-              Select Students
+              <span style={{
+                position: 'absolute',
+                top: '2px',
+                left: isReady ? '20px' : '2px',
+                width: '18px',
+                height: '18px',
+                borderRadius: '50%',
+                backgroundColor: 'white',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.25)',
+                transition: 'left 0.2s ease'
+              }} />
             </button>
+            <span className="text-data-value">
+              {isRequestingMatching ? 'Marking ready…' : 'All students are in'}
+            </span>
+          </div>
+
+          {/* Step 2 content - pure live status, no button of its own except
+              when students need to be selected for an extra pen pal. */}
+          {isReady && !penPalsAssigned && (
+            <div style={{ paddingTop: '1rem', borderTop: '1px solid #f0f0f0' }}>
+              <p className="text-meta-info" style={{ margin: 0, marginBottom: needsMultipleSelection ? '0.75rem' : 0 }}>
+                {needsMultipleSelection
+                  ? (hasAnyMultipleSelected
+                      ? 'Select additional students to have more than 1 pen pal.'
+                      : 'Select students to have more than 1 pen pal.')
+                  : liveRequirement
+                  ? `Waiting for ${liveRequirement.matchedSchoolName}'s class to finish registering their students. You can continue adding students until pen pals are matched.`
+                  : 'Waiting to be matched with a partner school.'}
+              </p>
+
+              {needsMultipleSelection && liveRequirement && (
+                <button
+                  className="btn"
+                  style={{ fontSize: '13px', borderRadius: '10px', marginTop: '0.75rem' }}
+                  onClick={() => onPenpalPreferenceCheckNeeded && onPenpalPreferenceCheckNeeded(liveRequirement.required, liveRequirement.current, liveRequirement.matchedSchoolName)}
+                >
+                  Select Students
+                </button>
+              )}
+            </div>
           )}
 
           {/* Step 3 content */}
           {penPalsAssigned && (
-            <div style={{ marginTop: '1.5rem' }}>
+            <div style={{ paddingTop: '1rem', borderTop: '1px solid #f0f0f0' }}>
               <Link
                 href={`/teacher/pen-pal-list?schoolId=${schoolData.id}`}
                 className="btn"
-                style={{ fontSize: '13px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
+                style={{ fontSize: '13px', borderRadius: '10px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
               >
                 Download Pen Pal List
               </Link>
