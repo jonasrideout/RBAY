@@ -52,22 +52,25 @@ export default function DashboardHeader({
     <div className="card" style={{
       display: 'flex',
       justifyContent: 'space-between',
-      alignItems: 'flex-start',
+      alignItems: 'center',
       marginBottom: 0,
       padding: '0.85rem 1.25rem',
       height: '100%'
     }}>
       <div>
-        <h1 className="text-school-name" style={{ marginBottom: '0.5rem', fontSize: '1.8rem' }}>
+        <p style={{ fontSize: '11px', fontWeight: 500, color: '#888', textTransform: 'uppercase', letterSpacing: '0.03em', margin: '0 0 0.35rem' }}>
+          Your School
+        </p>
+        <h1 style={{ fontSize: '16px', fontWeight: 600, color: '#333', margin: '0 0 0.15rem' }}>
           {schoolData.schoolName}
         </h1>
-        <p className="text-school-name" style={{ margin: 0, marginBottom: '0.25rem' }}>
+        <p style={{ margin: 0, marginBottom: '0.15rem', fontSize: '13px', fontWeight: 300, color: '#666' }}>
           {schoolData.teacherName}
         </p>
         {communicationPlatformsDisplay && (
           <p style={{
             margin: 0,
-            fontSize: '11px',
+            fontSize: '13px',
             fontWeight: '300',
             color: '#666'
           }}>
