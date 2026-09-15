@@ -158,30 +158,29 @@ export default function MatchingStatusCard({
 
   if (partner.isGroup && partner.schools) {
     return (
-      <div className="card" style={{ marginBottom: '2rem' }}>
-        <h3 style={{ color: '#1f2937', marginBottom: '1rem', fontSize: '1.4rem', fontWeight: '400', margin: 0 }}>
-          Your Pen Pal Schools
-        </h3>
+      <div className="card" style={{ marginBottom: '1rem', padding: '0.85rem 1.25rem' }}>
+        <p style={{ fontSize: '11px', fontWeight: 500, color: '#888', textTransform: 'uppercase', letterSpacing: '0.03em', margin: '0 0 0.5rem' }}>
+          Pen Pal Schools
+        </p>
         <div style={{ 
-          marginTop: '1rem',
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: '1rem'
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '0.75rem'
         }}>
           {partner.schools.map((school) => {
             const schoolPlatforms = formatPlatforms(school.communicationPlatforms);
             return (
               <div key={school.id}>
-                <div style={{ fontSize: '14px', fontWeight: '400', color: '#333', marginBottom: '0.25rem' }}>
+                <div style={{ fontSize: '14px', fontWeight: '500', color: '#333', marginBottom: '0.15rem' }}>
                   {school.schoolName}
                 </div>
                 {schoolPlatforms && (
-                  <div style={{ fontSize: '13px', fontWeight: '300', color: '#666', marginBottom: '0.25rem' }}>
+                  <div style={{ fontSize: '13px', fontWeight: '300', color: '#666', marginBottom: '0.15rem' }}>
                     {schoolPlatforms}
                   </div>
                 )}
                 {school.mailingAddress && (
-                  <div style={{ fontSize: '13px', fontWeight: '300', color: '#666', whiteSpace: 'pre-line' }}>
+                  <div style={{ fontSize: '13px', fontWeight: '300', color: '#666', whiteSpace: 'pre-line', lineHeight: 1.3 }}>
                     {school.mailingAddress}
                   </div>
                 )}
@@ -197,30 +196,28 @@ export default function MatchingStatusCard({
   const startMonth = schoolData.startMonth || schoolData.programStartMonth;
 
   return (
-    <div className="card" style={{ marginBottom: '2rem' }}>
-      <h3 style={{ color: '#1f2937', marginBottom: '1rem', fontSize: '1.4rem', fontWeight: '400', margin: 0 }}>
-        Your Pen Pal School
-      </h3>
-      <div style={{ marginTop: '1rem' }}>
-        <div style={{ fontSize: '14px', fontWeight: '400', color: '#333', marginBottom: '0.25rem' }}>
-          {partner.schoolName}
-        </div>
-        {partnerPlatforms && (
-          <div style={{ fontSize: '13px', fontWeight: '300', color: '#666', marginBottom: '0.25rem' }}>
-            {partnerPlatforms}
-          </div>
-        )}
-        {partner.mailingAddress && (
-          <div style={{ fontSize: '13px', fontWeight: '300', color: '#666', whiteSpace: 'pre-line' }}>
-            {partner.mailingAddress}
-          </div>
-        )}
-        {startMonth && startMonth !== 'TBD' && (
-          <div style={{ fontSize: '13px', fontWeight: '300', color: '#666', marginTop: '0.25rem' }}>
-            Starting: {startMonth}
-          </div>
-        )}
+    <div className="card" style={{ marginBottom: '1rem', padding: '0.85rem 1.25rem' }}>
+      <p style={{ fontSize: '11px', fontWeight: 500, color: '#888', textTransform: 'uppercase', letterSpacing: '0.03em', margin: '0 0 0.35rem' }}>
+        Pen Pal School
+      </p>
+      <div style={{ fontSize: '14px', fontWeight: '500', color: '#333', marginBottom: '0.15rem' }}>
+        {partner.schoolName}
       </div>
+      {partnerPlatforms && (
+        <div style={{ fontSize: '13px', fontWeight: '300', color: '#666', marginBottom: '0.15rem' }}>
+          {partnerPlatforms}
+        </div>
+      )}
+      {partner.mailingAddress && (
+        <div style={{ fontSize: '13px', fontWeight: '300', color: '#666', whiteSpace: 'pre-line', lineHeight: 1.3 }}>
+          {partner.mailingAddress}
+        </div>
+      )}
+      {startMonth && startMonth !== 'TBD' && (
+        <div style={{ fontSize: '13px', fontWeight: '300', color: '#666', marginTop: '0.15rem' }}>
+          Starting: {startMonth}
+        </div>
+      )}
     </div>
   );
 }
