@@ -162,6 +162,82 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// Reverses "Ready to Pair" back to COLLECTING - the toggle on the dashboard
+// is meant to be freely switched off again if a teacher realizes they need
+// to add or remove students after all, then switched back on once they're
+// done. Blocked once pen pals have actually been assigned, since that's the
+// real, final freeze point - un-readying at that stage would be misleading
+// since the matching itself has already happened.
+export async function DELETE(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { teacherEmail } = body;
+
+    if (!teacherEmail) {
+      return NextResponse.json(
+        { error: 'Teacher email is required' },
+        { status: 400 }
+      );
+    }
+
+    const school = await prisma.school.findFirst({
+      where: { teacherEmail, isActive: true },
+      include: {
+        students: {
+          where: { isActive: true },
+          include: { penpalConnections: true, penpalOf: true }
+        }
+      }
+    });
+
+    if (!school) {
+      return NextResponse.json(
+        { error: 'School not found' },
+        { status: 404 }
+      );
+    }
+
+    const hasPenpalAssignments = school.students.some(
+      s => s.penpalConnections.length > 0 || s.penpalOf.length > 0
+    );
+
+    if (hasPenpalAssignments) {
+      return NextResponse.json(
+        { error: 'Cannot un-ready after pen pals have been assigned' },
+        { status: 400 }
+      );
+    }
+
+    if (school.status !== 'READY') {
+      return NextResponse.json(
+        { error: 'School is not currently marked ready' },
+        { status: 400 }
+      );
+    }
+
+    const updatedSchool = await prisma.school.update({
+      where: { id: school.id },
+      data: { status: 'COLLECTING', updatedAt: new Date() }
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: 'Class is no longer marked ready',
+      school: {
+        id: updatedSchool.id,
+        status: updatedSchool.status
+      }
+    });
+
+  } catch (error) {
+    console.error('Un-ready pen pal pairing error:', error);
+    return NextResponse.json(
+      { error: 'Failed to update readiness. Please try again.' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
