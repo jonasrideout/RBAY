@@ -252,7 +252,7 @@ export default function DashboardTimeline({
               through step 2 too, since students can be added/removed right
               up until pen pals are actually assigned - only the toggle
               belongs exclusively to step 1. */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '1rem' }}>
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
             <button
               onClick={handleCopyLink}
               className="btn"
