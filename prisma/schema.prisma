@@ -77,6 +77,13 @@ model School {
   // One-to-one school pairing
   matchedWithSchoolId  String?       @unique
   notificationEmailsSent Boolean     @default(false)
+
+  // Tracks whether we've already emailed this teacher about a currently-
+  // outstanding "select students for more than one pen pal" requirement, so
+  // repeated roster changes on either side of the pairing don't spam them
+  // with duplicate emails. Reset to false once the requirement is met (or
+  // no longer applies), so a future gap correctly triggers a fresh email.
+  penpalPreferenceNotified Boolean  @default(false)
   
   // Future letter tracking fields (optional for now)
   letterFrequency      String?
