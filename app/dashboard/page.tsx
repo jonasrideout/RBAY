@@ -800,13 +800,32 @@ function TeacherDashboardContent() {
         
         {!isAdminViewing && <SessionWarningBanner />}
         
-        <DashboardHeader 
-          schoolData={schoolData} 
-          readOnly={isReadOnlyView}
-          adminBackButton={isAdminViewing}
-          pastClasses={pastClasses}
-          isViewingPastClass={isViewingPastClass}
-        />
+        {/* Header and the matched-partner info card sit side by side - the
+            header is identity ("who you are"), the partner card is the
+            practical counterpart ("who you're paired with"), so they read
+            as a natural two-up pairing rather than stacking vertically. */}
+        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+          <div style={{ flex: '1 1 320px' }}>
+            <DashboardHeader 
+              schoolData={schoolData} 
+              readOnly={isReadOnlyView}
+              adminBackButton={isAdminViewing}
+              pastClasses={pastClasses}
+              isViewingPastClass={isViewingPastClass}
+            />
+          </div>
+          <div style={{ flex: '1 1 320px' }}>
+            <MatchingSection 
+              schoolData={schoolData}
+              allActiveStudentsComplete={allActiveStudentsComplete}
+              matchedSchoolTeacher={schoolData.matchedSchool?.teacherName}
+              matchedSchoolRegion={schoolData.matchedSchool?.region}
+              onSchoolUpdated={handleSchoolUpdated}
+              readOnly={isReadOnlyView}
+              isAdminView={isAdminViewing}
+            />
+          </div>
+        </div>
 
         <DashboardTimeline
           schoolData={schoolData}
@@ -815,17 +834,6 @@ function TeacherDashboardContent() {
           allActiveStudentsComplete={allActiveStudentsComplete}
           onMatchingRequested={handleMatchingRequested}
           onPenpalPreferenceCheckNeeded={handlePenpalPreferenceCheckNeeded}
-        />
-
-        {/* Status card - positioned directly after header */}
-        <MatchingSection 
-          schoolData={schoolData}
-          allActiveStudentsComplete={allActiveStudentsComplete}
-          matchedSchoolTeacher={schoolData.matchedSchool?.teacherName}
-          matchedSchoolRegion={schoolData.matchedSchool?.region}
-          onSchoolUpdated={handleSchoolUpdated}
-          readOnly={isReadOnlyView}
-          isAdminView={isAdminViewing}
         />
 
         {/* Group Membership Card - positioned after status card */}
