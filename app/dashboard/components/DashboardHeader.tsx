@@ -52,7 +52,7 @@ export default function DashboardHeader({
     <div className="card" style={{
       display: 'flex',
       justifyContent: 'space-between',
-      alignItems: 'center',
+      alignItems: 'flex-start',
       marginBottom: 0,
       padding: '0.85rem 1.25rem',
       height: '100%'
