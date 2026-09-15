@@ -7,6 +7,8 @@ interface SchoolData {
   schoolName: string;
   teacherName: string;
   communicationPlatforms?: any;
+  startMonth?: string;
+  programStartMonth?: string;
 }
 
 interface PastClassSummary {
@@ -47,6 +49,7 @@ export default function DashboardHeader({
   };
 
   const communicationPlatformsDisplay = formatCommunicationPlatforms();
+  const startMonth = schoolData.startMonth || schoolData.programStartMonth;
 
   return (
     <div className="card" style={{
@@ -165,6 +168,11 @@ export default function DashboardHeader({
             color: '#666'
           }}>
             {communicationPlatformsDisplay}
+          </p>
+        )}
+        {startMonth && startMonth !== 'TBD' && (
+          <p style={{ margin: 0, marginTop: '0.15rem', fontSize: '13px', fontWeight: 300, color: '#666' }}>
+            Starting: {startMonth}
           </p>
         )}
       </div>
