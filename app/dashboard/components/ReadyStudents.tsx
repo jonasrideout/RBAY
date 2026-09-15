@@ -171,10 +171,24 @@ export default function ReadyStudents({
               title={penPalsAssigned ? "Cannot edit students after pen pals are assigned" : undefined}
               style={{
                 fontSize: '14px',
+                borderRadius: '10px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
                 opacity: penPalsAssigned ? 0.6 : 1
               }}
             >
-              {readyStudentsEditMode ? 'Finished' : 'Edit Student'}
+              {readyStudentsEditMode ? (
+                'Finished'
+              ) : (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                  </svg>
+                  Edit Student
+                </>
+              )}
             </button>
             <button
               className={readyStudentsRemovalMode ? "btn btn-secondary" : "btn"}
@@ -183,10 +197,23 @@ export default function ReadyStudents({
               title={penPalsAssigned ? "Cannot remove students after pen pals are assigned" : rosterLocked ? "Toggle \"All students are in\" off to remove a student" : undefined}
               style={{
                 fontSize: '14px',
+                borderRadius: '10px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
                 opacity: (penPalsAssigned || rosterLocked) ? 0.6 : 1
               }}
             >
-              {readyStudentsRemovalMode ? 'Finished' : 'Remove Student'}
+              {readyStudentsRemovalMode ? (
+                'Finished'
+              ) : (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z" />
+                  </svg>
+                  Remove Student
+                </>
+              )}
             </button>
           </div>
         )}
