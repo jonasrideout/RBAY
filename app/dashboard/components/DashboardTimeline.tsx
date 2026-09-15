@@ -137,6 +137,40 @@ export default function DashboardTimeline({
     setShowConfirmation(true);
   };
 
+  const handleUnreadyClick = async () => {
+    setIsRequestingMatching(true);
+    try {
+      const response = await fetch('/api/schools/request-matching', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ teacherEmail: schoolData.teacherEmail })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to update readiness');
+      }
+
+      // Deliberately not calling onMatchingRequested here - that callback
+      // optimistically sets status to READY, which is the wrong direction
+      // for un-readying. The reload below picks up the real, correct state.
+      setTimeout(() => window.location.reload(), 500);
+
+    } catch (err: any) {
+      console.error('Error un-readying:', err);
+      alert('Error updating readiness: ' + err.message);
+      setIsRequestingMatching(false);
+    }
+  };
+
+  const handleToggleClick = () => {
+    if (isReady) {
+      handleUnreadyClick();
+    } else {
+      handleReadyClick();
+    }
+  };
+
   const handleConfirmPairing = async () => {
     setShowConfirmation(false);
     setIsRequestingMatching(true);
@@ -175,6 +209,13 @@ export default function DashboardTimeline({
     schoolData.students.length === 0 ||
     !allActiveStudentsComplete ||
     !isMatched;
+
+  // Once ready, the toggle should only ever be locked by the true final
+  // freeze (pen pals actually assigned) - everything else that gated
+  // turning it ON in the first place doesn't apply to turning it back OFF.
+  const toggleDisabled = isReady
+    ? (penPalsAssigned || isRequestingMatching)
+    : readyCheckboxDisabled;
 
   const readyCheckboxTitle = isProfileIncomplete
     ? 'Complete your profile first'
@@ -256,7 +297,7 @@ export default function DashboardTimeline({
             <button
               onClick={handleCopyLink}
               className="btn"
-              disabled={isProfileIncomplete || penPalsAssigned}
+              disabled={isProfileIncomplete || penPalsAssigned || isReady}
               style={{
                 backgroundColor: copyStatus === 'copied' ? '#28a745' : 'white',
                 color: copyStatus === 'copied' ? 'white' : '#555',
@@ -267,8 +308,8 @@ export default function DashboardTimeline({
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '0.4rem',
-                opacity: (isProfileIncomplete || penPalsAssigned) ? 0.6 : 1,
-                cursor: (isProfileIncomplete || penPalsAssigned) ? 'not-allowed' : 'pointer'
+                opacity: (isProfileIncomplete || penPalsAssigned || isReady) ? 0.6 : 1,
+                cursor: (isProfileIncomplete || penPalsAssigned || isReady) ? 'not-allowed' : 'pointer'
               }}
             >
               {copyStatus === 'copied' ? (
@@ -285,9 +326,9 @@ export default function DashboardTimeline({
             </button>
 
             <Link
-              href={(isProfileIncomplete || penPalsAssigned) ? '#' : `/register-student?token=${schoolData.dashboardToken}`}
+              href={(isProfileIncomplete || penPalsAssigned || isReady) ? '#' : `/register-student?token=${schoolData.dashboardToken}`}
               className="btn"
-              onClick={(e) => { if (isProfileIncomplete || penPalsAssigned) e.preventDefault(); }}
+              onClick={(e) => { if (isProfileIncomplete || penPalsAssigned || isReady) e.preventDefault(); }}
               style={{
                 fontSize: '13px',
                 textDecoration: 'none',
@@ -296,11 +337,11 @@ export default function DashboardTimeline({
                 justifyContent: 'center',
                 gap: '0.4rem',
                 borderRadius: '10px',
-                opacity: (isProfileIncomplete || penPalsAssigned) ? 0.6 : 1,
-                cursor: (isProfileIncomplete || penPalsAssigned) ? 'not-allowed' : 'pointer',
-                pointerEvents: (isProfileIncomplete || penPalsAssigned) ? 'none' : 'auto'
+                opacity: (isProfileIncomplete || penPalsAssigned || isReady) ? 0.6 : 1,
+                cursor: (isProfileIncomplete || penPalsAssigned || isReady) ? 'not-allowed' : 'pointer',
+                pointerEvents: (isProfileIncomplete || penPalsAssigned || isReady) ? 'none' : 'auto'
               }}
-              title={penPalsAssigned ? 'Cannot add students after pen pals are assigned' : 'Add new student'}
+              title={penPalsAssigned ? 'Cannot add students after pen pals are assigned' : isReady ? 'Toggle "All students are in" off to add more students' : 'Add new student'}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M12 5v14M5 12h14" />
@@ -309,45 +350,55 @@ export default function DashboardTimeline({
             </Link>
           </div>
 
-          {/* "All students are in" toggle - the action that completes step 1
-              and moves the active step forward to step 2. */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.5rem' }}>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={isReady}
-              disabled={readyCheckboxDisabled || isReady}
-              onClick={handleReadyClick}
-              title={isReady ? 'All students are in' : readyCheckboxTitle}
-              style={{
-                width: '40px',
-                height: '22px',
-                borderRadius: '11px',
-                border: 'none',
-                position: 'relative',
-                flexShrink: 0,
-                backgroundColor: isReady ? '#28a745' : '#dee2e6',
-                cursor: (readyCheckboxDisabled || isReady) ? 'not-allowed' : 'pointer',
-                opacity: readyCheckboxDisabled && !isReady ? 0.6 : 1,
-                transition: 'background-color 0.2s ease',
-                padding: 0
-              }}
-            >
-              <span style={{
-                position: 'absolute',
-                top: '2px',
-                left: isReady ? '20px' : '2px',
-                width: '18px',
-                height: '18px',
-                borderRadius: '50%',
-                backgroundColor: 'white',
-                boxShadow: '0 1px 2px rgba(0,0,0,0.25)',
-                transition: 'left 0.2s ease'
-              }} />
-            </button>
-            <span className="text-data-value">
-              {isRequestingMatching ? 'Marking ready…' : 'All students are in'}
-            </span>
+          {/* "All students are in" toggle - freely reversible up until pen
+              pals are actually assigned, so a teacher can turn it off again
+              if they realize they need to add or remove someone, then turn
+              it back on when they're done. */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={isReady}
+                disabled={toggleDisabled}
+                onClick={handleToggleClick}
+                title={isReady ? 'Toggle off to make changes' : readyCheckboxTitle}
+                style={{
+                  width: '40px',
+                  height: '22px',
+                  borderRadius: '11px',
+                  border: 'none',
+                  position: 'relative',
+                  flexShrink: 0,
+                  backgroundColor: isReady ? '#28a745' : '#dee2e6',
+                  cursor: toggleDisabled ? 'not-allowed' : 'pointer',
+                  opacity: toggleDisabled ? 0.6 : 1,
+                  transition: 'background-color 0.2s ease',
+                  padding: 0
+                }}
+              >
+                <span style={{
+                  position: 'absolute',
+                  top: '2px',
+                  left: isReady ? '20px' : '2px',
+                  width: '18px',
+                  height: '18px',
+                  borderRadius: '50%',
+                  backgroundColor: 'white',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.25)',
+                  transition: 'left 0.2s ease'
+                }} />
+              </button>
+              <span className="text-data-value">
+                {isRequestingMatching ? 'Updating…' : 'All students are in'}
+              </span>
+            </div>
+
+            {isReady && !penPalsAssigned && (
+              <p className="text-meta-info" style={{ margin: 0, marginTop: '0.5rem' }}>
+                Need to add or remove a student? Toggle this off to make changes, then toggle it back on when you&rsquo;re done.
+              </p>
+            )}
           </div>
 
           {/* Step 2 content - pure live status, no button of its own except
