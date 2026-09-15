@@ -804,7 +804,7 @@ function TeacherDashboardContent() {
             header is identity ("who you are"), the partner card is the
             practical counterpart ("who you're paired with"), so they read
             as a natural two-up pairing rather than stacking vertically. */}
-        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'stretch', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'stretch', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
           <div style={{ flex: '1 1 380px', maxWidth: '480px' }}>
             <DashboardHeader 
               schoolData={schoolData} 
