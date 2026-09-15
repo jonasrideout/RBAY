@@ -158,7 +158,7 @@ export default function MatchingStatusCard({
 
   if (partner.isGroup && partner.schools) {
     return (
-      <div className="card" style={{ marginBottom: '1rem', padding: '0.85rem 1.25rem' }}>
+      <div className="card" style={{ marginBottom: '1rem', padding: '0.85rem 1.25rem', height: '100%' }}>
         <p style={{ fontSize: '11px', fontWeight: 500, color: '#888', textTransform: 'uppercase', letterSpacing: '0.03em', margin: '0 0 0.5rem' }}>
           Pen Pal Schools
         </p>
@@ -196,7 +196,7 @@ export default function MatchingStatusCard({
   const startMonth = schoolData.startMonth || schoolData.programStartMonth;
 
   return (
-    <div className="card" style={{ marginBottom: '1rem', padding: '0.85rem 1.25rem' }}>
+    <div className="card" style={{ marginBottom: '1rem', padding: '0.85rem 1.25rem', height: '100%' }}>
       <p style={{ fontSize: '11px', fontWeight: 500, color: '#888', textTransform: 'uppercase', letterSpacing: '0.03em', margin: '0 0 0.35rem' }}>
         Pen Pal School
       </p>
