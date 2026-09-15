@@ -22,6 +22,11 @@ interface ReadyStudentsProps {
   readyStudentsEditMode: boolean;
   expandedReadyStudents: Set<string>;
   penPalsAssigned: boolean;
+  // While true, Remove Student is disabled - the roster needs to stay
+  // stable once "All students are in" is toggled on, since the admin may
+  // run the matching algorithm at any point after both paired schools are
+  // ready. Freely lifts again if the teacher toggles readiness back off.
+  rosterLocked?: boolean;
   editingStudentId: string | null;
   editTempFirstName: string;
   editTempLastInitial: string;
@@ -53,6 +58,7 @@ export default function ReadyStudents({
   readyStudentsEditMode,
   expandedReadyStudents,
   penPalsAssigned,
+  rosterLocked = false,
   editingStudentId,
   editTempFirstName,
   editTempLastInitial,
@@ -173,11 +179,11 @@ export default function ReadyStudents({
             <button
               className={readyStudentsRemovalMode ? "btn btn-secondary" : "btn"}
               onClick={onToggleRemovalMode}
-              disabled={penPalsAssigned}
-              title={penPalsAssigned ? "Cannot remove students after pen pals are assigned" : undefined}
+              disabled={penPalsAssigned || rosterLocked}
+              title={penPalsAssigned ? "Cannot remove students after pen pals are assigned" : rosterLocked ? "Toggle \"All students are in\" off to remove a student" : undefined}
               style={{
                 fontSize: '14px',
-                opacity: penPalsAssigned ? 0.6 : 1
+                opacity: (penPalsAssigned || rosterLocked) ? 0.6 : 1
               }}
             >
               {readyStudentsRemovalMode ? 'Finished' : 'Remove Student'}
