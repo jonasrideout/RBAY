@@ -9,6 +9,7 @@ import { useTeacherSession, useSessionWarning } from '@/lib/useTeacherSession';
 
 // Import components
 import DashboardHeader from './components/DashboardHeader';
+import DashboardTimeline from './components/DashboardTimeline';
 import StudentMetricsGrid from './components/StudentMetricsGrid';
 import MatchingSection from './components/MatchingSection';
 import ReadyStudents from './components/ReadyStudents';
@@ -796,15 +797,19 @@ function TeacherDashboardContent() {
         
         <DashboardHeader 
           schoolData={schoolData} 
-          dashboardToken={schoolData.dashboardToken}
           readOnly={isReadOnlyView}
           adminBackButton={isAdminViewing}
+          pastClasses={pastClasses}
+          isViewingPastClass={isViewingPastClass}
+        />
+
+        <DashboardTimeline
+          schoolData={schoolData}
+          readOnly={isReadOnlyView}
+          isProfileIncomplete={isProfileIncomplete}
           allActiveStudentsComplete={allActiveStudentsComplete}
           onMatchingRequested={handleMatchingRequested}
           onPenpalPreferenceCheckNeeded={handlePenpalPreferenceCheckNeeded}
-          isProfileIncomplete={isProfileIncomplete}
-          pastClasses={pastClasses}
-          isViewingPastClass={isViewingPastClass}
         />
 
         {/* Status card - positioned directly after header */}
