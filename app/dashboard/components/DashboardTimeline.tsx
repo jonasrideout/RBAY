@@ -98,7 +98,6 @@ export default function DashboardTimeline({
   onMatchingRequested,
   onPenpalPreferenceCheckNeeded
 }: DashboardTimelineProps) {
-  const [copyStatus, setCopyStatus] = useState<'idle' | 'copied'>('idle');
   const [isRequestingMatching, setIsRequestingMatching] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
@@ -109,23 +108,6 @@ export default function DashboardTimeline({
   const liveRequirement = useMemo(() => calculateLiveRequirement(schoolData), [schoolData]);
   const needsMultipleSelection = !!liveRequirement && liveRequirement.current < liveRequirement.required;
   const hasAnyMultipleSelected = schoolData.students.some((s: any) => s.penpalPreference === 'MULTIPLE');
-
-  const generateStudentLink = () => {
-    if (typeof window !== 'undefined' && schoolData.dashboardToken) {
-      return `${window.location.origin}/register-student?token=${schoolData.dashboardToken}`;
-    }
-    return '';
-  };
-
-  const handleCopyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(generateStudentLink());
-      setCopyStatus('copied');
-      setTimeout(() => setCopyStatus('idle'), 2000);
-    } catch (err) {
-      console.error('Failed to copy:', err);
-    }
-  };
 
   const handleReadyClick = () => {
     if (needsMultipleSelection && liveRequirement) {
@@ -288,73 +270,12 @@ export default function DashboardTimeline({
         </p>
       ) : (
         <>
-          {/* Step 1 content: roster management buttons plus the toggle that
-              completes this step. Roster management itself stays available
-              through step 2 too, since students can be added/removed right
-              up until pen pals are actually assigned - only the toggle
-              belongs exclusively to step 1. */}
-          <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
-            <button
-              onClick={handleCopyLink}
-              className="btn"
-              disabled={isProfileIncomplete || penPalsAssigned || isReady}
-              style={{
-                backgroundColor: copyStatus === 'copied' ? '#28a745' : 'white',
-                color: copyStatus === 'copied' ? 'white' : '#555',
-                border: copyStatus === 'copied' ? '1px solid #28a745' : '1px solid #ddd',
-                borderRadius: '10px',
-                fontSize: '13px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.4rem',
-                opacity: (isProfileIncomplete || penPalsAssigned || isReady) ? 0.6 : 1,
-                cursor: (isProfileIncomplete || penPalsAssigned || isReady) ? 'not-allowed' : 'pointer'
-              }}
-            >
-              {copyStatus === 'copied' ? (
-                '✓ Copied!'
-              ) : (
-                <>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-                  </svg>
-                  Copy Student Link
-                </>
-              )}
-            </button>
-
-            <Link
-              href={(isProfileIncomplete || penPalsAssigned || isReady) ? '#' : `/register-student?token=${schoolData.dashboardToken}`}
-              className="btn"
-              onClick={(e) => { if (isProfileIncomplete || penPalsAssigned || isReady) e.preventDefault(); }}
-              style={{
-                fontSize: '13px',
-                textDecoration: 'none',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.4rem',
-                borderRadius: '10px',
-                opacity: (isProfileIncomplete || penPalsAssigned || isReady) ? 0.6 : 1,
-                cursor: (isProfileIncomplete || penPalsAssigned || isReady) ? 'not-allowed' : 'pointer',
-                pointerEvents: (isProfileIncomplete || penPalsAssigned || isReady) ? 'none' : 'auto'
-              }}
-              title={penPalsAssigned ? 'Cannot add students after pen pals are assigned' : isReady ? 'Toggle "All students are in" off to add more students' : 'Add new student'}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 5v14M5 12h14" />
-              </svg>
-              Add New Student
-            </Link>
-          </div>
-
           {/* "All students are in" toggle - freely reversible up until pen
-              pals are actually assigned, so a teacher can turn it off again
-              if they realize they need to add or remove someone, then turn
-              it back on when they're done. */}
-          <div style={{ marginBottom: '1.5rem' }}>
+              pals are actually assigned. Sits below the step divider,
+              directly beside the live status text once ready. Roster
+              management (Copy Link / Add Student) now lives in
+              RosterActions, right above the student list itself, not here. */}
+          <div style={{ paddingTop: '1rem', borderTop: '1px solid #f0f0f0' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
               <button
                 type="button"
@@ -389,47 +310,40 @@ export default function DashboardTimeline({
                   transition: 'left 0.2s ease'
                 }} />
               </button>
-              <span className="text-data-value">
-                {isRequestingMatching ? 'Updating…' : 'All students are in'}
-              </span>
+
+              {!isReady ? (
+                <span className="text-data-value">
+                  {isRequestingMatching ? 'Updating…' : 'All students are in'}
+                </span>
+              ) : !penPalsAssigned ? (
+                <span className="text-meta-info">
+                  {needsMultipleSelection
+                    ? (hasAnyMultipleSelected
+                        ? 'Select additional students to have more than 1 pen pal.'
+                        : 'Select students to have more than 1 pen pal.')
+                    : liveRequirement
+                    ? `Waiting for ${liveRequirement.matchedSchoolName}'s class to finish registering their students. Toggle this off if you need to add or remove a student.`
+                    : 'Waiting to be matched with a partner school.'}
+                </span>
+              ) : (
+                <span className="text-meta-info">Pen pals have been assigned.</span>
+              )}
             </div>
 
-            {isReady && !penPalsAssigned && (
-              <p className="text-meta-info" style={{ margin: 0, marginTop: '0.5rem' }}>
-                Need to add or remove a student? Toggle this off to make changes, then toggle it back on when you&rsquo;re done.
-              </p>
+            {isReady && !penPalsAssigned && needsMultipleSelection && liveRequirement && (
+              <button
+                className="btn"
+                style={{ fontSize: '13px', borderRadius: '10px', marginTop: '0.75rem' }}
+                onClick={() => onPenpalPreferenceCheckNeeded && onPenpalPreferenceCheckNeeded(liveRequirement.required, liveRequirement.current, liveRequirement.matchedSchoolName)}
+              >
+                Select Students
+              </button>
             )}
           </div>
 
-          {/* Step 2 content - pure live status, no button of its own except
-              when students need to be selected for an extra pen pal. */}
-          {isReady && !penPalsAssigned && (
-            <div style={{ paddingTop: '1rem', borderTop: '1px solid #f0f0f0' }}>
-              <p className="text-meta-info" style={{ margin: 0, marginBottom: needsMultipleSelection ? '0.75rem' : 0 }}>
-                {needsMultipleSelection
-                  ? (hasAnyMultipleSelected
-                      ? 'Select additional students to have more than 1 pen pal.'
-                      : 'Select students to have more than 1 pen pal.')
-                  : liveRequirement
-                  ? `Waiting for ${liveRequirement.matchedSchoolName}'s class to finish registering their students. You can continue adding students until pen pals are matched.`
-                  : 'Waiting to be matched with a partner school.'}
-              </p>
-
-              {needsMultipleSelection && liveRequirement && (
-                <button
-                  className="btn"
-                  style={{ fontSize: '13px', borderRadius: '10px', marginTop: '0.75rem' }}
-                  onClick={() => onPenpalPreferenceCheckNeeded && onPenpalPreferenceCheckNeeded(liveRequirement.required, liveRequirement.current, liveRequirement.matchedSchoolName)}
-                >
-                  Select Students
-                </button>
-              )}
-            </div>
-          )}
-
           {/* Step 3 content */}
           {penPalsAssigned && (
-            <div style={{ paddingTop: '1rem', borderTop: '1px solid #f0f0f0' }}>
+            <div style={{ marginTop: '1rem' }}>
               <Link
                 href={`/teacher/pen-pal-list?schoolId=${schoolData.id}`}
                 className="btn"
@@ -457,9 +371,9 @@ export default function DashboardTimeline({
               Ready to Pair Pen Pals?
             </h3>
             <p style={{ color: '#6c757d', marginBottom: '2rem', lineHeight: '1.5' }}>
-              You can keep adding or removing students until {liveRequirement?.matchedSchoolName || 'the matched school'} has
-              all their students in. We&rsquo;ll let you know if you need to come back and select
-              additional students who may need more than one pen pal.
+              This will lock adding or removing students until you toggle it off again. We&rsquo;ll let
+              you know if you need to come back and select additional students who may need more
+              than one pen pal.
             </p>
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
               <button onClick={handleCancelPairing} className="btn">
