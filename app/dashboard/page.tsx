@@ -10,7 +10,7 @@ import { useTeacherSession, useSessionWarning } from '@/lib/useTeacherSession';
 // Import components
 import DashboardHeader from './components/DashboardHeader';
 import DashboardTimeline from './components/DashboardTimeline';
-import StudentMetricsGrid from './components/StudentMetricsGrid';
+import RosterActions from './components/RosterActions';
 import MatchingSection from './components/MatchingSection';
 import ReadyStudents from './components/ReadyStudents';
 import ConfirmationDialog from './components/ConfirmationDialog';
@@ -842,12 +842,13 @@ function TeacherDashboardContent() {
           />
         )}
 
-        <StudentMetricsGrid 
-          schoolData={schoolData}
-          totalStudents={totalStudents}
-          studentsWithInterests={studentsWithInterests}
-          matchedSchool={schoolData.matchedSchool}
-          isMatched={schoolData?.matchedWithSchoolId != null || schoolData?.matchedSchool != null}
+        <RosterActions
+          expectedClassSize={schoolData.expectedClassSize}
+          registeredCount={totalStudents}
+          dashboardToken={schoolData.dashboardToken}
+          isProfileIncomplete={isProfileIncomplete}
+          penPalsAssigned={penPalsAssigned}
+          rosterLocked={rosterLocked}
           readOnly={isReadOnlyView}
         />
 
