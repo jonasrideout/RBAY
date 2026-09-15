@@ -194,6 +194,7 @@ export default function MatchingStatusCard({
   }
 
   const partnerPlatforms = formatPlatforms(partner.communicationPlatforms);
+  const startMonth = schoolData.startMonth || schoolData.programStartMonth;
 
   return (
     <div className="card" style={{ marginBottom: '2rem' }}>
@@ -212,6 +213,11 @@ export default function MatchingStatusCard({
         {partner.mailingAddress && (
           <div style={{ fontSize: '13px', fontWeight: '300', color: '#666', whiteSpace: 'pre-line' }}>
             {partner.mailingAddress}
+          </div>
+        )}
+        {startMonth && startMonth !== 'TBD' && (
+          <div style={{ fontSize: '13px', fontWeight: '300', color: '#666', marginTop: '0.25rem' }}>
+            Starting: {startMonth}
           </div>
         )}
       </div>
