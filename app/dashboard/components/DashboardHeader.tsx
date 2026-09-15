@@ -49,11 +49,13 @@ export default function DashboardHeader({
   const communicationPlatformsDisplay = formatCommunicationPlatforms();
 
   return (
-    <div style={{
+    <div className="card" style={{
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'flex-start',
-      marginBottom: '1.5rem'
+      marginBottom: 0,
+      padding: '0.85rem 1.25rem',
+      height: '100%'
     }}>
       <div>
         <h1 className="text-school-name" style={{ marginBottom: '0.5rem', fontSize: '1.8rem' }}>
