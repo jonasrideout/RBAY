@@ -502,6 +502,11 @@ function TeacherDashboardContent() {
   const allActiveStudentsComplete = totalStudents > 0;
   const readyForMatching = schoolData?.status === 'READY';
   const penPalsAssigned = schoolData?.studentStats?.hasPenpalAssignments || false;
+  // Roster is locked (Remove Student disabled) while the "All students are
+  // in" toggle is on, so the roster stays stable while an admin might be
+  // running the matching algorithm. Freely reversible via the toggle itself
+  // up until pen pals are actually assigned.
+  const rosterLocked = ['READY', 'MATCHED', 'CORRESPONDING', 'DONE'].includes(schoolData?.status || 'COLLECTING');
 
   const handleMatchingRequested = () => {
     setSchoolData(prev => prev ? { ...prev, status: 'READY' } : null);
@@ -852,6 +857,7 @@ function TeacherDashboardContent() {
           readyStudentsEditMode={readyStudentsEditMode}
           expandedReadyStudents={expandedReadyStudents}
           penPalsAssigned={penPalsAssigned}
+          rosterLocked={rosterLocked}
           editingStudentId={editingStudentId}
           editTempFirstName={editTempFirstName}
           editTempLastInitial={editTempLastInitial}
