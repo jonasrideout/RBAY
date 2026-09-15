@@ -33,6 +33,7 @@ interface SchoolData {
     schoolState?: string;
     expectedClassSize: number;
     region: string;
+    communicationPlatforms?: any;
     isGroup?: boolean;
     mailingAddress?: string;
     schools?: Array<{
@@ -40,6 +41,7 @@ interface SchoolData {
       schoolName: string;
       teacherName: string;
       mailingAddress?: string;
+      communicationPlatforms?: any;
     }>;
   };
   studentStats?: {
@@ -59,9 +61,17 @@ interface MatchingStatusCardProps {
   onSchoolUpdated?: () => void;
 }
 
+// This card now covers two, non-overlapping jobs:
+// 1. Prompting to complete an incomplete school profile (unrelated to the
+//    timeline - still needed here).
+// 2. Once matched, showing the partner school's practical details
+//    (communication platform, mailing address) so a teacher knows how to
+//    actually reach/mail their pen pal school. All "where are we in the
+//    process" status language now lives in DashboardTimeline instead - this
+//    card intentionally says nothing about readiness, waiting, or pairing
+//    progress anymore, to avoid the two components repeating each other.
 export default function MatchingStatusCard({ 
   schoolData, 
-  allActiveStudentsComplete, 
   readOnly = false,
   isAdminView = false,
   onSchoolUpdated
@@ -78,23 +88,9 @@ export default function MatchingStatusCard({
                       !schoolData.communicationPlatforms ||
                       (Array.isArray(schoolData.communicationPlatforms) && schoolData.communicationPlatforms.length === 0);
 
-  // Check if school is matched with another school/group
   const isMatched = schoolData?.matchedWithSchoolId != null;
-  
-  // Check status
-  const readyForPairing = schoolData?.status === 'READY';
-  const penPalsPaired = schoolData?.status === 'MATCHED';
-  
-  // Show card in four scenarios: incomplete profile, COLLECTING with complete profile, READY status, or MATCHED status
-  const isCollectingWithCompleteProfile = !isIncomplete && !readyForPairing && !penPalsPaired;
-  const shouldShowCard = isIncomplete || isCollectingWithCompleteProfile || readyForPairing || penPalsPaired;
-  
-  if (!shouldShowCard) {
-    return null;
-  }
 
   const handleModalSuccess = () => {
-    // Refresh the dashboard data
     if (onSchoolUpdated) {
       onSchoolUpdated();
     } else {
@@ -102,107 +98,13 @@ export default function MatchingStatusCard({
     }
   };
 
-  const handleViewPenPals = () => {
-    window.open(`/teacher/pen-pal-list?schoolId=${schoolData.id}`, '_blank');
+  const formatPlatforms = (platforms: any): string | null => {
+    if (!platforms || !Array.isArray(platforms) || platforms.length === 0) return null;
+    return platforms.join(' | ');
   };
 
-  // Render mailing addresses for matched schools
-  const renderMailingAddresses = () => {
-    if (!schoolData.matchedSchool) return null;
-
-    // If matched with a group, show all schools in the group
-    if (schoolData.matchedSchool.isGroup && schoolData.matchedSchool.schools) {
-      return (
-        <>
-          <div style={{ 
-            fontSize: '12px', 
-            fontWeight: '400', 
-            color: '#999',
-            marginBottom: '0.5rem',
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px'
-          }}>
-            Mailing Addresses
-          </div>
-          <div style={{ 
-            marginTop: '1rem',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '0.5rem'
-          }}>
-            {schoolData.matchedSchool.schools.map((school, index) => (
-              <div key={school.id}>
-                <div style={{ 
-                  fontSize: '14px', 
-                  fontWeight: '400', 
-                  color: '#333',
-                  marginBottom: '0.25rem'
-                }}>
-                  {school.schoolName}
-                </div>
-                {school.mailingAddress && (
-                  <div style={{ 
-                    fontSize: '13px', 
-                    fontWeight: '300', 
-                    color: '#666',
-                    whiteSpace: 'pre-line'
-                  }}>
-                    {school.mailingAddress}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </>
-      );
-    }
-
-    // Single matched school - moved to right column
-    if (schoolData.matchedSchool.mailingAddress) {
-      return (
-        <div style={{ 
-          marginTop: '1rem',
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '0.5rem'
-        }}>
-          <div></div>
-          <div>
-            <div style={{ 
-              fontSize: '12px', 
-              fontWeight: '400', 
-              color: '#999',
-              marginBottom: '0.5rem',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px'
-            }}>
-              Mailing Address
-            </div>
-            <div style={{ 
-              fontSize: '14px', 
-              fontWeight: '400', 
-              color: '#333',
-              marginBottom: '0.25rem'
-            }}>
-              {schoolData.matchedSchool.schoolName}
-            </div>
-            <div style={{ 
-              fontSize: '13px', 
-              fontWeight: '300', 
-              color: '#666',
-              whiteSpace: 'pre-line'
-            }}>
-              {schoolData.matchedSchool.mailingAddress}
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    return null;
-  };
-
-  // Show completion prompt if school data is incomplete
+  // Show completion prompt if school data is incomplete - unrelated to
+  // matching status, still needed regardless of the timeline.
   if (isIncomplete) {
     return (
       <>
@@ -245,136 +147,73 @@ export default function MatchingStatusCard({
     );
   }
 
-  // Show Pen Pals Paired card when status is MATCHED
-  if (penPalsPaired) {
+  // Not matched yet - nothing to show here; the timeline covers "waiting to
+  // be matched" status language.
+  if (!isMatched || !schoolData.matchedSchool) {
+    return null;
+  }
+
+  // Matched - show the partner school's practical details only.
+  const partner = schoolData.matchedSchool;
+
+  if (partner.isGroup && partner.schools) {
     return (
       <div className="card" style={{ marginBottom: '2rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '2rem' }}>
-          <div style={{ flex: '0 0 auto', minWidth: '300px' }}>
-            <h3 style={{ 
-              color: '#1f2937', 
-              marginBottom: '1rem', 
-              fontSize: '1.4rem',
-              fontWeight: '400',
-              margin: 0
-            }}>
-              Pen Pals Paired
-            </h3>
-            <p className="text-meta-info" style={{ marginBottom: '1rem' }}>
-              Your students have been paired with pen pals!
-            </p>
-            <button 
-              onClick={handleViewPenPals}
-              className="btn"
-              style={{ 
-                padding: '0.75rem 1.5rem'
-              }}
-            >
-              View Pen Pal List
-            </button>
-          </div>
-          
-          {/* Mailing addresses on the right side */}
-          <div style={{ flex: '1', minWidth: '250px' }}>
-            {renderMailingAddresses()}
-          </div>
+        <h3 style={{ color: '#1f2937', marginBottom: '1rem', fontSize: '1.4rem', fontWeight: '400', margin: 0 }}>
+          Your Pen Pal Schools
+        </h3>
+        <div style={{ 
+          marginTop: '1rem',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: '1rem'
+        }}>
+          {partner.schools.map((school) => {
+            const schoolPlatforms = formatPlatforms(school.communicationPlatforms);
+            return (
+              <div key={school.id}>
+                <div style={{ fontSize: '14px', fontWeight: '400', color: '#333', marginBottom: '0.25rem' }}>
+                  {school.schoolName}
+                </div>
+                {schoolPlatforms && (
+                  <div style={{ fontSize: '13px', fontWeight: '300', color: '#666', marginBottom: '0.25rem' }}>
+                    {schoolPlatforms}
+                  </div>
+                )}
+                {school.mailingAddress && (
+                  <div style={{ fontSize: '13px', fontWeight: '300', color: '#666', whiteSpace: 'pre-line' }}>
+                    {school.mailingAddress}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     );
   }
 
-  // Show Collecting Student Info card when profile is complete but not ready yet
-  if (isCollectingWithCompleteProfile) {
-    return (
-      <div className="card" style={{ marginBottom: '2rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
-          <div style={{ flex: '1', minWidth: '300px' }}>
-            <h3 style={{ 
-              color: '#1f2937', 
-              marginBottom: '1rem', 
-              fontSize: '1.4rem',
-              fontWeight: '400',
-            }}>
-              Collecting Student Info
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <span style={{ 
-                  color: '#999', 
-                  fontSize: '18px', 
-                  flexShrink: 0,
-                  width: '18px',
-                  textAlign: 'center'
-                }}>
-                  🔗
-                </span>
-                <span className="text-meta-info" style={{ margin: 0 }}>
-                  Copy the Student Link and share that with your class so they can register
-                </span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <span style={{ 
-                  color: '#999', 
-                  fontSize: '18px', 
-                  flexShrink: 0,
-                  width: '18px',
-                  textAlign: 'center'
-                }}>
-                  ➕
-                </span>
-                <span className="text-meta-info" style={{ margin: 0 }}>
-                  Click Add New Student to register kids yourself
-                </span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <span style={{ 
-                  color: '#999', 
-                  fontSize: '18px', 
-                  flexShrink: 0,
-                  width: '18px',
-                  textAlign: 'center'
-                }}>
-                  ✓
-                </span>
-                <span className="text-meta-info" style={{ margin: 0 }}>
-                  Click Ready to Pair Pen Pals when all kids have registered
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const partnerPlatforms = formatPlatforms(partner.communicationPlatforms);
 
-  // Show Ready for Pen Pals card when status is READY (waiting for pairing)
   return (
     <div className="card" style={{ marginBottom: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
-        <div style={{ flex: '1', minWidth: '300px' }}>
-          <h3 style={{ 
-            color: '#1f2937', 
-            marginBottom: '1rem', 
-            fontSize: '1.4rem',
-            fontWeight: '400',
-            margin: 0
-          }}>
-            Ready for Pen Pals
-          </h3>
-          <p className="text-meta-info" style={{ marginBottom: '0' }}>
-            {readOnly && !isAdminView
-              ? 'This school is ready for pen pal pairing and is waiting for a partner school.'
-              : isAdminView
-              ? 'This school is ready for pen pal pairing and is waiting for a partner school.'
-              : isMatched && schoolData.matchedSchool
-              ? `Ready for pen pals. When ${schoolData.matchedSchool.schoolName} is done collecting student data, pen pals will be paired and we will notify you via email.
-.`
-              : isMatched
-              ? 'Ready for pen pals. When your partner school is done collecting student data, pen pals will be paired.'
-              : 'Waiting for partner school. We will email you when matching is complete.'
-            }
-          </p>
+      <h3 style={{ color: '#1f2937', marginBottom: '1rem', fontSize: '1.4rem', fontWeight: '400', margin: 0 }}>
+        Your Pen Pal School
+      </h3>
+      <div style={{ marginTop: '1rem' }}>
+        <div style={{ fontSize: '14px', fontWeight: '400', color: '#333', marginBottom: '0.25rem' }}>
+          {partner.schoolName}
         </div>
+        {partnerPlatforms && (
+          <div style={{ fontSize: '13px', fontWeight: '300', color: '#666', marginBottom: '0.25rem' }}>
+            {partnerPlatforms}
+          </div>
+        )}
+        {partner.mailingAddress && (
+          <div style={{ fontSize: '13px', fontWeight: '300', color: '#666', whiteSpace: 'pre-line' }}>
+            {partner.mailingAddress}
+          </div>
+        )}
       </div>
     </div>
   );
