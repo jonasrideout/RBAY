@@ -21,8 +21,9 @@ export default function SuccessStep({
     // Teacher-added student success page
     return (
       <div className="card" style={{ 
-        background: '#f8f9fa', 
-        borderLeft: '3px solid #28a745',
+        background: '#F5F3FA', 
+        borderRadius: '20px',
+        borderLeft: '3px solid #3B3F8C',
         textAlign: 'center' as const,
         marginBottom: '1.5rem'
       }}>
@@ -30,7 +31,7 @@ export default function SuccessStep({
           <div style={{ 
             fontSize: '1.2rem', 
             fontWeight: '400', 
-            color: '#333',
+            color: '#3B3F8C',
             marginBottom: '0.5rem'
           }}>
             ✓ {registeredStudent?.firstName} has been registered successfully!
@@ -52,7 +53,11 @@ export default function SuccessStep({
             className="btn"
             style={{ 
               padding: '0.75rem 1.5rem',
-              textDecoration: 'none'
+              textDecoration: 'none',
+              borderRadius: '10px',
+              backgroundColor: '#3B3F8C',
+              color: 'white',
+              border: '1px solid #3B3F8C'
             }}
           >
             Return to Dashboard
@@ -63,7 +68,10 @@ export default function SuccessStep({
             className="btn"
             style={{ 
               padding: '0.75rem 1.5rem',
-              textDecoration: 'none'
+              textDecoration: 'none',
+              borderRadius: '10px',
+              color: '#5B87A6',
+              border: '1px solid #5B87A6'
             }}
           >
             Add Another Student
@@ -75,8 +83,9 @@ export default function SuccessStep({
     // Student self-registration success page
     return (
       <div className="card" style={{ 
-        background: '#f8f9fa', 
-        borderLeft: '3px solid #28a745',
+        background: '#F5F3FA', 
+        borderRadius: '20px',
+        borderLeft: '3px solid #3B3F8C',
         textAlign: 'center' as const,
         marginBottom: '1.5rem'
       }}>
@@ -84,7 +93,7 @@ export default function SuccessStep({
           <div style={{ 
             fontSize: '1.2rem', 
             fontWeight: '400', 
-            color: '#333',
+            color: '#3B3F8C',
             marginBottom: '0.5rem'
           }}>
             ✓ Thank you, {registeredStudent?.firstName}!
@@ -97,9 +106,9 @@ export default function SuccessStep({
         <div style={{ 
           background: 'white', 
           padding: '1.5rem', 
-          borderRadius: '6px', 
+          borderRadius: '14px', 
           margin: '1.5rem 0', 
-          border: '1px solid #e9ecef' 
+          border: '1px solid #DAD7E8' 
         }}>
           <div className="text-data-value" style={{ marginBottom: '1rem' }}>
             <strong>School:</strong> {registeredStudent?.schoolName}
