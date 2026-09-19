@@ -35,6 +35,18 @@ interface DashboardTimelineProps {
   onPenpalPreferenceCheckNeeded?: (required: number, current: number, matchedSchoolName: string) => void;
 }
 
+// Color palette (teacher dashboard only - inline by design, not global CSS,
+// so the admin panel and other pages stay untouched). See DashboardHeader.tsx
+// for the full palette note.
+const COLOR_INDIGO = '#3B3F8C';
+const COLOR_SLATE = '#8A87A0';
+const COLOR_DONE_BG = '#DEDCF0';
+const COLOR_UPCOMING_BG = '#E7E4EF';
+const COLOR_UPCOMING_TEXT = '#9C97AE';
+const COLOR_UPCOMING_BORDER = '#DAD7E8';
+const COLOR_LINE_DONE = '#C7C4E3';
+const COLOR_DIVIDER = '#E4E1ED';
+
 // Same math that used to live inline in the old "Ready to Pair" click
 // handler, now run on every render so the dashboard always reflects the
 // current, live requirement rather than a stale one-time check. (The
@@ -226,13 +238,13 @@ export default function DashboardTimeline({
     fontWeight: 600,
     fontSize: '14px',
     flexShrink: 0,
-    backgroundColor: state === 'active' ? '#28a745' : state === 'done' ? '#c3e6cb' : '#e9ecef',
-    color: state === 'active' ? 'white' : state === 'done' ? '#155724' : '#adb5bd',
-    border: state === 'upcoming' ? '1px solid #dee2e6' : 'none'
+    backgroundColor: state === 'active' ? COLOR_INDIGO : state === 'done' ? COLOR_DONE_BG : COLOR_UPCOMING_BG,
+    color: state === 'active' ? 'white' : state === 'done' ? COLOR_INDIGO : COLOR_UPCOMING_TEXT,
+    border: state === 'upcoming' ? `1px solid ${COLOR_UPCOMING_BORDER}` : 'none'
   });
 
   return (
-    <div className="card" style={{ marginBottom: '2rem' }}>
+    <div className="card" style={{ marginBottom: '2rem', borderRadius: '20px' }}>
       {/* Step circles + labels, laid out as one 3-column grid so each label
           is guaranteed to sit centered under its own circle rather than
           depending on two separate rows staying in sync. */}
@@ -246,14 +258,14 @@ export default function DashboardTimeline({
                 right: '50%',
                 width: '100%',
                 height: '2px',
-                backgroundColor: stepState((step - 1) as 1 | 2 | 3) === 'upcoming' ? '#e9ecef' : '#c3e6cb',
+                backgroundColor: stepState((step - 1) as 1 | 2 | 3) === 'upcoming' ? COLOR_UPCOMING_BORDER : COLOR_LINE_DONE,
                 zIndex: 0
               }} />
             )}
             <div style={{ ...circleStyle(stepState(step)), position: 'relative', zIndex: 1 }}>
               {stepState(step) === 'done' ? '✓' : step}
             </div>
-            <span style={{ marginTop: '0.5rem', fontSize: '13px', color: '#6c757d', textAlign: 'center' }}>
+            <span style={{ marginTop: '0.5rem', fontSize: '13px', color: COLOR_SLATE, textAlign: 'center' }}>
               {step === 1 ? 'Register Students' : step === 2 ? 'Ready to Pair' : 'Distribute Pen Pals'}
             </span>
           </div>
@@ -275,7 +287,7 @@ export default function DashboardTimeline({
               directly beside the live status text once ready. Roster
               management (Copy Link / Add Student) now lives in
               RosterActions, right above the student list itself, not here. */}
-          <div style={{ paddingTop: '1rem', borderTop: '1px solid #f0f0f0' }}>
+          <div style={{ paddingTop: '1rem', borderTop: `1px solid ${COLOR_DIVIDER}` }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
               <button
                 type="button"
@@ -291,7 +303,7 @@ export default function DashboardTimeline({
                   border: 'none',
                   position: 'relative',
                   flexShrink: 0,
-                  backgroundColor: isReady ? '#28a745' : '#dee2e6',
+                  backgroundColor: isReady ? COLOR_INDIGO : '#dee2e6',
                   cursor: toggleDisabled ? 'not-allowed' : 'pointer',
                   opacity: toggleDisabled ? 0.6 : 1,
                   transition: 'background-color 0.2s ease',
@@ -333,7 +345,7 @@ export default function DashboardTimeline({
             {isReady && !penPalsAssigned && needsMultipleSelection && liveRequirement && (
               <button
                 className="btn"
-                style={{ fontSize: '13px', borderRadius: '10px', marginTop: '0.75rem' }}
+                style={{ fontSize: '13px', borderRadius: '10px', marginTop: '0.75rem', backgroundColor: COLOR_INDIGO, color: 'white', border: `1px solid ${COLOR_INDIGO}` }}
                 onClick={() => onPenpalPreferenceCheckNeeded && onPenpalPreferenceCheckNeeded(liveRequirement.required, liveRequirement.current, liveRequirement.matchedSchoolName)}
               >
                 Select Students
@@ -347,7 +359,7 @@ export default function DashboardTimeline({
               <Link
                 href={`/teacher/pen-pal-list?schoolId=${schoolData.id}`}
                 className="btn"
-                style={{ fontSize: '13px', borderRadius: '10px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
+                style={{ fontSize: '13px', borderRadius: '10px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', backgroundColor: COLOR_INDIGO, color: 'white', border: `1px solid ${COLOR_INDIGO}` }}
               >
                 Download Pen Pal List
               </Link>
@@ -359,30 +371,30 @@ export default function DashboardTimeline({
       {showConfirmation && (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex',
+          backgroundColor: 'rgba(59, 63, 140, 0.35)', display: 'flex',
           alignItems: 'center', justifyContent: 'center', zIndex: 1000
         }}>
           <div style={{
-            backgroundColor: 'white', padding: '2rem', borderRadius: '8px',
+            backgroundColor: 'white', padding: '2rem', borderRadius: '20px',
             maxWidth: '500px', width: '90%', textAlign: 'center',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
+            boxShadow: '0 4px 20px rgba(59, 63, 140, 0.2)'
           }}>
-            <h3 style={{ color: '#495057', marginBottom: '1rem' }}>
+            <h3 style={{ fontFamily: 'var(--font-heading)', color: COLOR_INDIGO, fontWeight: 700, marginBottom: '1rem' }}>
               Ready to Pair Pen Pals?
             </h3>
-            <p style={{ color: '#6c757d', marginBottom: '2rem', lineHeight: '1.5' }}>
+            <p style={{ color: COLOR_SLATE, marginBottom: '2rem', lineHeight: '1.5' }}>
               This will lock adding or removing students until you toggle it off again. We&rsquo;ll let
               you know if you need to come back and select additional students who may need more
               than one pen pal.
             </p>
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-              <button onClick={handleCancelPairing} className="btn">
+              <button onClick={handleCancelPairing} className="btn" style={{ borderRadius: '10px' }}>
                 Cancel
               </button>
               <button
                 onClick={handleConfirmPairing}
                 className="btn"
-                style={{ backgroundColor: '#28a745', color: 'white', borderColor: '#28a745' }}
+                style={{ borderRadius: '10px', backgroundColor: COLOR_INDIGO, color: 'white', borderColor: COLOR_INDIGO }}
               >
                 Yes, Ready to Pair
               </button>
