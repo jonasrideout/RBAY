@@ -168,8 +168,8 @@ export default function ReadyStudents({
             <button
               className={readyStudentsEditMode ? "btn btn-secondary" : "btn"}
               onClick={onToggleEditMode}
-              disabled={penPalsAssigned}
-              title={penPalsAssigned ? "Cannot edit students after pen pals are assigned" : undefined}
+              disabled={penPalsAssigned || rosterLocked}
+              title={penPalsAssigned ? "Cannot edit students after pen pals are assigned" : rosterLocked ? "Toggle \"All students are in\" off to edit a student" : undefined}
               style={{
                 fontSize: '14px',
                 borderRadius: '10px',
@@ -178,7 +178,7 @@ export default function ReadyStudents({
                 gap: '0.4rem',
                 color: '#5B87A6',
                 border: '1px solid #5B87A6',
-                opacity: penPalsAssigned ? 0.6 : 1
+                opacity: (penPalsAssigned || rosterLocked) ? 0.6 : 1
               }}
             >
               {readyStudentsEditMode ? (
