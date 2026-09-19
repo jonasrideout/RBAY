@@ -47,10 +47,12 @@ export default function RosterActions({
   };
 
   const disabled = isProfileIncomplete || penPalsAssigned || rosterLocked;
+  const COLOR_INDIGO = '#3B3F8C';
+  const COLOR_DUSTY_BLUE = '#5B87A6';
 
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-      <p style={{ fontSize: '15px', fontWeight: 500, margin: 0 }}>
+      <p style={{ fontFamily: 'var(--font-heading)', fontSize: '16px', fontWeight: 700, color: COLOR_INDIGO, margin: 0 }}>
         Students ({expectedClassSize} expected, {registeredCount} registered)
       </p>
 
@@ -61,9 +63,9 @@ export default function RosterActions({
             className="btn"
             disabled={disabled}
             style={{
-              backgroundColor: copyStatus === 'copied' ? '#28a745' : 'white',
-              color: copyStatus === 'copied' ? 'white' : '#555',
-              border: copyStatus === 'copied' ? '1px solid #28a745' : '1px solid #ddd',
+              backgroundColor: copyStatus === 'copied' ? COLOR_INDIGO : 'white',
+              color: copyStatus === 'copied' ? 'white' : COLOR_DUSTY_BLUE,
+              border: copyStatus === 'copied' ? `1px solid ${COLOR_INDIGO}` : `1px solid ${COLOR_DUSTY_BLUE}`,
               borderRadius: '10px',
               fontSize: '13px',
               display: 'flex',
@@ -99,6 +101,8 @@ export default function RosterActions({
               justifyContent: 'center',
               gap: '0.4rem',
               borderRadius: '10px',
+              color: COLOR_DUSTY_BLUE,
+              border: `1px solid ${COLOR_DUSTY_BLUE}`,
               opacity: disabled ? 0.6 : 1,
               cursor: disabled ? 'not-allowed' : 'pointer',
               pointerEvents: disabled ? 'none' : 'auto'
