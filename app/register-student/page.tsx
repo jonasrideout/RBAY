@@ -387,7 +387,7 @@ function RegisterStudentForm() {
     return (
       <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
         <Header themed />
-        <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
+        <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
           <LoadingState />
         </main>
       </div>
@@ -398,7 +398,7 @@ function RegisterStudentForm() {
     <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
       <Header themed />
 
-      <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
+      <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
         {/* Show loading during API calls */}
         {isLoading && currentStep !== 'info' && (
           <LoadingState message="Processing..." />
@@ -463,7 +463,7 @@ function LoadingPage() {
   return (
     <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
       <Header themed />
-      <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
+      <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
         <div style={{ textAlign: 'center', padding: '2rem' }}>
           <div>Loading...</div>
         </div>
