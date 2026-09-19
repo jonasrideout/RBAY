@@ -71,14 +71,6 @@ export default function StudentInfoStep({
         </p>
       </div>
 
-      <h2 className="text-h2 text-center mb-3" style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, color: '#3B3F8C' }}>{isTeacherFlow ? 'Student Info' : 'Tell Us About Yourself'}</h2>
-      <p className="text-center mb-4" style={{ color: '#8A87A0', fontWeight: 300 }}>
-        {isTeacherFlow 
-          ? "Helps us find your student a great penpal who shares their interests!"
-          : "Helps us find you a great penpal who shares your interests!"
-        }
-      </p>
-
       <form onSubmit={onSubmit}>
         {/* Area 1: Student Info */}
         <div className="card" style={{ borderRadius: '20px', marginBottom: '1.25rem' }}>
