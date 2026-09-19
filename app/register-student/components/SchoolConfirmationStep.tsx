@@ -1,135 +1,119 @@
-// /app/register-student/components/SchoolConfirmationStep.tsx
+// /app/register-student/components/StudentInfoStep.tsx
+
+import BasicInfoForm from './BasicInfoForm';
+import InterestsForm from './InterestsForm';
+
 interface SchoolInfo {
   name: string;
   teacher: string;
   found: boolean;
   schoolId: string;
   teacherEmail?: string;
+  hasMultipleClasses?: boolean;
+  teacherNames?: string[];
 }
 
-interface SchoolConfirmationStepProps {
-  foundSchoolInfo: SchoolInfo | null;
-  onConfirm: (confirmed: boolean) => void;
+interface StudentFormData {
+  schoolToken: string;
+  firstName: string;
+  lastInitial: string;
+  grade: string;
+  teacherName: string;
+  interests: string[];
+  otherInterests: string;
+  penpalPreference: 'ONE' | 'MULTIPLE';
+  parentConsent: boolean;
 }
 
-export default function SchoolConfirmationStep({
-  foundSchoolInfo,
-  onConfirm
-}: SchoolConfirmationStepProps) {
-  const isMatch = foundSchoolInfo?.found !== false;
-  
+interface StudentInfoStepProps {
+  schoolInfo: SchoolInfo | null;
+  isTeacherFlow: boolean;
+  formData: StudentFormData;
+  error: string;
+  isLoading: boolean;
+  onSubmit: (e: React.FormEvent) => void;
+  onUpdateFormData: (field: keyof StudentFormData, value: any) => void;
+  onInterestChange: (interest: string, checked: boolean) => void;
+}
+
+export default function StudentInfoStep({
+  schoolInfo,
+  isTeacherFlow,
+  formData,
+  error,
+  isLoading,
+  onSubmit,
+  onUpdateFormData,
+  onInterestChange
+}: StudentInfoStepProps) {
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'flex-start',
-      justifyContent: 'center',
-      paddingTop: '1rem',
-      paddingLeft: '2rem',
-      paddingRight: '2rem'
-    }}>
-      <div style={{
-        background: 'white',
-        borderRadius: '20px',
-        padding: '3rem',
-        maxWidth: '700px',
-        width: '100%',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
-      }}>
-        {isMatch ? (
-          <>
-            <h1 style={{ 
-              fontSize: '1.8rem',
-              fontWeight: 700,
-              color: '#3B3F8C',
-              textAlign: 'center',
-              marginBottom: '1rem',
-              fontFamily: 'var(--font-heading)',
-              lineHeight: 1.3
-            }}>
-              Is this your school?
-            </h1>
-            
-            <div style={{ 
-              background: '#EDEAF5', 
-              padding: '1rem', 
-              borderRadius: '8px', 
-              marginBottom: '2rem', 
-              border: '2px solid #3B3F8C',
-              textAlign: 'center'
-            }}>
-              <h2 style={{ 
-                color: '#3B3F8C', 
-                marginBottom: '0.5rem', 
-                fontSize: '1.5rem',
-                fontWeight: 700,
-                fontFamily: 'var(--font-heading)'
-              }}>
-                {foundSchoolInfo?.name}
-              </h2>
-              <p style={{ 
-                color: '#8A87A0', 
-                marginBottom: '0', 
-                fontSize: '1rem',
-                fontWeight: 300,
-                fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-              }}>
-                Teacher: {foundSchoolInfo?.teacher}
-              </p>
-            </div>
-            
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <button 
-                onClick={() => onConfirm(true)}
-                className="btn-blue btn-blue-lg"
-                style={{ color: '#3B3F8C', borderColor: '#3B3F8C', borderRadius: '10px' }}
-              >
-                ✓ Yes, that's my school
-              </button>
-              
-              <button 
-                onClick={() => onConfirm(false)}
-                className="btn"
-                style={{ 
-                  background: '#F5F3FA',
-                  border: '1px solid #DAD7E8',
-                  color: '#8A87A0',
-                  borderRadius: '10px',
-                  padding: '1rem 2rem',
-                  fontSize: '1.125rem',
-                  fontWeight: 300
-                }}
-              >
-                ← No, try again
-              </button>
-            </div>
-          </>
-        ) : (
-          <>
-            <h1 style={{ 
-              fontSize: '1.8rem',
-              fontWeight: 700,
-              color: '#3B3F8C',
-              textAlign: 'center',
-              marginBottom: '2rem',
-              fontFamily: 'var(--font-heading)',
-              lineHeight: 1.3
-            }}>
-              I can't find a school that matches the information you entered.
-            </h1>
-            
-            <div style={{ textAlign: 'center' }}>
-              <button 
-                onClick={() => onConfirm(false)}
-                className="btn-blue btn-blue-lg"
-                style={{ color: '#3B3F8C', borderColor: '#3B3F8C', borderRadius: '10px' }}
-              >
-                ← Try Again
-              </button>
-            </div>
-          </>
-        )}
+    <div className="card" style={{ maxWidth: '915px', margin: '0 auto', borderRadius: '20px' }}>
+      <div style={{ background: '#F5F3FA', padding: '1rem', borderRadius: '14px', marginBottom: '1.5rem', border: '1px solid #DAD7E8' }}>
+        <h4 style={{ color: '#8A87A0', marginBottom: '0.5rem', fontWeight: 300 }}>
+          {isTeacherFlow ? 'Adding Student to:' : 'Your School:'}
+        </h4>
+        <p style={{ fontSize: '1.1rem', fontWeight: '300', color: '#3B3F8C', marginBottom: '0.25rem' }}>
+          {schoolInfo?.name}
+        </p>
+        <p style={{ color: '#8A87A0', marginBottom: '0', fontSize: '0.95rem', fontWeight: 300 }}>
+          Teacher: {schoolInfo?.teacher}
+        </p>
       </div>
+
+      <h2 className="text-h2 text-center mb-3" style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, color: '#3B3F8C' }}>{isTeacherFlow ? 'Student Info' : 'Tell Us About Yourself'}</h2>
+      <p className="text-center mb-4" style={{ color: '#8A87A0', fontWeight: 300 }}>
+        {isTeacherFlow 
+          ? "Helps us find your student a great penpal who shares their interests!"
+          : "Helps us find you a great penpal who shares your interests!"
+        }
+      </p>
+
+      <form onSubmit={onSubmit}>
+        <BasicInfoForm
+          isTeacherFlow={isTeacherFlow}
+          firstName={formData.firstName}
+          lastInitial={formData.lastInitial}
+          grade={formData.grade}
+          teacherName={formData.teacherName}
+          penpalPreference={formData.penpalPreference}
+          isLoading={isLoading}
+          hasMultipleClasses={schoolInfo?.hasMultipleClasses || false}
+          teacherNames={schoolInfo?.teacherNames || []}
+          onFirstNameChange={(value) => onUpdateFormData('firstName', value)}
+          onLastInitialChange={(value) => onUpdateFormData('lastInitial', value)}
+          onGradeChange={(value) => onUpdateFormData('grade', value)}
+          onTeacherNameChange={(value) => onUpdateFormData('teacherName', value)}
+          onPenpalPreferenceChange={(value) => onUpdateFormData('penpalPreference', value)}
+        />
+
+        <InterestsForm
+          isTeacherFlow={isTeacherFlow}
+          interests={formData.interests}
+          otherInterests={formData.otherInterests}
+          isLoading={isLoading}
+          showError={!!error}
+          onInterestChange={onInterestChange}
+          onOtherInterestsChange={(value) => onUpdateFormData('otherInterests', value)}
+        />
+
+        <div className="form-group text-center">
+          <button 
+            type="submit" 
+            className="btn-blue btn-blue-lg"
+            disabled={isLoading}
+            style={{ padding: '1rem 2rem', fontSize: '1.1rem', color: '#3B3F8C', borderColor: '#3B3F8C', borderRadius: '10px' }}
+          >
+            {isLoading ? (
+              <>
+                <span className="loading"></span>
+                <span style={{ marginLeft: '0.5rem' }}>Submitting...</span>
+              </>
+            ) : (
+              isTeacherFlow ? 'Submit Student' : 'Submit My Information'
+            )}
+          </button>
+        </div>
+      </form>
     </div>
   );
 }
