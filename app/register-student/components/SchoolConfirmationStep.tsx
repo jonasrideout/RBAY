@@ -1,3 +1,4 @@
+// /app/register-student/components/SchoolConfirmationStep.tsx
 interface SchoolInfo {
   name: string;
   teacher: string;
@@ -29,7 +30,7 @@ export default function SchoolConfirmationStep({
     }}>
       <div style={{
         background: 'white',
-        borderRadius: '12px',
+        borderRadius: '20px',
         padding: '3rem',
         maxWidth: '700px',
         width: '100%',
@@ -39,35 +40,35 @@ export default function SchoolConfirmationStep({
           <>
             <h1 style={{ 
               fontSize: '1.8rem',
-              fontWeight: 300,
-              color: '#2c5aa0',
+              fontWeight: 700,
+              color: '#3B3F8C',
               textAlign: 'center',
               marginBottom: '1rem',
-              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              fontFamily: 'var(--font-heading)',
               lineHeight: 1.3
             }}>
               Is this your school?
             </h1>
             
             <div style={{ 
-              background: '#f0f8ff', 
+              background: '#EDEAF5', 
               padding: '1rem', 
               borderRadius: '8px', 
               marginBottom: '2rem', 
-              border: '2px solid #2196f3',
+              border: '2px solid #3B3F8C',
               textAlign: 'center'
             }}>
               <h2 style={{ 
-                color: '#2c5aa0', 
+                color: '#3B3F8C', 
                 marginBottom: '0.5rem', 
                 fontSize: '1.5rem',
-                fontWeight: 300,
-                fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                fontWeight: 700,
+                fontFamily: 'var(--font-heading)'
               }}>
                 {foundSchoolInfo?.name}
               </h2>
               <p style={{ 
-                color: '#6c757d', 
+                color: '#8A87A0', 
                 marginBottom: '0', 
                 fontSize: '1rem',
                 fontWeight: 300,
@@ -81,6 +82,7 @@ export default function SchoolConfirmationStep({
               <button 
                 onClick={() => onConfirm(true)}
                 className="btn-blue btn-blue-lg"
+                style={{ color: '#3B3F8C', borderColor: '#3B3F8C', borderRadius: '10px' }}
               >
                 ✓ Yes, that's my school
               </button>
@@ -89,9 +91,10 @@ export default function SchoolConfirmationStep({
                 onClick={() => onConfirm(false)}
                 className="btn"
                 style={{ 
-                  background: '#f8f9fa',
-                  border: '1px solid #dee2e6',
-                  color: '#6c757d',
+                  background: '#F5F3FA',
+                  border: '1px solid #DAD7E8',
+                  color: '#8A87A0',
+                  borderRadius: '10px',
                   padding: '1rem 2rem',
                   fontSize: '1.125rem',
                   fontWeight: 300
@@ -105,11 +108,11 @@ export default function SchoolConfirmationStep({
           <>
             <h1 style={{ 
               fontSize: '1.8rem',
-              fontWeight: 300,
-              color: '#2c5aa0',
+              fontWeight: 700,
+              color: '#3B3F8C',
               textAlign: 'center',
               marginBottom: '2rem',
-              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              fontFamily: 'var(--font-heading)',
               lineHeight: 1.3
             }}>
               I can't find a school that matches the information you entered.
@@ -119,6 +122,7 @@ export default function SchoolConfirmationStep({
               <button 
                 onClick={() => onConfirm(false)}
                 className="btn-blue btn-blue-lg"
+                style={{ color: '#3B3F8C', borderColor: '#3B3F8C', borderRadius: '10px' }}
               >
                 ← Try Again
               </button>
