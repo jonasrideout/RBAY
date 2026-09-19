@@ -5,7 +5,7 @@ interface ErrorStateProps {
 
 export default function ErrorState({ error }: ErrorStateProps) {
   return (
-    <div className="card">
+    <div className="card" style={{ borderRadius: '20px' }}>
       <div className="alert alert-error">
         <strong>Error:</strong> {error}
       </div>
