@@ -61,6 +61,12 @@ interface MatchingStatusCardProps {
   onSchoolUpdated?: () => void;
 }
 
+// Color palette (teacher dashboard only - see DashboardHeader.tsx for the
+// same note: these are intentionally inline, not global CSS, so the admin
+// panel and other pages are untouched).
+const COLOR_INDIGO = '#3B3F8C';
+const COLOR_SLATE = '#8A87A0';
+
 // This card now covers two, non-overlapping jobs:
 // 1. Prompting to complete an incomplete school profile (unrelated to the
 //    timeline - still needed here).
@@ -108,14 +114,15 @@ export default function MatchingStatusCard({
   if (isIncomplete) {
     return (
       <>
-        <div className="card" style={{ marginBottom: '2rem' }}>
+        <div className="card" style={{ marginBottom: '2rem', borderRadius: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
             <div style={{ flex: '1', minWidth: '300px' }}>
               <h3 style={{ 
-                color: '#1f2937', 
+                fontFamily: 'var(--font-heading)',
+                color: COLOR_INDIGO, 
                 marginBottom: '1rem', 
-                fontSize: '1.4rem',
-                fontWeight: '400',
+                fontSize: '1.3rem',
+                fontWeight: '700',
                 margin: 0
               }}>
                 Complete Your School Profile
@@ -127,7 +134,11 @@ export default function MatchingStatusCard({
                 onClick={() => setShowEditModal(true)}
                 className="btn"
                 style={{ 
-                  padding: '0.75rem 1.5rem'
+                  padding: '0.75rem 1.5rem',
+                  borderRadius: '10px',
+                  backgroundColor: COLOR_INDIGO,
+                  color: 'white',
+                  border: `1px solid ${COLOR_INDIGO}`
                 }}
               >
                 Complete School Profile
@@ -158,8 +169,8 @@ export default function MatchingStatusCard({
 
   if (partner.isGroup && partner.schools) {
     return (
-      <div className="card" style={{ marginBottom: '1rem', padding: '0.85rem 1.25rem', height: '100%' }}>
-        <p style={{ fontSize: '11px', fontWeight: 500, color: '#888', textTransform: 'uppercase', letterSpacing: '0.03em', margin: '0 0 0.5rem' }}>
+      <div className="card" style={{ marginBottom: '1rem', padding: '0.85rem 1.25rem', borderRadius: '20px', height: '100%' }}>
+        <p style={{ fontSize: '11px', fontWeight: 500, color: COLOR_SLATE, textTransform: 'uppercase', letterSpacing: '0.03em', margin: '0 0 0.5rem' }}>
           Pen Pal Schools
         </p>
         <div style={{ 
@@ -171,16 +182,16 @@ export default function MatchingStatusCard({
             const schoolPlatforms = formatPlatforms(school.communicationPlatforms);
             return (
               <div key={school.id}>
-                <div style={{ fontSize: '16px', fontWeight: 600, color: '#333', marginBottom: '0.15rem' }}>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: '17px', fontWeight: 700, color: COLOR_INDIGO, marginBottom: '0.15rem' }}>
                   {school.schoolName}
                 </div>
                 {schoolPlatforms && (
-                  <div style={{ fontSize: '13px', fontWeight: '300', color: '#666', marginBottom: '0.15rem' }}>
+                  <div style={{ fontSize: '13px', fontWeight: '300', color: COLOR_SLATE, marginBottom: '0.15rem' }}>
                     {schoolPlatforms}
                   </div>
                 )}
                 {school.mailingAddress && (
-                  <div style={{ fontSize: '13px', fontWeight: '300', color: '#666', whiteSpace: 'pre-line', lineHeight: 1.3 }}>
+                  <div style={{ fontSize: '13px', fontWeight: '300', color: COLOR_SLATE, whiteSpace: 'pre-line', lineHeight: 1.3 }}>
                     {school.mailingAddress}
                   </div>
                 )}
@@ -195,20 +206,20 @@ export default function MatchingStatusCard({
   const partnerPlatforms = formatPlatforms(partner.communicationPlatforms);
 
   return (
-    <div className="card" style={{ marginBottom: '1rem', padding: '0.85rem 1.25rem', height: '100%' }}>
-      <p style={{ fontSize: '11px', fontWeight: 500, color: '#888', textTransform: 'uppercase', letterSpacing: '0.03em', margin: '0 0 0.35rem' }}>
+    <div className="card" style={{ marginBottom: '1rem', padding: '0.85rem 1.25rem', borderRadius: '20px', height: '100%' }}>
+      <p style={{ fontSize: '11px', fontWeight: 500, color: COLOR_SLATE, textTransform: 'uppercase', letterSpacing: '0.03em', margin: '0 0 0.35rem' }}>
         Pen Pal School
       </p>
-      <div style={{ fontSize: '16px', fontWeight: 600, color: '#333', marginBottom: '0.15rem' }}>
+      <div style={{ fontFamily: 'var(--font-heading)', fontSize: '17px', fontWeight: 700, color: COLOR_INDIGO, marginBottom: '0.15rem' }}>
         {partner.schoolName}
       </div>
       {partnerPlatforms && (
-        <div style={{ fontSize: '13px', fontWeight: '300', color: '#666', marginBottom: '0.15rem' }}>
+        <div style={{ fontSize: '13px', fontWeight: '300', color: COLOR_SLATE, marginBottom: '0.15rem' }}>
           {partnerPlatforms}
         </div>
       )}
       {partner.mailingAddress && (
-        <div style={{ fontSize: '13px', fontWeight: '300', color: '#666', whiteSpace: 'pre-line', lineHeight: 1.3 }}>
+        <div style={{ fontSize: '13px', fontWeight: '300', color: COLOR_SLATE, whiteSpace: 'pre-line', lineHeight: 1.3 }}>
           {partner.mailingAddress}
         </div>
       )}
