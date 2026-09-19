@@ -59,7 +59,7 @@ export default function StudentInfoStep({
 }: StudentInfoStepProps) {
   return (
     <div style={{ maxWidth: '915px', margin: '0 auto' }}>
-      <div style={{ background: '#F5F3FA', padding: '0.75rem 1.25rem', borderRadius: '14px', marginBottom: '1rem', border: '1px solid #DAD7E8' }}>
+      <div style={{ background: '#F5F3FA', padding: '0.6rem 1.1rem', borderRadius: '14px', marginBottom: '1rem', border: '1px solid #DAD7E8' }}>
         <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 300, color: '#8A87A0' }}>
           {isTeacherFlow ? 'Adding a student to' : 'Your school:'}{' '}
           <span style={{ color: '#3B3F8C', fontWeight: 500 }}>{schoolInfo?.name}</span>
@@ -69,7 +69,7 @@ export default function StudentInfoStep({
 
       <form onSubmit={onSubmit}>
         {/* Area 1: Student Info */}
-        <div className="card" style={{ borderRadius: '20px', marginBottom: '0.75rem' }}>
+        <div className="card" style={{ borderRadius: '20px', marginBottom: '0.75rem', padding: '1.1rem 1.25rem' }}>
           <SectionLabel>Student Info</SectionLabel>
           <BasicInfoForm
             isTeacherFlow={isTeacherFlow}
@@ -90,7 +90,7 @@ export default function StudentInfoStep({
         </div>
 
         {/* Area 2: Interests */}
-        <div className="card" style={{ borderRadius: '20px', marginBottom: '0.75rem' }}>
+        <div className="card" style={{ borderRadius: '20px', marginBottom: '0.75rem', padding: '1.1rem 1.25rem' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
             <p style={{ fontSize: '11px', fontWeight: 500, color: '#8A87A0', textTransform: 'uppercase', letterSpacing: '0.03em', margin: 0 }}>
               {isTeacherFlow ? 'Interests & Hobbies' : 'Your Interests & Hobbies'}
@@ -109,7 +109,7 @@ export default function StudentInfoStep({
         </div>
 
         {/* Area 3: Anything else */}
-        <div className="card" style={{ borderRadius: '20px', marginBottom: '1rem' }}>
+        <div className="card" style={{ borderRadius: '20px', marginBottom: '1rem', padding: '1.1rem 1.25rem' }}>
           <SectionLabel>Anything Else?</SectionLabel>
           <OtherInterestsForm
             isTeacherFlow={isTeacherFlow}
