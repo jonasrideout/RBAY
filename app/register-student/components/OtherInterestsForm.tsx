@@ -19,7 +19,7 @@ export default function OtherInterestsForm({
         id="other-interests" 
         className="form-textarea" 
         placeholder={isTeacherFlow ? "Tell us about any other hobbies, interests, or activities..." : "Tell us about any other hobbies, interests, or activities you enjoy..."}
-        rows={3}
+        rows={2}
         value={otherInterests}
         onChange={(e) => onOtherInterestsChange(e.target.value)}
         disabled={isLoading}
