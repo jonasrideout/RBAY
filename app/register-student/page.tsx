@@ -385,8 +385,8 @@ function RegisterStudentForm() {
   // Don't render anything until session check is complete
   if (!sessionCheckComplete) {
     return (
-      <div className="page">
-        <Header />
+      <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
+        <Header themed />
         <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
           <LoadingState />
         </main>
@@ -395,8 +395,8 @@ function RegisterStudentForm() {
   }
 
   return (
-    <div className="page">
-      <Header />
+    <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
+      <Header themed />
 
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
         {/* Show loading during API calls */}
@@ -450,7 +450,7 @@ function RegisterStudentForm() {
         )}
       </main>
 
-      <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
+      <footer style={{ background: 'transparent', borderTop: '1px solid #DAD7E8', color: '#8A87A0', padding: '2rem 0', marginTop: '3rem' }}>
         <div className="container text-center">
           <p>&copy; 2025 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
         </div>
@@ -461,8 +461,8 @@ function RegisterStudentForm() {
 
 function LoadingPage() {
   return (
-    <div className="page">
-      <Header />
+    <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
+      <Header themed />
       <main className="container" style={{ flex: 1, paddingTop: '3rem' }}>
         <div style={{ textAlign: 'center', padding: '2rem' }}>
           <div>Loading...</div>
