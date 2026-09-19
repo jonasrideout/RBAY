@@ -18,7 +18,7 @@ export default function Header({ showLogin = false, session, onLogout, themed = 
   const COLOR_CORAL = '#D98B7A';
 
   return (
-    <header className="header" style={themed ? { backgroundColor: 'white', borderBottom: '1px solid #E4E1ED' } : undefined}>
+    <header className="header" style={themed ? { backgroundColor: 'transparent', boxShadow: 'none', borderBottom: '1px solid #DAD7E8' } : undefined}>
       <div className="container">
         <div className="header-content">
           <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
