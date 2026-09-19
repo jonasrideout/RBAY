@@ -745,7 +745,7 @@ function TeacherDashboardContent() {
 
   if (isLoading) {
     return (
-      <div className="page">
+      <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
         <Header session={session} onLogout={handleLogout} />
         <main className="container" style={{ flex: 1, paddingTop: '1.5rem', minWidth: '1200px' }}>
           <div style={{ textAlign: 'center', padding: '2rem' }}>
@@ -759,7 +759,7 @@ function TeacherDashboardContent() {
 
   if (error) {
     return (
-      <div className="page">
+      <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
         <Header session={session} onLogout={handleLogout} />
         <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
           <div className="alert alert-error">
@@ -793,7 +793,7 @@ function TeacherDashboardContent() {
   }
 
   return (
-    <div className="page">
+    <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
       <Header session={session} onLogout={handleLogout} />
 
       <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
@@ -947,7 +947,7 @@ function TeacherDashboardContent() {
 
 function LoadingDashboard() {
   return (
-    <div className="page">
+    <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
       <Header />
       <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
         <div style={{ textAlign: 'center', padding: '2rem' }}>
