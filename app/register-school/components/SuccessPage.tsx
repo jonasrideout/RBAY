@@ -1,3 +1,4 @@
+// /app/register-school/components/SuccessPage.tsx
 "use client";
 
 import Link from 'next/link';
@@ -61,8 +62,8 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
 
   // Regular teacher success page
   return (
-    <div className="page">
-      <Header session={session} onLogout={handleLogout} />
+    <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
+      <Header session={session} onLogout={handleLogout} themed />
 
       <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
@@ -75,7 +76,7 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
             marginBottom: '1.5rem' 
           }}>
             <div>
-              <h1 className="text-school-name" style={{ marginBottom: '0.5rem', fontSize: '1.8rem' }}>
+              <h1 className="text-school-name" style={{ marginBottom: '0.5rem', fontSize: '1.8rem', fontFamily: 'var(--font-heading)', fontWeight: 700, color: '#3B3F8C' }}>
                 Registration Complete!
               </h1>
               <p className="text-school-name" style={{ margin: 0 }}>
@@ -86,15 +87,16 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
 
           {/* Success Status Card */}
           <div className="card" style={{ 
-            background: '#f8f9fa', 
-            borderLeft: '3px solid #28a745',
+            borderRadius: '20px',
+            background: '#F5F3FA', 
+            borderLeft: '3px solid #3B3F8C',
             marginBottom: '1.5rem'
           }}>
             <div style={{ textAlign: 'center', padding: '1rem 0' }}>
               <div style={{ 
                 fontSize: '1.2rem', 
                 fontWeight: '400', 
-                color: '#333',
+                color: '#3B3F8C',
                 marginBottom: '0.5rem'
               }}>
                 ✓ Your school has been successfully registered!
@@ -106,12 +108,13 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
           </div>
 
           {/* Next Steps Card */}
-          <div className="card" style={{ marginBottom: '1.5rem' }}>
+          <div className="card" style={{ marginBottom: '1.5rem', borderRadius: '20px' }}>
             <h3 style={{ 
-              color: '#333', 
+              fontFamily: 'var(--font-heading)',
+              color: '#3B3F8C', 
               fontSize: '1.2rem',
-              fontWeight: '400',
-              borderBottom: '1px solid #e9ecef', 
+              fontWeight: '700',
+              borderBottom: '1px solid #DAD7E8', 
               paddingBottom: '0.5rem', 
               marginBottom: '1.5rem' 
             }}>
@@ -132,9 +135,10 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
                   className="btn"
                   style={{ 
                     textDecoration: 'none',
-                    backgroundColor: '#2c5aa0',
+                    backgroundColor: '#3B3F8C',
                     color: 'white',
-                    border: '1px solid #2c5aa0',
+                    border: '1px solid #3B3F8C',
+                    borderRadius: '10px',
                     fontWeight: '500',
                     padding: '0.75rem 1.5rem',
                     display: 'inline-block'
@@ -155,9 +159,10 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
                   onClick={handleCopyStudentLink}
                   className="btn"
                   style={{ 
-                    backgroundColor: '#2c5aa0',
+                    backgroundColor: '#3B3F8C',
                     color: 'white',
-                    border: '1px solid #2c5aa0',
+                    border: '1px solid #3B3F8C',
+                    borderRadius: '10px',
                     fontWeight: '500',
                     padding: '0.75rem 1.5rem'
                   }}
@@ -209,7 +214,7 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
           </div>
 
           {/* Action Button */}
-          <div className="card" style={{ textAlign: 'center' }}>
+          <div className="card" style={{ textAlign: 'center', borderRadius: '20px' }}>
             <Link 
               href="/dashboard"
               className="btn"
@@ -217,9 +222,10 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
                 textDecoration: 'none',
                 padding: '1rem 2.5rem', 
                 fontSize: '1rem',
-                backgroundColor: '#2c5aa0',
+                backgroundColor: '#3B3F8C',
                 color: 'white',
-                border: '1px solid #2c5aa0',
+                border: '1px solid #3B3F8C',
+                borderRadius: '10px',
                 fontWeight: '500'
               }}
             >
@@ -230,7 +236,7 @@ export default function SuccessPage({ registeredSchool, isAdminMode = false }: S
         </div>
       </main>
 
-      <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
+      <footer style={{ background: 'transparent', borderTop: '1px solid #DAD7E8', color: '#8A87A0', padding: '2rem 0', marginTop: '3rem' }}>
         <div className="container text-center">
           <p>&copy; 2025 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
         </div>
