@@ -59,21 +59,17 @@ export default function StudentInfoStep({
 }: StudentInfoStepProps) {
   return (
     <div style={{ maxWidth: '915px', margin: '0 auto' }}>
-      <div style={{ background: '#F5F3FA', padding: '1rem 1.25rem', borderRadius: '14px', marginBottom: '1.5rem', border: '1px solid #DAD7E8' }}>
-        <h4 style={{ color: '#8A87A0', marginBottom: '0.5rem', fontWeight: 300 }}>
-          {isTeacherFlow ? 'Adding Student to:' : 'Your School:'}
-        </h4>
-        <p style={{ fontSize: '1.1rem', fontWeight: '300', color: '#3B3F8C', marginBottom: '0.25rem' }}>
-          {schoolInfo?.name}
-        </p>
-        <p style={{ color: '#8A87A0', marginBottom: '0', fontSize: '0.95rem', fontWeight: 300 }}>
-          Teacher: {schoolInfo?.teacher}
+      <div style={{ background: '#F5F3FA', padding: '0.75rem 1.25rem', borderRadius: '14px', marginBottom: '1rem', border: '1px solid #DAD7E8' }}>
+        <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 300, color: '#8A87A0' }}>
+          {isTeacherFlow ? 'Adding a student to' : 'Your school:'}{' '}
+          <span style={{ color: '#3B3F8C', fontWeight: 500 }}>{schoolInfo?.name}</span>
+          {' — '}{schoolInfo?.teacher}
         </p>
       </div>
 
       <form onSubmit={onSubmit}>
         {/* Area 1: Student Info */}
-        <div className="card" style={{ borderRadius: '20px', marginBottom: '1.25rem' }}>
+        <div className="card" style={{ borderRadius: '20px', marginBottom: '0.75rem' }}>
           <SectionLabel>Student Info</SectionLabel>
           <BasicInfoForm
             isTeacherFlow={isTeacherFlow}
@@ -94,8 +90,15 @@ export default function StudentInfoStep({
         </div>
 
         {/* Area 2: Interests */}
-        <div className="card" style={{ borderRadius: '20px', marginBottom: '1.25rem' }}>
-          <SectionLabel>{isTeacherFlow ? 'Interests & Hobbies' : 'Your Interests & Hobbies'}</SectionLabel>
+        <div className="card" style={{ borderRadius: '20px', marginBottom: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
+            <p style={{ fontSize: '11px', fontWeight: 500, color: '#8A87A0', textTransform: 'uppercase', letterSpacing: '0.03em', margin: 0 }}>
+              {isTeacherFlow ? 'Interests & Hobbies' : 'Your Interests & Hobbies'}
+            </p>
+            <span style={{ fontSize: '0.85rem', color: '#8A87A0', fontWeight: 300 }}>
+              — Select at least one that applies
+            </span>
+          </div>
           <InterestsForm
             isTeacherFlow={isTeacherFlow}
             interests={formData.interests}
@@ -106,7 +109,7 @@ export default function StudentInfoStep({
         </div>
 
         {/* Area 3: Anything else */}
-        <div className="card" style={{ borderRadius: '20px', marginBottom: '1.5rem' }}>
+        <div className="card" style={{ borderRadius: '20px', marginBottom: '1rem' }}>
           <SectionLabel>Anything Else?</SectionLabel>
           <OtherInterestsForm
             isTeacherFlow={isTeacherFlow}
