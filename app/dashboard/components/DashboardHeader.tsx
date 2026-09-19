@@ -32,6 +32,19 @@ interface DashboardHeaderProps {
   isViewingPastClass?: boolean;
 }
 
+// Color palette (teacher dashboard only - see /app/globals.css note: these
+// are NOT global CSS variables, deliberately, so the admin panel, login,
+// and registration pages are untouched. Drawn from the "Right Back at You"
+// book cover, muted for UI use):
+//   #3B3F8C indigo   - headings, primary actions, active state
+//   #5B4F86 violet   - links, secondary accents
+//   #8A87A0 slate    - meta/secondary text
+//   #5B87A6 dusty blue - secondary buttons
+//   #D98B7A coral    - attention/needs-action states
+const COLOR_INDIGO = '#3B3F8C';
+const COLOR_VIOLET = '#5B4F86';
+const COLOR_SLATE = '#8A87A0';
+
 export default function DashboardHeader({
   schoolData,
   adminBackButton = false,
@@ -58,17 +71,18 @@ export default function DashboardHeader({
       alignItems: 'flex-start',
       marginBottom: 0,
       padding: '0.85rem 1.25rem',
+      borderRadius: '20px',
       height: '100%'
     }}>
       <div>
-        <p style={{ fontSize: '11px', fontWeight: 500, color: '#888', textTransform: 'uppercase', letterSpacing: '0.03em', margin: '0 0 0.35rem' }}>
+        <p style={{ fontSize: '11px', fontWeight: 500, color: COLOR_SLATE, textTransform: 'uppercase', letterSpacing: '0.03em', margin: '0 0 0.35rem' }}>
           Your School
         </p>
-        <h1 style={{ fontSize: '16px', fontWeight: 600, color: '#333', margin: '0 0 0.15rem' }}>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '17px', fontWeight: 700, color: COLOR_INDIGO, margin: '0 0 0.15rem' }}>
           {schoolData.schoolName}
         </h1>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.6rem', marginBottom: '0.15rem', position: 'relative' }}>
-          <p style={{ margin: 0, fontSize: '13px', fontWeight: 300, color: '#666' }}>
+          <p style={{ margin: 0, fontSize: '13px', fontWeight: 300, color: COLOR_SLATE }}>
             {schoolData.teacherName}
           </p>
 
@@ -87,7 +101,7 @@ export default function DashboardHeader({
                   border: 'none',
                   padding: 0,
                   fontSize: '13px',
-                  color: '#2c5aa0',
+                  color: COLOR_VIOLET,
                   cursor: 'pointer',
                   textDecoration: 'underline'
                 }}
@@ -102,9 +116,9 @@ export default function DashboardHeader({
                   left: 0,
                   marginTop: '0.5rem',
                   background: 'white',
-                  border: '1px solid #ddd',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                  border: '1px solid #e4e1ed',
+                  borderRadius: '14px',
+                  boxShadow: '0 4px 12px rgba(59, 63, 140, 0.12)',
                   minWidth: '260px',
                   zIndex: 50,
                   padding: '0.5rem 0'
@@ -120,7 +134,7 @@ export default function DashboardHeader({
                   )}
 
                   {pastClasses.length === 0 ? (
-                    <p style={{ padding: '0.5rem 1rem', fontSize: '13px', color: '#888', margin: 0 }}>
+                    <p style={{ padding: '0.5rem 1rem', fontSize: '13px', color: COLOR_SLATE, margin: 0 }}>
                       No past classes yet
                     </p>
                   ) : (
@@ -134,7 +148,7 @@ export default function DashboardHeader({
                           padding: '0.5rem 1rem',
                           fontSize: '13px',
                           textDecoration: 'none',
-                          color: pastClass.isActive ? '#2c5aa0' : '#333',
+                          color: pastClass.isActive ? COLOR_VIOLET : '#333',
                           fontWeight: pastClass.isActive ? 500 : 300
                         }}
                       >
@@ -150,7 +164,7 @@ export default function DashboardHeader({
                     <a
                       href="/dashboard/new-class"
                       className="nav-link"
-                      style={{ display: 'block', padding: '0.5rem 1rem', fontSize: '13px', textDecoration: 'none', color: '#28a745' }}
+                      style={{ display: 'block', padding: '0.5rem 1rem', fontSize: '13px', textDecoration: 'none', color: COLOR_INDIGO }}
                     >
                       + Start This Year&rsquo;s Class
                     </a>
@@ -165,13 +179,13 @@ export default function DashboardHeader({
             margin: 0,
             fontSize: '13px',
             fontWeight: '300',
-            color: '#666'
+            color: COLOR_SLATE
           }}>
             {communicationPlatformsDisplay}
           </p>
         )}
         {startMonth && startMonth !== 'TBD' && (
-          <p style={{ margin: 0, marginTop: '0.15rem', fontSize: '13px', fontWeight: 300, color: '#666' }}>
+          <p style={{ margin: 0, marginTop: '0.15rem', fontSize: '13px', fontWeight: 300, color: COLOR_SLATE }}>
             Starting: {startMonth}
           </p>
         )}
