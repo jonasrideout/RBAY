@@ -3,23 +3,26 @@
 import Link from 'next/link';
 import Header from './components/Header';
 
+const COLOR_INDIGO = '#3B3F8C';
+const COLOR_VIOLET = '#5B4F86';
+
 export default function Home() {
   return (
-    <div className="page">
+    <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
       {/* Header */}
-      <Header showLogin={true} />
+      <Header showLogin={true} themed />
 
       {/* Main Content */}
       <main className="container" style={{ flex: 1, paddingTop: '3rem', paddingBottom: '3rem' }}>
         
         {/* Hero Section */}
         <section style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h1 className="text-h1" style={{ fontWeight: 300, marginBottom: '1rem' }}>
-            Building Empathy Through Literature & Letters
+          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '2.2rem', fontWeight: 700, color: COLOR_INDIGO, marginBottom: '1rem' }}>
+            Building Empathy Through Literature &amp; Letters
           </h1>
           <p style={{ 
             fontSize: '1.1rem', 
-            color: '#666', 
+            color: '#8A87A0', 
             marginBottom: '2rem',
             fontWeight: 300,
             lineHeight: 1.6,
@@ -32,18 +35,23 @@ export default function Home() {
 
         {/* Features */}
         <section style={{ marginTop: '3rem' }}>
-          <h2 className="text-h2" style={{ 
+          <h2 style={{ 
+            fontFamily: 'var(--font-heading)',
+            fontSize: '1.7rem',
+            fontWeight: 700,
+            color: COLOR_INDIGO,
             textAlign: 'center', 
-            marginBottom: '2rem',
-            fontWeight: 300 
+            marginBottom: '2rem'
           }}>
             A Three-Part Project
           </h2>
           <div className="grid grid-3">
-            <div className="card">
-              <h3 className="text-h3" style={{ 
+            <div className="card" style={{ borderRadius: '20px' }}>
+              <h3 style={{ 
+                fontFamily: 'var(--font-heading)',
                 fontSize: '1.3rem',
-                fontWeight: 300,
+                fontWeight: 700,
+                color: COLOR_INDIGO,
                 marginBottom: '1rem',
                 textAlign: 'center'
               }}>
@@ -54,10 +62,12 @@ export default function Home() {
               </p>
             </div>
             
-            <div className="card">
-              <h3 className="text-h3" style={{ 
+            <div className="card" style={{ borderRadius: '20px' }}>
+              <h3 style={{ 
+                fontFamily: 'var(--font-heading)',
                 fontSize: '1.3rem',
-                fontWeight: 300,
+                fontWeight: 700,
+                color: COLOR_INDIGO,
                 marginBottom: '1rem',
                 textAlign: 'center'
               }}>
@@ -68,10 +78,12 @@ export default function Home() {
               </p>
             </div>
             
-            <div className="card">
-              <h3 className="text-h3" style={{ 
+            <div className="card" style={{ borderRadius: '20px' }}>
+              <h3 style={{ 
+                fontFamily: 'var(--font-heading)',
                 fontSize: '1.3rem',
-                fontWeight: 300,
+                fontWeight: 700,
+                color: COLOR_INDIGO,
                 marginBottom: '1rem',
                 textAlign: 'center'
               }}>
@@ -86,11 +98,14 @@ export default function Home() {
 
         {/* About the Book */}
         <section style={{ marginTop: '3rem' }}>
-          <div className="card">
-            <h2 className="text-h2" style={{ 
+          <div className="card" style={{ borderRadius: '20px' }}>
+            <h2 style={{ 
+              fontFamily: 'var(--font-heading)',
+              fontSize: '1.7rem',
+              fontWeight: 700,
+              color: COLOR_INDIGO,
               textAlign: 'center', 
-              marginBottom: '2rem',
-              fontWeight: 300 
+              marginBottom: '2rem'
             }}>
               About <em>Right Back at You</em>
             </h2>
@@ -107,9 +122,10 @@ export default function Home() {
             <div className="grid grid-2">
               <div>
                 <h4 style={{ 
+                  fontFamily: 'var(--font-heading)',
                   fontSize: '1.2rem',
-                  fontWeight: 300,
-                  color: '#2c5aa0',
+                  fontWeight: 700,
+                  color: COLOR_VIOLET,
                   marginBottom: '0.75rem'
                 }}>
                   The Story
@@ -120,9 +136,10 @@ export default function Home() {
               </div>
               <div>
                 <h4 style={{ 
+                  fontFamily: 'var(--font-heading)',
                   fontSize: '1.2rem',
-                  fontWeight: 300,
-                  color: '#2c5aa0',
+                  fontWeight: 700,
+                  color: COLOR_VIOLET,
                   marginBottom: '0.75rem'
                 }}>
                   The Impact
@@ -138,14 +155,16 @@ export default function Home() {
         {/* Call to Action */}
         <section style={{ textAlign: 'center', marginTop: '3rem' }}>
           <div className="card" style={{ 
-            background: 'linear-gradient(135deg, #2c5aa0 0%, #244a85 100%)', 
+            background: `linear-gradient(135deg, ${COLOR_INDIGO} 0%, #2A2D63 100%)`, 
             color: 'white',
-            padding: '3rem 2rem'
+            padding: '3rem 2rem',
+            borderRadius: '20px'
           }}>
             <h2 style={{ 
+              fontFamily: 'var(--font-heading)',
               color: 'white',
               fontSize: '1.8rem',
-              fontWeight: 300,
+              fontWeight: 700,
               marginBottom: '1rem'
             }}>
               Ready to Build Empathy in Your Community?
@@ -162,8 +181,9 @@ export default function Home() {
             </p>
             <Link href="/login" className="btn-blue" style={{ 
               backgroundColor: 'white',
-              color: '#2c5aa0',
+              color: COLOR_INDIGO,
               border: '2px solid white',
+              borderRadius: '10px',
               display: 'inline-flex'
             }}>
               Join The Right Back at You Project Today
@@ -175,9 +195,9 @@ export default function Home() {
 
       {/* Footer */}
       <footer style={{ 
-        background: '#f8f9fa', 
-        borderTop: '1px solid #e9ecef',
-        color: '#666', 
+        background: 'transparent', 
+        borderTop: '1px solid #DAD7E8',
+        color: '#8A87A0', 
         padding: '2rem 0'
       }}>
         <div className="container" style={{ textAlign: 'center' }}>
@@ -188,7 +208,7 @@ export default function Home() {
             <Link 
               href="/contact" 
               style={{ 
-                color: '#2c5aa0', 
+                color: COLOR_VIOLET, 
                 textDecoration: 'none', 
                 margin: '0 1rem',
                 fontWeight: 300,
@@ -200,7 +220,7 @@ export default function Home() {
             <Link 
               href="/privacy" 
               style={{ 
-                color: '#2c5aa0', 
+                color: COLOR_VIOLET, 
                 textDecoration: 'none', 
                 margin: '0 1rem',
                 fontWeight: 300,
@@ -212,7 +232,7 @@ export default function Home() {
             <Link 
               href="/terms" 
               style={{ 
-                color: '#2c5aa0', 
+                color: COLOR_VIOLET, 
                 textDecoration: 'none', 
                 margin: '0 1rem',
                 fontWeight: 300,
