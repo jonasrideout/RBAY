@@ -1,3 +1,4 @@
+// /app/register-student/components/SchoolVerificationStep.tsx
 interface SchoolVerificationStepProps {
   schoolNameInput: string;
   setSchoolNameInput: (value: string) => void;
@@ -29,7 +30,7 @@ export default function SchoolVerificationStep({
     }}>
       <div style={{
         background: 'white',
-        borderRadius: '12px',
+        borderRadius: '20px',
         padding: '3rem',
         maxWidth: '700px',
         width: '100%',
@@ -37,11 +38,11 @@ export default function SchoolVerificationStep({
       }}>
         <h1 style={{
           fontSize: '1.8rem',
-          fontWeight: 300,
-          color: '#2c5aa0',
+          fontWeight: 700,
+          color: '#3B3F8C',
           textAlign: 'center',
           marginBottom: '1rem',
-          fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          fontFamily: 'var(--font-heading)',
           lineHeight: 1.3
         }}>
           Join The Right Back at You Project
@@ -50,7 +51,7 @@ export default function SchoolVerificationStep({
         <p style={{
           textAlign: 'center',
           marginBottom: '2.5rem',
-          color: '#6c757d',
+          color: '#8A87A0',
           fontSize: '1.1rem',
           fontWeight: '300',
           fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
@@ -78,7 +79,7 @@ export default function SchoolVerificationStep({
             />
             <p style={{ 
               fontSize: '0.85rem', 
-              color: '#6c757d', 
+              color: '#8A87A0', 
               marginTop: '0.5rem', 
               marginBottom: '0',
               fontWeight: '300',
@@ -98,6 +99,7 @@ export default function SchoolVerificationStep({
             <button 
               type="submit" 
               className="btn-blue btn-blue-lg"
+              style={{ color: '#3B3F8C', borderColor: '#3B3F8C', borderRadius: '10px' }}
               disabled={isLoading || !schoolToken}
             >
               {isLoading ? (
