@@ -126,7 +126,7 @@ export default function ReadyStudents({
   }
 
   return (
-    <div className="card" style={{ marginBottom: '2rem' }}>
+    <div className="card" style={{ marginBottom: '2rem', borderRadius: '20px' }}>
       <div style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
@@ -135,10 +135,11 @@ export default function ReadyStudents({
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <h3 style={{
+            fontFamily: 'var(--font-heading)',
             margin: '0',
-            fontSize: '1.2rem',
-            fontWeight: '400',
-            color: '#333'
+            fontSize: '1.15rem',
+            fontWeight: '700',
+            color: '#3B3F8C'
           }}>
             Ready Students ({studentsWithInterests.length})
           </h3>
@@ -175,6 +176,8 @@ export default function ReadyStudents({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.4rem',
+                color: '#5B87A6',
+                border: '1px solid #5B87A6',
                 opacity: penPalsAssigned ? 0.6 : 1
               }}
             >
@@ -201,6 +204,8 @@ export default function ReadyStudents({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.4rem',
+                color: '#D98B7A',
+                border: '1px solid #D98B7A',
                 opacity: (penPalsAssigned || rosterLocked) ? 0.6 : 1
               }}
             >
@@ -228,7 +233,7 @@ export default function ReadyStudents({
               <h4 style={{ 
                 fontSize: '1rem',
                 fontWeight: '500',
-                color: '#2c5aa0',
+                color: '#5B4F86',
                 marginBottom: '0.75rem',
                 paddingBottom: '0.5rem',
                 borderBottom: '2px solid #e0e0e0'
