@@ -1,3 +1,4 @@
+// /app/login/page.tsx
 'use client';
 
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -96,17 +97,19 @@ function LoginContent() {
   // Email verification screen for new teachers
   if (showVerification) {
     return (
-      <div className="page">
-        <Header showLogin={false} />
+      <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
+        <Header showLogin={false} themed />
         <main className="container" style={{ flex: 1, paddingTop: '3rem', paddingBottom: '3rem' }}>
           <div className="card" style={{ 
             maxWidth: '600px', 
-            margin: '0 auto'
+            margin: '0 auto',
+            borderRadius: '20px'
           }}>
             <h1 style={{ 
+              fontFamily: 'var(--font-heading)',
               fontSize: '1.8rem',
-              fontWeight: 300,
-              color: '#2c5aa0',
+              fontWeight: 700,
+              color: '#3B3F8C',
               marginBottom: '1.5rem',
               textAlign: 'center',
               lineHeight: 1.3
@@ -117,7 +120,7 @@ function LoginContent() {
             <p style={{ 
               fontSize: '1rem',
               fontWeight: 300,
-              color: '#555',
+              color: '#8A87A0',
               marginBottom: '2rem',
               lineHeight: 1.6,
               textAlign: 'center'
@@ -136,10 +139,10 @@ function LoginContent() {
                   </svg>
                 </div>
                 <div>
-                  <div style={{ fontWeight: 300, marginBottom: '0.5rem', color: '#555' }}>
+                  <div style={{ fontWeight: 300, marginBottom: '0.5rem', color: '#8A87A0' }}>
                     Email to verify: <strong style={{ fontWeight: 500 }}>{verificationEmail}</strong>
                   </div>
-                  <div style={{ fontSize: '0.875rem', fontWeight: 300, color: '#666' }}>
+                  <div style={{ fontSize: '0.875rem', fontWeight: 300, color: '#8A87A0' }}>
                     After verification, you'll be guided through school registration to join the program.
                   </div>
                 </div>
@@ -152,7 +155,10 @@ function LoginContent() {
                 className="btn-blue"
                 style={{ 
                   width: '100%',
-                  marginBottom: '1rem'
+                  marginBottom: '1rem',
+                  color: '#3B3F8C',
+                  borderColor: '#3B3F8C',
+                  borderRadius: '10px'
                 }}
               >
                 Verify Email Address
@@ -167,7 +173,7 @@ function LoginContent() {
                 style={{ 
                   background: 'none', 
                   border: 'none',
-                  color: '#2c5aa0',
+                  color: '#3B3F8C',
                   cursor: 'pointer',
                   fontSize: '0.95rem',
                   fontWeight: 300,
@@ -181,14 +187,14 @@ function LoginContent() {
             </div>
 
             <div style={{ 
-              borderTop: '1px solid #e9ecef',
+              borderTop: '1px solid #DAD7E8',
               paddingTop: '1.5rem',
               textAlign: 'center'
             }}>
               <Link 
                 href="/" 
                 style={{
-                  color: '#2c5aa0',
+                  color: '#3B3F8C',
                   textDecoration: 'none',
                   fontSize: '0.95rem',
                   fontWeight: 300
@@ -205,18 +211,20 @@ function LoginContent() {
 
   if (success) {
     return (
-      <div className="page">
-        <Header showLogin={false} />
+      <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
+        <Header showLogin={false} themed />
         <main className="container" style={{ flex: 1, paddingTop: '3rem', paddingBottom: '3rem' }}>
           <div className="card" style={{ 
             maxWidth: '600px', 
-            margin: '0 auto'
+            margin: '0 auto',
+            borderRadius: '20px'
           }}>
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
               <h1 style={{ 
+                fontFamily: 'var(--font-heading)',
                 fontSize: '1.8rem',
-                fontWeight: 300,
-                color: '#2c5aa0',
+                fontWeight: 700,
+                color: '#3B3F8C',
                 marginBottom: '1.5rem',
                 lineHeight: 1.3
               }}>
@@ -226,7 +234,7 @@ function LoginContent() {
               <p style={{ 
                 fontSize: '1rem',
                 fontWeight: 300,
-                color: '#555',
+                color: '#8A87A0',
                 marginBottom: '1.5rem',
                 lineHeight: 1.6
               }}>
@@ -236,7 +244,7 @@ function LoginContent() {
               <p style={{ 
                 fontSize: '0.9rem',
                 fontWeight: 300,
-                color: '#666',
+                color: '#8A87A0',
                 marginBottom: '2rem'
               }}>
                 The login link expires in 30 minutes for your security.
@@ -249,7 +257,10 @@ function LoginContent() {
                 className="btn-blue"
                 style={{ 
                   width: 'auto',
-                  display: 'inline-flex'
+                  display: 'inline-flex',
+                  color: '#3B3F8C',
+                  borderColor: '#3B3F8C',
+                  borderRadius: '10px'
                 }}
               >
                 Send another login link
@@ -259,7 +270,7 @@ function LoginContent() {
             <p style={{ 
               fontSize: '0.9rem',
               fontWeight: 300,
-              color: '#666',
+              color: '#8A87A0',
               marginBottom: '1.5rem',
               textAlign: 'center'
             }}>
@@ -267,14 +278,14 @@ function LoginContent() {
             </p>
 
             <div style={{ 
-              borderTop: '1px solid #e9ecef',
+              borderTop: '1px solid #DAD7E8',
               paddingTop: '1.5rem',
               textAlign: 'center'
             }}>
               <Link 
                 href="/" 
                 style={{
-                  color: '#2c5aa0',
+                  color: '#3B3F8C',
                   textDecoration: 'none',
                   fontSize: '0.95rem',
                   fontWeight: 300
@@ -290,17 +301,18 @@ function LoginContent() {
   }
 
   return (
-    <div className="page">
-      <Header showLogin={false} />
+    <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
+      <Header showLogin={false} themed />
 
       <main className="container" style={{ flex: 1, paddingTop: '3rem', paddingBottom: '3rem' }}>
-        <div className="card" style={{ maxWidth: '600px', margin: '0 auto' }}>
+        <div className="card" style={{ maxWidth: '600px', margin: '0 auto', borderRadius: '20px' }}>
           {/* Title */}
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <h1 style={{ 
+              fontFamily: 'var(--font-heading)',
               fontSize: '1.8rem',
-              fontWeight: 300,
-              color: '#2c5aa0',
+              fontWeight: 700,
+              color: '#3B3F8C',
               marginBottom: '1rem',
               lineHeight: 1.3
             }}>
@@ -309,7 +321,7 @@ function LoginContent() {
             <p style={{ 
               fontSize: '0.95rem',
               fontWeight: 300,
-              color: '#666'
+              color: '#8A87A0'
             }}>
               Enter your email to receive a secure link to login or register your class.
             </p>
@@ -378,7 +390,10 @@ function LoginContent() {
                 className="btn-blue"
                 style={{ 
                   width: 'auto',
-                  display: 'inline-flex'
+                  display: 'inline-flex',
+                  color: '#3B3F8C',
+                  borderColor: '#3B3F8C',
+                  borderRadius: '10px'
                 }}
               >
                 {isLoading ? (
@@ -397,13 +412,13 @@ function LoginContent() {
           <div style={{ 
             marginTop: '2rem', 
             textAlign: 'center',
-            borderTop: '1px solid #e9ecef',
+            borderTop: '1px solid #DAD7E8',
             paddingTop: '1.5rem'
           }}>
             <Link 
               href="/" 
               style={{
-                color: '#2c5aa0',
+                color: '#3B3F8C',
                 textDecoration: 'none',
                 fontSize: '0.95rem',
                 fontWeight: 300
@@ -421,7 +436,7 @@ function LoginContent() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="page">
+      <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
         <div className="container" style={{ textAlign: 'center', paddingTop: '2rem' }}>
           <div className="loading" style={{ margin: '0 auto' }}></div>
         </div>
