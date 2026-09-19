@@ -23,7 +23,7 @@ export default function OtherInterestsForm({
         value={otherInterests}
         onChange={(e) => onOtherInterestsChange(e.target.value)}
         disabled={isLoading}
-        style={{ borderRadius: '10px', fontFamily: 'inherit' }}
+        style={{ borderRadius: '10px', fontFamily: 'inherit', minHeight: '65px' }}
       />
     </div>
   );
