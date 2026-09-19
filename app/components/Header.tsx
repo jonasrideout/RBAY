@@ -51,7 +51,7 @@ export default function Header({ showLogin = false, session, onLogout, themed = 
                 <Link
                   href="/login"
                   className="btn-blue"
-                  style={themed ? { backgroundColor: COLOR_INDIGO, borderColor: COLOR_INDIGO, borderRadius: '10px' } : undefined}
+                  style={themed ? { backgroundColor: COLOR_INDIGO, borderColor: COLOR_INDIGO, borderRadius: '10px', color: 'white' } : undefined}
                 >
                   Login or Sign Up
                 </Link>
