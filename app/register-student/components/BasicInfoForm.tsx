@@ -156,7 +156,7 @@ export default function BasicInfoForm({
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: 'rgba(59, 63, 140, 0.35)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -165,22 +165,23 @@ export default function BasicInfoForm({
           <div style={{
             backgroundColor: 'white',
             padding: '2rem',
-            borderRadius: '8px',
+            borderRadius: '20px',
             maxWidth: '500px',
             width: '90%',
-            border: '3px solid #2c5aa0',
+            border: '3px solid #3B3F8C',
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
           }}>
             <h3 style={{ 
-              color: '#2c5aa0', 
+              fontFamily: 'var(--font-heading)',
+              color: '#3B3F8C', 
               marginBottom: '1rem',
               fontSize: '1.5rem',
-              fontWeight: '300'
+              fontWeight: '700'
             }}>
               Multiple Pen Pals
             </h3>
             <p style={{ 
-              color: '#495057', 
+              color: '#8A87A0', 
               marginBottom: '2rem', 
               lineHeight: '1.5',
               fontSize: '1.1rem',
@@ -194,7 +195,8 @@ export default function BasicInfoForm({
                 className="btn"
                 style={{
                   padding: '0.75rem 1.5rem',
-                  fontSize: '1rem'
+                  fontSize: '1rem',
+                  borderRadius: '10px'
                 }}
               >
                 Cancel
@@ -203,11 +205,12 @@ export default function BasicInfoForm({
                 onClick={handleConfirm}
                 className="btn"
                 style={{
-                  backgroundColor: '#2c5aa0',
+                  backgroundColor: '#3B3F8C',
                   color: 'white',
-                  borderColor: '#2c5aa0',
+                  borderColor: '#3B3F8C',
                   padding: '0.75rem 1.5rem',
-                  fontSize: '1rem'
+                  fontSize: '1rem',
+                  borderRadius: '10px'
                 }}
               >
                 Yes, I'm Sure
