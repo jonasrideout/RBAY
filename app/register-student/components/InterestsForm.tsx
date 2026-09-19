@@ -32,13 +32,6 @@ export default function InterestsForm({
 }: InterestsFormProps) {
   return (
     <div className="form-group" style={{ marginBottom: 0 }}>
-      <p style={{ color: '#8A87A0', fontSize: '0.9rem', marginBottom: '1rem', fontWeight: '300' }}>
-        {isTeacherFlow 
-          ? "Select at least one that applies"
-          : "Select at least one that applies - this helps us find you a great penpal!"
-        }
-      </p>
-      
       {showError && interests.length === 0 && (
         <div style={{ 
           color: '#dc3545', 
@@ -67,7 +60,7 @@ export default function InterestsForm({
         }
       `}</style>
       
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
         {INTEREST_OPTIONS.map(interest => {
           const isSelected = interests.includes(interest.value);
           return (
