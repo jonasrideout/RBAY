@@ -22,7 +22,7 @@ export default function Header({ showLogin = false, session, onLogout, themed = 
       <div className="container">
         <div className="header-content">
           <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <img src="/RB@Y-logo.png" alt="Right Back at You" style={{ height: '40px' }} />
+            <img src="/RB@Y-logo.png" alt="Right Back at You" style={{ height: '56px' }} />
             <span style={{ fontWeight: themed ? 700 : 300, fontFamily: themed ? 'var(--font-heading)' : undefined, color: themed ? COLOR_INDIGO : undefined }}>The Right Back at You Project</span>
           </Link>
           <nav className={showLogin || session ? "nav-login" : "nav-invisible"}>
