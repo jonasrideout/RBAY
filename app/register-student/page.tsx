@@ -16,15 +16,18 @@ import SchoolConfirmationStep from './components/SchoolConfirmationStep';
 import StudentInfoStep from './components/StudentInfoStep';
 import SuccessStep from './components/SuccessStep';
 
-// The School record's teacherNames array only holds the ADDITIONAL teachers
-// typed into the "multiple classes" field at registration - it never
-// included the primary registering teacher's own name. That meant the
-// per-student teacher dropdown was missing the one teacher most likely to
-// actually have students in the mix. This builds the full, deduplicated
-// list students should choose from.
-function buildTeacherOptions(primaryTeacherName: string, additionalTeacherNames: string[]): string[] {
-  const names = [primaryTeacherName, ...additionalTeacherNames].filter(Boolean);
-  return Array.from(new Set(names));
+// The teacher dropdown is built entirely from the School record's
+// teacherNames array (the "multiple classes" field at registration) rather
+// than also auto-injecting the primary teacher's own teacherName field.
+// That auto-injection used to cause a formatting mismatch: teacherNames
+// entries are typed in however a teacher wants students to address them
+// (e.g. "Mr. Sloss"), while teacherName is the teacher's formal registered
+// name (e.g. "Kelly Bulbulkaya") - showing both styles in the same dropdown
+// looked inconsistent. The registration form now explicitly invites the
+// primary teacher to add herself to teacherNames too, in whatever style she
+// wants, so every dropdown entry is consistently formatted the same way.
+function buildTeacherOptions(additionalTeacherNames: string[]): string[] {
+  return Array.from(new Set(additionalTeacherNames.filter(Boolean)));
 }
 
 interface StudentFormData {
@@ -145,7 +148,7 @@ function RegisterStudentForm() {
         schoolId: data.school.id,
         teacherEmail: data.school.teacherEmail,
         hasMultipleClasses: data.school.hasMultipleClasses || false,
-        teacherNames: buildTeacherOptions(data.school.teacherName, data.school.teacherNames || [])
+        teacherNames: buildTeacherOptions(data.school.teacherNames || [])
       });
 
       // Check if the current user is a teacher with a session
@@ -187,7 +190,7 @@ function RegisterStudentForm() {
         schoolId: data.school.id,
         teacherEmail: data.school.teacherEmail,
         hasMultipleClasses: data.school.hasMultipleClasses || false,
-        teacherNames: buildTeacherOptions(data.school.teacherName, data.school.teacherNames || [])
+        teacherNames: buildTeacherOptions(data.school.teacherNames || [])
       });
 
       // Set the dashboard token for form submission
@@ -271,7 +274,7 @@ function RegisterStudentForm() {
           schoolId: data.school.id,
           teacherEmail: teacherEmail,
           hasMultipleClasses: data.school.hasMultipleClasses || false,
-          teacherNames: buildTeacherOptions(data.school.teacherName, data.school.teacherNames || [])
+          teacherNames: buildTeacherOptions(data.school.teacherNames || [])
         });
         setCurrentStep('schoolConfirm');
       } else {
@@ -283,7 +286,7 @@ function RegisterStudentForm() {
           schoolId: data.school.id,
           teacherEmail: teacherEmail,
           hasMultipleClasses: data.school.hasMultipleClasses || false,
-          teacherNames: buildTeacherOptions(data.school.teacherName, data.school.teacherNames || [])
+          teacherNames: buildTeacherOptions(data.school.teacherNames || [])
         });
         setCurrentStep('schoolConfirm');
       }
