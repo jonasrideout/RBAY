@@ -527,7 +527,25 @@ function TeacherDashboardContent() {
 
   const handlePenpalPreferenceUpdateComplete = async () => {
     setShowPenpalPreferenceUpdate(false);
-    
+
+    // This modal now opens in two different situations: (1) the original
+    // flow, mid-way through a teacher's FIRST "Ready to Pair" click, where
+    // the school isn't ready yet and still needs that POST to actually mark
+    // it ready; and (2) a school that's ALREADY ready, where a gap opened
+    // up later (e.g. the partner school added students) and the teacher
+    // used the "Select Students" button to address it. In case (2) the
+    // school is already ready - re-posting to the ready endpoint there
+    // fails with "already requested pairing", since nothing about
+    // readiness actually changed, only the student selections (already
+    // saved by the modal itself via its own PUT calls). So only call this
+    // when the school genuinely isn't ready yet.
+    const alreadyReady = schoolData?.status && schoolData.status !== 'COLLECTING';
+
+    if (alreadyReady) {
+      window.location.reload();
+      return;
+    }
+
     try {
       const response = await fetch('/api/schools/request-matching', {
         method: 'POST',
@@ -745,8 +763,8 @@ function TeacherDashboardContent() {
 
   if (isLoading) {
     return (
-      <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
-        <Header session={session} onLogout={handleLogout} themed />
+      <div className="page">
+        <Header session={session} onLogout={handleLogout} />
         <main className="container" style={{ flex: 1, paddingTop: '1.5rem', minWidth: '1200px' }}>
           <div style={{ textAlign: 'center', padding: '2rem' }}>
             <div className="loading" style={{ margin: '0 auto 1rem' }}></div>
@@ -759,8 +777,8 @@ function TeacherDashboardContent() {
 
   if (error) {
     return (
-      <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
-        <Header session={session} onLogout={handleLogout} themed />
+      <div className="page">
+        <Header session={session} onLogout={handleLogout} />
         <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
           <div className="alert alert-error">
             <strong>Error:</strong> {error}
@@ -793,8 +811,8 @@ function TeacherDashboardContent() {
   }
 
   return (
-    <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
-      <Header session={session} onLogout={handleLogout} themed />
+    <div className="page">
+      <Header session={session} onLogout={handleLogout} />
 
       <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
         
@@ -947,8 +965,8 @@ function TeacherDashboardContent() {
 
 function LoadingDashboard() {
   return (
-    <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
-      <Header themed />
+    <div className="page">
+      <Header />
       <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
         <div style={{ textAlign: 'center', padding: '2rem' }}>
           <div>Loading dashboard...</div>
