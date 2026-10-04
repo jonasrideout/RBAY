@@ -46,6 +46,11 @@ const COLOR_UPCOMING_TEXT = '#9C97AE';
 const COLOR_UPCOMING_BORDER = '#DAD7E8';
 const COLOR_LINE_DONE = '#C7C4E3';
 const COLOR_DIVIDER = '#E4E1ED';
+// Same coral used elsewhere in the app for "needs attention" states (e.g.
+// the Remove Student button) - kept muted rather than true red, matching
+// the rest of the palette instead of introducing a jarring alarm color.
+const COLOR_CORAL = '#D98B7A';
+const COLOR_CORAL_BG = '#FBEEEA';
 
 // Same math that used to live inline in the old "Ready to Pair" click
 // handler, now run on every render so the dashboard always reflects the
@@ -287,71 +292,97 @@ export default function DashboardTimeline({
               directly beside the live status text once ready. Roster
               management (Copy Link / Add Student) now lives in
               RosterActions, right above the student list itself, not here. */}
-          <div style={{ paddingTop: '1rem', borderTop: `1px solid ${COLOR_DIVIDER}` }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={isReady}
-                disabled={toggleDisabled}
-                onClick={handleToggleClick}
-                title={isReady ? 'Toggle off to make changes' : readyCheckboxTitle}
-                style={{
-                  width: '40px',
-                  height: '22px',
-                  borderRadius: '11px',
-                  border: 'none',
-                  position: 'relative',
-                  flexShrink: 0,
-                  backgroundColor: isReady ? COLOR_INDIGO : '#dee2e6',
-                  cursor: toggleDisabled ? 'not-allowed' : 'pointer',
-                  opacity: toggleDisabled ? 0.6 : 1,
-                  transition: 'background-color 0.2s ease',
-                  padding: 0
-                }}
-              >
-                <span style={{
-                  position: 'absolute',
-                  top: '2px',
-                  left: isReady ? '20px' : '2px',
-                  width: '18px',
-                  height: '18px',
-                  borderRadius: '50%',
-                  backgroundColor: 'white',
-                  boxShadow: '0 1px 2px rgba(0,0,0,0.25)',
-                  transition: 'left 0.2s ease'
-                }} />
-              </button>
+          {(() => {
+            // When a selection is actually needed, the whole toggle+status
+            // group sits inside a visibly distinct coral alert box instead
+            // of just plain body text - a teacher landing here (from the
+            // email notification or otherwise) should immediately see that
+            // something needs their attention, not have to notice a single
+            // line of gray text to find out why they're here.
+            const needsAttention = isReady && !penPalsAssigned && needsMultipleSelection;
 
-              {!isReady ? (
-                <span className="text-data-value">
-                  {isRequestingMatching ? 'Updating…' : 'All students are in'}
-                </span>
-              ) : !penPalsAssigned ? (
-                <span className="text-meta-info">
-                  {needsMultipleSelection
-                    ? (hasAnyMultipleSelected
-                        ? 'Select additional students to have more than 1 pen pal.'
-                        : 'Select students to have more than 1 pen pal.')
-                    : liveRequirement
-                    ? `Waiting for ${liveRequirement.matchedSchoolName}'s class to finish registering their students. Toggle this off if you need to add or remove a student.`
-                    : 'Waiting to be matched with a partner school.'}
-                </span>
-              ) : (
-                <span className="text-meta-info">Pen pals have been assigned.</span>
-              )}
-            </div>
+            const wrapperStyle = needsAttention
+              ? {
+                  paddingTop: '1rem',
+                  marginTop: '1rem',
+                  padding: '1rem',
+                  borderRadius: '14px',
+                  backgroundColor: COLOR_CORAL_BG,
+                  border: `1px solid ${COLOR_CORAL}`
+                }
+              : { paddingTop: '1rem', borderTop: `1px solid ${COLOR_DIVIDER}` };
 
-            {isReady && !penPalsAssigned && needsMultipleSelection && liveRequirement && (
-              <button
-                className="btn"
-                style={{ fontSize: '13px', borderRadius: '10px', marginTop: '0.75rem', backgroundColor: COLOR_INDIGO, color: 'white', border: `1px solid ${COLOR_INDIGO}` }}
-                onClick={() => onPenpalPreferenceCheckNeeded && onPenpalPreferenceCheckNeeded(liveRequirement.required, liveRequirement.current, liveRequirement.matchedSchoolName)}
-              >
-                Select Students
-              </button>
-            )}
-          </div>
+            return (
+              <div style={wrapperStyle}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={isReady}
+                    disabled={toggleDisabled}
+                    onClick={handleToggleClick}
+                    title={isReady ? 'Toggle off to make changes' : readyCheckboxTitle}
+                    style={{
+                      width: '40px',
+                      height: '22px',
+                      borderRadius: '11px',
+                      border: 'none',
+                      position: 'relative',
+                      flexShrink: 0,
+                      backgroundColor: isReady ? COLOR_INDIGO : '#dee2e6',
+                      cursor: toggleDisabled ? 'not-allowed' : 'pointer',
+                      opacity: toggleDisabled ? 0.6 : 1,
+                      transition: 'background-color 0.2s ease',
+                      padding: 0
+                    }}
+                  >
+                    <span style={{
+                      position: 'absolute',
+                      top: '2px',
+                      left: isReady ? '20px' : '2px',
+                      width: '18px',
+                      height: '18px',
+                      borderRadius: '50%',
+                      backgroundColor: 'white',
+                      boxShadow: '0 1px 2px rgba(0,0,0,0.25)',
+                      transition: 'left 0.2s ease'
+                    }} />
+                  </button>
+
+                  {!isReady ? (
+                    <span className="text-data-value">
+                      {isRequestingMatching ? 'Updating…' : 'All students are in'}
+                    </span>
+                  ) : !penPalsAssigned ? (
+                    <span
+                      className={needsAttention ? undefined : 'text-meta-info'}
+                      style={needsAttention ? { color: '#8A4E3C', fontWeight: 500 } : undefined}
+                    >
+                      {needsMultipleSelection
+                        ? (hasAnyMultipleSelected
+                            ? 'Select additional students to have more than 1 pen pal.'
+                            : 'Select students to have more than 1 pen pal.')
+                        : liveRequirement
+                        ? `Waiting for ${liveRequirement.matchedSchoolName}'s class to finish registering their students. Toggle this off if you need to add or remove a student.`
+                        : 'Waiting to be matched with a partner school.'}
+                    </span>
+                  ) : (
+                    <span className="text-meta-info">Pen pals have been assigned.</span>
+                  )}
+                </div>
+
+                {needsAttention && liveRequirement && (
+                  <button
+                    className="btn"
+                    style={{ fontSize: '13px', borderRadius: '10px', marginTop: '0.75rem', backgroundColor: COLOR_CORAL, color: 'white', border: `1px solid ${COLOR_CORAL}` }}
+                    onClick={() => onPenpalPreferenceCheckNeeded && onPenpalPreferenceCheckNeeded(liveRequirement.required, liveRequirement.current, liveRequirement.matchedSchoolName)}
+                  >
+                    Select Students
+                  </button>
+                )}
+              </div>
+            );
+          })()}
 
           {/* Step 3 content */}
           {penPalsAssigned && (
