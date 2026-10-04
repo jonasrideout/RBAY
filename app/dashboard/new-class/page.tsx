@@ -285,12 +285,11 @@ export default function StartNewClassPage() {
 
           <div style={{ marginBottom: '1.5rem' }}>
             <h1 className="text-school-name" style={{ marginBottom: '0.5rem', fontSize: '1.8rem' }}>
-              Welcome back! Start this year&rsquo;s class.
+              Welcome back!
             </h1>
             <p className="text-school-name" style={{ margin: 0 }}>
-              We&rsquo;ve pre-filled your info from last time. Please confirm it&rsquo;s still
-              accurate before starting your new class. You can update anything that&rsquo;s
-              changed, like your grade level or communication platform.
+              We&rsquo;ve pre-filled your info from last time. Please confirm or update before
+              you register.
             </p>
           </div>
 
