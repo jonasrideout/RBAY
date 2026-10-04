@@ -282,7 +282,7 @@ export default function SchoolFormFields({
             Teacher Names *
           </label>
           <p className="text-meta-info" style={{ fontSize: '0.9rem', marginBottom: '1rem' }}>
-            Only you&rsquo;ll log in and manage this dashboard. Teacher names are attached to students so letters are easy to sort when they arrive.
+            Only you&rsquo;ll log in and manage this dashboard. Add your own name here too, however your students refer to you (e.g. &ldquo;Ms. Bulbulkaya&rdquo;), so they can select you as their teacher &mdash; along with any other teachers whose students are participating. Teacher names are attached to students so letters are easy to sort when they arrive.
           </p>
           {(formData.teacherNames || []).map((name, index) => (
             <div key={index} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
