@@ -68,6 +68,13 @@ interface SchoolData {
     schoolState?: string;
     expectedClassSize: number;
     actualStudentCount: number;
+    // The partner's own readiness - needed so DashboardTimeline's live
+    // "select students for more than one pen pal" check only applies once
+    // the partner side has actually finished registering. Previously
+    // dropped here even though the API sends it, since this object is
+    // built field-by-field rather than passed straight through.
+    status?: 'COLLECTING' | 'READY' | 'MATCHED' | 'CORRESPONDING' | 'DONE';
+    allSchoolsReady?: boolean;
     region: string;
     communicationPlatforms?: any;
     mailingAddress?: string;
@@ -315,6 +322,8 @@ function TeacherDashboardContent() {
           schoolState: data.school.matchedWithSchool.schoolState,
           expectedClassSize: data.school.matchedWithSchool.expectedClassSize,
           actualStudentCount: data.school.matchedWithSchool.actualStudentCount,
+          status: data.school.matchedWithSchool.status,
+          allSchoolsReady: data.school.matchedWithSchool.allSchoolsReady,
           region: data.school.matchedWithSchool.region,
           communicationPlatforms: data.school.matchedWithSchool.communicationPlatforms,
           mailingAddress: data.school.matchedWithSchool.mailingAddress,
@@ -374,6 +383,8 @@ function TeacherDashboardContent() {
           schoolState: data.school.matchedWithSchool.schoolState,
           expectedClassSize: data.school.matchedWithSchool.expectedClassSize,
           actualStudentCount: data.school.matchedWithSchool.actualStudentCount,
+          status: data.school.matchedWithSchool.status,
+          allSchoolsReady: data.school.matchedWithSchool.allSchoolsReady,
           region: data.school.matchedWithSchool.region,
           communicationPlatforms: data.school.matchedWithSchool.communicationPlatforms,
           mailingAddress: data.school.matchedWithSchool.mailingAddress,
@@ -446,6 +457,8 @@ function TeacherDashboardContent() {
           schoolState: data.school.matchedWithSchool.schoolState,
           expectedClassSize: data.school.matchedWithSchool.expectedClassSize,
           actualStudentCount: data.school.matchedWithSchool.actualStudentCount,
+          status: data.school.matchedWithSchool.status,
+          allSchoolsReady: data.school.matchedWithSchool.allSchoolsReady,
           region: data.school.matchedWithSchool.region,
           communicationPlatforms: data.school.matchedWithSchool.communicationPlatforms,
           mailingAddress: data.school.matchedWithSchool.mailingAddress,
@@ -763,8 +776,8 @@ function TeacherDashboardContent() {
 
   if (isLoading) {
     return (
-      <div className="page">
-        <Header session={session} onLogout={handleLogout} />
+      <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
+        <Header session={session} onLogout={handleLogout} themed />
         <main className="container" style={{ flex: 1, paddingTop: '1.5rem', minWidth: '1200px' }}>
           <div style={{ textAlign: 'center', padding: '2rem' }}>
             <div className="loading" style={{ margin: '0 auto 1rem' }}></div>
@@ -777,8 +790,8 @@ function TeacherDashboardContent() {
 
   if (error) {
     return (
-      <div className="page">
-        <Header session={session} onLogout={handleLogout} />
+      <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
+        <Header session={session} onLogout={handleLogout} themed />
         <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
           <div className="alert alert-error">
             <strong>Error:</strong> {error}
@@ -811,8 +824,8 @@ function TeacherDashboardContent() {
   }
 
   return (
-    <div className="page">
-      <Header session={session} onLogout={handleLogout} />
+    <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
+      <Header session={session} onLogout={handleLogout} themed />
 
       <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
         
@@ -954,7 +967,7 @@ function TeacherDashboardContent() {
 
       </main>
 
-      <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
+      <footer style={{ background: 'transparent', borderTop: '1px solid #DAD7E8', color: '#8A87A0', padding: '2rem 0', marginTop: '3rem' }}>
         <div className="container text-center">
           <p>&copy; 2025 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature and letters.</p>
         </div>
@@ -965,8 +978,8 @@ function TeacherDashboardContent() {
 
 function LoadingDashboard() {
   return (
-    <div className="page">
-      <Header />
+    <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
+      <Header themed />
       <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
         <div style={{ textAlign: 'center', padding: '2rem' }}>
           <div>Loading dashboard...</div>
