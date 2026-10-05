@@ -14,6 +14,14 @@ interface SchoolData {
   matchedSchool?: {
     schoolName: string;
     actualStudentCount: number;
+    // The partner's own status (single-school match), or whether every
+    // school in the partner group has reached READY (group match). Used to
+    // gate the "select students for more than one pen pal" check so it
+    // only applies once the partner side has actually finished
+    // registering - otherwise a still-growing partner roster could trigger
+    // a premature, soon-stale prompt.
+    status?: 'COLLECTING' | 'READY' | 'MATCHED' | 'CORRESPONDING' | 'DONE';
+    allSchoolsReady?: boolean;
     isGroup?: boolean;
     schools?: Array<{ schoolName: string }>;
   };
@@ -70,12 +78,23 @@ function calculateLiveRequirement(schoolData: SchoolData): { required: number; c
   let targetClassSize = 0;
   let matchedSchoolName = 'the matched school';
 
+  // Whether the partner side has actually finished registering - gates the
+  // multiples requirement below so a still-growing partner roster doesn't
+  // trigger a premature, soon-stale "select students" prompt. Defaults to
+  // NOT ready if this data is missing for any reason, since a missed
+  // prompt is far less disruptive than a flaky one that reappears as the
+  // partner's count keeps changing.
+  let partnerReady = false;
+
   if (schoolData.matchedWithSchoolId && schoolData.matchedSchool) {
     targetClassSize = schoolData.matchedSchool.actualStudentCount;
     if (schoolData.matchedSchool.isGroup && schoolData.matchedSchool.schools) {
       matchedSchoolName = schoolData.matchedSchool.schools.map(s => s.schoolName).join(' + ');
+      partnerReady = !!schoolData.matchedSchool.allSchoolsReady;
     } else {
       matchedSchoolName = schoolData.matchedSchool.schoolName;
+      partnerReady = !!schoolData.matchedSchool.status &&
+        ['READY', 'MATCHED', 'CORRESPONDING', 'DONE'].includes(schoolData.matchedSchool.status);
     }
   }
 
@@ -100,9 +119,14 @@ function calculateLiveRequirement(schoolData: SchoolData): { required: number; c
     (s: any) => s.penpalPreference === 'MULTIPLE'
   ).length;
 
+  // If the partner hasn't finished registering yet, don't surface a
+  // requirement at all - report 0/0 (no gap) so the UI falls through to
+  // the normal "waiting for partner" message instead of a premature
+  // "select students" prompt that could become stale as their roster
+  // keeps growing.
   return {
-    required: thisSchoolRequired,
-    current: thisSchoolCurrentMultiple,
+    required: partnerReady ? thisSchoolRequired : 0,
+    current: partnerReady ? thisSchoolCurrentMultiple : 0,
     matchedSchoolName
   };
 }
