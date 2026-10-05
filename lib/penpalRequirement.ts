@@ -40,6 +40,12 @@ export async function calculateRequirementForSchool(schoolId: string): Promise<R
   const matchedId = school.matchedWithSchoolId;
   let targetClassSize = 0;
   let matchedSchoolName = 'the matched school';
+  // Gates the requirement below so it only applies once the partner side
+  // has actually finished registering - otherwise a still-growing partner
+  // roster (and therefore a still-growing requirement) could trigger an
+  // email about a number that's about to change again. Mirrors the same
+  // check in DashboardTimeline.tsx's client-side display calculation.
+  let partnerReady = false;
 
   if (matchedId.startsWith('group:')) {
     const groupId = matchedId.replace('group:', '');
@@ -50,6 +56,9 @@ export async function calculateRequirementForSchool(schoolId: string): Promise<R
     if (!group) return null;
     targetClassSize = group.schools.reduce((sum, s) => sum + s.students.length, 0);
     matchedSchoolName = group.schools.map(s => s.schoolName).join(' + ');
+    partnerReady = group.schools.every(s =>
+      ['READY', 'MATCHED', 'CORRESPONDING', 'DONE'].includes(s.status)
+    );
   } else {
     const matchedSchool = await prisma.school.findUnique({
       where: { id: matchedId },
@@ -58,6 +67,7 @@ export async function calculateRequirementForSchool(schoolId: string): Promise<R
     if (!matchedSchool) return null;
     targetClassSize = matchedSchool.students.length;
     matchedSchoolName = matchedSchool.schoolName;
+    partnerReady = ['READY', 'MATCHED', 'CORRESPONDING', 'DONE'].includes(matchedSchool.status);
   }
 
   const isInGroup = !!school.schoolGroupId && !!school.schoolGroup;
@@ -89,9 +99,13 @@ export async function calculateRequirementForSchool(schoolId: string): Promise<R
     s => s.penpalPreference === 'MULTIPLE'
   ).length;
 
+  // If the partner hasn't finished registering yet, report no gap at all -
+  // this is what prevents checkAndNotifyPenpalRequirement below from
+  // emailing a teacher about a requirement that could still change as the
+  // partner's roster keeps growing.
   return {
-    required: thisSchoolRequired,
-    current: thisSchoolCurrentMultiple,
+    required: partnerReady ? thisSchoolRequired : 0,
+    current: partnerReady ? thisSchoolCurrentMultiple : 0,
     matchedSchoolName
   };
 }
