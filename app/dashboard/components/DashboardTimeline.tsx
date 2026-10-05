@@ -66,7 +66,7 @@ const COLOR_CORAL_BG = '#FBEEEA';
 // authoritative version that actually triggers teacher notification emails
 // lives server-side in /lib/penpalRequirement.ts - this is the display copy
 // of the same calculation.)
-function calculateLiveRequirement(schoolData: SchoolData): { required: number; current: number; matchedSchoolName: string } | null {
+function calculateLiveRequirement(schoolData: SchoolData): { required: number; current: number; matchedSchoolName: string; partnerReady: boolean } | null {
   if (!schoolData.matchedWithSchoolId && !schoolData.schoolGroup?.matchedWithGroupId) {
     return null;
   }
@@ -127,7 +127,8 @@ function calculateLiveRequirement(schoolData: SchoolData): { required: number; c
   return {
     required: partnerReady ? thisSchoolRequired : 0,
     current: partnerReady ? thisSchoolCurrentMultiple : 0,
-    matchedSchoolName
+    matchedSchoolName,
+    partnerReady
   };
 }
 
@@ -386,9 +387,11 @@ export default function DashboardTimeline({
                         ? (hasAnyMultipleSelected
                             ? 'Select additional students to have more than 1 pen pal.'
                             : 'Select students to have more than 1 pen pal.')
-                        : liveRequirement
+                        : !liveRequirement
+                        ? 'Waiting to be matched with a partner school.'
+                        : !liveRequirement.partnerReady
                         ? `Waiting for ${liveRequirement.matchedSchoolName}'s class to finish registering their students. Toggle this off if you need to add or remove a student.`
-                        : 'Waiting to be matched with a partner school.'}
+                        : `You're all set! Waiting for an admin to pair your class with ${liveRequirement.matchedSchoolName}.`}
                     </span>
                   ) : (
                     <span className="text-meta-info">Pen pals have been assigned.</span>
