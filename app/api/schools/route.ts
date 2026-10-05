@@ -502,6 +502,10 @@ export async function GET(request: NextRequest) {
             schoolCountry: matchedSchool.schoolCountry,
             expectedClassSize: matchedSchool.expectedClassSize,
             actualStudentCount: matchedSchool.students.length,
+            // Needed so the dashboard's live "select additional students"
+            // check only applies once the partner has ALSO finished
+            // registering, not while their roster could still be growing.
+            status: matchedSchool.status,
             region: matchedSchool.region,
             mailingAddress: matchedSchool.mailingAddress,
             communicationPlatforms: matchedSchool.communicationPlatforms,
@@ -553,6 +557,12 @@ export async function GET(request: NextRequest) {
             schoolCountry: matchedGroup.schools[0]?.schoolCountry || 'United States',
             expectedClassSize: totalExpectedClassSize,
             actualStudentCount: totalActualStudents,
+            // A group has multiple schools, so there's no single "status" -
+            // this is true only once every school in the group has at
+            // least reached READY, same role as the single-school status
+            // field above (gates the live "select additional students"
+            // check to after the partner side has actually finished).
+            allSchoolsReady: matchedGroup.schools.every((s: any) => ['READY', 'MATCHED', 'CORRESPONDING', 'DONE'].includes(s.status)),
             region: matchedGroup.schools[0]?.region || '',
             isGroup: true,
             schools: matchedGroup.schools.map(s => ({
@@ -624,6 +634,12 @@ export async function GET(request: NextRequest) {
             schoolCountry: matchedGroup.schools[0]?.schoolCountry || 'United States',
             expectedClassSize: totalExpectedClassSize,
             actualStudentCount: totalActualStudents,
+            // A group has multiple schools, so there's no single "status" -
+            // this is true only once every school in the group has at
+            // least reached READY, same role as the single-school status
+            // field above (gates the live "select additional students"
+            // check to after the partner side has actually finished).
+            allSchoolsReady: matchedGroup.schools.every((s: any) => ['READY', 'MATCHED', 'CORRESPONDING', 'DONE'].includes(s.status)),
             region: matchedGroup.schools[0]?.region || '',
             isGroup: true,
             schools: matchedGroup.schools.map(s => ({
@@ -676,6 +692,10 @@ export async function GET(request: NextRequest) {
             schoolCountry: matchedSchool.schoolCountry,
             expectedClassSize: matchedSchool.expectedClassSize,
             actualStudentCount: matchedSchool.students.length,
+            // Needed so the dashboard's live "select additional students"
+            // check only applies once the partner has ALSO finished
+            // registering, not while their roster could still be growing.
+            status: matchedSchool.status,
             region: matchedSchool.region,
             mailingAddress: matchedSchool.mailingAddress,
             communicationPlatforms: matchedSchool.communicationPlatforms,
@@ -732,6 +752,7 @@ export async function GET(request: NextRequest) {
           schoolCountry: matchedGroup.schools[0]?.schoolCountry || 'United States',
           expectedClassSize: totalExpectedClassSize,
           actualStudentCount: totalActualStudents,
+          allSchoolsReady: matchedGroup.schools.every((s: any) => ['READY', 'MATCHED', 'CORRESPONDING', 'DONE'].includes(s.status)),
           region: matchedGroup.schools[0]?.region || '',
           isGroup: true,
           schools: matchedGroup.schools.map(s => ({
