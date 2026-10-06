@@ -22,7 +22,7 @@ const balooTwo = Baloo_2({
 });
 
 export const metadata: Metadata = {
-  title: "Right Back at You Project",
+  title: "RB@Y",
   description: "Building empathy and connection through literature",
 };
 
