@@ -656,14 +656,14 @@ export default function AdminDashboard() {
           </div>
           
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <Link href="/register-school?admin=true" className="btn btn-primary" style={{ backgroundColor: '#3B3F8C', borderColor: '#3B3F8C', borderRadius: '10px' }}>
+            <Link href="/register-school?admin=true" className="btn btn-primary" style={{ backgroundColor: '#3B3F8C', borderColor: '#3B3F8C', borderRadius: '10px', color: 'white' }}>
               Add School
             </Link>
             
             <button 
               onClick={() => setShowGroupModal(true)}
               className="btn btn-primary"
-              style={{ minWidth: '130px', backgroundColor: '#3B3F8C', borderColor: '#3B3F8C', borderRadius: '10px' }}
+              style={{ minWidth: '130px', backgroundColor: '#3B3F8C', borderColor: '#3B3F8C', borderRadius: '10px', color: 'white' }}
             >
               Create Group
             </button>
@@ -678,7 +678,7 @@ export default function AdminDashboard() {
                 }
               }}
               className="btn btn-primary"
-              style={{ minWidth: '160px', backgroundColor: '#3B3F8C', borderColor: '#3B3F8C', borderRadius: '10px' }}
+              style={{ minWidth: '160px', backgroundColor: '#3B3F8C', borderColor: '#3B3F8C', borderRadius: '10px', color: 'white' }}
             >
               {showFilters ? 'Hide Filters' : 'Search for Schools'}  
             </button>
