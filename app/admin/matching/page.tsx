@@ -796,6 +796,9 @@ export default function AdminDashboard() {
                       pair={pair} 
                       onAssignPenPals={() => handleAssignPenPals(pair.unit1, pair.unit2)}
                       onUnmatch={() => handleUnmatchUnits(pair.unit1, pair.unit2)}
+                      showMarkDoneButton={true}
+                      onMarkDone={() => handleMarkAsDone(pair.unit1, pair.unit2)}
+                      assignedAt={getUnitAssignedAt(pair.unit1) || getUnitAssignedAt(pair.unit2)}
                     />
                   ))}
                 </div>
@@ -822,6 +825,9 @@ export default function AdminDashboard() {
                       showAssignButton={true} 
                       onAssignPenPals={() => handleAssignPenPals(pair.unit1, pair.unit2)}
                       onUnmatch={() => handleUnmatchUnits(pair.unit1, pair.unit2)}
+                      showMarkDoneButton={true}
+                      onMarkDone={() => handleMarkAsDone(pair.unit1, pair.unit2)}
+                      assignedAt={getUnitAssignedAt(pair.unit1) || getUnitAssignedAt(pair.unit2)}
                     />
                   ))}
                 </div>
