@@ -15,7 +15,11 @@ interface SchoolPairDisplayProps {
   // "Mark as Done" support: shown alongside the existing action buttons for
   // completed pairs. assignedAt is an ISO date string (or null) showing how
   // long ago pen pals were assigned, so the admin has context before
-  // deciding to archive a pair.
+  // deciding to archive a pair. The button itself only ever appears once
+  // notification emails have actually been sent (see render logic below) -
+  // showMarkDoneButton/onMarkDone just control whether this component was
+  // given the ability at all, independent of which workflow section it's
+  // currently rendered in.
   showMarkDoneButton?: boolean;
   onMarkDone?: () => void;
   assignedAt?: string | null;
@@ -742,7 +746,12 @@ export default function SchoolPairDisplay({
                   )}
                 </button>
 
-                {showMarkDoneButton && onMarkDone && (
+                {/* Mark as Done now only appears once emails have actually
+                    been sent (either just now, or already true in the
+                    database) - previously this only checked that pen pals
+                    were assigned, which let a pair be archived before its
+                    teachers were ever notified. */}
+                {showMarkDoneButton && onMarkDone && (emailsSent || alreadySent) && (
                   <button
                     onClick={onMarkDone}
                     style={{
