@@ -290,8 +290,8 @@ export default function SchoolCard({
       {/* Unmatch Confirmation Modal */}
       {showUnmatchModal && (
         <div className="modal-overlay" onClick={() => !isUnmatching && setShowUnmatchModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-school-name" style={{ marginBottom: '16px' }}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ borderRadius: '20px' }}>
+            <h2 className="text-school-name" style={{ marginBottom: '16px', fontFamily: 'var(--font-heading)', color: '#3B3F8C' }}>
               Unmatch Schools?
             </h2>
             <p className="text-normal" style={{ marginBottom: '20px' }}>
@@ -306,13 +306,15 @@ export default function SchoolCard({
                 onClick={() => setShowUnmatchModal(false)}
                 className="btn btn-secondary"
                 disabled={isUnmatching}
+                style={{ borderRadius: '10px' }}
               >
                 Cancel
               </button>
               <button
                 onClick={handleUnmatchConfirm}
-                className="btn btn-primary"
+                className="btn"
                 disabled={isUnmatching}
+                style={{ borderRadius: '10px', backgroundColor: '#D98B7A', color: 'white', borderColor: '#D98B7A' }}
               >
                 {isUnmatching ? 'Unmatching...' : 'Yes, Unmatch'}
               </button>
