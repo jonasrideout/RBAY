@@ -174,7 +174,7 @@ export default function FilterBar({
           fontSize: '0.8rem', 
           fontWeight: '600', 
           marginBottom: '4px', 
-          color: '#4a5568' 
+          color: '#3B3F8C' 
         }}>
           {label}
         </label>
@@ -184,8 +184,8 @@ export default function FilterBar({
             width: '100%',
             height: '36px',
             padding: '6px 8px',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
+            border: '1px solid #DAD7E8',
+            borderRadius: '8px',
             backgroundColor: 'white',
             cursor: 'pointer',
             fontSize: '0.75rem',
@@ -214,7 +214,8 @@ export default function FilterBar({
           <span style={{ 
             transform: dropdownStates[filterKey] ? 'rotate(180deg)' : 'rotate(0deg)', 
             transition: 'transform 0.2s',
-            fontSize: '0.6rem'
+            fontSize: '0.6rem',
+            color: '#8A87A0'
           }}>
             ▼
           </span>
@@ -227,13 +228,13 @@ export default function FilterBar({
             left: 0,
             right: 0,
             backgroundColor: 'white',
-            border: '1px solid #ccc',
+            border: '1px solid #DAD7E8',
             borderTop: 'none',
-            borderRadius: '0 0 4px 4px',
+            borderRadius: '0 0 8px 8px',
             maxHeight: '200px',
             overflowY: 'auto',
             zIndex: 1000,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            boxShadow: '0 4px 12px rgba(59, 63, 140, 0.12)',
             minWidth: '180px'
           }}>
             {options.map(option => {
@@ -250,8 +251,8 @@ export default function FilterBar({
                     padding: '8px 12px',
                     cursor: 'pointer',
                     fontSize: '0.75rem',
-                    backgroundColor: isSelected ? '#f0f8ff' : 'transparent',
-                    borderBottom: '1px solid #f0f0f0',
+                    backgroundColor: isSelected ? '#EDEAF5' : 'transparent',
+                    borderBottom: '1px solid #E4E1ED',
                     lineHeight: '1.2'
                   }}
                   onClick={(e) => e.stopPropagation()}
@@ -260,7 +261,7 @@ export default function FilterBar({
                     type="checkbox"
                     checked={Boolean(isSelected)}
                     onChange={() => handleFilterChange(filterKey, option)}
-                    style={{ marginRight: '8px', marginTop: '1px', flexShrink: 0 }}
+                    style={{ marginRight: '8px', marginTop: '1px', flexShrink: 0, accentColor: '#3B3F8C' }}
                   />
                   <span style={{ wordBreak: 'break-word' }}>
                     {option}
@@ -282,7 +283,7 @@ export default function FilterBar({
           fontSize: '0.8rem', 
           fontWeight: '600', 
           marginBottom: '4px', 
-          color: '#4a5568' 
+          color: '#3B3F8C' 
         }}>
           Start Month
         </label>
@@ -292,8 +293,8 @@ export default function FilterBar({
             width: '100%',
             height: '36px',
             padding: '6px 8px',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
+            border: '1px solid #DAD7E8',
+            borderRadius: '8px',
             backgroundColor: 'white',
             cursor: 'pointer',
             fontSize: '0.7rem',
@@ -315,7 +316,8 @@ export default function FilterBar({
           <span style={{ 
             transform: dropdownStates.startDate ? 'rotate(180deg)' : 'rotate(0deg)', 
             transition: 'transform 0.2s',
-            fontSize: '0.6rem'
+            fontSize: '0.6rem',
+            color: '#8A87A0'
           }}>
             ▼
           </span>
@@ -328,13 +330,13 @@ export default function FilterBar({
             left: 0,
             right: 0,
             backgroundColor: 'white',
-            border: '1px solid #ccc',
+            border: '1px solid #DAD7E8',
             borderTop: 'none',
-            borderRadius: '0 0 4px 4px',
+            borderRadius: '0 0 8px 8px',
             maxHeight: '200px',
             overflowY: 'auto',
             zIndex: 1000,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            boxShadow: '0 4px 12px rgba(59, 63, 140, 0.12)',
             minWidth: '140px'
           }}>
             <div
@@ -342,8 +344,8 @@ export default function FilterBar({
                 padding: '8px 12px',
                 cursor: 'pointer',
                 fontSize: '0.75rem',
-                backgroundColor: !filters.startDate ? '#f0f8ff' : 'transparent',
-                borderBottom: '1px solid #f0f0f0'
+                backgroundColor: !filters.startDate ? '#EDEAF5' : 'transparent',
+                borderBottom: '1px solid #E4E1ED'
               }}
               onClick={() => {
                 handleFilterChange('startDate', '');
@@ -359,8 +361,8 @@ export default function FilterBar({
                   padding: '8px 12px',
                   cursor: 'pointer',
                   fontSize: '0.75rem',
-                  backgroundColor: filters.startDate === month ? '#f0f8ff' : 'transparent',
-                  borderBottom: '1px solid #f0f0f0'
+                  backgroundColor: filters.startDate === month ? '#EDEAF5' : 'transparent',
+                  borderBottom: '1px solid #E4E1ED'
                 }}
                 onClick={() => {
                   handleFilterChange('startDate', month);
@@ -382,9 +384,9 @@ export default function FilterBar({
       style={{
         marginBottom: '2rem',
         padding: '16px 20px',
-        backgroundColor: '#f8f9fa',
-        borderRadius: '8px',
-        border: '1px solid #e0e6ed',
+        backgroundColor: '#F5F3FA',
+        borderRadius: '14px',
+        border: '1px solid #DAD7E8',
         display: 'flex',
         gap: '12px',
         alignItems: 'flex-end',
@@ -398,7 +400,7 @@ export default function FilterBar({
           fontSize: '0.8rem', 
           fontWeight: '600', 
           marginBottom: '4px', 
-          color: '#4a5568' 
+          color: '#3B3F8C' 
         }}>
           Search schools or teachers
         </label>
@@ -410,8 +412,8 @@ export default function FilterBar({
             width: '100%',
             height: '36px',
             padding: '6px 10px',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
+            border: '1px solid #DAD7E8',
+            borderRadius: '8px',
             fontSize: '0.85rem',
             backgroundColor: 'white'
           }}
@@ -463,10 +465,10 @@ export default function FilterBar({
           style={{
             height: '36px',
             width: '45px',
-            border: hasActiveFilters ? 'none' : '1px solid #ccc',
-            borderRadius: '4px',
-            backgroundColor: hasActiveFilters ? '#2196f3' : 'white',
-            color: hasActiveFilters ? 'white' : '#666',
+            border: hasActiveFilters ? 'none' : '1px solid #DAD7E8',
+            borderRadius: '8px',
+            backgroundColor: hasActiveFilters ? '#3B3F8C' : 'white',
+            color: hasActiveFilters ? 'white' : '#8A87A0',
             cursor: 'pointer',
             fontSize: '0.8rem',
             fontWeight: '500'
@@ -484,13 +486,13 @@ export default function FilterBar({
           style={{
             height: '36px',
             width: '45px',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
+            border: '1px solid #DAD7E8',
+            borderRadius: '8px',
             backgroundColor: 'white',
             cursor: 'pointer',
             fontSize: '0.8rem',
             fontWeight: '500',
-            color: '#666'
+            color: '#8A87A0'
           }}
         >
           Clear
