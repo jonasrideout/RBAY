@@ -24,7 +24,7 @@ export default function UnmatchConfirmDialog({
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: 'rgba(0,0,0,0.5)',
+      backgroundColor: 'rgba(59, 63, 140, 0.35)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -33,12 +33,12 @@ export default function UnmatchConfirmDialog({
       <div style={{
         backgroundColor: 'white',
         padding: '30px',
-        borderRadius: '8px',
+        borderRadius: '20px',
         maxWidth: '500px',
         width: '90%',
-        boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
+        boxShadow: '0 10px 25px rgba(59, 63, 140, 0.2)'
       }}>
-        <h3 style={{ margin: '0 0 20px 0', color: '#333' }}>
+        <h3 style={{ margin: '0 0 20px 0', fontFamily: 'var(--font-heading)', fontWeight: 700, color: '#D98B7A' }}>
           Unmatch Schools?
         </h3>
         
@@ -46,11 +46,11 @@ export default function UnmatchConfirmDialog({
           <div style={{ 
             marginBottom: '15px', 
             padding: '10px', 
-            backgroundColor: '#f8f9fa', 
-            borderRadius: '4px'
+            backgroundColor: '#F5F3FA', 
+            borderRadius: '10px'
           }}>
             <strong>{school1Name}</strong><br />
-            <span style={{ fontSize: '14px', color: '#666' }}>
+            <span style={{ fontSize: '14px', color: '#8A87A0' }}>
               {school1Region}
             </span>
           </div>
@@ -61,23 +61,23 @@ export default function UnmatchConfirmDialog({
           
           <div style={{ 
             padding: '10px', 
-            backgroundColor: '#f8f9fa', 
-            borderRadius: '4px'
+            backgroundColor: '#F5F3FA', 
+            borderRadius: '10px'
           }}>
             <strong>{school2Name}</strong><br />
-            <span style={{ fontSize: '14px', color: '#666' }}>
+            <span style={{ fontSize: '14px', color: '#8A87A0' }}>
               {school2Region}
             </span>
           </div>
         </div>
 
         <div style={{
-          backgroundColor: '#fff3cd',
-          border: '1px solid #ffeaa7',
-          borderRadius: '4px',
+          backgroundColor: '#FBEEEA',
+          border: '1px solid #D98B7A',
+          borderRadius: '10px',
           padding: '10px',
           marginBottom: '20px',
-          color: '#856404',
+          color: '#8A4E3C',
           fontSize: '14px'
         }}>
           Both schools will no longer be matched together and will return to the available schools list.
@@ -88,8 +88,8 @@ export default function UnmatchConfirmDialog({
             onClick={onCancel}
             style={{
               padding: '10px 20px',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
+              border: '1px solid #DAD7E8',
+              borderRadius: '10px',
               backgroundColor: 'white',
               cursor: 'pointer',
               fontSize: '0.9rem'
@@ -103,8 +103,8 @@ export default function UnmatchConfirmDialog({
             style={{
               padding: '10px 20px',
               border: 'none',
-              borderRadius: '4px',
-              backgroundColor: '#2196f3',
+              borderRadius: '10px',
+              backgroundColor: '#D98B7A',
               color: 'white',
               cursor: 'pointer',
               fontSize: '0.9rem'
