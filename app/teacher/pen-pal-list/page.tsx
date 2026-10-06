@@ -238,7 +238,7 @@ function PenPalListContent() {
         <div className="container">
           <div className="header-content">
             <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <img src="/RB@Y-logo.jpg" alt="Right Back at You" style={{ height: '40px' }} />
+              <img src="/RB@Y-logo.png" alt="Right Back at You" style={{ height: '40px' }} />
               The Right Back at You Project
             </Link>
             <nav className="nav">
@@ -300,7 +300,7 @@ function PenPalListContent() {
             </div>
             <div>
               <img 
-                src="/RB@Y-logo.jpg" 
+                src="/RB@Y-logo.png" 
                 alt="Right Back at You Logo" 
                 style={{ height: '60px' }} 
               />
