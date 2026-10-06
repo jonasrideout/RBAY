@@ -87,7 +87,7 @@ const getUnitInfo = (school?: School | null, group?: SchoolGroup | null) => {
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: 'rgba(0,0,0,0.5)',
+      backgroundColor: 'rgba(59, 63, 140, 0.35)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -96,23 +96,23 @@ const getUnitInfo = (school?: School | null, group?: SchoolGroup | null) => {
       <div style={{
         backgroundColor: 'white',
         padding: '30px',
-        borderRadius: '8px',
+        borderRadius: '20px',
         maxWidth: '500px',
         width: '90%',
-        boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
+        boxShadow: '0 10px 25px rgba(59, 63, 140, 0.2)'
       }}>
-        <h3 style={{ margin: '0 0 20px 0', color: '#333' }}>
+        <h3 style={{ margin: '0 0 20px 0', fontFamily: 'var(--font-heading)', fontWeight: 700, color: '#3B3F8C' }}>
           {isMatched ? 'Match Successful!' : 'Confirm Match'}
         </h3>
         
         {showWarning && !isMatched && pinnedSchool && selectedMatch && (
           <div style={{
-            backgroundColor: '#fff3cd',
-            border: '1px solid #ffeaa7',
-            borderRadius: '4px',
+            backgroundColor: '#F5EBD3',
+            border: '1px solid #C9A24B',
+            borderRadius: '10px',
             padding: '10px',
             marginBottom: '15px',
-            color: '#856404'
+            color: '#6B5A2E'
           }}>
             Warning: Both schools are in the same region ({pinnedSchool.region}). 
             Cross-regional matches are preferred for this program.
@@ -123,9 +123,9 @@ const getUnitInfo = (school?: School | null, group?: SchoolGroup | null) => {
           <div style={{ 
             marginBottom: '15px', 
             padding: '10px', 
-            backgroundColor: isMatched ? '#e8f5e9' : '#f8f9fa', 
-            borderRadius: '4px',
-            border: isMatched ? '1px solid #4caf50' : 'none'
+            backgroundColor: isMatched ? '#EDEAF5' : '#F5F3FA', 
+            borderRadius: '10px',
+            border: isMatched ? '1px solid #3B3F8C' : 'none'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
               <strong>{unit1Info.name}</strong>
@@ -133,23 +133,23 @@ const getUnitInfo = (school?: School | null, group?: SchoolGroup | null) => {
                 <span style={{
                   display: 'inline-block',
                   padding: '2px 6px',
-                  backgroundColor: '#e8f5e9',
-                  border: '1px solid #4caf50',
-                  borderRadius: '3px',
+                  backgroundColor: '#EDEAF5',
+                  border: '1px solid #3B3F8C',
+                  borderRadius: '8px',
                   fontSize: '10px',
-                  color: '#2e7d32',
+                  color: '#3B3F8C',
                   fontWeight: 400
                 }}>
                   GROUP
                 </span>
               )}
             </div>
-            <span style={{ fontSize: '14px', color: '#666' }}>
+            <span style={{ fontSize: '14px', color: '#8A87A0' }}>
               {unit1Info.details}
             </span>
             <div style={{ 
               fontSize: '12px', 
-              color: unit1Info.isReady ? '#4caf50' : '#ff9800', 
+              color: unit1Info.isReady ? '#3B3F8C' : '#D98B7A', 
               fontWeight: '500', 
               marginTop: '4px' 
             }}>
@@ -163,9 +163,9 @@ const getUnitInfo = (school?: School | null, group?: SchoolGroup | null) => {
           
           <div style={{ 
             padding: '10px', 
-            backgroundColor: isMatched ? '#e8f5e9' : '#f8f9fa', 
-            borderRadius: '4px',
-            border: isMatched ? '1px solid #4caf50' : 'none'
+            backgroundColor: isMatched ? '#EDEAF5' : '#F5F3FA', 
+            borderRadius: '10px',
+            border: isMatched ? '1px solid #3B3F8C' : 'none'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
               <strong>{unit2Info.name}</strong>
@@ -173,23 +173,23 @@ const getUnitInfo = (school?: School | null, group?: SchoolGroup | null) => {
                 <span style={{
                   display: 'inline-block',
                   padding: '2px 6px',
-                  backgroundColor: '#e8f5e9',
-                  border: '1px solid #4caf50',
-                  borderRadius: '3px',
+                  backgroundColor: '#EDEAF5',
+                  border: '1px solid #3B3F8C',
+                  borderRadius: '8px',
                   fontSize: '10px',
-                  color: '#2e7d32',
+                  color: '#3B3F8C',
                   fontWeight: 400
                 }}>
                   GROUP
                 </span>
               )}
             </div>
-            <span style={{ fontSize: '14px', color: '#666' }}>
+            <span style={{ fontSize: '14px', color: '#8A87A0' }}>
               {unit2Info.details}
             </span>
             <div style={{ 
               fontSize: '12px', 
-              color: unit2Info.isReady ? '#4caf50' : '#ff9800', 
+              color: unit2Info.isReady ? '#3B3F8C' : '#D98B7A', 
               fontWeight: '500', 
               marginTop: '4px' 
             }}>
@@ -204,8 +204,8 @@ const getUnitInfo = (school?: School | null, group?: SchoolGroup | null) => {
               onClick={onCancel}
               style={{
                 padding: '10px 20px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
+                border: '1px solid #DAD7E8',
+                borderRadius: '10px',
                 backgroundColor: 'white',
                 cursor: 'pointer',
                 fontSize: '0.9rem'
@@ -218,8 +218,8 @@ const getUnitInfo = (school?: School | null, group?: SchoolGroup | null) => {
               onClick={onClose}
               style={{
                 padding: '10px 20px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
+                border: '1px solid #DAD7E8',
+                borderRadius: '10px',
                 backgroundColor: 'white',
                 cursor: 'pointer',
                 fontSize: '0.9rem'
@@ -235,9 +235,9 @@ const getUnitInfo = (school?: School | null, group?: SchoolGroup | null) => {
             style={{
               padding: '10px 20px',
               border: 'none',
-              borderRadius: '4px',
-              backgroundColor: isMatched ? '#f5f5f5' : '#2196f3',
-              color: isMatched ? '#666' : 'white',
+              borderRadius: '10px',
+              backgroundColor: isMatched ? '#F5F3FA' : '#3B3F8C',
+              color: isMatched ? '#8A87A0' : 'white',
               cursor: isMatched ? 'default' : 'pointer',
               fontSize: '0.9rem'
             }}
@@ -251,9 +251,9 @@ const getUnitInfo = (school?: School | null, group?: SchoolGroup | null) => {
             style={{
               padding: '10px 20px',
               border: 'none',
-              borderRadius: '4px',
-              backgroundColor: canAssignPenPals ? '#2196f3' : '#f5f5f5',
-              color: canAssignPenPals ? 'white' : '#666',
+              borderRadius: '10px',
+              backgroundColor: canAssignPenPals ? '#3B3F8C' : '#F5F3FA',
+              color: canAssignPenPals ? 'white' : '#8A87A0',
               cursor: canAssignPenPals ? 'pointer' : 'default',
               fontSize: '0.9rem'
             }}
@@ -271,12 +271,12 @@ const getUnitInfo = (school?: School | null, group?: SchoolGroup | null) => {
         
         {isMatched && !bothUnitsReady && (
           <div style={{
-            backgroundColor: '#fff3cd',
-            border: '1px solid #ffeaa7',
-            borderRadius: '4px',
+            backgroundColor: '#F5EBD3',
+            border: '1px solid #C9A24B',
+            borderRadius: '10px',
             padding: '10px',
             marginTop: '15px',
-            color: '#856404'
+            color: '#6B5A2E'
           }}>
             Both units must complete data collection (READY status) before pen pals can be assigned.
           </div>
