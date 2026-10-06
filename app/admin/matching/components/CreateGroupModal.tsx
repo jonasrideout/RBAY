@@ -705,6 +705,7 @@ export default function CreateGroupModal({
                 borderRadius: '10px',
                 backgroundColor: '#3B3F8C',
                 borderColor: '#3B3F8C',
+                color: 'white',
                 opacity: (
                   isSubmitting || 
                   (mode === 'create' && (selectedSchools.length < 2 || !groupName.trim())) ||
