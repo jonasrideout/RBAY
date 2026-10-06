@@ -680,7 +680,7 @@ export default function SchoolPairDisplay({
               <button
                 onClick={onAssignPenPals}
                 className="btn btn-primary"
-                style={{ minWidth: '140px', fontSize: '12px', backgroundColor: '#3B3F8C', borderColor: '#3B3F8C', borderRadius: '10px' }}
+                style={{ minWidth: '140px', fontSize: '12px', backgroundColor: '#3B3F8C', borderColor: '#3B3F8C', borderRadius: '10px', color: 'white' }}
               >
                 Assign Pen Pals
               </button>
