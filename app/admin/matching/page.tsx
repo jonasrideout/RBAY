@@ -612,8 +612,8 @@ export default function AdminDashboard() {
 
   if (isLoading) {
     return (
-      <div className="page">
-        <Header />
+      <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
+        <Header themed />
         <div className="container" style={{ textAlign: 'center', padding: '3rem' }}>
           <h2>Loading Dashboard...</h2>
         </div>
@@ -631,10 +631,11 @@ export default function AdminDashboard() {
   const availableForGrouping = schools;
 
   return (
-    <div className="page">
+    <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
       <Header 
         session={{ user: { email: adminUser } }} 
         onLogout={handleAdminLogout} 
+        themed
       />
 
       <main className="container" style={{ flex: 1, paddingTop: '1.5rem' }}>
@@ -646,23 +647,23 @@ export default function AdminDashboard() {
           marginBottom: '1.5rem' 
         }}>
           <div>
-            <h1 className="text-school-name" style={{ marginBottom: '0.5rem' }}>
+            <h1 className="text-school-name" style={{ marginBottom: '0.5rem', fontFamily: 'var(--font-heading)', fontWeight: 700, color: '#3B3F8C' }}>
               Administrator Dashboard
             </h1>
-            <p className="text-meta-info" style={{ margin: 0 }}>
+            <p className="text-meta-info" style={{ margin: 0, color: '#8A87A0' }}>
               Overview of all schools and their progress through the program.
             </p>
           </div>
           
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <Link href="/register-school?admin=true" className="btn btn-primary">
+            <Link href="/register-school?admin=true" className="btn btn-primary" style={{ backgroundColor: '#3B3F8C', borderColor: '#3B3F8C', borderRadius: '10px' }}>
               Add School
             </Link>
             
             <button 
               onClick={() => setShowGroupModal(true)}
               className="btn btn-primary"
-              style={{ minWidth: '130px' }}
+              style={{ minWidth: '130px', backgroundColor: '#3B3F8C', borderColor: '#3B3F8C', borderRadius: '10px' }}
             >
               Create Group
             </button>
@@ -677,7 +678,7 @@ export default function AdminDashboard() {
                 }
               }}
               className="btn btn-primary"
-              style={{ minWidth: '160px' }}
+              style={{ minWidth: '160px', backgroundColor: '#3B3F8C', borderColor: '#3B3F8C', borderRadius: '10px' }}
             >
               {showFilters ? 'Hide Filters' : 'Search for Schools'}  
             </button>
@@ -701,9 +702,9 @@ export default function AdminDashboard() {
             backgroundColor: 'white',
             paddingBottom: '1rem',
             marginBottom: '1rem',
-            borderBottom: '2px solid #e5e7eb'
+            borderBottom: '2px solid #DAD7E8'
           }}>
-            <h3 style={{ marginBottom: '1rem', color: '#1976d2', marginTop: 0 }}>
+            <h3 style={{ marginBottom: '1rem', color: '#3B3F8C', marginTop: 0, fontFamily: 'var(--font-heading)' }}>
               Pinned {isGroup(pinnedUnit) ? 'Group' : 'School'} - Select a match below
             </h3>
             {isSchool(pinnedUnit) ? (
@@ -738,13 +739,13 @@ export default function AdminDashboard() {
         )}
 
         <section style={{ marginBottom: '3rem' }}>
-          <h2 className="text-teacher-name" style={{ marginBottom: '1rem', fontSize: '16px' }}>
+          <h2 className="text-teacher-name" style={{ marginBottom: '1rem', fontSize: '16px', fontFamily: 'var(--font-heading)', fontWeight: 700, color: '#3B3F8C' }}>
             Schools & Groups Available for Matching ({unmatchedToShow.length})
           </h2>
           {unmatchedToShow.length === 0 ? (
             <div style={{ 
-              background: '#fff', border: '1px solid #e0e6ed', borderRadius: '12px',
-              textAlign: 'center', padding: '2rem', color: '#6c757d'
+              background: '#fff', border: '1px solid #DAD7E8', borderRadius: '20px',
+              textAlign: 'center', padding: '2rem', color: '#8A87A0'
             }}>
               {filtersApplied 
                 ? 'No schools or groups match the current filters. Try adjusting your search criteria.'
@@ -784,13 +785,13 @@ export default function AdminDashboard() {
         {!filtersApplied && (
           <>
             <section style={{ marginBottom: '3rem' }}>
-              <h2 className="text-teacher-name" style={{ marginBottom: '1rem', fontSize: '16px' }}>
+              <h2 className="text-teacher-name" style={{ marginBottom: '1rem', fontSize: '16px', fontFamily: 'var(--font-heading)', fontWeight: 700, color: '#3B3F8C' }}>
                 Matched Pairs Awaiting Student Readiness ({awaitingReadiness.length})
               </h2>
               {awaitingReadiness.length === 0 ? (
                 <div style={{ 
-                  background: '#fff', border: '1px solid #e0e6ed', borderRadius: '12px',
-                  textAlign: 'center', padding: '2rem', color: '#6c757d'
+                  background: '#fff', border: '1px solid #DAD7E8', borderRadius: '20px',
+                  textAlign: 'center', padding: '2rem', color: '#8A87A0'
                 }}>
                   No matched pairs are waiting for student data collection.
                 </div>
@@ -812,13 +813,13 @@ export default function AdminDashboard() {
             </section>
 
             <section style={{ marginBottom: '3rem' }}>
-              <h2 className="text-teacher-name" style={{ marginBottom: '1rem', fontSize: '16px' }}>
+              <h2 className="text-teacher-name" style={{ marginBottom: '1rem', fontSize: '16px', fontFamily: 'var(--font-heading)', fontWeight: 700, color: '#3B3F8C' }}>
                 Ready for Pen Pal Assignment ({readyForPairing.length})
               </h2>
               {readyForPairing.length === 0 ? (
                 <div style={{ 
-                  background: '#fff', border: '1px solid #e0e6ed', borderRadius: '12px',
-                  textAlign: 'center', padding: '2rem', color: '#6c757d'
+                  background: '#fff', border: '1px solid #DAD7E8', borderRadius: '20px',
+                  textAlign: 'center', padding: '2rem', color: '#8A87A0'
                 }}>
                   No pairs are ready for pen pal assignment.
                 </div>
@@ -841,13 +842,13 @@ export default function AdminDashboard() {
             </section>
 
             <section style={{ marginBottom: '3rem' }}>
-              <h2 className="text-teacher-name" style={{ marginBottom: '1rem', fontSize: '16px' }}>
+              <h2 className="text-teacher-name" style={{ marginBottom: '1rem', fontSize: '16px', fontFamily: 'var(--font-heading)', fontWeight: 700, color: '#3B3F8C' }}>
                 Complete Pairs with Assigned Pen Pals ({completePairs.length})
               </h2>
               {completePairs.length === 0 ? (
                 <div style={{ 
-                  background: '#fff', border: '1px solid #e0e6ed', borderRadius: '12px',
-                  textAlign: 'center', padding: '2rem', color: '#6c757d'
+                  background: '#fff', border: '1px solid #DAD7E8', borderRadius: '20px',
+                  textAlign: 'center', padding: '2rem', color: '#8A87A0'
                 }}>
                   No pairs have completed pen pal assignments yet.
                 </div>
@@ -873,7 +874,7 @@ export default function AdminDashboard() {
                 type="button"
                 onClick={() => setShowDonePairs(prev => !prev)}
                 className="btn"
-                style={{ marginBottom: showDonePairs ? '1rem' : 0 }}
+                style={{ marginBottom: showDonePairs ? '1rem' : 0, borderRadius: '10px', color: '#5B87A6', borderColor: '#5B87A6' }}
               >
                 {showDonePairs ? '▾' : '▸'} Done ({donePairs.length})
               </button>
@@ -881,8 +882,8 @@ export default function AdminDashboard() {
               {showDonePairs && (
                 donePairs.length === 0 ? (
                   <div style={{ 
-                    background: '#fff', border: '1px solid #e0e6ed', borderRadius: '12px',
-                    textAlign: 'center', padding: '2rem', color: '#6c757d'
+                    background: '#fff', border: '1px solid #DAD7E8', borderRadius: '20px',
+                    textAlign: 'center', padding: '2rem', color: '#8A87A0'
                   }}>
                     No pairs have been marked done yet.
                   </div>
@@ -927,7 +928,7 @@ export default function AdminDashboard() {
         />
       )}
 
-      <footer style={{ background: '#343a40', color: 'white', padding: '2rem 0', marginTop: '3rem' }}>
+      <footer style={{ background: 'transparent', borderTop: '1px solid #DAD7E8', color: '#8A87A0', padding: '2rem 0', marginTop: '3rem' }}>
         <div className="container text-center">
           <p>&copy; 2025 The Right Back at You Project by Carolyn Mackler. Building empathy and connection through literature.</p>
         </div>
