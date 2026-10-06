@@ -585,15 +585,21 @@ export default function AdminDashboard() {
       }
     });
     
-    const awaitingReadiness = matchedPairs.filter(pair => !pair.bothUnitsReady);
-    const readyForPairing = matchedPairs.filter(pair => pair.bothUnitsReady && !pair.hasStudentPairings);
-    const allCompletePairs = matchedPairs.filter(pair => pair.hasStudentPairings);
-    // Split completed pairs into ones still awaiting an admin decision vs.
-    // ones already marked DONE (both units' schools all flipped to DONE via
-    // handleMarkAsDone). Done pairs move into a separate, collapsed section
-    // instead of piling up in the main workflow view.
-    const completePairs = allCompletePairs.filter(pair => !(isUnitDone(pair.unit1) && isUnitDone(pair.unit2)));
-    const donePairs = allCompletePairs.filter(pair => isUnitDone(pair.unit1) && isUnitDone(pair.unit2));
+    // A pair marked DONE must be excluded from every other category
+    // outright, not just added to its own - otherwise it can leak back
+    // into "Awaiting Readiness" too. That leak is exactly what happened
+    // before this fix: isUnitReady only counts READY/MATCHED as ready, so
+    // once a school's status flips to DONE it no longer satisfies that
+    // check, which flipped bothUnitsReady to false and dragged the pair
+    // back into "awaiting readiness" even though it was actually finished.
+    // Checking "done" first and filtering everything else against it
+    // closes that gap for good.
+    const donePairs = matchedPairs.filter(pair => isUnitDone(pair.unit1) && isUnitDone(pair.unit2));
+    const activePairs = matchedPairs.filter(pair => !(isUnitDone(pair.unit1) && isUnitDone(pair.unit2)));
+
+    const awaitingReadiness = activePairs.filter(pair => !pair.bothUnitsReady);
+    const readyForPairing = activePairs.filter(pair => pair.bothUnitsReady && !pair.hasStudentPairings);
+    const completePairs = activePairs.filter(pair => pair.hasStudentPairings);
 
     return {
       unmatched,
