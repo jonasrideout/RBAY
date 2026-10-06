@@ -685,6 +685,50 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        {/* Jump nav - sticky row of section shortcuts with live counts, so
+            the admin can get to any section in one click regardless of how
+            far down the page they've scrolled, instead of scrolling past
+            everything else to get there. */}
+        <div style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 50,
+          backgroundColor: '#EDEAF5',
+          paddingTop: '0.5rem',
+          paddingBottom: '0.75rem',
+          marginBottom: '1.5rem',
+          display: 'flex',
+          gap: '8px',
+          flexWrap: 'wrap'
+        }}>
+          {[
+            { id: 'section-available', label: 'Available', count: unmatchedToShow.length },
+            { id: 'section-awaiting', label: 'Awaiting Readiness', count: awaitingReadiness.length },
+            { id: 'section-ready', label: 'Ready to Pair', count: readyForPairing.length },
+            { id: 'section-complete', label: 'Complete', count: completePairs.length },
+            { id: 'section-done', label: 'Done', count: donePairs.length }
+          ].map(({ id, label, count }) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+              style={{
+                padding: '6px 14px',
+                borderRadius: '999px',
+                border: '1px solid #3B3F8C',
+                backgroundColor: 'white',
+                color: '#3B3F8C',
+                fontSize: '13px',
+                fontWeight: 500,
+                cursor: 'pointer',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              {label} ({count})
+            </button>
+          ))}
+        </div>
+
         {error && (
           <div className="alert alert-error" style={{ marginBottom: '2rem' }}>
             <strong>Error:</strong> {error}
@@ -738,7 +782,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        <section style={{ marginBottom: '3rem' }}>
+        <section id="section-available" style={{ marginBottom: '3rem' }}>
           <h2 className="text-teacher-name" style={{ marginBottom: '1rem', fontSize: '16px', fontFamily: 'var(--font-heading)', fontWeight: 700, color: '#3B3F8C' }}>
             Schools & Groups Available for Matching ({unmatchedToShow.length})
           </h2>
@@ -784,7 +828,7 @@ export default function AdminDashboard() {
 
         {!filtersApplied && (
           <>
-            <section style={{ marginBottom: '3rem' }}>
+            <section id="section-awaiting" style={{ marginBottom: '3rem' }}>
               <h2 className="text-teacher-name" style={{ marginBottom: '1rem', fontSize: '16px', fontFamily: 'var(--font-heading)', fontWeight: 700, color: '#3B3F8C' }}>
                 Matched Pairs Awaiting Student Readiness ({awaitingReadiness.length})
               </h2>
@@ -812,7 +856,7 @@ export default function AdminDashboard() {
               )}
             </section>
 
-            <section style={{ marginBottom: '3rem' }}>
+            <section id="section-ready" style={{ marginBottom: '3rem' }}>
               <h2 className="text-teacher-name" style={{ marginBottom: '1rem', fontSize: '16px', fontFamily: 'var(--font-heading)', fontWeight: 700, color: '#3B3F8C' }}>
                 Ready for Pen Pal Assignment ({readyForPairing.length})
               </h2>
@@ -841,7 +885,7 @@ export default function AdminDashboard() {
               )}
             </section>
 
-            <section style={{ marginBottom: '3rem' }}>
+            <section id="section-complete" style={{ marginBottom: '3rem' }}>
               <h2 className="text-teacher-name" style={{ marginBottom: '1rem', fontSize: '16px', fontFamily: 'var(--font-heading)', fontWeight: 700, color: '#3B3F8C' }}>
                 Complete Pairs with Assigned Pen Pals ({completePairs.length})
               </h2>
@@ -869,7 +913,7 @@ export default function AdminDashboard() {
               )}
             </section>
 
-            <section style={{ marginBottom: '3rem' }}>
+            <section id="section-done" style={{ marginBottom: '3rem' }}>
               <button
                 type="button"
                 onClick={() => setShowDonePairs(prev => !prev)}
