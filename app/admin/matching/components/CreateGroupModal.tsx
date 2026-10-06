@@ -1,3 +1,4 @@
+// app/admin/matching/components/CreateGroupModal.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -221,7 +222,7 @@ export default function CreateGroupModal({
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      backgroundColor: 'rgba(59, 63, 140, 0.35)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -233,13 +234,17 @@ export default function CreateGroupModal({
         display: 'flex',
         flexDirection: 'column',
         padding: 0,
-        overflow: 'hidden'
+        overflow: 'hidden',
+        borderRadius: '20px'
       }}>
         {/* Header - Fixed */}
         <div style={{ padding: '24px 24px 0 24px', flexShrink: 0 }}>
           <h2 className="text-teacher-name" style={{ 
             fontSize: '18px', 
-            marginBottom: '20px' 
+            marginBottom: '20px',
+            fontFamily: 'var(--font-heading)',
+            fontWeight: 700,
+            color: '#3B3F8C'
           }}>
             {mode === 'create' ? 'Create School Group' : 'Update Existing Group'}
           </h2>
@@ -256,10 +261,10 @@ export default function CreateGroupModal({
               style={{
                 flex: 1,
                 padding: '10px',
-                backgroundColor: mode === 'create' ? '#007bff' : '#f8f9fa',
-                color: mode === 'create' ? 'white' : '#495057',
-                border: '1px solid #dee2e6',
-                borderRadius: '4px',
+                backgroundColor: mode === 'create' ? '#3B3F8C' : '#F5F3FA',
+                color: mode === 'create' ? 'white' : '#3B3F8C',
+                border: '1px solid #DAD7E8',
+                borderRadius: '10px',
                 cursor: isSubmitting ? 'not-allowed' : 'pointer',
                 fontSize: '14px',
                 fontWeight: mode === 'create' ? '500' : '300'
@@ -273,10 +278,10 @@ export default function CreateGroupModal({
               style={{
                 flex: 1,
                 padding: '10px',
-                backgroundColor: mode === 'update' ? '#007bff' : '#f8f9fa',
-                color: mode === 'update' ? 'white' : '#495057',
-                border: '1px solid #dee2e6',
-                borderRadius: '4px',
+                backgroundColor: mode === 'update' ? '#3B3F8C' : '#F5F3FA',
+                color: mode === 'update' ? 'white' : '#3B3F8C',
+                border: '1px solid #DAD7E8',
+                borderRadius: '10px',
                 cursor: isSubmitting ? 'not-allowed' : 'pointer',
                 fontSize: '14px',
                 fontWeight: mode === 'update' ? '500' : '300'
@@ -302,7 +307,7 @@ export default function CreateGroupModal({
                   display: 'block', 
                   fontSize: '13px', 
                   fontWeight: '300',
-                  color: '#495057',
+                  color: '#8A87A0',
                   marginBottom: '8px'
                 }}>
                   Group Name (this appears on the Pen Pal list)
@@ -315,8 +320,8 @@ export default function CreateGroupModal({
                   style={{
                     width: '100%',
                     padding: '8px 12px',
-                    border: '1px solid #dee2e6',
-                    borderRadius: '4px',
+                    border: '1px solid #DAD7E8',
+                    borderRadius: '8px',
                     fontSize: '14px'
                   }}
                 />
@@ -327,20 +332,20 @@ export default function CreateGroupModal({
                   display: 'block', 
                   fontSize: '13px', 
                   fontWeight: '300',
-                  color: '#495057',
+                  color: '#8A87A0',
                   marginBottom: '8px'
                 }}>
                   Select Schools (minimum 2)
                 </label>
                 
                 <div style={{ 
-                  border: '1px solid #dee2e6', 
-                  borderRadius: '4px',
+                  border: '1px solid #DAD7E8', 
+                  borderRadius: '10px',
                   maxHeight: '300px',
                   overflow: 'auto'
                 }}>
                   {availableSchools.length === 0 ? (
-                    <div style={{ padding: '20px', textAlign: 'center', color: '#6c757d' }}>
+                    <div style={{ padding: '20px', textAlign: 'center', color: '#8A87A0' }}>
                       No schools available for grouping
                     </div>
                   ) : (
@@ -353,10 +358,10 @@ export default function CreateGroupModal({
                             display: 'flex',
                             alignItems: 'center',
                             padding: '12px',
-                            borderBottom: '1px solid #f8f9fa',
+                            borderBottom: '1px solid #F5F3FA',
                             cursor: status.disabled ? 'not-allowed' : 'pointer',
                             backgroundColor: selectedSchools.includes(school.id) 
-                              ? '#f8f9fa' 
+                              ? '#EDEAF5' 
                               : 'transparent',
                             opacity: status.disabled ? 0.5 : 1
                           }}
@@ -366,7 +371,7 @@ export default function CreateGroupModal({
                             checked={selectedSchools.includes(school.id)}
                             onChange={() => toggleSchool(school.id)}
                             disabled={status.disabled}
-                            style={{ marginRight: '12px' }}
+                            style={{ marginRight: '12px', accentColor: '#3B3F8C' }}
                           />
                           <div style={{ flex: 1 }}>
                             <div className="text-school-name" style={{ fontSize: '14px' }}>
@@ -374,7 +379,7 @@ export default function CreateGroupModal({
                               {status.disabled && (
                                 <span style={{ 
                                   fontSize: '11px', 
-                                  color: '#dc3545',
+                                  color: '#D98B7A',
                                   marginLeft: '8px'
                                 }}>
                                   {status.reason}
@@ -398,8 +403,8 @@ export default function CreateGroupModal({
               {selectedSchools.length >= 2 && (
                 <div style={{
                   padding: '12px',
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: '4px',
+                  backgroundColor: '#F5F3FA',
+                  borderRadius: '10px',
                   marginBottom: '20px'
                 }}>
                   <div className="text-data-label" style={{ marginBottom: '4px' }}>
@@ -419,13 +424,13 @@ export default function CreateGroupModal({
               {isLoadingGroups ? (
                 <div style={{ padding: '40px', textAlign: 'center' }}>
                   <div className="loading" style={{ margin: '0 auto' }}></div>
-                  <p style={{ marginTop: '12px', color: '#6c757d' }}>Loading groups...</p>
+                  <p style={{ marginTop: '12px', color: '#8A87A0' }}>Loading groups...</p>
                 </div>
               ) : groups.length === 0 ? (
                 <div style={{ 
                   padding: '40px', 
                   textAlign: 'center',
-                  color: '#6c757d'
+                  color: '#8A87A0'
                 }}>
                   No groups exist yet. Create a group first.
                 </div>
@@ -436,15 +441,15 @@ export default function CreateGroupModal({
                       display: 'block', 
                       fontSize: '13px', 
                       fontWeight: '300',
-                      color: '#495057',
+                      color: '#8A87A0',
                       marginBottom: '8px'
                     }}>
                       Select Group to Update
                     </label>
                     
                     <div style={{ 
-                      border: '1px solid #dee2e6', 
-                      borderRadius: '4px',
+                      border: '1px solid #DAD7E8', 
+                      borderRadius: '10px',
                       maxHeight: '150px',
                       overflow: 'auto'
                     }}>
@@ -457,10 +462,10 @@ export default function CreateGroupModal({
                               display: 'flex',
                               alignItems: 'center',
                               padding: '12px',
-                              borderBottom: '1px solid #f8f9fa',
+                              borderBottom: '1px solid #F5F3FA',
                               cursor: hasLockedSchools ? 'not-allowed' : 'pointer',
                               backgroundColor: selectedGroupId === group.id 
-                                ? '#f8f9fa' 
+                                ? '#EDEAF5' 
                                 : 'transparent',
                               opacity: hasLockedSchools ? 0.5 : 1
                             }}
@@ -474,7 +479,7 @@ export default function CreateGroupModal({
                                 setSchoolsToRemove([]);
                               }}
                               disabled={hasLockedSchools}
-                              style={{ marginRight: '12px' }}
+                              style={{ marginRight: '12px', accentColor: '#3B3F8C' }}
                             />
                             <div style={{ flex: 1 }}>
                               <div className="text-school-name" style={{ fontSize: '14px' }}>
@@ -482,7 +487,7 @@ export default function CreateGroupModal({
                                 {hasLockedSchools && (
                                   <span style={{ 
                                     fontSize: '11px', 
-                                    color: '#dc3545',
+                                    color: '#D98B7A',
                                     marginLeft: '8px'
                                   }}>
                                     (Locked - has pen pals)
@@ -507,15 +512,15 @@ export default function CreateGroupModal({
                           display: 'block', 
                           fontSize: '13px', 
                           fontWeight: '300',
-                          color: '#495057',
+                          color: '#8A87A0',
                           marginBottom: '8px'
                         }}>
                           Schools Currently in Group
                         </label>
                         
                         <div style={{ 
-                          border: '1px solid #dee2e6', 
-                          borderRadius: '4px',
+                          border: '1px solid #DAD7E8', 
+                          borderRadius: '10px',
                           maxHeight: '150px',
                           overflow: 'auto'
                         }}>
@@ -528,8 +533,8 @@ export default function CreateGroupModal({
                                   display: 'flex',
                                   alignItems: 'center',
                                   padding: '12px',
-                                  borderBottom: '1px solid #f8f9fa',
-                                  backgroundColor: isMarkedForRemoval ? '#fff3cd' : 'transparent'
+                                  borderBottom: '1px solid #F5F3FA',
+                                  backgroundColor: isMarkedForRemoval ? '#FBEEEA' : 'transparent'
                                 }}
                               >
                                 <input
@@ -537,7 +542,7 @@ export default function CreateGroupModal({
                                   checked={isMarkedForRemoval}
                                   onChange={() => toggleSchoolToRemove(school.id)}
                                   disabled={school.hasPenPals}
-                                  style={{ marginRight: '12px' }}
+                                  style={{ marginRight: '12px', accentColor: '#D98B7A' }}
                                 />
                                 <div style={{ flex: 1 }}>
                                   <div className="text-school-name" style={{ fontSize: '14px' }}>
@@ -545,7 +550,7 @@ export default function CreateGroupModal({
                                     {school.hasPenPals && (
                                       <span style={{ 
                                         fontSize: '11px', 
-                                        color: '#dc3545',
+                                        color: '#D98B7A',
                                         marginLeft: '8px'
                                       }}>
                                         (Has pen pals - cannot remove)
@@ -557,7 +562,7 @@ export default function CreateGroupModal({
                                   </div>
                                 </div>
                                 {isMarkedForRemoval && (
-                                  <span style={{ fontSize: '12px', color: '#856404' }}>
+                                  <span style={{ fontSize: '12px', color: '#8A4E3C' }}>
                                     Will be removed
                                   </span>
                                 )}
@@ -574,15 +579,15 @@ export default function CreateGroupModal({
                             display: 'block', 
                             fontSize: '13px', 
                             fontWeight: '300',
-                            color: '#495057',
+                            color: '#8A87A0',
                             marginBottom: '8px'
                           }}>
                             Available Schools to Add
                           </label>
                           
                           <div style={{ 
-                            border: '1px solid #dee2e6', 
-                            borderRadius: '4px',
+                            border: '1px solid #DAD7E8', 
+                            borderRadius: '10px',
                             maxHeight: '150px',
                             overflow: 'auto'
                           }}>
@@ -596,9 +601,9 @@ export default function CreateGroupModal({
                                     display: 'flex',
                                     alignItems: 'center',
                                     padding: '12px',
-                                    borderBottom: '1px solid #f8f9fa',
+                                    borderBottom: '1px solid #F5F3FA',
                                     cursor: status.disabled ? 'not-allowed' : 'pointer',
-                                    backgroundColor: isMarkedForAdd ? '#d1ecf1' : 'transparent',
+                                    backgroundColor: isMarkedForAdd ? '#EDEAF5' : 'transparent',
                                     opacity: status.disabled ? 0.5 : 1
                                   }}
                                 >
@@ -607,7 +612,7 @@ export default function CreateGroupModal({
                                     checked={isMarkedForAdd}
                                     onChange={() => toggleSchoolToAdd(school.id)}
                                     disabled={status.disabled}
-                                    style={{ marginRight: '12px' }}
+                                    style={{ marginRight: '12px', accentColor: '#3B3F8C' }}
                                   />
                                   <div style={{ flex: 1 }}>
                                     <div className="text-school-name" style={{ fontSize: '14px' }}>
@@ -615,7 +620,7 @@ export default function CreateGroupModal({
                                       {status.disabled && (
                                         <span style={{ 
                                           fontSize: '11px', 
-                                          color: '#dc3545',
+                                          color: '#D98B7A',
                                           marginLeft: '8px'
                                         }}>
                                           {status.reason}
@@ -627,7 +632,7 @@ export default function CreateGroupModal({
                                     </div>
                                   </div>
                                   {isMarkedForAdd && (
-                                    <span style={{ fontSize: '12px', color: '#0c5460' }}>
+                                    <span style={{ fontSize: '12px', color: '#3B3F8C' }}>
                                       Will be added
                                     </span>
                                   )}
@@ -647,9 +652,9 @@ export default function CreateGroupModal({
           {error && (
             <div style={{
               padding: '12px',
-              backgroundColor: '#f8d7da',
-              color: '#721c24',
-              borderRadius: '4px',
+              backgroundColor: '#FBEEEA',
+              color: '#8A4E3C',
+              borderRadius: '10px',
               marginBottom: '20px',
               fontSize: '13px'
             }}>
@@ -661,7 +666,7 @@ export default function CreateGroupModal({
         {/* Footer Buttons - Fixed */}
         <div style={{ 
           padding: '0 24px 24px 24px',
-          borderTop: '1px solid #dee2e6',
+          borderTop: '1px solid #E4E1ED',
           paddingTop: '20px',
           flexShrink: 0,
           backgroundColor: 'white'
@@ -677,9 +682,9 @@ export default function CreateGroupModal({
               className="btn"
               style={{
                 padding: '8px 16px',
-                backgroundColor: '#f8f9fa',
-                border: '1px solid #dee2e6',
-                borderRadius: '4px',
+                backgroundColor: '#F5F3FA',
+                border: '1px solid #DAD7E8',
+                borderRadius: '10px',
                 cursor: isSubmitting ? 'not-allowed' : 'pointer',
                 fontSize: '14px',
                 fontWeight: '300'
@@ -697,6 +702,9 @@ export default function CreateGroupModal({
               className="btn btn-primary"
               style={{
                 padding: '8px 16px',
+                borderRadius: '10px',
+                backgroundColor: '#3B3F8C',
+                borderColor: '#3B3F8C',
                 opacity: (
                   isSubmitting || 
                   (mode === 'create' && (selectedSchools.length < 2 || !groupName.trim())) ||
