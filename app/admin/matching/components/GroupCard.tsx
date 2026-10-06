@@ -1,3 +1,4 @@
+// app/admin/matching/components/GroupCard.tsx
 import { SchoolGroup } from '../types';
 
 interface GroupCardProps {
@@ -47,12 +48,12 @@ export default function GroupCard({
           <span style={{
             display: 'inline-block',
             padding: '3px 8px',
-            backgroundColor: '#e8f5e9',
-            border: '1px solid #81c784',
-            borderRadius: '4px',
+            backgroundColor: '#EDEAF5',
+            border: '1px solid #3B3F8C',
+            borderRadius: '8px',
             fontSize: '11px',
             fontWeight: '500',
-            color: '#2e7d32',
+            color: '#3B3F8C',
             textTransform: 'uppercase',
             letterSpacing: '0.5px'
           }}>
@@ -78,14 +79,14 @@ export default function GroupCard({
 
         {group.schools.map((school) => (
           <div key={school.id} style={{ marginBottom: '8px' }}>
-            <div style={{ fontSize: '11px', color: '#333', lineHeight: '1.4' }}>
+            <div style={{ fontSize: '11px', color: '#3B3F8C', lineHeight: '1.4' }}>
               • {school.schoolName} ({school.teacherName}) - {school.studentCount} students
             </div>
             {school.specialConsiderations && (
               <div style={{
                 fontSize: '12px',
                 fontStyle: 'italic',
-                color: '#6c757d',
+                color: '#8A87A0',
                 marginLeft: '12px',
                 marginTop: '2px'
               }}>
