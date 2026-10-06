@@ -146,7 +146,10 @@ export default function SchoolCard({
 
   return (
     <>
-      <div className={`card-school grid-school-card ${isPinned ? 'card-school-pinned' : ''}`}>
+      <div
+        className={`card-school grid-school-card ${isPinned ? 'card-school-pinned' : ''}`}
+        style={isPinned ? { borderColor: '#3B3F8C', borderRadius: '14px' } : undefined}
+      >
         
         {/* Column 1: School Information */}
         <div className="school-info-column">
@@ -251,6 +254,7 @@ export default function SchoolCard({
                 onClick={onPin}
                 className={`btn-icon-pin ${isPinned ? 'btn-icon-pin-active' : ''}`}
                 title={isPinned ? "Unpin school" : "Pin school"}
+                style={isPinned ? { backgroundColor: '#3B3F8C', borderColor: '#3B3F8C' } : undefined}
               >
                 {renderIcon('pin')}
               </button>
