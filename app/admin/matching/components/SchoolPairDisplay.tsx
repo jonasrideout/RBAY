@@ -194,8 +194,8 @@ export default function SchoolPairDisplay({
     return (
       <div style={{
         background: 'white',
-        border: '1px solid #e0e0e0',
-        borderRadius: '6px',
+        border: '1px solid #DAD7E8',
+        borderRadius: '14px',
         padding: '12px',
         fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         fontWeight: '300'
@@ -214,8 +214,8 @@ export default function SchoolPairDisplay({
             <h4 style={{
               margin: '0 0 2px 0',
               fontSize: '16px',
-              fontWeight: '300',
-              color: '#111',
+              fontWeight: '600',
+              color: '#3B3F8C',
               lineHeight: '1.2'
             }}>
               {school.schoolName}
@@ -224,7 +224,7 @@ export default function SchoolPairDisplay({
             <div style={{
               fontSize: '12px',
               fontWeight: '300',
-              color: '#555'
+              color: '#8A87A0'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span>{school.teacherName}</span>
@@ -242,14 +242,14 @@ export default function SchoolPairDisplay({
                 </button>
               </div>
               {school.communicationPlatforms && Array.isArray(school.communicationPlatforms) && school.communicationPlatforms.length > 0 && (
-                <div style={{ color: '#888', fontSize: '11px', marginTop: '2px' }}>
+                <div style={{ color: '#8A87A0', fontSize: '11px', marginTop: '2px' }}>
                   {school.communicationPlatforms.map(platform => {
                     if (platform.startsWith('Other:')) return platform.replace('Other:', '').trim();
                     return platform === 'Google Meet' ? 'Meet' : platform === 'Microsoft Teams' ? 'Teams' : platform;
                   }).join(' | ')}
                 </div>
               )}
-              <div style={{ color: '#888', fontSize: '11px' }}>
+              <div style={{ color: '#8A87A0', fontSize: '11px' }}>
                 Grades {school.gradeLevel}
               </div>
             </div>
@@ -265,9 +265,9 @@ export default function SchoolPairDisplay({
               onClick={() => openDashboard(school)}
               style={{
                 background: 'white',
-                border: '1px solid #ddd',
-                borderRadius: '3px',
-                color: '#555',
+                border: '1px solid #5B87A6',
+                borderRadius: '8px',
+                color: '#5B87A6',
                 fontSize: '11px',
                 fontWeight: '400',
                 cursor: 'pointer',
@@ -284,9 +284,9 @@ export default function SchoolPairDisplay({
               onClick={() => copyDashboardUrl(school, isFirst)}
               style={{
                 background: 'white',
-                border: '1px solid #ddd',
-                borderRadius: '3px',
-                color: '#555',
+                border: '1px solid #5B87A6',
+                borderRadius: '8px',
+                color: '#5B87A6',
                 fontSize: '11px',
                 fontWeight: '400',
                 cursor: 'pointer',
@@ -307,9 +307,9 @@ export default function SchoolPairDisplay({
                 }}
                 style={{
                   background: 'white',
-                  border: '1px solid #28a745',
-                  borderRadius: '3px',
-                  color: '#28a745',
+                  border: '1px solid #3B3F8C',
+                  borderRadius: '8px',
+                  color: '#3B3F8C',
                   fontSize: '11px',
                   fontWeight: '400',
                   cursor: 'pointer',
@@ -334,17 +334,17 @@ export default function SchoolPairDisplay({
           marginBottom: '6px'
         }}>
           <div>
-            <span style={{ color: '#999', fontSize: '10px' }}>Region </span>
+            <span style={{ color: '#8A87A0', fontSize: '10px' }}>Region </span>
             <span style={{ color: '#333', fontWeight: '300' }}>{school.region.toUpperCase()}</span>
           </div>
           
           <div>
-            <span style={{ color: '#999', fontSize: '10px' }}>Start </span>
+            <span style={{ color: '#8A87A0', fontSize: '10px' }}>Start </span>
             <span style={{ color: '#333', fontWeight: '300' }}>{school.startMonth.toUpperCase()}</span>
           </div>
           
           <div>
-            <span style={{ color: '#999', fontSize: '10px' }}>Ready </span>
+            <span style={{ color: '#8A87A0', fontSize: '10px' }}>Ready </span>
             <span style={{ color: '#333', fontWeight: '300' }}>{school.studentCounts?.ready || 0}</span>
           </div>
         </div>
@@ -355,7 +355,7 @@ export default function SchoolPairDisplay({
           fontWeight: '300',
           marginBottom: '8px'
         }}>
-          <span style={{ color: '#999', fontSize: '11px' }}>Status </span>
+          <span style={{ color: '#8A87A0', fontSize: '11px' }}>Status </span>
           <span style={{ color: '#333', fontWeight: '300' }}>
             {pair.hasStudentPairings ? 'MATCHED + PAIRED' : school.status}
           </span>
@@ -364,13 +364,13 @@ export default function SchoolPairDisplay({
         {/* Special Considerations - if present */}
         {school.specialConsiderations && (
           <div style={{
-            color: '#777',
+            color: '#8A87A0',
             fontSize: '10px',
             fontStyle: 'italic',
             fontWeight: '300',
             marginTop: '6px',
             paddingTop: '6px',
-            borderTop: '1px solid #f0f0f0',
+            borderTop: '1px solid #E4E1ED',
             lineHeight: '1.3'
           }}>
             {school.specialConsiderations}
@@ -384,8 +384,8 @@ export default function SchoolPairDisplay({
     return (
       <div style={{
         background: 'white',
-        border: '1px solid #e0e0e0',
-        borderRadius: '6px',
+        border: '1px solid #DAD7E8',
+        borderRadius: '14px',
         padding: '12px',
         fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         fontWeight: '300'
@@ -401,8 +401,8 @@ export default function SchoolPairDisplay({
           <h4 style={{
             margin: 0,
             fontSize: '16px',
-            fontWeight: '300',
-            color: '#111',
+            fontWeight: '600',
+            color: '#3B3F8C',
             lineHeight: '1.2'
           }}>
             {group.name}
@@ -410,12 +410,12 @@ export default function SchoolPairDisplay({
           <div style={{
             display: 'inline-block',
             padding: '2px 6px',
-            backgroundColor: '#e8f5e9',
-            border: '1px solid #4caf50',
-            borderRadius: '3px',
+            backgroundColor: '#EDEAF5',
+            border: '1px solid #3B3F8C',
+            borderRadius: '8px',
             fontSize: '10px',
-            color: '#2e7d32',
-            fontWeight: 400
+            color: '#3B3F8C',
+            fontWeight: 500
           }}>
             GROUP
           </div>
@@ -433,7 +433,7 @@ export default function SchoolPairDisplay({
               gap: '6px',
               fontSize: '12px',
               fontWeight: '300',
-              color: '#555',
+              color: '#8A87A0',
               marginBottom: idx < group.schools.length - 1 ? '12px' : '16px'
             }}>
               <div>
@@ -453,14 +453,14 @@ export default function SchoolPairDisplay({
                   </button>
                 </div>
                 {school.communicationPlatforms && Array.isArray(school.communicationPlatforms) && school.communicationPlatforms.length > 0 && (
-                  <div style={{ color: '#888', fontSize: '11px', marginTop: '2px' }}>
+                  <div style={{ color: '#8A87A0', fontSize: '11px', marginTop: '2px' }}>
                     {school.communicationPlatforms.map(platform => {
                       if (platform.startsWith('Other:')) return platform.replace('Other:', '').trim();
                       return platform === 'Google Meet' ? 'Meet' : platform === 'Microsoft Teams' ? 'Teams' : platform;
                     }).join(' | ')}
                   </div>
                 )}
-                <div style={{ color: '#888', fontSize: '11px', marginTop: '2px' }}>
+                <div style={{ color: '#8A87A0', fontSize: '11px', marginTop: '2px' }}>
                   Grades {school.gradeLevel}
                 </div>
 
@@ -474,9 +474,9 @@ export default function SchoolPairDisplay({
                     onClick={() => openDashboard(school)}
                     style={{
                       background: 'white',
-                      border: '1px solid #ddd',
-                      borderRadius: '3px',
-                      color: '#555',
+                      border: '1px solid #5B87A6',
+                      borderRadius: '8px',
+                      color: '#5B87A6',
                       fontSize: '10px',
                       fontWeight: '400',
                       cursor: 'pointer',
@@ -493,9 +493,9 @@ export default function SchoolPairDisplay({
                      onClick={() => copyDashboardUrl(school, false, true)}
                     style={{
                       background: 'white',
-                      border: '1px solid #ddd',
-                      borderRadius: '3px',
-                      color: '#555',
+                      border: '1px solid #5B87A6',
+                      borderRadius: '8px',
+                      color: '#5B87A6',
                       fontSize: '10px',
                       fontWeight: '400',
                       cursor: 'pointer',
@@ -518,9 +518,9 @@ export default function SchoolPairDisplay({
                   }}
                   style={{
                     background: 'white',
-                    border: '1px solid #28a745',
-                    borderRadius: '3px',
-                    color: '#28a745',
+                    border: '1px solid #3B3F8C',
+                    borderRadius: '8px',
+                    color: '#3B3F8C',
                     fontSize: '11px',
                     fontWeight: '400',
                     cursor: 'pointer',
@@ -546,17 +546,17 @@ export default function SchoolPairDisplay({
           marginBottom: '6px'
         }}>
           <div>
-            <span style={{ color: '#999', fontSize: '10px' }}>Region </span>
+            <span style={{ color: '#8A87A0', fontSize: '10px' }}>Region </span>
             <span style={{ color: '#333', fontWeight: '300' }}>{group.schools[0]?.region.toUpperCase() || 'N/A'}</span>
           </div>
           
           <div>
-            <span style={{ color: '#999', fontSize: '10px' }}>Start </span>
+            <span style={{ color: '#8A87A0', fontSize: '10px' }}>Start </span>
             <span style={{ color: '#333', fontWeight: '300' }}>{group.schools[0]?.startMonth.toUpperCase() || 'N/A'}</span>
           </div>
           
           <div>
-            <span style={{ color: '#999', fontSize: '10px' }}>Ready </span>
+            <span style={{ color: '#8A87A0', fontSize: '10px' }}>Ready </span>
             <span style={{ color: '#333', fontWeight: '300' }}>{group.studentCounts.ready}</span>
           </div>
         </div>
@@ -567,7 +567,7 @@ export default function SchoolPairDisplay({
           fontWeight: '300',
           marginBottom: '8px'
         }}>
-          <span style={{ color: '#999', fontSize: '10px' }}>Status </span>
+          <span style={{ color: '#8A87A0', fontSize: '10px' }}>Status </span>
           <span style={{ color: '#333', fontWeight: '300' }}>
             {pair.hasStudentPairings ? 'MATCHED + PAIRED' : 
              group.schools.every(s => s.status === 'READY') ? 'READY' : 'COLLECTING'}
@@ -577,13 +577,13 @@ export default function SchoolPairDisplay({
         {/* Special considerations below */}
         {group.schools.filter(s => s.specialConsiderations).map(school => (
           <div key={school.id} style={{
-            color: '#777',
+            color: '#8A87A0',
             fontSize: '10px',
             fontStyle: 'italic',
             fontWeight: '300',
             marginTop: '6px',
             paddingTop: '6px',
-            borderTop: '1px solid #f0f0f0',
+            borderTop: '1px solid #E4E1ED',
             lineHeight: '1.3'
           }}>
             <strong>{school.schoolName}:</strong> {school.specialConsiderations}
@@ -604,15 +604,15 @@ export default function SchoolPairDisplay({
         onClick={handleUnmatchClick}
         disabled={pair.hasStudentPairings}
         style={{
-          background: '#f8f9fa',
-          border: '1px solid #dee2e6',
+          background: '#F5F3FA',
+          border: '1px solid #DAD7E8',
           borderRadius: '50%',
           width: '20px',
           height: '20px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#666',
+          color: '#8A87A0',
           cursor: pair.hasStudentPairings ? 'not-allowed' : 'pointer',
           opacity: pair.hasStudentPairings ? 0.3 : 1,
           padding: 0
@@ -631,12 +631,12 @@ export default function SchoolPairDisplay({
     <>
       <div style={{
         background: 'white',
-        border: '1px solid #e0e0e0',
-        borderRadius: '8px',
+        border: '1px solid #DAD7E8',
+        borderRadius: '20px',
         padding: '20px',
         marginBottom: '16px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-        borderLeft: '3px solid #28a745'
+        boxShadow: '0 2px 8px rgba(59, 63, 140, 0.08)',
+        borderLeft: '3px solid #3B3F8C'
       }}>
 
         {/* Pair Container */}
@@ -673,14 +673,14 @@ export default function SchoolPairDisplay({
             gap: '16px',
             marginTop: '16px',
             paddingTop: '16px',
-            borderTop: '1px solid #f0f0f0'
+            borderTop: '1px solid #E4E1ED'
           }}>
             
             {showAssignButton && onAssignPenPals && !pair.hasStudentPairings && (
               <button
                 onClick={onAssignPenPals}
                 className="btn btn-primary"
-                style={{ minWidth: '140px', fontSize: '12px' }}
+                style={{ minWidth: '140px', fontSize: '12px', backgroundColor: '#3B3F8C', borderColor: '#3B3F8C', borderRadius: '10px' }}
               >
                 Assign Pen Pals
               </button>
@@ -692,7 +692,7 @@ export default function SchoolPairDisplay({
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
-                  color: '#28a745',
+                  color: '#3B3F8C',
                   fontWeight: '500',
                   fontSize: '12px'
                 }}>
@@ -703,7 +703,7 @@ export default function SchoolPairDisplay({
                 </div>
 
                 {formatAssignedAt(assignedAt) && (
-                  <span style={{ fontSize: '11px', color: '#888' }}>
+                  <span style={{ fontSize: '11px', color: '#8A87A0' }}>
                     {formatAssignedAt(assignedAt)}
                   </span>
                 )}
@@ -712,10 +712,10 @@ export default function SchoolPairDisplay({
                   onClick={handleSendEmails}
                   disabled={sendingEmails || emailsSent || alreadySent}
                   style={{
-                    background: (emailsSent || alreadySent) ? '#28a745' : 'white',
-                    border: (emailsSent || alreadySent) ? '1px solid #28a745' : '1px solid #2c5aa0',
-                    borderRadius: '3px',
-                    color: (emailsSent || alreadySent) ? 'white' : '#2c5aa0',
+                    background: (emailsSent || alreadySent) ? '#3B3F8C' : 'white',
+                    border: (emailsSent || alreadySent) ? '1px solid #3B3F8C' : '1px solid #3B3F8C',
+                    borderRadius: '10px',
+                    color: (emailsSent || alreadySent) ? 'white' : '#3B3F8C',
                     fontSize: '12px',
                     fontWeight: '500',
                     cursor: (sendingEmails || emailsSent || alreadySent) ? 'not-allowed' : 'pointer',
@@ -756,9 +756,9 @@ export default function SchoolPairDisplay({
                     onClick={onMarkDone}
                     style={{
                       background: 'white',
-                      border: '1px solid #6c757d',
-                      borderRadius: '3px',
-                      color: '#6c757d',
+                      border: '1px solid #5B87A6',
+                      borderRadius: '10px',
+                      color: '#5B87A6',
                       fontSize: '12px',
                       fontWeight: '500',
                       cursor: 'pointer',
