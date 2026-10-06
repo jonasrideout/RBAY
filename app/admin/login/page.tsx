@@ -42,8 +42,8 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="page">
-      <Header />
+    <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
+      <Header themed />
       
       <main className="container" style={{ 
         flex: 1, 
@@ -55,19 +55,21 @@ export default function AdminLogin() {
       }}>
         <div className="card" style={{
           width: '100%',
-          maxWidth: '500px'
+          maxWidth: '500px',
+          borderRadius: '20px'
         }}>
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <h1 style={{ 
-              color: '#2c5aa0', 
+              color: '#3B3F8C', 
               fontSize: '1.8rem', 
               marginBottom: '0.75rem',
-              fontWeight: 300
+              fontFamily: 'var(--font-heading)',
+              fontWeight: 700
             }}>
               Administrator Login
             </h1>
             <p style={{ 
-              color: '#666', 
+              color: '#8A87A0', 
               fontSize: '0.95rem',
               fontWeight: 300
             }}>
@@ -135,7 +137,10 @@ export default function AdminLogin() {
                 disabled={isLoading}
                 className="btn-blue"
                 style={{ 
-                  width: '100%'
+                  width: '100%',
+                  color: '#3B3F8C',
+                  borderColor: '#3B3F8C',
+                  borderRadius: '10px'
                 }}
               >
                 {isLoading ? 'Signing In...' : 'Sign In'}
@@ -147,10 +152,10 @@ export default function AdminLogin() {
             textAlign: 'center', 
             marginTop: '2rem',
             paddingTop: '1.5rem',
-            borderTop: '1px solid #e9ecef'
+            borderTop: '1px solid #DAD7E8'
           }}>
             <p style={{ 
-              color: '#666', 
+              color: '#8A87A0', 
               fontSize: '0.875rem',
               fontWeight: 300
             }}>
