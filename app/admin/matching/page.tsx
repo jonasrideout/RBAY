@@ -742,6 +742,14 @@ export default function AdminDashboard() {
             position: 'sticky',
             top: 0,
             zIndex: 100,
+            // Same color as the page background, not white and not
+            // transparent - solid enough to block scrolling content from
+            // showing through behind the sticky label/card (that bleed-
+            // through was the actual bug), but since it matches the page
+            // exactly, it doesn't read as its own separate box the way a
+            // white panel did before.
+            backgroundColor: '#EDEAF5',
+            paddingBottom: '1rem',
             marginBottom: '1rem'
           }}>
             <h3 style={{ marginBottom: '0.75rem', color: '#3B3F8C', marginTop: 0, fontFamily: 'var(--font-heading)' }}>
