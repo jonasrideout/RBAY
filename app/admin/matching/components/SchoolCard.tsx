@@ -148,7 +148,18 @@ export default function SchoolCard({
     <>
       <div
         className={`card-school grid-school-card ${isPinned ? 'card-school-pinned' : ''}`}
-        style={isPinned ? { border: 'none' } : undefined}
+        style={isPinned ? {
+          // Pinned previously looked like a second, separate card nested
+          // inside the "Pinned School" panel (its own white background,
+          // shadow, and border all stacked on top of the panel behind it).
+          // Rather than a boxed-in highlight, this reads as the content
+          // itself glowing softly from behind - no fill of its own, no
+          // hard edge, just a diffuse indigo light centered behind it.
+          border: 'none',
+          background: 'transparent',
+          boxShadow: '0 0 50px 14px rgba(59, 63, 140, 0.18)',
+          borderRadius: '24px'
+        } : undefined}
       >
         
         {/* Column 1: School Information */}
