@@ -743,12 +743,9 @@ export default function AdminDashboard() {
             position: 'sticky',
             top: 0,
             zIndex: 100,
-            backgroundColor: 'white',
-            paddingBottom: '1rem',
-            marginBottom: '1rem',
-            borderBottom: '2px solid #DAD7E8'
+            marginBottom: '1rem'
           }}>
-            <h3 style={{ marginBottom: '1rem', color: '#3B3F8C', marginTop: 0, fontFamily: 'var(--font-heading)' }}>
+            <h3 style={{ marginBottom: '0.75rem', color: '#3B3F8C', marginTop: 0, fontFamily: 'var(--font-heading)' }}>
               Pinned {isGroup(pinnedUnit) ? 'Group' : 'School'} - Select a match below
             </h3>
             {isSchool(pinnedUnit) ? (
