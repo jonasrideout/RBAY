@@ -149,16 +149,14 @@ export default function SchoolCard({
       <div
         className={`card-school grid-school-card ${isPinned ? 'card-school-pinned' : ''}`}
         style={isPinned ? {
-          // Pinned previously looked like a second, separate card nested
-          // inside the "Pinned School" panel (its own white background,
-          // shadow, and border all stacked on top of the panel behind it).
-          // Rather than a boxed-in highlight, this reads as the content
-          // itself glowing softly from behind - no fill of its own, no
-          // hard edge, just a diffuse indigo light centered behind it.
-          border: 'none',
-          background: 'transparent',
-          boxShadow: '0 0 50px 14px rgba(59, 63, 140, 0.18)',
-          borderRadius: '24px'
+          // The outer "Pinned School" wrapper panel is gone now (see
+          // page.tsx) - this card is the only box on screen for the pinned
+          // school, so it needs its own clear "this one's selected" signal:
+          // a visible indigo border with a soft glow halo around it, rather
+          // than just a flat line.
+          border: '2px solid #3B3F8C',
+          borderRadius: '16px',
+          boxShadow: '0 0 24px 4px rgba(59, 63, 140, 0.35)'
         } : undefined}
       >
         
