@@ -148,7 +148,7 @@ export default function SchoolCard({
     <>
       <div
         className={`card-school grid-school-card ${isPinned ? 'card-school-pinned' : ''}`}
-        style={isPinned ? { borderColor: '#3B3F8C', borderRadius: '14px' } : undefined}
+        style={isPinned ? { border: 'none' } : undefined}
       >
         
         {/* Column 1: School Information */}
