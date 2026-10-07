@@ -685,15 +685,14 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Jump nav - sticky row of section shortcuts with live counts, so
-            the admin can get to any section in one click regardless of how
-            far down the page they've scrolled, instead of scrolling past
-            everything else to get there. */}
+        {/* Jump nav - row of section shortcuts with live counts, so the
+            admin can get to any section in one click instead of scrolling
+            past everything else to get there. Deliberately NOT sticky: the
+            "Pinned School" panel below is also sticky at top:0, and having
+            both stick at once meant they collided/overlapped as soon as a
+            school was pinned. Only one sticky element at the top of the
+            page at a time, so this one just scrolls away normally. */}
         <div style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 50,
-          backgroundColor: '#EDEAF5',
           paddingTop: '0.5rem',
           paddingBottom: '0.75rem',
           marginBottom: '1.5rem',
