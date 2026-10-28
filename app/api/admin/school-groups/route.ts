@@ -1,3 +1,5 @@
+// app/api/admin/school-groups/route.ts
+
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -186,6 +188,22 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    // Only IDs that actually belong to this group can be removed.
+    // Anything else is rejected rather than silently ungrouping a school
+    // that belongs to a different group.
+    const currentSchoolIds = group.schools.map(s => s.id);
+    if (schoolIdsToRemove && schoolIdsToRemove.length > 0) {
+      const notMembers = schoolIdsToRemove.filter(
+        (id: string) => !currentSchoolIds.includes(id)
+      );
+      if (notMembers.length > 0) {
+        return NextResponse.json(
+          { error: 'One or more schools to remove are not in this group' },
+          { status: 400 }
+        );
+      }
+    }
+
     // Check pen pal locks for schools being removed
     if (schoolIdsToRemove && schoolIdsToRemove.length > 0) {
       const lockedSchools = [];
@@ -245,7 +263,6 @@ export async function PUT(request: NextRequest) {
     }
 
     // Calculate resulting school count
-    const currentSchoolIds = group.schools.map(s => s.id);
     const removedIds = new Set(schoolIdsToRemove || []);
     const remainingIds = currentSchoolIds.filter(id => !removedIds.has(id));
     const addedIds = schoolIdsToAdd || [];
@@ -253,16 +270,24 @@ export async function PUT(request: NextRequest) {
 
     // If only 1 school would remain, auto-dissolve the group
     if (finalCount === 1) {
-      // Disconnect all schools
-      await prisma.school.updateMany({
-        where: { schoolGroupId: groupId },
-        data: { schoolGroupId: null }
-      });
+      // A matched group can't be dissolved: its partner would be left
+      // pointing at a group that no longer exists.
+      if (group.matchedWithGroupId) {
+        return NextResponse.json(
+          { error: 'This change would dissolve a matched group. Unmatch it first.' },
+          { status: 400 }
+        );
+      }
 
-      // Delete the group
-      await prisma.schoolGroup.delete({
-        where: { id: groupId }
-      });
+      await prisma.$transaction([
+        prisma.school.updateMany({
+          where: { schoolGroupId: groupId },
+          data: { schoolGroupId: null }
+        }),
+        prisma.schoolGroup.delete({
+          where: { id: groupId }
+        })
+      ]);
 
       const response = NextResponse.json({ 
         success: true,
@@ -281,19 +306,29 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Perform the updates
+    // Perform the updates together so a failure can't leave the group half-updated
+    const updates = [];
     if (schoolIdsToRemove && schoolIdsToRemove.length > 0) {
-      await prisma.school.updateMany({
-        where: { id: { in: schoolIdsToRemove } },
-        data: { schoolGroupId: null }
-      });
+      updates.push(
+        prisma.school.updateMany({
+          // Scoped to this group as a second safeguard
+          where: { id: { in: schoolIdsToRemove }, schoolGroupId: groupId },
+          data: { schoolGroupId: null }
+        })
+      );
     }
 
     if (schoolIdsToAdd && schoolIdsToAdd.length > 0) {
-      await prisma.school.updateMany({
-        where: { id: { in: schoolIdsToAdd } },
-        data: { schoolGroupId: groupId }
-      });
+      updates.push(
+        prisma.school.updateMany({
+          where: { id: { in: schoolIdsToAdd }, schoolGroupId: null },
+          data: { schoolGroupId: groupId }
+        })
+      );
+    }
+
+    if (updates.length > 0) {
+      await prisma.$transaction(updates);
     }
 
     // Fetch updated group
@@ -351,6 +386,15 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
+    // A matched group can't be deleted: its partner would be left
+    // pointing at a group that no longer exists.
+    if (group.matchedWithGroupId) {
+      return NextResponse.json(
+        { error: 'Cannot delete a matched group. Unmatch it first.' },
+        { status: 400 }
+      );
+    }
+
     // Check if any schools in the group have pen pals
     const lockedSchools = [];
     for (const school of group.schools) {
@@ -369,16 +413,16 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // Disconnect all schools from the group first
-    await prisma.school.updateMany({
-      where: { schoolGroupId: groupId },
-      data: { schoolGroupId: null }
-    });
-
-    // Delete the group
-    await prisma.schoolGroup.delete({
-      where: { id: groupId }
-    });
+    // Disconnect all schools and delete the group together
+    await prisma.$transaction([
+      prisma.school.updateMany({
+        where: { schoolGroupId: groupId },
+        data: { schoolGroupId: null }
+      }),
+      prisma.schoolGroup.delete({
+        where: { id: groupId }
+      })
+    ]);
 
     const response = NextResponse.json({ success: true });
     response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
