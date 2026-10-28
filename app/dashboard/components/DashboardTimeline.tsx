@@ -86,7 +86,9 @@ function calculateLiveRequirement(schoolData: SchoolData): { required: number; c
   // partner's count keeps changing.
   let partnerReady = false;
 
-  if (schoolData.matchedWithSchoolId && schoolData.matchedSchool) {
+    // matchedSchool is set for both direct matches and group matches
+  // (matchedWithSchoolId is null for classes in a group).
+  if (schoolData.matchedSchool) {
     targetClassSize = schoolData.matchedSchool.actualStudentCount;
     if (schoolData.matchedSchool.isGroup && schoolData.matchedSchool.schools) {
       matchedSchoolName = schoolData.matchedSchool.schools.map(s => s.schoolName).join(' + ');
