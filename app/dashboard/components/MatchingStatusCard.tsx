@@ -94,7 +94,9 @@ export default function MatchingStatusCard({
                       !schoolData.communicationPlatforms ||
                       (Array.isArray(schoolData.communicationPlatforms) && schoolData.communicationPlatforms.length === 0);
 
-  const isMatched = schoolData?.matchedWithSchoolId != null;
+  // A class in a group has no matchedWithSchoolId of its own - the match
+  // lives on the group - so treat the partner data the API sends as the signal.
+  const isMatched = schoolData?.matchedWithSchoolId != null || !!schoolData.matchedSchool;
 
   const handleModalSuccess = () => {
     if (onSchoolUpdated) {
