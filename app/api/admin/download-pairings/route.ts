@@ -33,10 +33,12 @@ function displaySchoolName(school: any): string | undefined {
 // 2. for a class in a group, that class's registering teacher - each
 //    grouped class is its own registration, so its students never fill in
 //    a per-student teacher name.
+// Prefixed with "Teacher:" so the name isn't mistaken for part of the
+// address or another student's name on the printed list.
 function displayTeacherName(student: any): string | undefined {
-  if (student?.teacherName) return student.teacherName;
+  if (student?.teacherName) return `Teacher: ${student.teacherName.trim()}`;
   if (student?.school?.schoolGroupId && student.school.teacherName) {
-    return student.school.teacherName;
+    return `Teacher: ${student.school.teacherName.trim()}`;
   }
   return undefined;
 }
@@ -108,8 +110,10 @@ export async function GET(request: NextRequest) {
             name: `${connection.penpal.firstName} ${connection.penpal.lastInitial}.`,
             grade: connection.penpal.grade,
             school: displaySchoolName(connection.penpal.school),
-            city: connection.penpal.school?.schoolCity,
-            state: connection.penpal.school?.schoolState,
+            // Grouped classes each typed their own city/state, so they come
+            // out inconsistent - the group name plus country is enough.
+            city: connection.penpal.school?.schoolGroupId ? null : connection.penpal.school?.schoolCity,
+            state: connection.penpal.school?.schoolGroupId ? null : connection.penpal.school?.schoolState,
             country: connection.penpal.school?.schoolCountry,
             schoolGroupId: connection.penpal.school?.schoolGroupId,
             teacherName: displayTeacherName(connection.penpal),
@@ -127,8 +131,10 @@ export async function GET(request: NextRequest) {
             name: `${connection.student.firstName} ${connection.student.lastInitial}.`,
             grade: connection.student.grade,
             school: displaySchoolName(connection.student.school),
-            city: connection.student.school?.schoolCity,
-            state: connection.student.school?.schoolState,
+            // Grouped classes each typed their own city/state, so they come
+            // out inconsistent - the group name plus country is enough.
+            city: connection.student.school?.schoolGroupId ? null : connection.student.school?.schoolCity,
+            state: connection.student.school?.schoolGroupId ? null : connection.student.school?.schoolState,
             country: connection.student.school?.schoolCountry,
             schoolGroupId: connection.student.school?.schoolGroupId,
             teacherName: displayTeacherName(connection.student),
