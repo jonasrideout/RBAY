@@ -17,6 +17,30 @@ interface PenpalData {
   otherInterests: string | null;
 }
 
+// For a pen pal whose class is part of a school group (e.g. several
+// classes at one school that each registered separately), show the
+// group's name instead of each class's own self-entered school name, so
+// the partner's list reads consistently ("Xanh Tue Duc" rather than a mix
+// of "XTD", "Xanh Tue Duc School", etc.).
+function displaySchoolName(school: any): string | undefined {
+  if (!school) return undefined;
+  return school.schoolGroup?.name || school.schoolName;
+}
+
+// Teacher shown next to a pen pal:
+// 1. the student's own teacherName (set per-student at multiple-classes
+//    schools), otherwise
+// 2. for a class in a group, that class's registering teacher - each
+//    grouped class is its own registration, so its students never fill in
+//    a per-student teacher name.
+function displayTeacherName(student: any): string | undefined {
+  if (student?.teacherName) return student.teacherName;
+  if (student?.school?.schoolGroupId && student.school.teacherName) {
+    return student.school.teacherName;
+  }
+  return undefined;
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -42,7 +66,9 @@ export async function GET(request: NextRequest) {
               include: {
                 penpal: {
                   include: {
-                    school: true
+                    school: {
+                      include: { schoolGroup: true }
+                    }
                   }
                 }
               }
@@ -51,7 +77,9 @@ export async function GET(request: NextRequest) {
               include: {
                 student: {
                   include: {
-                    school: true
+                    school: {
+                      include: { schoolGroup: true }
+                    }
                   }
                 }
               }
@@ -79,12 +107,12 @@ export async function GET(request: NextRequest) {
           allPenpals.push({
             name: `${connection.penpal.firstName} ${connection.penpal.lastInitial}.`,
             grade: connection.penpal.grade,
-            school: connection.penpal.school?.schoolName,
+            school: displaySchoolName(connection.penpal.school),
             city: connection.penpal.school?.schoolCity,
             state: connection.penpal.school?.schoolState,
             country: connection.penpal.school?.schoolCountry,
             schoolGroupId: connection.penpal.school?.schoolGroupId,
-            teacherName: connection.penpal.teacherName || undefined,
+            teacherName: displayTeacherName(connection.penpal),
             hasMultipleClasses: connection.penpal.school?.hasMultipleClasses,
             interests: connection.penpal.interests,
             otherInterests: connection.penpal.otherInterests
@@ -98,12 +126,12 @@ export async function GET(request: NextRequest) {
           allPenpals.push({
             name: `${connection.student.firstName} ${connection.student.lastInitial}.`,
             grade: connection.student.grade,
-            school: connection.student.school?.schoolName,
+            school: displaySchoolName(connection.student.school),
             city: connection.student.school?.schoolCity,
             state: connection.student.school?.schoolState,
             country: connection.student.school?.schoolCountry,
             schoolGroupId: connection.student.school?.schoolGroupId,
-            teacherName: connection.student.teacherName || undefined,
+            teacherName: displayTeacherName(connection.student),
             hasMultipleClasses: connection.student.school?.hasMultipleClasses,
             interests: connection.student.interests,
             otherInterests: connection.student.otherInterests
