@@ -168,8 +168,13 @@ function PenPalListContent() {
       });
     });
 
-    // Convert to array and sort alphabetically by student name
+    // Group by the pen pal's teacher (when there is one), then
+    // alphabetically by student name within each teacher. Lists with no
+    // pen pal teacher names sort exactly as before: by student name only.
+    const penpalTeacher = (s: ConsolidatedStudent) => s.penpals[0]?.teacherName || '';
     return Array.from(studentMap.values()).sort((a, b) => {
+      const byTeacher = penpalTeacher(a).localeCompare(penpalTeacher(b), undefined, { numeric: true });
+      if (byTeacher !== 0) return byTeacher;
       return a.studentName.localeCompare(b.studentName);
     });
   };
@@ -311,7 +316,7 @@ function PenPalListContent() {
             </h2>
           </div>
 
-          {/* Student listings - consolidated and sorted alphabetically */}
+          {/* Student listings - consolidated, grouped by pen pal teacher, then alphabetical */}
           <div className="student-cards-container">
             {consolidatedStudents.map((student, studentIndex) => (
               <div key={studentIndex} className="student-card" style={{ position: 'relative' }}>
