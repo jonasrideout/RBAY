@@ -42,6 +42,10 @@ export default function AdminDashboard() {
   // expanded section, so the active workflow view doesn't accumulate every
   // past year's completed pairs.
   const [showDonePairs, setShowDonePairs] = useState(false);
+  // Collapsed by default: registrations archived (isActive: false) when a
+  // returning teacher started a new year's class, and never matched. They
+  // stay out of every matching list and only appear in this section.
+  const [showArchived, setShowArchived] = useState(false);
   
   // Filter state
   const [filters, setFilters] = useState<Filters>({
@@ -152,6 +156,10 @@ export default function AdminDashboard() {
       return unit.studentCounts?.ready || 0;
     }
   };
+
+  // Treat a missing isActive as active, so nothing disappears if the API
+  // ever omits the field.
+  const isArchived = (school: School): boolean => school.isActive === false;
 
   const unitHasPenPalAssignments = (unit: MatchableUnit): boolean => {
     return unit.penPalAssignments?.hasAssignments || false;
@@ -397,7 +405,7 @@ export default function AdminDashboard() {
 
   const handleApplyFilters = () => {
     const unmatchedSchools = schools.filter(school => 
-      !school.schoolGroupId && !school.matchedWithSchoolId
+      !school.schoolGroupId && !school.matchedWithSchoolId && !isArchived(school)
     );
     
     const unmatchedGroups = groups.filter(group => 
@@ -507,6 +515,10 @@ export default function AdminDashboard() {
 
   const organizeUnitsByWorkflow = () => {
     const unmatched: MatchableUnit[] = [];
+    // Archived, unmatched registrations only. An archived school that is
+    // part of a pair (e.g. last year's DONE pair) still flows into the pair
+    // sections below as before, so pairing history is unaffected.
+    const archived: School[] = [];
     const matchedPairs: MatchedPair[] = [];
     
     const processedSchools = new Set<string>();
@@ -516,7 +528,11 @@ export default function AdminDashboard() {
   if (processedSchools.has(school.id) || school.schoolGroupId) return;
 
   if (!school.matchedWithSchoolId) {
-    unmatched.push(school);
+    if (isArchived(school)) {
+      archived.push(school);
+    } else {
+      unmatched.push(school);
+    }
   } else {
     const matchedSchoolFull = schools.find(s => s.id === school.matchedWithSchoolId);
     
@@ -606,7 +622,8 @@ export default function AdminDashboard() {
       awaitingReadiness,
       readyForPairing,
       completePairs,
-      donePairs
+      donePairs,
+      archived
     };
   };
 
@@ -621,14 +638,14 @@ export default function AdminDashboard() {
     );
   }
 
-  const { unmatched, awaitingReadiness, readyForPairing, completePairs, donePairs } = organizeUnitsByWorkflow();
+  const { unmatched, awaitingReadiness, readyForPairing, completePairs, donePairs, archived } = organizeUnitsByWorkflow();
   
   let unmatchedToShow = filtersApplied ? filteredUnits : unmatched;
   if (pinnedUnit) {
     unmatchedToShow = unmatchedToShow.filter(unit => unit.id !== pinnedUnit.id);
   }
 
-  const availableForGrouping = schools;
+  const availableForGrouping = schools.filter(school => !isArchived(school));
 
   return (
     <div className="page" style={{ backgroundColor: '#EDEAF5' }}>
@@ -705,7 +722,8 @@ export default function AdminDashboard() {
             { id: 'section-awaiting', label: 'Awaiting Readiness', count: awaitingReadiness.length },
             { id: 'section-ready', label: 'Ready to Pair', count: readyForPairing.length },
             { id: 'section-complete', label: 'Complete', count: completePairs.length },
-            { id: 'section-done', label: 'Done', count: donePairs.length }
+            { id: 'section-done', label: 'Done', count: donePairs.length },
+            { id: 'section-archived', label: 'Archived', count: archived.length }
           ].map(({ id, label, count }) => (
             <button
               key={id}
@@ -942,6 +960,41 @@ export default function AdminDashboard() {
                         key={`done-${index}`} 
                         pair={pair} 
                         assignedAt={getUnitAssignedAt(pair.unit1) || getUnitAssignedAt(pair.unit2)}
+                      />
+                    ))}
+                  </div>
+                )
+              )}
+            </section>
+
+            <section id="section-archived" style={{ marginBottom: '3rem' }}>
+              <button
+                type="button"
+                onClick={() => setShowArchived(prev => !prev)}
+                className="btn"
+                style={{ marginBottom: showArchived ? '1rem' : 0, borderRadius: '10px', color: '#8A87A0', borderColor: '#8A87A0' }}
+              >
+                {showArchived ? '▾' : '▸'} Archived ({archived.length})
+              </button>
+
+              {showArchived && (
+                archived.length === 0 ? (
+                  <div style={{ 
+                    background: '#fff', border: '1px solid #DAD7E8', borderRadius: '20px',
+                    textAlign: 'center', padding: '2rem', color: '#8A87A0'
+                  }}>
+                    No archived registrations.
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {archived.map(school => (
+                      <SchoolCard
+                        key={`archived-${school.id}`}
+                        school={school}
+                        showActions={false}
+                        isPinned={false}
+                        onPin={() => {}}
+                        onUpdate={handleSchoolsUpdate}
                       />
                     ))}
                   </div>
