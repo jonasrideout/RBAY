@@ -168,12 +168,16 @@ function PenPalListContent() {
       });
     });
 
-    // Group by the pen pal's teacher (when there is one), then
-    // alphabetically by student name within each teacher. Lists with no
-    // pen pal teacher names sort exactly as before: by student name only.
-    const penpalTeacher = (s: ConsolidatedStudent) => s.penpals[0]?.teacherName || '';
+    // A school that registered several classes/sections (hasMultipleClasses)
+    // is grouped by its OWN students' class, so the teacher can hand out
+    // slips section by section. Every other school is grouped by the pen
+    // pal's teacher. Alphabetical by student name within each group. Lists
+    // with neither sort exactly as before: by student name only.
+    const groupByOwnClass = !!data.school.hasMultipleClasses;
+    const groupKey = (s: ConsolidatedStudent) =>
+      groupByOwnClass ? (s.studentTeacherName || '') : (s.penpals[0]?.teacherName || '');
     return Array.from(studentMap.values()).sort((a, b) => {
-      const byTeacher = penpalTeacher(a).localeCompare(penpalTeacher(b), undefined, { numeric: true });
+      const byTeacher = groupKey(a).localeCompare(groupKey(b), undefined, { numeric: true });
       if (byTeacher !== 0) return byTeacher;
       return a.studentName.localeCompare(b.studentName);
     });
@@ -363,7 +367,7 @@ function PenPalListContent() {
                   maxWidth: 'calc(100% - 180px)', // Leave room for logo on right
                   paddingRight: '1rem'
                 }}>
-                  {student.studentName} | Interests: {student.studentInterests}
+                  {student.studentName}{student.studentHasMultipleClasses && student.studentTeacherName ? ` | Class: ${student.studentTeacherName.trim()}` : ''} | Interests: {student.studentInterests}
                 </div>
                 <div style={{
                   marginLeft: '1rem',
