@@ -15,6 +15,8 @@ export interface School {
   startMonth: string;
   letterFrequency?: string;
   status: 'COLLECTING' | 'READY' | 'MATCHED' | 'CORRESPONDING' | 'DONE';
+  // false = archived when a returning teacher started a new year's class
+  isActive?: boolean;
   specialConsiderations?: string;
   communicationPlatforms?: any;
   createdAt: Date;
