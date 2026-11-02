@@ -175,6 +175,9 @@ export async function GET() {
         specialConsiderations: school.specialConsiderations,
         communicationPlatforms: school.communicationPlatforms,
         status: school.status,
+        // false = archived when a returning teacher started a new year's
+        // class; the admin dashboard hides these behind an "Archived" toggle.
+        isActive: school.isActive,
         letterFrequency: school.letterFrequency,
         lettersSent: school.lettersSent,
         lettersReceived: school.lettersReceived,
