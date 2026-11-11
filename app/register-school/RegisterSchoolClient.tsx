@@ -258,6 +258,16 @@ export default function RegisterSchoolClient({
         return;
       }
 
+      // Meta Pixel: a teacher has completed school registration. Admin
+      // registrations return above, so they are never counted. No form data
+      // is sent with the event.
+      if (typeof window !== 'undefined') {
+        const fbq = (window as unknown as { fbq?: (...args: unknown[]) => void }).fbq;
+        if (fbq) {
+          fbq('track', 'CompleteRegistration');
+        }
+      }
+
       // For regular teachers, show success page
       setRegisteredSchool(data.school);
       setIsSubmitted(true);
