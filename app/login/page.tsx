@@ -2,7 +2,7 @@
 'use client';
 
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useState, useEffect, useRef, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import Header from '../components/Header';
 
@@ -37,24 +37,6 @@ function LoginContent() {
       setError('An error occurred during sign-in. Please try again.');
     }
   }, [errorParam, router]);
-
-  // Meta Pixel: fire a Lead event once when the "check your email" screen
-  // appears (a teacher has requested a login link). This covers both the
-  // returning-teacher path and the new-teacher verification path. The ref
-  // guard stops "Send another login link" from counting a second Lead.
-  // Must stay above the early returns below (rules of hooks).
-  const hasTrackedRef = useRef(false);
-  useEffect(() => {
-    if (success && !hasTrackedRef.current) {
-      hasTrackedRef.current = true;
-      if (typeof window !== 'undefined') {
-        const fbq = (window as unknown as { fbq?: (...args: unknown[]) => void }).fbq;
-        if (fbq) {
-          fbq('track', 'Lead');
-        }
-      }
-    }
-  }, [success]);
 
   const handleSendMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
